@@ -2,6 +2,7 @@
 
 >  Mvvm Library for .NET projects.
 
+
 * **MvvmLib.Core** [netstandard 2.0, net 4.5]
   * **BindableBase**, **Validatable**, **Editable**, **ValidateAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
   * **Commands** and **composite** command
@@ -9,9 +10,13 @@
   * **Singleton**
   * **Messenger** : allows to **subscribe**, **publish** and filter messages
 
+
+
 * **MvvmLib.IoC** (Dependency Injection) [netstandard 2.0, net 4.5]
   * **Injector**: allows to **register Types, Singletons, Instances, values, auto discover types, etc.**.
   
+
+
 * **MvvmLib.Wpf** (Navigation) [net 4.5]
   * **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
   * **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
@@ -21,6 +26,8 @@
   * **ILoadedEventListener**: allows to be notified when the view or window is loaded
 * **Mvvm**
   * **BootstrapperBase**: bootstrapper base class
+
+
 
 * **MvvmLib.Windows** (Navigation) [uwp]
   * **NavigationManager**: allows to create and manage **navigation services**
@@ -33,15 +40,21 @@
 * **Mvvm**
   * **BootstrapperBase**: bootstrapper base class
 
+
+
 * **MvvmLib.Adaptive.Wpf** [net 4.5]
   * **BreakpointBinder**: allows to **bind controls** and make the page "**responsive**"
   * **BreakpointListener**: allows to define a list of breakpoints and be notified on current breakpoint changed
+
+
 
 * **MvvmLib.Adaptive.Windows** [uwp]
   * **BreakpointBinder**: allows to **bind controls** and make the page "**responsive**"
   * **BreakpointListener**: allows to define a list of breakpoints and be notified on current breakpoint changed
   * **ResponsiveGridView** and **ResponsiveVariableSizedGridView**
   * **BusyIndicator**
+
+
 
 ## Installation
 
