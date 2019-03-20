@@ -24,9 +24,7 @@
   * **INavigatable**: allows views and view models to be notified on navigate
   * **IActivatable**, **IDeactivatable**: allow to cancel navigation
   * **ILoadedEventListener**: allows to be notified when the view or window is loaded
-* **Mvvm**
   * **BootstrapperBase**: bootstrapper base class
-
 
 
 * **MvvmLib.Windows** (Navigation) [uwp]
@@ -37,7 +35,6 @@
   * **IDeactivatable**: allows to **cancel** navigation
   * **ILoadedEventListener**: allows to be notified from view model when the **view** is **loaded**
   * **BackRequestManager**: allows to show the **back button** in **title bar**
-* **Mvvm**
   * **BootstrapperBase**: bootstrapper base class
 
 
