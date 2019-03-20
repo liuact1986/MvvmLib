@@ -1,0 +1,30 @@
+﻿<Page
+    x:Class="AdaptiveSample.Windows.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adaptive="using:MvvmLib.Adaptive"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Click="OnGoAdaptiveDemo" Margin="4">Adaptive Binding</Button>
+            <Button Click="OnGoResponsiveGridViewPage"  Margin="4">Responsive GridView demos</Button>
+            <Button Click="OnGoDataTemplateSelectorPage"  Margin="4">Responsive GridView With DataTemplateSelector</Button>
+            <Button Click="OnGoResponsiveVariableSizedGridViewPage"  Margin="4">Responsive Variable sized GridView</Button>
+            <Button Click="OnGoBreakpointPage"  Margin="4">With breakpoints</Button>
+            <Button Click="OnShowBusy" Margin="4">Show Busy Indicator</Button>
+        </StackPanel>
+
+        <Frame x:Name="MainFrame" Grid.Row="1"></Frame>
+
+        <adaptive:BusyIndicator x:Name="BusyIndicator" Grid.RowSpan="2"></adaptive:BusyIndicator>
+    </Grid>
+</Page>

@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Company>romagny13</Company>
+    <Description>MvvmLib Shared classes.
+
+* Mvvm
+  * BindableBase, Validatable, Editable, ValidateAndEditable and ModelWrapper base classes for Models and ViewModels
+  * Commands and composite command
+  * Sync extensions for list and collections. Allows to sync data
+  * Singleton
+* Messenger : allows to subscribe, publish and filter messages</Description>
+    <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
+    <Authors>romagny13</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Source\MvvmLib.Core\MvvmLib.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+  </ItemGroup>
+
+</Project>

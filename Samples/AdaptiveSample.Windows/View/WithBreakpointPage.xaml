@@ -1,0 +1,62 @@
+﻿<Page xmlns:adaptive="using:MvvmLib.Adaptive"
+    x:Class="AdaptiveSample.Windows.WithBreakpointPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="ThisPage"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <DataTemplate x:Name="SquareTemplate">
+            <Grid Background="{Binding Color}" Margin="4">
+                <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <adaptive:BreakpointBinder x:Name="bp" File="Breakpoints/WithBreakpointPage.json"/>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Margin="16,6">Responsive GridView With breakpoints</TextBlock>
+                <adaptive:ResponsiveGridView x:Name="ResponsiveGridView"                                        
+                                         ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}"
+                                         ItemTemplate="{StaticResource SquareTemplate}"
+                                         ItemClickCommand="{Binding ElementName=ThisPage,Path=Command}" 
+                                         Columns="{Binding Active.columns, ElementName=bp,FallbackValue=4}"
+                                         ItemHeight="300"
+                                         Grid.Row="1">
+                </adaptive:ResponsiveGridView>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Margin="16,6">Responsive Variable Sized GridView with breakpoints</TextBlock>
+                <adaptive:ResponsiveVariableSizedGridView x:Name="ResponsiveVariableSizedGridView"
+                                                      Columns="{Binding Active.variablecolumns, ElementName=bp,FallbackValue=6}"
+                                                      ItemHeight="150"
+                                                      ItemsSource="{Binding ElementName=ThisPage,Path=VariableSizedItems,Mode=OneWay}"
+                                                      ItemTemplate="{StaticResource SquareTemplate}" Grid.Row="1">
+                </adaptive:ResponsiveVariableSizedGridView>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+    
+</Page>

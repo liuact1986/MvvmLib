@@ -1,0 +1,82 @@
+﻿<Page xmlns:adaptive="using:MvvmLib.Adaptive" 
+    x:Class="AdaptiveSample.Windows.GridViewDemoPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      x:Name="ThisPage"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <DataTemplate x:Name="SquareTemplate">
+            <Grid Background="{Binding Color}">
+                <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+
+            <!--One Row GridView -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Margin="16,6">GridView One Row</TextBlock>
+                <adaptive:OneRowGridView x:Name="OneRowGridView"
+                                     ItemHeight="300"
+                                     ItemWidth="400"
+                                     ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}"
+                                     ItemTemplate="{StaticResource SquareTemplate}"
+                                     ItemClickCommand="{Binding ElementName=ThisPage,Path=Command}" Grid.Row="1">
+                </adaptive:OneRowGridView>
+            </Grid>
+
+            <!--One Row Mode-->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Margin="16,6">Responsive GridView + One Row Mode</TextBlock>
+                <adaptive:ResponsiveGridView x:Name="ResponsiveGridView"
+                                     OneRowMode="True"
+                                     Columns="3"
+                                     ItemHeight="300"
+                                     ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}"
+                                     ItemTemplate="{StaticResource SquareTemplate}"
+                                     ItemClickCommand="{Binding ElementName=ThisPage,Path=Command}" Grid.Row="1">
+                </adaptive:ResponsiveGridView>
+            </Grid>
+
+
+            <!-- Normal -->
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Margin="16,6">Responsive GridView Without One Row Mode</TextBlock>
+                <adaptive:ResponsiveGridView x:Name="NormalGridView"
+                                     Columns="6"
+                                     ItemHeight="200"
+                                     ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}"
+                                     ItemTemplate="{StaticResource SquareTemplate}"
+                                     ItemClickCommand="{Binding ElementName=ThisPage,Path=Command}" Grid.Row="1">
+                </adaptive:ResponsiveGridView>
+            </Grid>
+
+        </Grid>
+    </ScrollViewer>
+</Page>

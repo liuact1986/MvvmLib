@@ -1,0 +1,26 @@
+﻿[
+  {
+    "minwidth": 0,
+    "bindings": {
+      "margin": "40, 20",
+      "titleFontSize": 18,
+      "titleForeground": "darkgreen"
+    }
+  },
+  {
+    "minwidth": 600,
+    "bindings": {
+      "margin": "80, 40",
+      "titleFontSize": 24,
+      "titleForeground": "darkorange"
+    }
+  },
+  {
+    "minwidth": 960,
+    "bindings": {
+      "margin": "160, 80",
+      "titleFontSize": 36,
+      "titleForeground": "red"
+    }
+  }
+]

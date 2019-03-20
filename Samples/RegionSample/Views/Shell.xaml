@@ -1,0 +1,94 @@
+﻿<Window x:Class="RegionSample.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RegionSample"
+        xmlns:nav="http://mvvmlib.com/"
+        nav:ViewModelLocator.ResolveWindowViewModel="True" 
+        xmlns:viewModels ="clr-namespace:RegionSample.ViewModels"
+        xmlns:views="clr-namespace:RegionSample.Views"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="768" Width="1024"
+        WindowStartupLocation="CenterScreen">
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <WrapPanel Orientation="Horizontal">
+                <TextBlock Text="Content region" Margin="6"></TextBlock>
+                <Button Content="Root" Command="{Binding NavigateToRootCommand}"></Button>
+                <Button Content="Go Back" Command="{Binding GoBackCommand}" Margin="4,0,0,0"></Button>
+                <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="4,0,0,0"></Button>
+                <Button Content="View B" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="4,0,0,0"></Button>
+                <Button Content="DetailViewModel" Command="{Binding NavigateCommand}" CommandParameter="{x:Type viewModels:DetailViewModel}" Margin="4,0,0,0"></Button>
+                <Button Content="Composition" Command="{Binding NavigateComposedCommand}" Margin="4,0,0,0"></Button>
+                <Button Content="Go Forward" Command="{Binding GoForwardCommand}" Margin="4,0,0,0"></Button>
+                <Button Content="Open Window" Command="{Binding OpenWindowCommand}" Margin="4,0,0,0"></Button>
+            </WrapPanel>
+
+            <ContentControl x:Name="ContentRegion1" nav:RegionManager.ContentRegion="ContentRegion" Grid.Row="1"></ContentControl>
+            <ContentControl x:Name="ContentRegion2" nav:RegionManager.ContentRegion="ContentRegion" Grid.Row="2"></ContentControl>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Add ViewA" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewA}"></Button>
+                <Button Content="Add ViewB" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewB}"></Button>
+                <Button Content="Add Composed" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ComposedView}"></Button>
+                <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
+                    <Button Content="Insert" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=InsertIndexTextBox,Path=Text}"></Button>
+                    <TextBlock Text="Index:" Margin="6"></TextBlock>
+                    <TextBox x:Name="InsertIndexTextBox" Text="0" VerticalContentAlignment="Center" Width="20"></TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                    <Button Content="Remove At" Command="{Binding RemoveAtCommand}" CommandParameter="{Binding ElementName=RemoveIndexTextBox,Path=Text}"></Button>
+                    <TextBlock Text="Index:" Margin="6"></TextBlock>
+                    <TextBox x:Name="RemoveIndexTextBox" Text="0" VerticalContentAlignment="Center" Width="20"></TextBox>
+                </StackPanel>
+                <Button Content="Clear" Command="{Binding ClearCommand}" Margin="8,0,0,0"></Button>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <!-- ItemsControlRegion (1) -->
+                    <ItemsControl x:Name="ItemsRegion1" nav:RegionManager.ItemsRegion="ItemsRegion"></ItemsControl>
+
+                    <StackPanel x:Name="StackPanelRegion1" nav:RegionManager.ItemsRegion="StackPanelRegion" Grid.Row="1" Margin="12"></StackPanel>
+
+                    <TabControl x:Name="TabControlRegion1" nav:RegionManager.ItemsRegion="TabControlRegion" Grid.Row="2" Margin="12">
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Header" Value="{Binding Message,FallbackValue='No message'}" />
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                    </TabControl>
+                </Grid>
+
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</Window>

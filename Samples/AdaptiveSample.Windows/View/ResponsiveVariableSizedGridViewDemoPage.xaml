@@ -1,0 +1,30 @@
+﻿<Page xmlns:adaptive="using:MvvmLib.Adaptive" 
+    x:Class="AdaptiveSample.Windows.ResponsiveVariableSizedGridViewDemoPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      x:Name="ThisPage"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <ScrollViewer>
+            <adaptive:ResponsiveVariableSizedGridView x:Name="GridView"
+            Columns="6"
+            ItemHeight="150"
+            ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}">
+                <adaptive:ResponsiveVariableSizedGridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="{Binding Color}"  Margin="4">
+                            <TextBlock Text="{Binding Title}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </adaptive:ResponsiveVariableSizedGridView.ItemTemplate>
+            </adaptive:ResponsiveVariableSizedGridView>
+        </ScrollViewer>
+        
+    </Grid>
+</Page>

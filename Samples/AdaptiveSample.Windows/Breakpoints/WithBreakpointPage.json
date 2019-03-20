@@ -1,0 +1,23 @@
+﻿[
+    {
+        "minwidth": 0,
+        "bindings": {
+            "columns": 2,
+            "variablecolumns": 2
+        }
+    },
+    {
+        "minwidth": 600,
+        "bindings": {
+            "columns": 3,
+            "variablecolumns": 4
+        }
+    },
+    {
+        "minwidth": 960,
+        "bindings": {
+            "columns": 4,
+            "variablecolumns": 6
+        }
+    }
+]

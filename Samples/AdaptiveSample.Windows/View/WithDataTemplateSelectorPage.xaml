@@ -1,0 +1,51 @@
+﻿<Page xmlns:adaptive="using:MvvmLib.Adaptive" 
+    x:Class="AdaptiveSample.Windows.WithDataTemplateSelectorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="ThisPage"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <DataTemplate x:Name="SquareTemplate">
+            <Grid Background="{Binding Color}" Margin="4">
+                <TextBlock Text="{Binding Title}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Name="BorderTemplate">
+            <Border x:Name="circularBorder" 
+                   BorderBrush="Black" BorderThickness="10"
+                    CornerRadius="10"
+                    Background="{Binding Color}">
+                <TextBlock Text="{Binding Title}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </DataTemplate>
+
+        <local:MyDataTemplateSelector x:Name="MyDataTemplateSelector" 
+                                      SquareTemplate="{StaticResource SquareTemplate}"
+                                      BorderTemplate="{StaticResource BorderTemplate}"/>
+
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ScrollViewer>
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+                <adaptive:ResponsiveGridView x:Name="ItemTemplateSelectorGridView"
+                                            Columns="4"
+                                            ItemHeight="150"
+                                            ItemsSource="{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}"
+                                            ItemTemplateSelector="{StaticResource MyDataTemplateSelector}"
+                                            ItemClickCommand="{Binding ElementName=ThisPage,Path=Command}">
+                </adaptive:ResponsiveGridView>
+                
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

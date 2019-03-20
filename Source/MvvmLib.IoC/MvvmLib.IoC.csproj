@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <Description>MvvmLib IoC Container.
+
+* DI (Dependency Injection)
+  * Injector: allows to **register Types, Singletons, Instances, values, auto discover types, inject properties, etc.</Description>
+    <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
+    <Company>romagny13</Company>
+    <Authors>romagny13</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Source\MvvmLib.IoC\MvvmLib.IoC.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>

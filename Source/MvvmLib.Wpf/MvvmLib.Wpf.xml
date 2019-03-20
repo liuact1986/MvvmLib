@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MvvmLib.Wpf</name>
+    </assembly>
+    <members>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String)">
+            <summary>
+            Returns the first content region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String,System.String)">
+            <summary>
+            Returns the content region.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="name">The control name property</param>
+            <returns></returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.ViewModelLocationProvider">
+            <summary>
+            The ViewModelLocationProvider class locates the view model for the view.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.SetViewModelFactory(System.Func{System.Type,System.Object})">
+            <summary>
+            The view model factory receives a view model type and have to create an instance of the view model. It could uses a ioc container to create the instance and resolve view model dependences.
+            </summary>
+            <param name="viewModelFactory"></param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.RegisterCustom(System.Type,System.Type)">
+            <summary>
+            Registers a ViewModelType for a ViewType.
+            </summary>
+            <param name="viewType">The view type</param>
+            <param name="viewModelType">The view model type</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.ViewResolver">
+            <summary>
+            Creates an instance of a view. 
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewResolver.SetViewFactory(System.Func{System.Type,System.Object})">
+            <summary>
+            The view factory receives a view type and have to get always a new instance of a view.
+            </summary>
+            <param name="viewFactory">The view factory</param>
+        </member>
+        <member name="T:MvvmLib.Wpf.Properties.Resources">
+            <summary>
+              Une classe de ressource fortement typée destinée, entre autres, à la consultation des chaînes localisées.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Wpf.Properties.Resources.ResourceManager">
+            <summary>
+              Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Wpf.Properties.Resources.Culture">
+            <summary>
+              Remplace la propriété CurrentUICulture du thread actuel pour toutes
+              les recherches de ressources à l'aide de cette classe de ressource fortement typée.
+            </summary>
+        </member>
+    </members>
+</doc>

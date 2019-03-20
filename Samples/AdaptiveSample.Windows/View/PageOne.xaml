@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="AdaptiveSample.Windows.PageOne"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AdaptiveSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:adaptive="using:MvvmLib.Adaptive"
+    mc:Ignorable="d">
+
+    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <adaptive:BreakpointBinder x:Name="bp"  File="Breakpoints/PageOne.json" />
+        <TextBlock x:Name="SizeTextBlock" Style="{StaticResource SubheaderTextBlockStyle}"></TextBlock>
+        
+        <TextBlock x:Name="TextBlock" 
+                   FontSize="{Binding Active.titleFontSize, ElementName=bp}"
+                   Margin="{Binding Active.margin, ElementName=bp}"
+                   Foreground="{Binding Active.titleForeground, ElementName=bp}">Title with adaptive font size, margin and foreground</TextBlock>
+
+    </StackPanel>
+</Page>

@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="RegionSample.Views.ViewB"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RegionSample.Views"
+             Background="#c0392b"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <StackPanel VerticalAlignment="Center">
+        <TextBlock Text="View B (ViewModel SINGLETON + ISelectable)" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Text="{Binding Message}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Text="{Binding Count}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"></TextBlock>
+        <Button Content="Update ViewA Message" Command="{Binding UpdateMessageCommand}" Width="150"></Button>
+    </StackPanel>
+
+</UserControl>
