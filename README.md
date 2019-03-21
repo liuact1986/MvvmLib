@@ -59,10 +59,10 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 | Package  | Required | Description | NuGet |
 | --- | --- | --- | --- |
-| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg)
-| [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg) |
-| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg) |
-| [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg) |
+| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square)
+| [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg?style=flat-square) |
+| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
+| [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg?style=flat-square) |
 
 ```
 PM> Install-Package MvvmLib.Core
@@ -75,10 +75,10 @@ PM> Install-Package MvvmLib.Adaptive.Wpf
 
 | Package  | Required | Description | NuGet |
 | --- | --- | --- | --- |
-| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg) |
-| [MvvmLib.Windows](https://www.nuget.org/packages/MvvmLib.Windows/) | Yes | Navigation with view model | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Windows.svg) |
-| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg) |
-| [MvvmLib.Adaptive.Windows](https://www.nuget.org/packages/MvvmLib.Adaptive.Windows/) | No | Make the page "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Windows.svg) |
+| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square) |
+| [MvvmLib.Windows](https://www.nuget.org/packages/MvvmLib.Windows/) | Yes | Navigation with view model | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Windows.svg?style=flat-square) |
+| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
+| [MvvmLib.Adaptive.Windows](https://www.nuget.org/packages/MvvmLib.Adaptive.Windows/) | No | Make the page "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Windows.svg?style=flat-square) |
 
 ```
 PM> Install-Package MvvmLib.Core
