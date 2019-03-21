@@ -86,3 +86,7 @@ PM> Install-Package MvvmLib.Windows
 PM> Install-Package MvvmLib.IoC
 PM> Install-Package MvvmLib.Adaptive.Windows
 ```
+
+<p align="center">
+<img src="https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png">
+</p>
