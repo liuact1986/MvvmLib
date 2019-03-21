@@ -29,7 +29,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **BootstrapperBase**: bootstrapper base class
 
 
-### MvvmLib.Windows (Navigation) [uwp]
+## MvvmLib.Windows (Navigation) [uwp]
   
 * **NavigationManager**: allows to create and manage **navigation services**
 * **FrameNavigationService**: allows to **navigate**, go back, go forward, **cancel navigation** and **notify viewmodel**
