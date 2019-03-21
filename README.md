@@ -23,7 +23,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
 * **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
 * **RegionManager**: allows to get a region, then **navigate** _with regions_ 
-* **INavigatable**: allows the view model to be notified on navigate
+* **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
 * **ILoadedEventListener**: allows to be notified when the view or window is loaded
 * **BootstrapperBase**: bootstrapper base class
@@ -34,7 +34,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **NavigationManager**: allows to create and manage **navigation services**
 * **FrameNavigationService**: allows to **navigate**, go back, go forward, **cancel navigation** and **notify viewmodel**
 * **ViewModelLocator**: allows to **resolve ViewModel** for views
-* **INavigatable**: allows the view model to be notified on navigate
+* **INavigatable**: allows the view models to be notified on navigate
 * **IDeactivatable**: allows to **cancel** navigation
 * **ILoadedEventListener**: allows to be notified from view model when the **view** is **loaded**
 * **BackRequestManager**: allows to show the **back button** in **title bar**
