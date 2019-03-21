@@ -35,7 +35,7 @@ namespace MvvmLib.Adaptive
             }
             catch (FileNotFoundException)
             {
-                throw new ArgumentException("Json file \"" + configFile + "\" not found. Set  file as \"Content\" and \"copy into the output directory\" in the properties panel.");
+                throw new ArgumentException("Json file \"" + configFile + "\" not found. Set file as \"Content\" and \"copy into the output directory\" in the properties panel.");
             }
         }
 

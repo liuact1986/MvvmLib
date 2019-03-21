@@ -72,18 +72,25 @@ namespace NavigationSample.Windows.Views
 
         private async void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            var tag = args.InvokedItemContainer.Tag.ToString();
-
-            switch (tag)
+            if (args.IsSettingsInvoked)
             {
-                case "PageA":
-                    await navigationService.NavigateAsync(typeof(PageA), "PageA navigation parameter");
-                    break;
-                case "PageB":
-                    await navigationService.NavigateAsync(typeof(PageB), "PageB navigation parameter");
-                    break;
-                default:
-                    break;
+                // settings page
+                await navigationService.NavigateAsync(typeof(SettingsPage));
+            }
+            else if (args.InvokedItemContainer != null)
+            {
+                var tag = args.InvokedItemContainer.Tag.ToString();
+                switch (tag)
+                {
+                    case "PageA":
+                        await navigationService.NavigateAsync(typeof(PageA), "PageA navigation parameter");
+                        break;
+                    case "PageB":
+                        await navigationService.NavigateAsync(typeof(PageB), "PageB navigation parameter");
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
