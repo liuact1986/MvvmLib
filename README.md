@@ -57,12 +57,12 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 ### Wpf 
 
-| Package  | Required | Description |
-| --- | --- | --- |
-| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger |
-| [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition |
-| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. |
-| [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive"
+| Package  | Required | Description | NuGet |
+| --- | --- | --- | --- |
+| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg)
+| [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg) |
+| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg) |
+| [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg) |
 
 ```
 PM> Install-Package MvvmLib.Core
@@ -73,12 +73,12 @@ PM> Install-Package MvvmLib.Adaptive.Wpf
 
 ### Uwp
 
-| Package  | Required | Description | 
-| --- | --- | --- |
-| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes | BindableBase, Validation, commands, Messenger |
-| [MvvmLib.Windows](https://www.nuget.org/packages/MvvmLib.Windows/) | Yes | Navigation with view model | 
-| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No | IoC Container or use Unity, Autofac, etc. |
-| [MvvmLib.Adaptive.Windows](https://www.nuget.org/packages/MvvmLib.Adaptive.Windows/) | No | Make the page "responsive"
+| Package  | Required | Description | NuGet |
+| --- | --- | --- | --- |
+| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg) |
+| [MvvmLib.Windows](https://www.nuget.org/packages/MvvmLib.Windows/) | Yes | Navigation with view model | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Windows.svg) |
+| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg) |
+| [MvvmLib.Adaptive.Windows](https://www.nuget.org/packages/MvvmLib.Adaptive.Windows/) | No | Make the page "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Windows.svg) |
 
 ```
 PM> Install-Package MvvmLib.Core
