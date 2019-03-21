@@ -1,0 +1,38 @@
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csprojAssemblyReference.cache
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csproj.CoreCompileInputs.cache
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.Tests.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.Tests.pdb
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.pdb
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csproj.CopyComplete
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.dll
+C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.pdb
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.Tests.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.Tests.pdb
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\MvvmLib.Wpf.pdb
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\bin\Release\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csprojAssemblyReference.cache
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csproj.CoreCompileInputs.cache
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.csproj.CopyComplete
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.dll
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Wpf.Tests\obj\Release\MvvmLib.Wpf.Tests.pdb

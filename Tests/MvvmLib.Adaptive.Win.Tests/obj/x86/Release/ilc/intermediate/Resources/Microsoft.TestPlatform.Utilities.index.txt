@@ -1,0 +1,2 @@
+Microsoft.TestPlatform.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  Microsoft.VisualStudio.TestPlatform.Utilities.Resources.Resources.resources

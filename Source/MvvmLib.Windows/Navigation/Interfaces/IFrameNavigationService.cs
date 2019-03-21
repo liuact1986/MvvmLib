@@ -10,12 +10,12 @@ namespace MvvmLib.Navigation
     public interface IFrameNavigationService
     {
         /// <summary>
-        /// Gets the value that indicates if the can go back.
+        /// Gets the value that indicates if the frame can go back.
         /// </summary>
         bool CanGoBack { get; }
 
         /// <summary>
-        /// Gets the value that indicates if the can go forward.
+        /// Gets the value that indicates if the frame can go forward.
         /// </summary>
         bool CanGoForward { get; }
 

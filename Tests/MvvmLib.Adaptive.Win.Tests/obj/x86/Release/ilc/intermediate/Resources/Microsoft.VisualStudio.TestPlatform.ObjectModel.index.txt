@@ -1,0 +1,3 @@
+Microsoft.VisualStudio.TestPlatform.ObjectModel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  Microsoft.VisualStudio.TestPlatform.ObjectModel.Resources.Resources.resources
+  Microsoft.VisualStudio.TestPlatform.ObjectModel.Resources.CommonResources.resources

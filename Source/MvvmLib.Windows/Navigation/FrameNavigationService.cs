@@ -39,13 +39,13 @@ namespace MvvmLib.Navigation
         public event EventHandler<FrameNavigationCanceledEventArgs> NavigationCanceled;
 
         /// <summary>
-        /// Gets the value that indicates if the can go back.
+        /// Gets the value that indicates if the frame can go back.
         /// </summary>
         public bool CanGoBack => frameFacade.CanGoBack;
 
 
         /// <summary>
-        /// Gets the value that indicates if the can go forward.
+        /// Gets the value that indicates if the frame can go forward.
         /// </summary>
         public bool CanGoForward => frameFacade.CanGoForward;
 

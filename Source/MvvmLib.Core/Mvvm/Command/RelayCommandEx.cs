@@ -8,9 +8,21 @@ namespace MvvmLib.Mvvm
     /// <typeparam name="T">The generic type</typeparam>
     public class RelayCommand<T> : RelayCommandBase
     {
+        /// <summary>
+        /// The execute method.
+        /// </summary>
         protected Action<T> callback;
+
+        /// <summary>
+        /// The predicate.
+        /// </summary>
         protected Func<T, bool> condition;
 
+        /// <summary>
+        /// Creates the relay command.
+        /// </summary>
+        /// <param name="callback">The execute method</param>
+        /// <param name="condition">The predicate</param>
         public RelayCommand(Action<T> callback, Func<T, bool> condition = null)
         {
             this.callback = callback;

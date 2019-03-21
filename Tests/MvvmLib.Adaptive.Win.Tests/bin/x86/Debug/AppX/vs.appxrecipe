@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>DESKTOP-0MIP8G2</Machine>
+    <WindowsUser>romag</WindowsUser>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetOsVersion>10.0</TargetOsVersion>
+    <TargetOsDescription>Windows 10.0</TargetOsDescription>
+    <SolutionConfiguration>Debug|x86</SolutionConfiguration>
+    <PackageArchitecture>x86</PackageArchitecture>
+    <PackageIdentityName>73a68ab8-a341-47b7-b65e-4c5216c36abd</PackageIdentityName>
+    <PackageIdentityPublisher>CN=romag</PackageIdentityPublisher>
+    <IntermediateOutputPath>C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\obj\x86\Debug\</IntermediateOutputPath>
+    <RemoteDeploymentType>
+    </RemoteDeploymentType>
+    <PackageRegistrationPath>
+    </PackageRegistrationPath>
+    <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
+    <DeployOptionalPackages>false</DeployOptionalPackages>
+    <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
+    <LayoutDir>C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\AppX</LayoutDir>
+    <RegisteredManifestChecksum>80CABA22D8E1495326187509C258260C3F798AF6C6CD3BB9BD58C95FEDD553B8</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>73a68ab8-a341-47b7-b65e-4c5216c36abd_1.0.0.0_x86__3bpkjtc1587ze</RegisteredPackageMoniker>
+    <RegisteredUserModeAppID>73a68ab8-a341-47b7-b65e-4c5216c36abd_3bpkjtc1587ze!vstest.executionengine.universal.App</RegisteredUserModeAppID>
+    <RegisteredPackageID>73a68ab8-a341-47b7-b65e-4c5216c36abd</RegisteredPackageID>
+    <RegisteredPackagePublisher>CN=romag</RegisteredPackagePublisher>
+    <RegisteredVersion>1.0.0.0</RegisteredVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\Core\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-03-21T10:01:23.367</Modified>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\MvvmLib.Adaptive.Win.Tests.exe">
+      <PackagePath>entrypoint\MvvmLib.Adaptive.Win.Tests.exe</PackagePath>
+      <Modified>2019-03-21T10:01:22.226</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\MvvmLib.Adaptive.Win.Tests.pdb">
+      <PackagePath>MvvmLib.Adaptive.Win.Tests.pdb</PackagePath>
+      <Modified>2019-03-21T10:01:22.226</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\MvvmLib.Adaptive.Win.pdb">
+      <PackagePath>MvvmLib.Adaptive.Win.pdb</PackagePath>
+      <Modified>2019-03-20T23:42:03.450</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\References\CommonConfiguration\neutral\testhost.dll">
+      <PackagePath>testhost.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testframework\1.3.2\lib\uap10.0\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</PackagePath>
+      <Modified>2018-06-05T10:55:44.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testframework\1.3.2\lib\uap10.0\Microsoft.VisualStudio.TestPlatform.TestFramework.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.TestFramework.dll</PackagePath>
+      <Modified>2018-06-05T10:47:02.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\newtonsoft.json\9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll">
+      <PackagePath>Newtonsoft.Json.dll</PackagePath>
+      <Modified>2016-06-13T21:06:14.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x86.microsoft.netcore.universalwindowsplatform\6.2.3\runtimes\win10-x86\lib\uap10.0.15138\System.Runtime.dll">
+      <PackagePath>System.Runtime.dll</PackagePath>
+      <Modified>2018-11-29T09:27:16.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\MvvmLib.Adaptive.Win.dll">
+      <PackagePath>MvvmLib.Adaptive.Win.dll</PackagePath>
+      <Modified>2019-03-20T23:42:03.450</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\bin\10.0.17763.0\XamlCompiler\Microsoft.UI.Xaml.Markup.winmd">
+      <PackagePath>Microsoft.UI.Xaml.Markup.winmd</PackagePath>
+      <Modified>2018-10-23T00:33:40.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.TestPlatform.CommunicationUtilities.dll">
+      <PackagePath>Microsoft.TestPlatform.CommunicationUtilities.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.TestPlatform.CoreUtilities.dll">
+      <PackagePath>Microsoft.TestPlatform.CoreUtilities.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.TestPlatform.CrossPlatEngine.dll">
+      <PackagePath>Microsoft.TestPlatform.CrossPlatEngine.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.TestPlatform.PlatformAbstractions.dll">
+      <PackagePath>Microsoft.TestPlatform.PlatformAbstractions.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.TestPlatform.Utilities.dll">
+      <PackagePath>Microsoft.TestPlatform.Utilities.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.VisualStudio.TestPlatform.Common.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.Common.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\neutral\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</PackagePath>
+      <Modified>2018-10-10T00:50:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\Redist\CommonConfiguration\x86\msdia140.dll">
+      <PackagePath>msdia140.dll</PackagePath>
+      <Modified>2018-10-01T16:37:00.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll</PackagePath>
+      <Modified>2018-06-05T10:51:36.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll</PackagePath>
+      <Modified>2018-06-05T10:50:06.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\uap10.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll">
+      <PackagePath>Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll</PackagePath>
+      <Modified>2018-06-05T10:52:56.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\_common\fr\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll">
+      <PackagePath>fr\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll</PackagePath>
+      <Modified>2018-06-05T10:51:46.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\_common\fr\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll">
+      <PackagePath>fr\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll</PackagePath>
+      <Modified>2018-06-05T10:54:58.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\.nuget\packages\mstest.testadapter\1.3.2\build\_common\fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll">
+      <PackagePath>fr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll</PackagePath>
+      <Modified>2018-06-05T10:47:04.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Common\bind.json">
+      <PackagePath>Common\bind.json</PackagePath>
+      <Modified>2019-03-21T09:40:29.394</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Common\test.json">
+      <PackagePath>Common\test.json</PackagePath>
+      <Modified>2019-03-21T09:40:29.396</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Properties\UnitTestApp.rd.xml">
+      <PackagePath>Properties\UnitTestApp.rd.xml</PackagePath>
+      <Modified>2019-03-21T09:37:44.227</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\LockScreenLogo.scale-200.png">
+      <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\SplashScreen.scale-200.png">
+      <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\Square150x150Logo.scale-200.png">
+      <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\Square44x44Logo.scale-200.png">
+      <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\StoreLogo.png">
+      <PackagePath>Assets\StoreLogo.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\Assets\Wide310x150Logo.scale-200.png">
+      <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2019-02-27T18:43:41.393</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\MvvmLib.Adaptive.Win.Tests.xr.xml">
+      <PackagePath>MvvmLib.Adaptive.Win.Tests.xr.xml</PackagePath>
+      <Modified>2019-03-21T09:57:18.829</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\MvvmLib.Adaptive.Win.xr.xml">
+      <PackagePath>MvvmLib.Adaptive.Win\MvvmLib.Adaptive.Win.xr.xml</PackagePath>
+      <Modified>2019-03-20T23:42:03.006</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\UnitTestApp.xbf">
+      <PackagePath>UnitTestApp.xbf</PackagePath>
+      <Modified>2019-03-21T10:01:21.896</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\BusyIndicator\BusyIndicator.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\BusyIndicator\BusyIndicator.xbf</PackagePath>
+      <Modified>2019-03-20T22:19:03.986</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\OneRowGridView\OneRowGridView.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\OneRowGridView\OneRowGridView.xbf</PackagePath>
+      <Modified>2019-03-20T22:19:03.986</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\ResponsiveGridView\ResponsiveGridView.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\ResponsiveGridView\ResponsiveGridView.xbf</PackagePath>
+      <Modified>2019-03-20T22:19:03.987</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\ResponsiveVariableSizedGridView\ResponsiveVariableSizedGridView.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\ResponsiveVariableSizedGridView\ResponsiveVariableSizedGridView.xbf</PackagePath>
+      <Modified>2019-03-20T22:19:03.987</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\ResponsiveVariableSizedGridView\VariableSizedGridView.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\ResponsiveVariableSizedGridView\VariableSizedGridView.xbf</PackagePath>
+      <Modified>2019-03-20T23:42:03.069</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\Themes\Generic.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\Themes\Generic.xbf</PackagePath>
+      <Modified>2019-03-20T23:42:03.070</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\bin\Debug\Themes\SharedStyles.xbf">
+      <PackagePath>MvvmLib.Adaptive.Win\Themes\SharedStyles.xbf</PackagePath>
+      <Modified>2019-03-20T23:42:03.069</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\UnionMetadata\10.0.17763.0\Windows.winmd">
+      <PackagePath>WinMetadata\Windows.winmd</PackagePath>
+      <Modified>2018-10-22T23:44:28.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+      <Modified>2019-03-21T09:57:20.202</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\bin\x86\Debug\Core\MvvmLib.Adaptive.Win.Tests.exe">
+      <PackagePath>MvvmLib.Adaptive.Win.Tests.exe</PackagePath>
+      <Modified>2019-03-21T10:01:23.357</Modified>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx">
+      <Name>Microsoft.NET.CoreRuntime.2.2</Name>
+      <Version>2.2.26926.4</Version>
+      <Architecture>x86</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreRuntime.2.2, MinVersion = 2.2.26926.4, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x64.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx">
+      <Name>Microsoft.NET.CoreRuntime.2.2</Name>
+      <Version>2.2.26926.4</Version>
+      <Architecture>x64</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreRuntime.2.2, MinVersion = 2.2.26926.4, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x64.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-arm.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx">
+      <Name>Microsoft.NET.CoreRuntime.2.2</Name>
+      <Version>2.2.26926.4</Version>
+      <Architecture>arm</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreRuntime.2.2, MinVersion = 2.2.26926.4, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-arm.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreRuntime.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx">
+      <Name>Microsoft.NET.CoreFramework.Debug.2.2</Name>
+      <Version>2.2.27129.1</Version>
+      <Architecture>x86</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreFramework.Debug.2.2, MinVersion = 2.2.27129.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x64.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx">
+      <Name>Microsoft.NET.CoreFramework.Debug.2.2</Name>
+      <Version>2.2.27129.1</Version>
+      <Architecture>x64</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreFramework.Debug.2.2, MinVersion = 2.2.27129.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-x64.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-arm.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx">
+      <Name>Microsoft.NET.CoreFramework.Debug.2.2</Name>
+      <Version>2.2.27129.1</Version>
+      <Architecture>arm</Architecture>
+      <FrameworkIdentity>Name = Microsoft.NET.CoreFramework.Debug.2.2, MinVersion = 2.2.27129.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\UWPNuGetPackages\runtime.win10-arm.microsoft.net.uwpcoreruntimesdk\2.2.3\build\..\tools\Appx\Microsoft.NET.CoreFramework.Debug.2.2.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\">
+      <Name>Microsoft.VCLibs.140.00.Debug</Name>
+      <Version>14.0.27023.1</Version>
+      <Architecture>ARM</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.27023.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\.\AppX\Debug\ARM\Microsoft.VCLibs.ARM.Debug.14.00.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\">
+      <Name>Microsoft.VCLibs.140.00.Debug</Name>
+      <Version>14.0.27023.1</Version>
+      <Architecture>ARM64</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.27023.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\.\AppX\Debug\ARM64\Microsoft.VCLibs.ARM64.Debug.14.00.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\">
+      <Name>Microsoft.VCLibs.140.00.Debug</Name>
+      <Version>14.0.27023.1</Version>
+      <Architecture>x64</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.27023.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\.\AppX\Debug\x64\Microsoft.VCLibs.x64.Debug.14.00.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\">
+      <Name>Microsoft.VCLibs.140.00.Debug</Name>
+      <Version>14.0.27023.1</Version>
+      <Architecture>x86</Architecture>
+      <FrameworkIdentity>Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.27023.1, Publisher = %27CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US%27</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.VCLibs\14.0\.\AppX\Debug\x86\Microsoft.VCLibs.x86.Debug.14.00.appx</AppxLocation>
+      <MoreInfo>
+      </MoreInfo>
+    </ResolvedSDKReference>
+  </ItemGroup>
+</Project>

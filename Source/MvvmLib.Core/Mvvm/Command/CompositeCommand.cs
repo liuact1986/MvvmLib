@@ -8,6 +8,9 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public class CompositeCommand : RelayCommandBase
     {
+        /// <summary>
+        /// The list of the commands to be executed.
+        /// </summary>
         protected List<ICommand> commands = new List<ICommand>();
 
         /// <summary>

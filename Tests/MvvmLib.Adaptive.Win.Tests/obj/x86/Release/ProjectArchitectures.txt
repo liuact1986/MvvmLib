@@ -1,0 +1,2 @@
+C:\Users\romag\Documents\v1\Source\MvvmLib.Adaptive.Win\MvvmLib.Adaptive.Win.csproj;neutral
+C:\Users\romag\Documents\v1\Tests\MvvmLib.Adaptive.Win.Tests\MvvmLib.Adaptive.Win.Tests.csproj;x86
