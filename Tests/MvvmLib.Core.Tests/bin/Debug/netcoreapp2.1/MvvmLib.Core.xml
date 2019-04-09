@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MvvmLib.Core</name>
+    </assembly>
+    <members>
+        <member name="T:MvvmLib.Mvvm.BindableBase">
+            <summary>
+            Base class for models and view models. Allows to notify the view that a property has changed.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Mvvm.BindableBase.PropertyChanged">
+            <summary>
+            The property changed event handler.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.BindableBase.SetProperty``1(``0@,``0,System.String)">
+            <summary>
+            Sets the value of the property.
+            </summary>
+            <typeparam name="T">The type of the property</typeparam>
+            <param name="storage">The field</param>
+            <param name="value">The new value</param>
+            <param name="propertyName">The property name</param>
+            <returns>True if the value has changed</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.BindableBase.RaisePropertyChanged(System.String)">
+            <summary>
+            Allows to raise to the view that a property value has changed.
+            </summary>
+            <param name="propertyName">The property name</param>
+        </member>
+        <member name="T:MvvmLib.Mvvm.CompositeCommand">
+            <summary>
+            A command that can execute multiple commands.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Mvvm.CompositeCommand.commands">
+            <summary>
+            The list of the commands to be executed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.CompositeCommand.Add(System.Windows.Input.ICommand)">
+            <summary>
+            Adds a new command to the composite command.
+            </summary>
+            <param name="command">The command</param>
+            <returns>The composite command</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.CompositeCommand.EvaluateCondition(System.Object)">
+            <summary>
+            Checks if the command have to be executed.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.CompositeCommand.InvokeCallback(System.Object)">
+            <summary>
+            Invokes the execute method.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="T:MvvmLib.Mvvm.IRelayCommand">
+            <summary>
+            The relay command contract.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.IRelayCommand.RaiseCanExecuteChanged">
+            <summary>
+            Invokes when the condition have to be checked.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Mvvm.RelayCommand">
+            <summary>
+            Parameter less command (no CommandParameter value passed to callback and condition)
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Mvvm.RelayCommand.callback">
+            <summary>
+            The execute method.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Mvvm.RelayCommand.condition">
+            <summary>
+            The predicate.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand.#ctor(System.Action,System.Func{System.Boolean})">
+            <summary>
+            Creates the relay command.
+            </summary>
+            <param name="callback">The execute method</param>
+            <param name="condition">The predicate</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand.EvaluateCondition(System.Object)">
+            <summary>
+            Checks if the command have to be executed.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns>True if the command can be executed</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand.InvokeCallback(System.Object)">
+            <summary>
+            Invokes the execute method.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="T:MvvmLib.Mvvm.RelayCommandBase">
+            <summary>
+            Base class for commands.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Mvvm.RelayCommandBase.CanExecuteChanged">
+            <summary>
+            Can Execute changed event handler.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommandBase.CanExecute(System.Object)">
+            <summary>
+            Checks if the command have to be executed.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommandBase.Execute(System.Object)">
+            <summary>
+            Invokes the execute method.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommandBase.RaiseCanExecuteChanged">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Mvvm.RelayCommandBase.CanExecute(System.Object)"/>.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommandBase.EvaluateCondition(System.Object)">
+            <summary>
+            Checks if the command have to be executed.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns>True if the command can be executed</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommandBase.InvokeCallback(System.Object)">
+            <summary>
+            Invokes the execute method.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="T:MvvmLib.Mvvm.RelayCommand`1">
+            <summary>
+            Implementation of ICommand
+            </summary>
+            <typeparam name="T">The generic type</typeparam>
+        </member>
+        <member name="F:MvvmLib.Mvvm.RelayCommand`1.callback">
+            <summary>
+            The execute method.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Mvvm.RelayCommand`1.condition">
+            <summary>
+            The predicate.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand`1.#ctor(System.Action{`0},System.Func{`0,System.Boolean})">
+            <summary>
+            Creates the relay command.
+            </summary>
+            <param name="callback">The execute method</param>
+            <param name="condition">The predicate</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand`1.EvaluateCondition(System.Object)">
+            <summary>
+            Checks if the command have to be executed.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.RelayCommand`1.InvokeCallback(System.Object)">
+            <summary>
+            Invokes the execute method.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+    </members>
+</doc>

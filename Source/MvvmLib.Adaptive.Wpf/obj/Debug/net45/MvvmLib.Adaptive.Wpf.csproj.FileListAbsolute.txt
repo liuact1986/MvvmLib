@@ -1,0 +1,9 @@
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\bin\Debug\net45\MvvmLib.Adaptive.Wpf.dll
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\bin\Debug\net45\MvvmLib.Adaptive.Wpf.pdb
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\bin\Debug\net45\MvvmLib.Adaptive.Wpf.xml
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.csprojAssemblyReference.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.Properties.Resources.resources
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.csproj.GenerateResource.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.csproj.CoreCompileInputs.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.dll
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Adaptive.Wpf\obj\Debug\net45\MvvmLib.Adaptive.Wpf.pdb

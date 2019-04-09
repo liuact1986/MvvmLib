@@ -1,0 +1,3 @@
+* MvvmLib.Core
+	* 0.0.2
+	- Update Validatable and Model Wrapper classes

@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.IoC\\MvvmLib.IoC.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.IoC\\MvvmLib.IoC.csproj": {
+      "version": "0.0.2",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.IoC\\MvvmLib.IoC.csproj",
+        "projectName": "MvvmLib.IoC",
+        "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.IoC\\MvvmLib.IoC.csproj",
+        "packagesPath": "C:\\Users\\romag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.IoC\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "fallbackFolders": [
+          "C:\\ProgramData\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\romag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net45",
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net45": {
+            "projectReferences": {}
+          },
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net45": {},
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

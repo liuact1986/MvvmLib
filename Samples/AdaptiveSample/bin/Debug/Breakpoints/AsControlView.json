@@ -1,0 +1,23 @@
+﻿[
+  {
+    "minwidth": 0,
+    "bindings": {
+      "TitleFontSize": "20",
+      "TitleColor": "red"
+    }
+  },
+  {
+    "minwidth": 640,
+    "bindings": {
+      "TitleFontSize": "50",
+      "TitleColor": "blue"
+    }
+  },
+  {
+    "minwidth": 960,
+    "bindings": {
+      "TitleFontSize": "100",
+      "TitleColor": "green"
+    }
+  }
+]

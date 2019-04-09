@@ -1,0 +1,8 @@
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\bin\Debug\net45\MvvmLib.Core.dll
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\bin\Debug\net45\MvvmLib.Core.pdb
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.csprojAssemblyReference.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.csproj.CoreCompileInputs.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.AssemblyInfoInputs.cache
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.AssemblyInfo.cs
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.dll
+C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Core\obj\Debug\net45\MvvmLib.Core.pdb

@@ -1,0 +1,116 @@
+﻿<Page
+    x:Class="ValidationSample.Windows.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ValidationSample.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:converters="using:ValidationSample.Windows.Converters"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:FirstErrorConverter x:Name="FirstErrorConverter"></converters:FirstErrorConverter>
+    </Page.Resources>
+
+    <Grid VerticalAlignment="Center"  HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock VerticalAlignment="Center" Margin="3" HorizontalAlignment="Left" Text="Id:"/>
+            <TextBox x:Name="idTextBox" IsReadOnly="True" Width="120" VerticalAlignment="Center" 
+                 Text="{Binding User.Id, Mode=OneTime}" 
+                 Margin="3" HorizontalAlignment="Left" Grid.Column="1"/>
+
+            <TextBlock VerticalAlignment="Center"  Margin="3" HorizontalAlignment="Left" Grid.Row="1" Text="First Name:"/>
+            <TextBox x:Name="firstNameTextBox" Width="120" VerticalAlignment="Center" 
+                 Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                 Margin="3" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
+
+            <!-- with converter -->
+            <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" 
+                       Foreground="Red" Margin="3" TextWrapping="Wrap" Grid.Row="2" Grid.ColumnSpan="2"></TextBlock>
+
+            <TextBlock VerticalAlignment="Center" Grid.Row="3" Margin="3" HorizontalAlignment="Left" Text="Last Name:"/>
+            <TextBox x:Name="lastNameTextBox" Width="120" VerticalAlignment="Center" 
+                 Text="{Binding User.LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                 Grid.Row="3"  Margin="3"  HorizontalAlignment="Left" Grid.Column="1"/>
+
+            <TextBlock Text="{Binding User.Errors[LastName][0]}" Foreground="Red" Margin="3" TextWrapping="Wrap" Grid.Row="4" Grid.ColumnSpan="2"></TextBlock>
+
+        </Grid>
+
+        <Border BorderThickness="2" BorderBrush="#444" Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center" Margin="3" HorizontalAlignment="Left" Text="Validation Type:"/>
+                <ComboBox x:Name="validationTypesComboBox" MinWidth="120" VerticalAlignment="Center"
+                  ItemsSource="{Binding ValidationTypes}"
+                  SelectedItem="{Binding User.ValidationType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="3"  HorizontalAlignment="Left" Grid.Column="1"/>
+
+                <TextBlock VerticalAlignment="Center" Grid.Row="1" Margin="3" HorizontalAlignment="Left" Text="Use Custom Validations:"/>
+                <CheckBox x:Name="useCustomValidationsCheckBox" VerticalAlignment="Center" Grid.Row="1" Margin="3"
+                  IsChecked="{Binding User.UseCustomValidations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  HorizontalAlignment="Left" Grid.Column="1" />
+
+                <TextBlock VerticalAlignment="Center" Grid.Row="2" Margin="3" HorizontalAlignment="Left" Text="Use Data Annotations:"/>
+                <CheckBox x:Name="useDataAnnotationsCheckBox" VerticalAlignment="Center" Grid.Row="2" Margin="3" 
+                  IsChecked="{Binding User.UseDataAnnotations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  HorizontalAlignment="Left" Grid.Column="1" />
+
+                <TextBlock  FontStyle="Italic" VerticalAlignment="Center" Grid.Row="3" Margin="3" HorizontalAlignment="Left" Text="Can Validate On Property Changed:"/>
+                <CheckBox x:Name="canValidateOnPropertyChangedCheckBox" 
+                  VerticalAlignment="Center" Grid.Row="3" Margin="3" 
+                  IsChecked="{Binding User.CanValidateOnPropertyChanged, Mode=OneWay}" 
+                  IsHitTestVisible="False"
+                  HorizontalAlignment="Left" Grid.Column="1" />
+
+                <TextBlock  FontStyle="Italic" VerticalAlignment="Center" Grid.Row="4" Margin="3" HorizontalAlignment="Left" Text="Has Errors:"/>
+                <CheckBox x:Name="hasErrorsCheckBox" VerticalAlignment="Center" Grid.Row="4" Margin="3" 
+                  IsChecked="{Binding User.HasErrors, Mode=OneWay}" 
+                  IsHitTestVisible="False" HorizontalAlignment="Left" Grid.Column="1" />
+
+                <TextBlock  FontStyle="Italic" VerticalAlignment="Center" Grid.Row="5" Margin="3" HorizontalAlignment="Left" Text="Is Submitted:"/>
+                <CheckBox x:Name="isSubmittedCheckBox" VerticalAlignment="Center" Grid.Row="5" Margin="3"
+                  IsChecked="{Binding User.IsSubmitted, Mode=OneWay}" 
+                  IsHitTestVisible="False" HorizontalAlignment="Left" Grid.Column="1" />
+
+            </Grid>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3">
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="3"></Button>
+            <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3"></Button>
+        </StackPanel>
+    </Grid>
+
+</Page>

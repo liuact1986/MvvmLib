@@ -1,0 +1,161 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Tests\\MvvmLib.Adaptive.Win.Tests\\MvvmLib.Adaptive.Win.Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\MvvmLib.Adaptive.Win.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\MvvmLib.Adaptive.Win.csproj",
+        "projectName": "MvvmLib.Adaptive.Win",
+        "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\MvvmLib.Adaptive.Win.csproj",
+        "packagesPath": "C:\\Users\\romag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\ProgramData\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\romag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "uap10.0.10240"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "uap10.0.10240": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "uap10.0.10240": {
+          "dependencies": {
+            "Microsoft.NETCore.UniversalWindowsPlatform": {
+              "target": "Package",
+              "version": "[6.2.3, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win10-arm": {
+          "#import": []
+        },
+        "win10-arm-aot": {
+          "#import": []
+        },
+        "win10-arm64-aot": {
+          "#import": []
+        },
+        "win10-x64": {
+          "#import": []
+        },
+        "win10-x64-aot": {
+          "#import": []
+        },
+        "win10-x86": {
+          "#import": []
+        },
+        "win10-x86-aot": {
+          "#import": []
+        }
+      }
+    },
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Tests\\MvvmLib.Adaptive.Win.Tests\\MvvmLib.Adaptive.Win.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Tests\\MvvmLib.Adaptive.Win.Tests\\MvvmLib.Adaptive.Win.Tests.csproj",
+        "projectName": "MvvmLib.Adaptive.Win.Tests",
+        "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Tests\\MvvmLib.Adaptive.Win.Tests\\MvvmLib.Adaptive.Win.Tests.csproj",
+        "packagesPath": "C:\\Users\\romag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Tests\\MvvmLib.Adaptive.Win.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\ProgramData\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\romag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "uap10.0.16299"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "uap10.0.16299": {
+            "projectReferences": {
+              "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\MvvmLib.Adaptive.Win.csproj": {
+                "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Adaptive.Win\\MvvmLib.Adaptive.Win.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "uap10.0.16299": {
+          "dependencies": {
+            "MSTest.TestAdapter": {
+              "target": "Package",
+              "version": "[1.3.2, )"
+            },
+            "MSTest.TestFramework": {
+              "target": "Package",
+              "version": "[1.3.2, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.0.1, )"
+            },
+            "Microsoft.NETCore.UniversalWindowsPlatform": {
+              "target": "Package",
+              "version": "[6.2.3, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      },
+      "runtimes": {
+        "win10-arm": {
+          "#import": []
+        },
+        "win10-arm-aot": {
+          "#import": []
+        },
+        "win10-arm64-aot": {
+          "#import": []
+        },
+        "win10-x64": {
+          "#import": []
+        },
+        "win10-x64-aot": {
+          "#import": []
+        },
+        "win10-x86": {
+          "#import": []
+        },
+        "win10-x86-aot": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

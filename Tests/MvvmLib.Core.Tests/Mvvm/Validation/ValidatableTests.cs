@@ -20,10 +20,10 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
             {
                 FirstName = "Marie",
                 LastName = "Bellin",
-                ValidationType = ValidationType.OnPropertyChange
+                ValidationType = ValidationHandling.OnPropertyChange
             };
 
-            Assert.AreEqual(ValidationType.OnPropertyChange, model.ValidationType);
+            Assert.AreEqual(ValidationHandling.OnPropertyChange, model.ValidationType);
             Assert.IsTrue(model.CanValidateOnPropertyChanged);
         }
 
@@ -33,12 +33,12 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
 
             var model = new UserValidatable
             {
-                ValidationType = ValidationType.OnSubmit,
+                ValidationType = ValidationHandling.OnSubmit,
                 FirstName = "Marie",
                 LastName = "Bellin"
             };
 
-            Assert.AreEqual(ValidationType.OnSubmit, model.ValidationType);
+            Assert.AreEqual(ValidationHandling.OnSubmit, model.ValidationType);
             Assert.IsFalse(model.CanValidateOnPropertyChanged);
 
             model.ValidateAll();
@@ -52,12 +52,12 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
 
             var model = new UserValidatable
             {
-                ValidationType = ValidationType.Explicit,
+                ValidationType = ValidationHandling.Explicit,
                 FirstName = "Marie",
                 LastName = "Bellin"
             };
 
-            Assert.AreEqual(ValidationType.Explicit, model.ValidationType);
+            Assert.AreEqual(ValidationHandling.Explicit, model.ValidationType);
             Assert.IsFalse(model.CanValidateOnPropertyChanged);
 
             model.ValidateAll();
@@ -141,7 +141,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         {
             var user = new UserValidatable
             {
-                ValidationType = ValidationType.OnPropertyChange,
+                ValidationType = ValidationHandling.OnPropertyChange,
                 FirstName = "M",
                 LastName = "Bellin"
             };

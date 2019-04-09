@@ -1,0 +1,78 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Windows\\MvvmLib.Windows.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Windows\\MvvmLib.Windows.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Windows\\MvvmLib.Windows.csproj",
+        "projectName": "MvvmLib.Windows",
+        "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Windows\\MvvmLib.Windows.csproj",
+        "packagesPath": "C:\\Users\\romag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\romag\\Documents\\Visual Studio 2019\\Projects\\MvvmLib\\Source\\MvvmLib.Windows\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\ProgramData\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\romag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "uap10.0.10240"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "uap10.0.10240": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "uap10.0.10240": {
+          "dependencies": {
+            "Microsoft.NETCore.UniversalWindowsPlatform": {
+              "target": "Package",
+              "version": "[6.2.3, )"
+            },
+            "System.ValueTuple": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win10-arm": {
+          "#import": []
+        },
+        "win10-arm-aot": {
+          "#import": []
+        },
+        "win10-arm64-aot": {
+          "#import": []
+        },
+        "win10-x64": {
+          "#import": []
+        },
+        "win10-x64-aot": {
+          "#import": []
+        },
+        "win10-x86": {
+          "#import": []
+        },
+        "win10-x86-aot": {
+          "#import": []
+        }
+      }
+    }
+  }
+}
