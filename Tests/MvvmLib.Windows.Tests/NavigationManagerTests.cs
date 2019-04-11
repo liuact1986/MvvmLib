@@ -30,11 +30,30 @@ namespace MvvmLib.Windows.Tests
             var i1 = service.GetDefault();
             var i2 = service.GetNamed("f2");
 
-            Assert.IsTrue(service.IsRegistered());
-            Assert.IsTrue(service.IsRegistered("f2"));
+            Assert.IsTrue(NavigationManager.IsRegistered());
+            Assert.IsTrue(NavigationManager.IsRegistered("f2"));
 
             Assert.AreEqual(n1, i1);
             Assert.AreEqual(n2, i2);
+        }
+
+
+        [TestMethod]
+        public void Unregister_WithStatic()
+        {
+            var service = GetService();
+
+            Assert.IsTrue(NavigationManager.IsRegistered());
+            Assert.IsTrue(NavigationManager.IsRegistered("f2"));
+
+            NavigationManager.UnregisterDefault();
+
+            Assert.IsFalse(NavigationManager.IsRegistered());
+            Assert.IsTrue(NavigationManager.IsRegistered("f2"));
+
+            NavigationManager.Unregister("f2");
+
+            Assert.IsFalse(NavigationManager.IsRegistered("f2"));
         }
     }
 }

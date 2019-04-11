@@ -8,6 +8,7 @@ namespace MvvmLib.IoC
         bool AutoDiscovery { get; set; }
         bool NonPublicConstructors { get; set; }
 
+        DelegateFactoryType DelegateFactoryType { get; set; }
         event EventHandler<InjectorResolveEventArgs> Resolved;
 
         object BuildUp(object instance);

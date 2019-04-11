@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
@@ -39,7 +41,6 @@ namespace MvvmLib.Navigation
         /// </summary>
         public bool CanGoBack => frame.CanGoBack;
 
-
         /// <summary>
         /// Gets the value that indicates if the can go forward.
         /// </summary>
@@ -49,6 +50,16 @@ namespace MvvmLib.Navigation
         /// Gets the frame content.
         /// </summary>
         public object Content => frame.Content;
+
+        /// <summary>
+        /// The frame back stack.
+        /// </summary>
+        public IList<PageStackEntry> BackStack => frame.BackStack;
+
+        /// <summary>
+        /// The frame forward stack.
+        /// </summary>
+        public IList<PageStackEntry> ForwardStack => frame.ForwardStack;
 
         /// <summary>
         /// Creates the frame facade.

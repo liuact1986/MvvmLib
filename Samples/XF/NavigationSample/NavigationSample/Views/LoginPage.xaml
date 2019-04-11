@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:nav="clr-namespace:MvvmLib.Navigation;assembly=MvvmLib.XF"
+             nav:ViewModelLocator.ResolveViewModel="True"
+             Title="Login Page"
+             x:Class="NavigationSample.Views.LoginPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Login Page"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Login and redirect to Home Page" Command="{Binding LoginCommand}"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

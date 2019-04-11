@@ -40,6 +40,19 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **BackRequestManager**: allows to show the **back button** in **title bar**
 * **BootstrapperBase**: bootstrapper base class
 
+## MvvmLib.XF (Navigation) [Xamarin]
+  
+* **NavigationManager**: allows to create and manage **navigation services**
+* **PageNavigationService**: allows to **push**, push modal, pop, pop modal, pop to root, handle system go back, **cancel navigation** and **notify viewmodel**
+* **ViewModelLocator**: allows to **resolve ViewModel** for views
+* **INavigatable**: allows the view models to be notified on navigate
+* **IActivatable**, **IDeactivatable**: allow to cancel navigation
+* **INavigationParameterKnowledge**: allows to store navigation parameter in the view model for system go back
+* **IPageKnowledge**: allows to receive in view model the page
+* **DialogService**: allows to display alerts and action sheets
+* **BootstrapperBase**: bootstrapper base class
+* **EventToCommandBehavior** and **BehaviorBase**
+
 ## MvvmLib.Adaptive.Wpf [net 4.5]
 
 * **BreakpointBinder**: allows to **bind controls** and make the page "**responsive**"
@@ -85,6 +98,20 @@ PM> Install-Package MvvmLib.Core
 PM> Install-Package MvvmLib.Windows
 PM> Install-Package MvvmLib.IoC
 PM> Install-Package MvvmLib.Adaptive.Windows
+```
+
+### Xamarin
+
+| Package  | Required | Description | NuGet |
+| --- | --- | --- | --- |
+| [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | No | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square) |
+| [MvvmLib.XF](https://www.nuget.org/packages/MvvmLib.XF/) | Yes | Navigation with view model | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.XF.svg?style=flat-square) |
+| [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
+
+```
+PM> Install-Package MvvmLib.Core
+PM> Install-Package MvvmLib.XF
+PM> Install-Package MvvmLib.IoC
 ```
 
 <p align="center">

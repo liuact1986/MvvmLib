@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:nav="clr-namespace:MvvmLib.Navigation;assembly=MvvmLib.XF"
+             nav:ViewModelLocator.ResolveViewModel="True"
+             Title="Page B"
+             x:Class="NavigationSample.Views.PageB">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="{Binding Message}"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Editor Text="{Binding MyText}"></Editor>
+            <Button Text="Go Back (programmaticaly)" Command="{Binding GoBackCommand}"></Button>
+            <Button Text="Go to Root (HomePage)" Command="{Binding NavigateCommand}"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+
+</ContentPage>

@@ -1,9 +1,0 @@
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\bin\Debug\net45\MvvmLib.Wpf.dll
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\bin\Debug\net45\MvvmLib.Wpf.pdb
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\bin\Debug\net45\MvvmLib.Wpf.xml
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.csprojAssemblyReference.cache
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.Properties.Resources.resources
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.csproj.GenerateResource.cache
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.csproj.CoreCompileInputs.cache
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.dll
-C:\Users\romag\Documents\Visual Studio 2019\Projects\MvvmLib\Source\MvvmLib.Wpf\obj\Debug\net45\MvvmLib.Wpf.pdb

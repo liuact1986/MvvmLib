@@ -26,7 +26,6 @@ namespace MvvmLib.Navigation
             return navigationService;
         }
 
-
         /// <summary>
         /// registers the frame with the default name, creates and returns a navigation service.
         /// </summary>
@@ -38,11 +37,30 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Remove the navigation service.
+        /// </summary>
+        /// <param name="name">The name</param>
+        /// <returns>True if service is removed</returns>
+        public static bool Unregister(string name)
+        {
+            return navigationServices.Remove(name);
+        }
+
+        /// <summary>
+        /// Remove the navigation service.
+        /// </summary>
+        /// <returns>True if service is removed</returns>
+        public static bool UnregisterDefault()
+        {
+            return Unregister(DefaultFrameName);
+        }
+
+        /// <summary>
         /// Checks if the named navigation service is registered.
         /// </summary>
         /// <param name="name">The name</param>
         /// <returns>True if registered</returns>
-        public bool IsRegistered(string name)
+        public static bool IsRegistered(string name)
         {
             return navigationServices.ContainsKey(name);
         }
@@ -51,10 +69,11 @@ namespace MvvmLib.Navigation
         /// Checks if the default navigation service is registered.
         /// </summary>
         /// <returns>True if registered</returns>
-        public bool IsRegistered()
+        public static bool IsRegistered()
         {
             return IsRegistered(DefaultFrameName);
         }
+
 
         /// <summary>
         /// Returns the named navigation service.

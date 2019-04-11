@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:nav="clr-namespace:MvvmLib.Navigation;assembly=MvvmLib.XF"
+             nav:ViewModelLocator.ResolveViewModel="True"
+             Title="Modal Page B"
+             x:Class="NavigationSample.Views.ModalPageB">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="{Binding Message}"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Go back" Command="{Binding GoBackCommand}"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

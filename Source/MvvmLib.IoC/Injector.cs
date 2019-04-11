@@ -22,6 +22,12 @@ namespace MvvmLib.IoC
 
         public bool NonPublicProperties { get; set; }
 
+        public DelegateFactoryType DelegateFactoryType
+        {
+            get => this.objectCreationManager.DelegateFactoryType;
+            set => this.objectCreationManager.DelegateFactoryType = value;
+        }
+
         private readonly List<EventHandler<InjectorRegistrationEventArgs>> registered;
         public event EventHandler<InjectorRegistrationEventArgs> Registered
         {
@@ -263,7 +269,8 @@ namespace MvvmLib.IoC
             method = method.MakeGenericMethod(returnType);
 
             var expressionCall = Expression.Call(null, method, Expression.Constant(this));
-            return Expression.Lambda(expressionCall).Compile();
+            var compiled = Expression.Lambda(expressionCall).Compile();
+            return compiled;
         }
 
         private object ResolveParameterValue(TypeRegistration registration, ParameterInfo parameter)
@@ -303,6 +310,7 @@ namespace MvvmLib.IoC
                         object value = null;
                         if (parameterType.IsValueType)
                         {
+                            // get default value with factory ??
                             value = Activator.CreateInstance(parameterType);
                         }
                         registration.ValueContainer.RegisterValue(parameter.Name, value);

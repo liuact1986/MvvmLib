@@ -50,7 +50,7 @@ namespace MvvmLib.Mvvm
             RaisePropertyChanged(propertyName);
             RaisePropertyChanged(string.Empty);
 
-            if (ValidationType == ValidationHandling.OnPropertyChange)
+            if (CanValidateOnPropertyChanged)
             {
                 this.ValidateProperty(propertyName, value);
             }

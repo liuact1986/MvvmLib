@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:nav="clr-namespace:MvvmLib.Navigation;assembly=MvvmLib.XF"
+             nav:ViewModelLocator.ResolveViewModel="True"
+             x:Class="NavigationSample.Views.ChildPageA">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="{Binding Message}"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Go to Child PageB" Command="{Binding NavigateCommand}"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

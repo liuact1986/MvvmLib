@@ -36,9 +36,7 @@ namespace ValidationSample.Windows.Models
         public string LastName
         {
             get { return GetValue<string>(); }
-            set {
-                SetValue(value);
-            }
+            set { SetValue(value); }
         }
 
         // etc.

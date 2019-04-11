@@ -41,7 +41,6 @@ namespace ValidationSample.Windows.ViewModels
         private void OnSave()
         {
             this.User.ValidateAll();
-            //this.Errors = this.user.Errors;
 
             // for sample (view notification for Base class properties)
             this.RaisePropertyChanged("User");

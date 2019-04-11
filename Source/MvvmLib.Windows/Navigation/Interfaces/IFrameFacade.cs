@@ -22,6 +22,8 @@ namespace MvvmLib.Navigation
         /// Gets the frame content.
         /// </summary>
         object Content { get; }
+        System.Collections.Generic.IList<Windows.UI.Xaml.Navigation.PageStackEntry> BackStack { get; }
+        System.Collections.Generic.IList<Windows.UI.Xaml.Navigation.PageStackEntry> ForwardStack { get; }
 
         /// <summary>
         /// Invoked when the can go back value changed.

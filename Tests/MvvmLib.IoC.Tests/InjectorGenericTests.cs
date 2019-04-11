@@ -14,6 +14,21 @@ namespace MvvmLib.Tests.IoC
             return new Injector();
         }
 
+        [TestMethod]
+        public void Change_DelegateFactoryType()
+        {
+            var o = new ObjectCreationManager();
+            var service = new Injector(o);
+
+            Assert.AreEqual(DelegateFactoryType.Expression, o.DelegateFactoryType);
+            Assert.AreEqual(DelegateFactoryType.Expression, service.DelegateFactoryType);
+
+            service.DelegateFactoryType = DelegateFactoryType.Reflection;
+
+            Assert.AreEqual(DelegateFactoryType.Reflection, o.DelegateFactoryType);
+            Assert.AreEqual(DelegateFactoryType.Reflection, service.DelegateFactoryType);
+        }
+
         // Register Factory
 
         [TestMethod]

@@ -44,7 +44,7 @@ namespace NavigationSample.Windows.Views
             }
         }
 
-        private void SyncMenutItem()
+        private void SyncMenuItem()
         {
             var view = MainFrame.Content as FrameworkElement;
             if (view != null)
@@ -61,12 +61,12 @@ namespace NavigationSample.Windows.Views
 
         private void OnNavigated(object sender, FrameNavigatedEventArgs e)
         {
-            SyncMenutItem();
+            SyncMenuItem();
         }
 
         private void OnNavigationCanceled(object sender, FrameNavigationCanceledEventArgs e)
         {
-            SyncMenutItem();
+            SyncMenuItem();
         }
 
 

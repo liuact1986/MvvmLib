@@ -170,9 +170,14 @@ namespace MvvmLib.Mvvm
             this.Source = model ?? (this);
         }
 
+        public bool ContainPropertyToIgnore(string propertyName)
+        {
+            return this.propertiesToIgnore.Contains(propertyName);
+        }
+
         public void AddPropertyToIgnore(string propertyName)
         {
-            if (!this.propertiesToIgnore.Contains(propertyName))
+            if (!ContainPropertyToIgnore(propertyName))
             {
                 this.propertiesToIgnore.Add(propertyName);
             }
@@ -180,7 +185,7 @@ namespace MvvmLib.Mvvm
 
         public void RemovePropertyToIgnore(string propertyName)
         {
-            if (this.propertiesToIgnore.Contains(propertyName))
+            if (ContainPropertyToIgnore(propertyName))
             {
                 this.propertiesToIgnore.Remove(propertyName);
             }
