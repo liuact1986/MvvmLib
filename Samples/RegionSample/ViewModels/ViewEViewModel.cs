@@ -15,9 +15,14 @@ namespace RegionSample.ViewModels
             set { SetProperty(ref count, value); }
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatingTo(object parameter)
         {
             Count++;
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+
         }
 
         public void OnNavigatingFrom()

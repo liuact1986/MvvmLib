@@ -59,6 +59,7 @@
     <Compile Include="ViewModels\CustomWindowViewModel.cs" />
     <Compile Include="ViewModels\DetailViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewAViewModel.cs" />
     <Compile Include="ViewModels\ViewBViewModel.cs" />
@@ -176,7 +177,7 @@
       <Name>MvvmLib.IoC</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Source\MvvmLib.Wpf\MvvmLib.Wpf.csproj">
-      <Project>{ed848dc9-33a7-4321-812c-e2d06059a563}</Project>
+      <Project>{4f277439-f45b-4c70-9c4f-6b2e19557354}</Project>
       <Name>MvvmLib.Wpf</Name>
     </ProjectReference>
   </ItemGroup>

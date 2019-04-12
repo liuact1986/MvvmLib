@@ -123,8 +123,8 @@ namespace MvvmLib.Navigation
                             });
                         }
 
-                        // on navigated to
-                        this.DoOnNavigatedTo(viewOrObject, context, parameter);
+                        // on navigating to
+                        this.DoOnNavigatingTo(viewOrObject, context, parameter);
 
                         // animate
                         if (isView)
@@ -141,6 +141,9 @@ namespace MvvmLib.Navigation
 
                         // history
                         this.History.Insert(index, navigationEntry);
+
+                        // on navigated to
+                        this.DoOnNavigatedTo(viewOrObject, context, parameter);
                         this.RaiseNavigated(sourceType, parameter, RegionNavigationType.Insert);
                     }
                     else

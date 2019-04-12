@@ -32,7 +32,7 @@ namespace RegionSample.Views
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await regionManager.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
+            await regionManager.GetContentRegion("RegionRight", "RegionRight1").NavigateAsync(typeof(ViewB));
         }
     }
 }

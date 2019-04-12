@@ -74,9 +74,14 @@ namespace RegionSample.ViewModels
             return Task.FromResult(result);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatingTo(object parameter)
         {
             Count++;
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+
         }
 
         public void OnLoaded(object parameter)

@@ -57,7 +57,7 @@ namespace MvvmLib.Navigation
                     return viewTypeToViewModelTypeCustomRegistrations[viewType];
                 }
 
-                var viewModelType = viewTypeToViewModelTypeResolver(viewType); ;
+                var viewModelType = viewTypeToViewModelTypeResolver(viewType); 
                 viewTypeToViewModelTypeCache.Add(viewType, viewModelType);
                 return viewModelType;
             }

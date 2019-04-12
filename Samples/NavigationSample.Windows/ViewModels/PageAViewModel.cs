@@ -1,14 +1,18 @@
 ﻿using System.Threading.Tasks;
 using MvvmLib.Mvvm;
-using MvvmLib.Navigation;
 using NavigationSample.Windows.Services;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
 using System;
 using Windows.UI.Xaml.Controls;
+using System.Linq;
+using MvvmLib.Navigation;
+using JsonLib;
 
 namespace NavigationSample.Windows.ViewModels
 {
+
+
     public class PageAViewModel : BindableBase, INavigatable, IDeactivatable
     {
         private string message;

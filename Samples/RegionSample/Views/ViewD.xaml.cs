@@ -24,6 +24,11 @@ namespace RegionSample.Views
             return Task.FromResult(result);
         }
 
+        public void OnNavigatingTo(object parameter)
+        {
+
+        }
+
         public void OnNavigatedTo(object parameter)
         {
 

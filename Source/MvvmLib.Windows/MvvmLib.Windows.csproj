@@ -136,14 +136,12 @@
     <Compile Include="Navigation\Interfaces\IBackRequestManager.cs" />
     <Compile Include="Navigation\Interfaces\IDeactivatable.cs" />
     <Compile Include="Navigation\Interfaces\IFrameFacade.cs" />
-    <Compile Include="Navigation\Interfaces\IFrameNavigationService.cs" />
+    <Compile Include="Navigation\Interfaces\INavigationService.cs" />
     <Compile Include="Navigation\Interfaces\ILoadedEventListener.cs" />
     <Compile Include="Navigation\Interfaces\INavigatable.cs" />
     <Compile Include="Navigation\Interfaces\INavigationManager.cs" />
-    <Compile Include="Navigation\Interfaces\INavigationParameters.cs" />
     <Compile Include="Navigation\NavigationException.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
-    <Compile Include="Navigation\NavigationParameters.cs" />
     <Compile Include="Navigation\ViewModelLocationProvider.cs" />
     <Compile Include="Navigation\ViewModelLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,9 +150,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

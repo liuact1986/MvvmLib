@@ -24,6 +24,7 @@ namespace MvvmLib.Navigation
         object Content { get; }
         System.Collections.Generic.IList<Windows.UI.Xaml.Navigation.PageStackEntry> BackStack { get; }
         System.Collections.Generic.IList<Windows.UI.Xaml.Navigation.PageStackEntry> ForwardStack { get; }
+        Type CurrentSourcePageType { get; }
 
         /// <summary>
         /// Invoked when the can go back value changed.

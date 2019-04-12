@@ -14,11 +14,11 @@ namespace MvvmLib.Navigation
 
         protected bool isPopHandled = false;
 
-        private NavigationGuard guard;
+        protected NavigationGuard guard;
 
         public Dictionary<Type, Page> ActivePages { get; }
 
-        private bool storeActivePages = true;
+        protected bool storeActivePages = true;
         public bool StoreActivePages
         {
             get { return storeActivePages; }
@@ -116,8 +116,6 @@ namespace MvvmLib.Navigation
             }
             else
             {
-                isPopHandled = false;
-
                 // check after changes
                 CheckAfterPagePopped(e.Page);
             }

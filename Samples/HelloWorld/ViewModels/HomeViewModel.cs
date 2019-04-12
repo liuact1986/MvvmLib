@@ -12,12 +12,17 @@ namespace HelloWorld.ViewModels
             set { SetProperty(ref message, value); }
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatingTo(object parameter)
         {
             if (parameter != null)
             {
                 Message = parameter.ToString();
             }
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+
         }
 
         public void OnNavigatingFrom()

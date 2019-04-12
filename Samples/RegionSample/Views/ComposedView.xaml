@@ -28,7 +28,7 @@
                 <ItemsControl x:Name="RegionLeft1" nav:RegionManager.ItemsRegion="RegionLeft"></ItemsControl>
             </Border>
             <Border BorderThickness="2" BorderBrush="White" Grid.Column="1">
-                <ContentControl nav:RegionManager.ContentRegion="RegionRight"></ContentControl>
+                <ContentControl x:Name="RegionRight1" nav:RegionManager.ContentRegion="RegionRight"></ContentControl>
             </Border>
         </Grid>
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -10,61 +11,51 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class BackRequestManager : IBackRequestManager
     {
-        Frame frame;
-        Action callback;
+        protected Frame frame;
+        protected Action navigationActionCallback;
 
         /// <summary>
         /// Handles SystemNavigationManager back requested.
         /// </summary>
         /// <param name="frame">The frame</param>
-        /// <param name="callback">Go back callback</param>
-        public void Handle(Frame frame, Action callback)
+        /// <param name="navigationActionCallback">Go back callback</param>
+        public virtual void Handle(Frame frame, Action navigationActionCallback)
         {
             this.frame = frame;
-            this.callback = callback;
+            this.navigationActionCallback = navigationActionCallback;
 
-            this.frame.Navigated += OnNavigated;
+            this.frame.RegisterPropertyChangedCallback(Frame.CanGoBackProperty, OnCanGoBackChanged);
+
             SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
 
-            if (this.frame.CanGoBack)
-            {
-                ShowBackButton();
-            }
+            this.CheckVisibility();
         }
 
         /// <summary>
         /// Unhandles SystemNavigationManager back requested.
         /// </summary>
-        public void Unhandle()
+        public virtual void Unhandle()
         {
-            this.callback = null;
+            this.navigationActionCallback = null;
 
             SystemNavigationManager.GetForCurrentView().BackRequested -= OnBackRequested;
-            this.frame.Navigated -= OnNavigated;
 
             HideBackButton();
         }
 
-        private void ShowBackButton()
+        #region Back button Visibility management
+
+        protected virtual void ShowBackButton()
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
         }
 
-        private void HideBackButton()
+        protected virtual void HideBackButton()
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
 
-        private void OnBackRequested(object sender, BackRequestedEventArgs e)
-        {
-            if (frame.CanGoBack)
-            {
-                callback?.Invoke();
-                e.Handled = true;
-            }
-        }
-
-        private void OnNavigated(object sender, NavigationEventArgs e)
+        protected void CheckVisibility()
         {
             if (frame.CanGoBack)
             {
@@ -73,6 +64,25 @@ namespace MvvmLib.Navigation
             else
             {
                 HideBackButton();
+            }
+        }
+
+        protected virtual void OnCanGoBackChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            this.CheckVisibility();
+        }
+
+        #endregion // Back button Visibility management
+
+
+        // action to call (navigate)
+
+        protected virtual void OnBackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if (frame.CanGoBack)
+            {
+                navigationActionCallback?.Invoke();
+                e.Handled = true;
             }
         }
     }

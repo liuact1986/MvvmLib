@@ -9,5 +9,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel VerticalAlignment="Center">
         <TextBlock Text="Login View" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"></TextBlock>
+        <Button Content="Fake Logged in and redirect" Command="{Binding LoginCommand}" Width="160" Margin="3"></Button>
     </StackPanel>
 </UserControl>

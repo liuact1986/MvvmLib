@@ -62,6 +62,11 @@ namespace MvvmLib.Navigation
         public IList<PageStackEntry> ForwardStack => frame.ForwardStack;
 
         /// <summary>
+        /// The current source page type of the frame.
+        /// </summary>
+        public Type CurrentSourcePageType => frame.CurrentSourcePageType;
+
+        /// <summary>
         /// Creates the frame facade.
         /// </summary>
         /// <param name="frame">The frame control</param>

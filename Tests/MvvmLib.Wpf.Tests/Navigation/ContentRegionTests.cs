@@ -127,6 +127,11 @@ namespace MvvmLib.Wpf.Tests
             canActivate = true;
             canDeactivate = true;
         }
+
+        public void OnNavigatingTo(object parameter)
+        {
+            
+        }
     }
 
     public class ViewAndVm : ContentControl, INavigatable, IActivatable, IDeactivatable
@@ -184,6 +189,11 @@ namespace MvvmLib.Wpf.Tests
             canActivate = true;
             canDeactivate = true;
         }
+
+        public void OnNavigatingTo(object parameter)
+        {
+        
+        }
     }
 
     public class NavigatableView : INavigatable
@@ -209,6 +219,11 @@ namespace MvvmLib.Wpf.Tests
             isOkOnNavigatedTo = false;
             p = null;
             isOkOnNavigatingFrom = false;
+        }
+
+        public void OnNavigatingTo(object parameter)
+        {
+         
         }
     }
 
@@ -260,6 +275,11 @@ namespace MvvmLib.Wpf.Tests
             isOkCanDeactivate = false;
             canActivate = true;
             canDeactivate = true;
+        }
+
+        public void OnNavigatingTo(object parameter)
+        {
+       
         }
     }
 

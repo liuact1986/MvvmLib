@@ -10,8 +10,8 @@ namespace MvvmLib.Navigation
     {
         private const string DefaultFrameName = "__default__";
 
-        static Dictionary<string, KeyValuePair<Frame, IFrameNavigationService>> navigationServices
-            = new Dictionary<string, KeyValuePair<Frame, IFrameNavigationService>>();
+        static Dictionary<string, KeyValuePair<Frame, INavigationService>> navigationServices
+            = new Dictionary<string, KeyValuePair<Frame, INavigationService>>();
 
         /// <summary>
         /// registers the frame with the name, creates and returns a navigation service.
@@ -19,10 +19,10 @@ namespace MvvmLib.Navigation
         /// <param name="frame">The frame</param>
         /// <param name="name">The name</param>
         /// <returns>The navigation service</returns>
-        public static IFrameNavigationService Register(Frame frame, string name)
+        public static INavigationService Register(Frame frame, string name)
         {
             var navigationService = new FrameNavigationService(new FrameFacade(frame));
-            navigationServices[name] = new KeyValuePair<Frame, IFrameNavigationService>(frame, navigationService);
+            navigationServices[name] = new KeyValuePair<Frame, INavigationService>(frame, navigationService);
             return navigationService;
         }
 
@@ -31,7 +31,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="frame">The frame</param>
         /// <returns>The navigation service</returns>
-        public static IFrameNavigationService Register(Frame frame)
+        public static INavigationService Register(Frame frame)
         {
             return Register(frame, DefaultFrameName);
         }
@@ -80,7 +80,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="name">The name</param>
         /// <returns>The navigation service</returns>
-        public IFrameNavigationService GetNamed(string name)
+        public INavigationService GetNamed(string name)
         {
             if (!IsRegistered(name)){ throw new NavigationException("No navigation service with the name \"" + name + "\" registered"); }
 
@@ -91,7 +91,7 @@ namespace MvvmLib.Navigation
         /// Returns the default navigation service.
         /// </summary>
         /// <returns>The navigation service</returns>
-        public IFrameNavigationService GetDefault()
+        public INavigationService GetDefault()
         {
             return GetNamed(DefaultFrameName);
         }

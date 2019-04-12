@@ -35,6 +35,7 @@
                 <Button Content="DetailViewModel" Command="{Binding NavigateCommand}" CommandParameter="{x:Type viewModels:DetailViewModel}" Margin="4,0,0,0"></Button>
                 <Button Content="Composition" Command="{Binding NavigateComposedCommand}" Margin="4,0,0,0"></Button>
                 <Button Content="Go Forward" Command="{Binding GoForwardCommand}" Margin="4,0,0,0"></Button>
+                <Button Content="Login Process" Command="{Binding FakeLoginCommand}" Margin="4,0,0,0"></Button>
                 <Button Content="Open Window" Command="{Binding OpenWindowCommand}" Margin="4,0,0,0"></Button>
             </WrapPanel>
 

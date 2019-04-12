@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace HelloWorld.Views
+namespace RegionSample.Views
 {
     /// <summary>
     /// Logique d'interaction pour HomeView.xaml

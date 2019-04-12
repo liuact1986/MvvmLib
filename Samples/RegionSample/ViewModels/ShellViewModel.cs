@@ -14,6 +14,7 @@ namespace RegionSample.ViewModels
         public IRelayCommand GoBackCommand { get; private set; }
         public IRelayCommand GoForwardCommand { get; private set; }
         public IRelayCommand NavigateComposedCommand { get; private set; }
+        public IRelayCommand FakeLoginCommand { get; private set; }
         public IRelayCommand OpenWindowCommand { get; private set; }
 
         public IRelayCommand AddCommand { get; private set; }
@@ -28,7 +29,12 @@ namespace RegionSample.ViewModels
             this.regionManager = regionManager;
 
             var contentRegion = regionManager.GetContentRegion("ContentRegion", "ContentRegion1");
+            contentRegion.CanGoBackChanged += OnContentRegionCanGoBackChanged;
+            contentRegion.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
+
             var contentRegion2 = regionManager.GetContentRegion("ContentRegion", "ContentRegion2");
+            contentRegion2.CanGoBackChanged += OnContentRegionCanGoBackChanged;
+            contentRegion2.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
 
             var itemsRegion = regionManager.GetItemsRegion("ItemsRegion", "ItemsRegion1");
             var stackPanelRegion = regionManager.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
@@ -67,6 +73,12 @@ namespace RegionSample.ViewModels
                 await contentRegion2.GoForwardAsync(EntranceTransitionType.SlideInFromBottom, ExitTransitionType.SlideOutToBottom);
             },
             () => contentRegion.CanGoForward || contentRegion2.CanGoForward);
+
+
+            FakeLoginCommand = new RelayCommand(async () =>
+            {
+                await contentRegion.NavigateAsync(typeof(HomeView), "Remove login page from history + can go back changed notification");
+            });
 
             NavigateComposedCommand = new RelayCommand(async () =>
             {
@@ -158,6 +170,17 @@ namespace RegionSample.ViewModels
             });
         }
 
+        private void OnContentRegionCanGoBackChanged(object sender, EventArgs e)
+        {
+            NavigateToRootCommand.RaiseCanExecuteChanged();
+            GoBackCommand.RaiseCanExecuteChanged();
+        }
+
+        private void OnContentRegionCanGoForwardChanged(object sender, EventArgs e)
+        {
+            GoForwardCommand.RaiseCanExecuteChanged();
+        }
+
         private void ContentRegion_NavigationFailed(object sender, RegionNavigationFailedEventArgs e)
         {
             Debug.WriteLine("Navigation failed , source: " + e.Source.ToString() + ", parameter: " + e.Parameter?.ToString());
@@ -165,9 +188,9 @@ namespace RegionSample.ViewModels
 
         private void ShellViewModel_Navigated(object sender, RegionNavigationEventArgs e)
         {
-            NavigateToRootCommand.RaiseCanExecuteChanged();
-            GoBackCommand.RaiseCanExecuteChanged();
-            GoForwardCommand.RaiseCanExecuteChanged();
+            //NavigateToRootCommand.RaiseCanExecuteChanged();
+            //GoBackCommand.RaiseCanExecuteChanged();
+            //GoForwardCommand.RaiseCanExecuteChanged();
         }
 
     }

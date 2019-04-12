@@ -10,7 +10,7 @@ namespace NavigationSample.Windows.Views
 
         INavigationManager navigationManager;
         IBackRequestManager backRequestManager;
-        IFrameNavigationService navigationService;
+        INavigationService navigationService;
 
         public Shell(INavigationManager navigationManager, IBackRequestManager backRequestManager)
         {

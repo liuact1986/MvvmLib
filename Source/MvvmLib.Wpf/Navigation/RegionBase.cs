@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace MvvmLib.Navigation
 {
-    public abstract class RegionBase
+    public abstract class RegionBase : IRegion
     {
         public string RegionName { get; protected set; }
 
@@ -103,6 +103,18 @@ namespace MvvmLib.Navigation
             if (context != null && context is INavigatable)
             {
                 ((INavigatable)context).OnNavigatingFrom();
+            }
+        }
+
+        protected virtual void DoOnNavigatingTo(object view, object context, object parameter)
+        {
+            if (view is INavigatable)
+            {
+                ((INavigatable)view).OnNavigatingTo(parameter);
+            }
+            if (context != null && context is INavigatable)
+            {
+                ((INavigatable)context).OnNavigatingTo(parameter);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Animation;
@@ -7,10 +8,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
     /// The main navigation service implementation. Allows to navigate, cancel navigation and notify view models with parameter.
     /// </summary>
-    public class FrameNavigationService : IFrameNavigationService
+    public class FrameNavigationService : INavigationService
     {
         IFrameFacade frameFacade;
 
@@ -94,7 +96,7 @@ namespace MvvmLib.Navigation
         private void OnFrameFacadeNavigated(object sender, FrameNavigatedEventArgs e)
         {
             // on navigated to new view model
-            this.DoNavigatedToNewViewModel(e.Content, e.Parameter, e.NavigationMode);
+            this.DoNavigatedToViewModel(e.Content, e.Parameter, e.NavigationMode);
             this.Navigated?.Invoke(this, new FrameNavigatedEventArgs(e.SourcePageType, e.Content, e.Parameter, e.NavigationMode));
         }
 
@@ -111,7 +113,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        private void DoNavigatedToNewViewModel(object content, object parameter, NavigationMode navigationMode)
+        private void DoNavigatedToViewModel(object content, object parameter, NavigationMode navigationMode)
         {
             if (content != null)
             {
@@ -213,6 +215,51 @@ namespace MvvmLib.Navigation
             await PerformNavigationAsync(() => frameFacade.Navigate(sourcePageType, parameter, infoOverride));
         }
 
+
+        /// <summary>
+        /// Redirect to the page and remove the previous page from history.
+        /// </summary>
+        /// <param name="sourcePageType">The type of the page to redirect</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="infoOverride">The navigation transition</param>
+        /// <returns></returns>
+        public async Task RedirectAsync(Type sourcePageType, object parameter, NavigationTransitionInfo infoOverride)
+        {
+            var currentSourcePageType = frameFacade.CurrentSourcePageType;
+
+            // delay 
+            await Task.Delay(1);
+
+            await PerformNavigationAsync(() => frameFacade.Navigate(sourcePageType, parameter, infoOverride));
+
+            // remove page from history
+            var entry = BackStack.LastOrDefault();
+            if(entry != null && entry.SourcePageType == currentSourcePageType)
+            {
+                BackStack.Remove(entry);
+            }
+        }
+
+        /// <summary>
+        /// Redirect to the page and remove the previous page from history.
+        /// </summary>
+        /// <param name="sourcePageType">The type of the page to redirect</param>
+        /// <param name="parameter">The parameter</param>
+        /// <returns></returns>
+        public async Task RedirectAsync(Type sourcePageType, object parameter)
+        {
+            await RedirectAsync(sourcePageType, parameter, null);
+        }
+
+        /// <summary>
+        /// Redirect to the page and remove the previous page from history.
+        /// </summary>
+        /// <param name="sourcePageType">The type of the page to redirect</param>
+        /// <returns></returns>
+        public async Task RedirectAsync(Type sourcePageType)
+        {
+            await RedirectAsync(sourcePageType, null, null);
+        }
 
         /// <summary>
         /// Navigates to previous entry.

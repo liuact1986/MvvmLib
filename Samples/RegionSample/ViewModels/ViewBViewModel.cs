@@ -36,9 +36,14 @@ namespace RegionSample.ViewModels
             Message += "!";
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatingTo(object parameter)
         {
             Count++;
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+
         }
 
         public bool IsTarget(Type viewType, object parameter)

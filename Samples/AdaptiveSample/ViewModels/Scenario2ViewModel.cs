@@ -41,5 +41,10 @@ namespace AdaptiveSample.ViewModels
         {
            
         }
+
+        public void OnNavigatingTo(object parameter)
+        {
+            
+        }
     }
 }

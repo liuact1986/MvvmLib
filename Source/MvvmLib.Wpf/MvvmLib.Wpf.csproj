@@ -2,23 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-  </PropertyGroup>
+    <Version>0.0.4</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Library for Wpf with Navigation, View Composition, Guards and view model participation.
 
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+      * Navigation
+      * Regions: change and animate the content of ContentRegion (ContentControl) and ItemsRegions (ItemsControl, TabControl, ... and more with Adapters)
+      * ViewModelLocator: allows to resolve ViewModel for regions and for window with ResolveWindowViewModel
+      * RegionManager: allows to get a region, then navigate with regions
+      * INavigatable: allows views and view models to be notified on navigate
+      * IActivatable, IDeactivatable: allow to cancel navigation
+      * ILoadedEventListener: allows to be notified when the view or window is loaded
+      * Mvvm
+      * BootstrapperBase: base class for Bootstrapper</Description>
+    <Authors>romagny13</Authors>
+    <licenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</licenseUrl>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>
+    <PackageTags>mvvm composition navigation</PackageTags>
+    <Copyright>Copyright ©  romagny 13 - 2018/ 2019</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Source\MvvmLib.Wpf\MvvmLib.Wpf.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\MvvmLib\Source\MvvmLib.Wpf\MvvmLib.Wpf.xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="System.Windows" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>

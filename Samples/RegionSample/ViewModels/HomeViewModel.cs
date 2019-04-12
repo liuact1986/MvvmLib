@@ -1,18 +1,56 @@
-﻿using MvvmLib.Mvvm;
+﻿using System.Threading.Tasks;
+using RegionSample.Views;
+using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using System.Collections.Generic;
 
-namespace HelloWorld.ViewModels
+namespace RegionSample.ViewModels
 {
-    public class HomeViewModel : BindableBase, INavigatable
+    public class User
     {
-        private string message;
+        public static bool IsLoggedIn { get; set; }
+    }
+
+    public class HomeViewModel : BindableBase, IActivatable, INavigatable
+    {
+        private string message = "Default HomePage message";
         public string Message
         {
             get { return message; }
             set { SetProperty(ref message, value); }
         }
 
-        public void OnNavigatedTo(object parameter)
+        private IRegionManager regionManager;
+
+        private ContentRegion contentRegion;
+
+        public HomeViewModel(IRegionManager regionManager)
+        {
+            this.regionManager = regionManager;
+
+            contentRegion = regionManager.GetContentRegion("ContentRegion", "ContentRegion1");
+        }
+
+        public async Task<bool> CanActivateAsync(object parameter)
+        {
+            if (User.IsLoggedIn)
+            {
+                return true;
+            }
+            else
+            {
+                var navigationParameters = new Dictionary<string, object>
+                {
+                    { "redirectTo",typeof(HomeView) },
+                    { "parameter", parameter }
+                };
+                // redirect remove current page (if present) from history
+                await contentRegion.RedirectAsync(typeof(LoginView), navigationParameters);
+                return false;
+            }
+        }
+
+        public void OnNavigatingTo(object parameter)
         {
             if (parameter != null)
             {
@@ -20,9 +58,14 @@ namespace HelloWorld.ViewModels
             }
         }
 
+        public void OnNavigatedTo(object parameter)
+        {
+
+        }
+
         public void OnNavigatingFrom()
         {
-           
+
         }
     }
 }

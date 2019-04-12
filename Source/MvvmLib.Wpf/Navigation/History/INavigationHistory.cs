@@ -1,20 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace MvvmLib.Navigation
 {
     public interface INavigationHistory
     {
-        Stack<NavigationEntry> BackStack { get; }
+        BindableList<NavigationEntry> BackStack { get; }
         NavigationEntry Current { get; }
-        Stack<NavigationEntry> ForwardStack { get; }
+        BindableList<NavigationEntry> ForwardStack { get; }
         NavigationEntry Next { get; }
         NavigationEntry Previous { get; }
         NavigationEntry Root { get; }
 
+        event EventHandler CanGoBackChanged;
+        event EventHandler CanGoForwardChanged;
+
         void Clear();
         NavigationEntry GoBack();
         NavigationEntry GoForward();
-        void Navigate(NavigationEntry entry);
+        void HandleGoBackChanged();
+        void HandleGoForwardChanged();
+        void Navigate(NavigationEntry navigationEntry);
         void NavigateToRoot();
+        void UnhandleGoBackChanged();
+        void UnhandleGoForwardChanged();
     }
 }

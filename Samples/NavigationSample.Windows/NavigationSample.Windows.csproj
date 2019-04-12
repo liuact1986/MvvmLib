@@ -124,10 +124,16 @@
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmBootstrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\HomePageViewModel.cs" />
+    <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\PageAViewModel.cs" />
     <Compile Include="ViewModels\PageBViewModel.cs" />
+    <Compile Include="Services\QueryHelper.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PageA.xaml.cs">
       <DependentUpon>PageA.xaml</DependentUpon>
@@ -165,12 +171,19 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JsonObjectSerializer">
+      <Version>0.7.5</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
