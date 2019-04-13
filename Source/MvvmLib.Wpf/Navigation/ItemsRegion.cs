@@ -88,21 +88,12 @@ namespace MvvmLib.Navigation
                     if (viewOrObject == null) { throw new Exception("View or object null \"" + sourceType.Name + "\""); }
 
 
-                    // context
                     object context = null;
                     var isView = IsView(viewOrObject);
                     var view = viewOrObject as FrameworkElement;
                     if (isView)
                     {
-                        if (view.DataContext != null)
-                        {
-                            context = view.DataContext;
-                        }
-                        else
-                        {
-                            context = ViewModelLocator.GetViewModel(sourceType); // singleton or new instance
-                            ViewModelLocator.SetViewModel(view, context); // if(viewModel != null) view.DataContext = viewModel
-                        }
+                        context = GetOrSetViewContext(sourceType, view);
                     }
 
                     if (await CheckCanActivateAsync(viewOrObject, context, parameter))

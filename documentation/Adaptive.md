@@ -119,5 +119,5 @@ Define the **json file** as **content** in properties panel
 
 Namespace
 ```
-xmlns:Adaptive="http://wpflib.com/" 
+xmlns:Adaptive="http://mvvmlib.com/" 
 ```

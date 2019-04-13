@@ -31,60 +31,25 @@ namespace MvvmLib.Navigation
         private static void OnWindowActivated(object sender, System.EventArgs e)
         {
             var window = sender as Window;
-            var context = GetViewModel(window.GetType());
-            SetViewModel(window, context);
+
+            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(window.GetType());
+
+            object context = null;
+            if (viewModelType != null)
+            {
+                context = ViewModelLocationProvider.ResolveViewModel(viewModelType);
+                window.DataContext = context;
+            }
+
             window.Activated -= OnWindowActivated;
 
             if (window is ILoadedEventListener)
             {
                 ((ILoadedEventListener)window).OnLoaded(null);
             }
-            if(context != null && context is ILoadedEventListener)
+            if (context != null && context is ILoadedEventListener)
             {
                 ((ILoadedEventListener)context).OnLoaded(null);
-            }
-        }
-
-        public static object GetViewModel(Type viewType)
-        {
-            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType);
-            if (viewModelType != null)
-            {
-                return ViewModelLocationProvider.ResolveViewModel(viewModelType);
-            }
-            return null;
-        }
-
-        public static bool GetAutoWireValueForElement(DependencyObject element)
-        {
-            var window = Window.GetWindow(element);
-            if (window != null)
-            {
-                var value = window.GetValue(ResolveWindowViewModelProperty);
-                return value != null && (bool)value;
-            }
-            return false;
-        }
-
-        public static bool IsNullDataContext(FrameworkElement view)
-        {
-            return view.DataContext == null;
-        }
-
-        public static void SetViewModel(FrameworkElement view)
-        {
-            if (IsNullDataContext(view))
-            {
-                var viewModel = ViewModelLocator.GetViewModel(view.GetType());
-                view.DataContext = viewModel;
-            }
-        }
-
-        public static void SetViewModel(FrameworkElement view, object viewModel)
-        {
-            if (IsNullDataContext(view))
-            {
-                view.DataContext = viewModel;
             }
         }
     }

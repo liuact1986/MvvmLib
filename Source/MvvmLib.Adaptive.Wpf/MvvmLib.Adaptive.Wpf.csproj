@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
     <Authors>romagny13</Authors>
-    <Version>0.0.3</Version>
+    <Version>0.0.6</Version>
     <Description>Make the view "responsive".
 
 * Adaptive

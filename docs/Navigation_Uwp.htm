@@ -106,7 +106,7 @@
 <li>View models in <code>ViewModels</code> namespace</li>
 <li>View model name: <em>view name + &quot;ViewModel&quot;</em> (example: MainPageViewModel for MainPage)</li>
 </ul>
-<p>On each view that requires to resolve the view model:</p>
+<p>On <strong>each view</strong> that <strong>requires</strong> to <strong>resolve</strong> the <strong>view model</strong>:</p>
 <pre><code class="xml">&lt;Page ...
     xmlns:nav=&quot;using:MvvmLib.Navigation&quot;
     nav:ViewModelLocator.ResolveViewModel=&quot;True&quot;&gt;
@@ -383,9 +383,8 @@ await navigationManager.GetDefault().RedirectAsync(typeof(LoginPage), &quot;My p
 
 <h2 id="ideactivatable-navigation-guard">IDeactivatable Navigation Guard<a class="headerlink" href="#ideactivatable-navigation-guard" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
-<p>Allow to cancel navigation</p>
+<p>Allows to cancel navigation</p>
 </blockquote>
-<p>Sample:</p>
 <pre><code class="cs">public class PageAViewModel :  IDeactivatable
 {
 
@@ -404,8 +403,7 @@ await navigationManager.GetDefault().RedirectAsync(typeof(LoginPage), &quot;My p
 }
 </code></pre>
 
-<p>MvvmLib.Windows has not IActivatable interface, because it's the frame that creates the view instance and we cannot access the the instance before navigating.</p>
-<p>But its possible <strong>cancel navigation</strong> from view model <strong>with redirectAsync</strong> method. Example:</p>
+<p>IActivatable interface is not present because pages are created by the frame ... but its possible to <strong>cancel navigation</strong> from view model <strong>with redirectAsync</strong> method:</p>
 <pre><code class="cs">public class HomePageViewModel :  INavigatable
 {
     private INavigationManager navigationManager;

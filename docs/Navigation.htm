@@ -137,15 +137,16 @@ View model name:
 
 <h3 id="resolvewindowviewmodel-attached-property-window">ResolveWindowViewModel Attached property (Window)<a class="headerlink" href="#resolvewindowviewmodel-attached-property-window" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>Allows to resolve the view model of the Window. Example:</p>
+<p><strong>Only on Windows</strong> (Shell or &quot;popup&quot;)</p>
 <pre><code class="xml">&lt;Window x:Class=&quot;WpfLibSample.Views.Shell&quot;
         ...
-         xmlns:nav=&quot;http://wpflib.com/&quot;
+         xmlns:nav=&quot;http://mvvmlib.com/&quot;
          nav:ViewModelLocator.ResolveWindowViewModel=&quot;True&quot;&gt;
 </code></pre>
 
 <h2 id="regions">Regions<a class="headerlink" href="#regions" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>namespace</p>
-<pre class="nocode">xmlns:nav=&quot;http://wpflib.com/&quot;
+<pre class="nocode">xmlns:nav=&quot;http://mvvmlib.com/&quot;
 </pre><p>With a ContentControl</p>
 <pre><code class="xml">&lt;ContentControl x:Name=&quot;MyContentRegion1&quot; nav:RegionManager.ContentRegion=&quot;MyContentRegion&quot;&gt;&lt;/ContentControl&gt;
 </code></pre>
@@ -414,7 +415,7 @@ region.Animation.DefaultFromRightValue = 700;
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegions(&quot;ContentRegion&quot;).NavigateAsync(typeof(HomeView));
+        await regionManager.GetContentRegion(&quot;ContentRegion&quot;).NavigateAsync(typeof(HomeView));
     }
 }
 </code></pre>

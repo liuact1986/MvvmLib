@@ -23,7 +23,7 @@ Default **convention**:
 
 (We can change this convention)
 
-On each view that requires to resolve the view model:
+On **each view** that **requires** to **resolve** the **view model**:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>

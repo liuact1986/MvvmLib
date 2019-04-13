@@ -20,7 +20,7 @@ Default **convention**:
 * View models in `ViewModels` namespace
 * View model name: _view name + "ViewModel"_ (example: MainPageViewModel for MainPage)
 
-On each view that requires to resolve the view model:
+On **each view** that **requires** to **resolve** the **view model**:
 
 ```xml
 <Page ...
@@ -257,9 +257,8 @@ public class MainPageViewModel : INavigatable
 
 ## IDeactivatable Navigation Guard
 
-> Allow to cancel navigation
+> Allows to cancel navigation
 
-Sample:
 
 ```cs
 public class PageAViewModel :  IDeactivatable
@@ -280,9 +279,7 @@ public class PageAViewModel :  IDeactivatable
 }
 ```
 
-MvvmLib.Windows has not IActivatable interface, because it's the frame that creates the view instance and we cannot access the the instance before navigating.
-
-But its possible **cancel navigation** from view model **with redirectAsync** method. Example:
+IActivatable interface is not present because pages are created by the frame ... but its possible to **cancel navigation** from view model **with redirectAsync** method:
 
 ```cs
 public class HomePageViewModel :  INavigatable

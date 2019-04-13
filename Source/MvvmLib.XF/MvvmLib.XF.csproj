@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.0.1</Version>
+    <Version>0.0.6</Version>
     <Authors>romagny13</Authors>
     <Description>Library for Xamarin Forms with Navigation, Guards and view model participation.</Description>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>

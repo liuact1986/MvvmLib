@@ -65,6 +65,25 @@ namespace MvvmLib.Navigation
             return ViewResolver.Resolve(viewType);
         }
 
+        protected virtual object GetOrSetViewContext(Type sourceType, FrameworkElement view)
+        {
+            object context = null;
+            if (view.DataContext != null)
+            {
+                context = view.DataContext;
+            }
+            else
+            {
+                var viewModelType = ViewModelLocationProvider.ResolveViewModelType(sourceType); // singleton or new instance
+                if (viewModelType != null)
+                {
+                    context = ViewModelLocationProvider.ResolveViewModel(viewModelType);
+                    view.DataContext = context;
+                }
+            }
+            return context;
+        }
+
         protected virtual async Task<bool> CheckCanDeactivateAsync(object view, object context)
         {
             var canDeactivateView = view is IDeactivatable ? await this.guard.CheckCanDeactivateAsync((IDeactivatable)view) : true;

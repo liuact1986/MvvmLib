@@ -51,19 +51,20 @@ ViewModelLocationProvider.RegisterCustom(typeof(ViewA), typeof(MyCustomViewAView
 
 Allows to resolve the view model of the Window. Example:
 
+**Only on Windows** (Shell or "popup")
+
 ```xml
 <Window x:Class="WpfLibSample.Views.Shell"
         ...
-         xmlns:nav="http://wpflib.com/"
+         xmlns:nav="http://mvvmlib.com/"
          nav:ViewModelLocator.ResolveWindowViewModel="True">
 ```
-
 
 ## Regions 
 
 namespace
 ```
-xmlns:nav="http://wpflib.com/"
+xmlns:nav="http://mvvmlib.com/"
 ```
 
 With a ContentControl
@@ -318,7 +319,7 @@ public class ShellViewModel : ILoadedEventListener
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegions("ContentRegion").NavigateAsync(typeof(HomeView));
+        await regionManager.GetContentRegion("ContentRegion").NavigateAsync(typeof(HomeView));
     }
 }
 ```
