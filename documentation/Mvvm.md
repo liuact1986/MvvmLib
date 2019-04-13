@@ -482,7 +482,7 @@ public class TabViewModel : BindableBase, INavigatable
         canSave = true;
         SaveCommand = new RelayCommand(OnSave, CheckCanSave);
 
-        // add the command to the composte command
+        // add the command to the composite command
         applicationCommands.SaveAllCommand.Add(SaveCommand);
     }
 
@@ -517,8 +517,8 @@ Bind the command in the view
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Margin="4"></TextBlock>
         <CheckBox IsChecked="{Binding CanSave}" Content="Can save?" Margin="4"></CheckBox>
-        <Button Content="Save" Command="{Binding SaveCommand}" Margin="4"></Button>
         <!-- the button is disabled if cannot save -->
+        <Button Content="Save" Command="{Binding SaveCommand}" Margin="4"></Button>
         <TextBlock Text="{Binding SaveMessage}" Margin="4"></TextBlock>
     </StackPanel>
 
@@ -569,7 +569,7 @@ Bind the composite command in the Shell
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <!-- the button is disabled if on command cannot save -->
+        <!-- the button is disabled if one command cannot save -->
         <Button Content="Save All" Command="{Binding SaveAllCommand}" Width="120" Margin="4" HorizontalAlignment="Left"></Button>
 
         <TabControl nav:RegionManager.ItemsRegion="TabRegion" Grid.Row="1">

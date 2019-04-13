@@ -588,7 +588,7 @@ public class ApplicationCommands : IApplicationCommands
         canSave = true;
         SaveCommand = new RelayCommand(OnSave, CheckCanSave);
 
-        // add the command to the composte command
+        // add the command to the composite command
         applicationCommands.SaveAllCommand.Add(SaveCommand);
     }
 
@@ -621,8 +621,8 @@ public class ApplicationCommands : IApplicationCommands
     &lt;StackPanel HorizontalAlignment=&quot;Center&quot; VerticalAlignment=&quot;Center&quot;&gt;
         &lt;TextBlock Text=&quot;{Binding Title}&quot; FontSize=&quot;18&quot; FontWeight=&quot;Bold&quot; Margin=&quot;4&quot;&gt;&lt;/TextBlock&gt;
         &lt;CheckBox IsChecked=&quot;{Binding CanSave}&quot; Content=&quot;Can save?&quot; Margin=&quot;4&quot;&gt;&lt;/CheckBox&gt;
-        &lt;Button Content=&quot;Save&quot; Command=&quot;{Binding SaveCommand}&quot; Margin=&quot;4&quot;&gt;&lt;/Button&gt;
         &lt;!-- the button is disabled if cannot save --&gt;
+        &lt;Button Content=&quot;Save&quot; Command=&quot;{Binding SaveCommand}&quot; Margin=&quot;4&quot;&gt;&lt;/Button&gt;
         &lt;TextBlock Text=&quot;{Binding SaveMessage}&quot; Margin=&quot;4&quot;&gt;&lt;/TextBlock&gt;
     &lt;/StackPanel&gt;
 
@@ -669,7 +669,7 @@ public class ApplicationCommands : IApplicationCommands
             &lt;RowDefinition /&gt;
         &lt;/Grid.RowDefinitions&gt;
 
-        &lt;!-- the button is disabled if on command cannot save --&gt;
+        &lt;!-- the button is disabled if one command cannot save --&gt;
         &lt;Button Content=&quot;Save All&quot; Command=&quot;{Binding SaveAllCommand}&quot; Width=&quot;120&quot; Margin=&quot;4&quot; HorizontalAlignment=&quot;Left&quot;&gt;&lt;/Button&gt;
 
         &lt;TabControl nav:RegionManager.ItemsRegion=&quot;TabRegion&quot; Grid.Row=&quot;1&quot;&gt;
