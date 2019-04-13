@@ -17,8 +17,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             composite.Add(new RelayCommand(() =>
             {
                 command1Called = true;
-            }))
-            .Add(new RelayCommand(() =>
+            }));
+            composite.Add(new RelayCommand(() =>
             {
                 command2Called = true;
             }));
@@ -42,8 +42,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             {
                 command1Result = value;
                 command1Called = true;
-            }))
-            .Add(new RelayCommand(() =>
+            }));
+            composite.Add(new RelayCommand(() =>
             {
                 command2Called = true;
             }));
@@ -98,12 +98,12 @@ namespace MvvmLib.Core.Tests.Mvvm
             composite.Add(new RelayCommand(() =>
             {
                 command1Called = true;
-            },()=>
-            {
-                isCheck1 = true;
-                return false;
-            }))
-            .Add(new RelayCommand(() =>
+            }, () =>
+             {
+                 isCheck1 = true;
+                 return false;
+             }));
+            composite.Add(new RelayCommand(() =>
             {
                 command2Called = true;
             },()=>
@@ -140,8 +140,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             {
                 isCheck1 = true;
                 return true;
-            }))
-            .Add(new RelayCommand(() =>
+            }));
+            composite.Add(new RelayCommand(() =>
             {
                 command2Called = true;
             }, () =>

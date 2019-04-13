@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace MvvmLib.Mvvm
 {
+
     /// <summary>
-    /// A command that can execute multiple commands.
+    /// The composite can executes multiple commands.
     /// </summary>
     public class CompositeCommand : RelayCommandBase
     {
@@ -14,24 +16,50 @@ namespace MvvmLib.Mvvm
         protected List<ICommand> commands = new List<ICommand>();
 
         /// <summary>
-        /// Adds a new command to the composite command.
+        /// Creates a composite command and add commands.
         /// </summary>
-        /// <param name="command">The command</param>
-        /// <returns>The composite command</returns>
-        public CompositeCommand Add(ICommand command)
+        public CompositeCommand()
+        { }
+
+        /// <summary>
+        /// Creates a composite command and add commands.
+        /// </summary>
+        /// <param name="commands">The commands to add</param>
+        public CompositeCommand(params ICommand[] commands)
         {
-            this.commands.Add(command);
-            return this;
+            this.AddRange(commands);
+        }
+
+
+        /// <summary>
+        /// Add a the commands to the composite command.
+        /// </summary>
+        /// <param name="commands">The commands to add</param>
+        public void AddRange(IEnumerable<ICommand> commands)
+        {
+            foreach (var command in commands)
+            {
+                this.commands.Add(command);
+            }
         }
 
         /// <summary>
-        /// Checks if the command have to be executed.
+        /// Adds a new command to the composite command.
+        /// </summary>
+        /// <param name="command">The command</param>
+        public void Add(ICommand command)
+        {
+            this.commands.Add(command);
+        }
+
+        /// <summary>
+        /// Checks if commands have to be executed.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        /// <returns></returns>
-        public override bool EvaluateCondition(object parameter)
+        /// <returns>True if all commands can execute</returns>
+        public override bool CanExecute(object parameter)
         {
-            foreach (var command in this.commands)
+            foreach (var command in commands)
             {
                 if (!command.CanExecute(parameter))
                 {
@@ -42,15 +70,17 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Invokes the execute method.
+        /// Execute all commands of composite command.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        public override void InvokeCallback(object parameter)
+        public override void Execute(object parameter)
         {
-            foreach (var command in this.commands)
+            foreach (var command in commands)
             {
                 command.Execute(parameter);
             }
         }
     }
+
+
 }

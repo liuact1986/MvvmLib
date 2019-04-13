@@ -1,154 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MvvmLib.Navigation
 {
-    public class BindableItemEventArgs : EventArgs
-    {
-        public object Item { get; }
-        public int? Index { get; }
-
-        public BindableItemEventArgs(object item, int? index)
-        {
-            this.Item = item;
-            this.Index = index;
-        }
-    }
-
-    public class BindableList<T> : IList<T>
-    {
-        protected List<T> list = new List<T>();
-
-        public event EventHandler<BindableItemEventArgs> ItemAdded;
-
-        public event EventHandler<BindableItemEventArgs> ItemRemoved;
-
-        public event EventHandler<BindableItemEventArgs> ItemUpdated;
-
-        public T this[int index]
-        {
-            get
-            {
-                if (index < 0 || index > list.Count - 1)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                return list[index];
-            }
-            set
-            {
-                if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-
-                if (index < 0 || index > list.Count - 1)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                list[index] = value;
-                this.ItemUpdated?.Invoke(this, new BindableItemEventArgs(list[index], index));
-            }
-        }
-
-        public int Count => list.Count;
-
-        protected bool isReadOnly;
-        public bool IsReadOnly => isReadOnly;
-
-        public void SetReadOnly(bool isReadOnly = true)
-        {
-            this.isReadOnly = isReadOnly;
-        }
-
-        public void Add(T item)
-        {
-            if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-            this.Insert(list.Count, item);
-
-        }
-
-        public void Clear()
-        {
-            if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-            if (list.Count > 0)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    this.RemoveAt(i);
-                }
-            }
-
-        }
-
-        public bool Contains(T item)
-        {
-            return list.Contains(item);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            list.CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return list.GetEnumerator();
-        }
-
-        public int IndexOf(T item)
-        {
-            return list.IndexOf(item);
-        }
-
-        public void Insert(int index, T item)
-        {
-            if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-            if (index < 0 || index > list.Count)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            list.Insert(index, item);
-            this.ItemAdded?.Invoke(this, new BindableItemEventArgs(item, index));
-
-        }
-
-        public bool Remove(T item)
-        {
-            if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-            if (list.Remove(item))
-            {
-                var index = list.IndexOf(item);
-                this.ItemRemoved?.Invoke(this, new BindableItemEventArgs(item, index));
-                return true;
-            }
-
-            return false;
-        }
-
-        public void RemoveAt(int index)
-        {
-            if (isReadOnly) { throw new InvalidOperationException("List is readony"); }
-            if (index < 0 || index > list.Count - 1)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            list.RemoveAt(index);
-            this.ItemRemoved?.Invoke(this, new BindableItemEventArgs(null, index));
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return list.GetEnumerator();
-        }
-    }
 
     public class NavigationHistory : INavigationHistory
     {
-        // current 
-
-        // - 0 : Home
-        // - 1: Page A
-        // - 2: Page B
         public BindableList<NavigationEntry> BackStack { get; }
 
         public BindableList<NavigationEntry> ForwardStack { get; }
@@ -195,36 +52,58 @@ namespace MvvmLib.Navigation
 
         public void HandleGoBackChanged()
         {
-            this.BackStack.ItemAdded += OnBackStackChanged;
-            this.BackStack.ItemRemoved += OnBackStackChanged;
+            this.BackStack.ItemAdded += OnBackStackItemAdded;
+            this.BackStack.ItemRemoved += OnBackStackItemRemoved;
         }
 
         public void UnhandleGoBackChanged()
         {
-            this.BackStack.ItemAdded -= OnBackStackChanged;
-            this.BackStack.ItemRemoved -= OnBackStackChanged;
+            this.BackStack.ItemAdded -= OnBackStackItemAdded;
+            this.BackStack.ItemRemoved -= OnBackStackItemRemoved;
         }
 
         public void HandleGoForwardChanged()
         {
-            this.ForwardStack.ItemAdded += OnForwardStackChanged;
-            this.ForwardStack.ItemRemoved += OnForwardStackChanged;
+            this.ForwardStack.ItemAdded += OnForwardStackItemAdded;
+            this.ForwardStack.ItemRemoved += OnForwardStackItemRemoved;
         }
 
         public void UnhandleGoForwardChanged()
         {
-            this.ForwardStack.ItemAdded -= OnForwardStackChanged;
-            this.ForwardStack.ItemRemoved -= OnForwardStackChanged;
+            this.ForwardStack.ItemAdded -= OnForwardStackItemAdded;
+            this.ForwardStack.ItemRemoved -= OnForwardStackItemRemoved;
         }
 
-        private void OnBackStackChanged(object sender, EventArgs e)
+        private void OnBackStackItemAdded(object sender, EventArgs e)
         {
-            this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
+            if(BackStack.Count == 1)
+            {
+                this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        private void OnForwardStackChanged(object sender, EventArgs e)
+        private void OnBackStackItemRemoved(object sender, EventArgs e)
         {
-            this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
+            if (BackStack.Count == 0)
+            {
+                this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
+            }       
+        }
+
+        private void OnForwardStackItemAdded(object sender, EventArgs e)
+        {
+            if (ForwardStack.Count == 1)
+            {
+                this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void OnForwardStackItemRemoved(object sender, EventArgs e)
+        {
+            if (ForwardStack.Count == 0)
+            {
+                this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void Navigate(NavigationEntry navigationEntry)

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MvvmLib.Adaptive.Windows - MvvmLib Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="css/theme_colors.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles/vs.css">
+    <link rel="stylesheet" href="css/font-awesome.4.5.0.min.css">
+</head>
+<body role="document">
+    <div class="grid-for-nav">
+        <nav data-toggle="nav-shift" class="nav-side stickynav">
+            <div class="side-nav-search">
+                <a href="index.htm"><i class="fa fa-home"></i> MvvmLib Documentation</a>
+                <div role="search">
+                    <form id="search-form" class="form" action="Docnet_search.htm" method="get">
+                        <input type="text" name="q" placeholder="Search docs" />
+                    </form>
+                </div>
+            </div>
+            <div class="menu menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+<ul>
+<li class="tocentry"><a href="index.htm">Home</a>
+</li>
+
+<li class="tocentry"><a href="Mvvm.htm">MvvmLib.Core</a>
+</li>
+<li class="tocentry"><a href="DI.htm">MvvmLib.IoC</a>
+</li>
+<li class="tocentry"><a href="Navigation.htm">MvvmLib.Wpf</a>
+</li>
+<li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
+</li>
+<li class="tocentry"><a href="Navigation_XF.htm">MvvmLib.XF</a>
+</li>
+<li class="tocentry"><a href="Adaptive.htm">MvvmLib.Adaptive.Wpf</a>
+</li>
+<li class="tocentry current"><a class="current" href="Adaptive_Uwp.htm">MvvmLib.Adaptive.Windows</a>
+<ul class="currentrelative">
+<li class="tocentry"><a href="#breakpointlistener">BreakpointListener</a></li>
+
+<li class="tocentry"><a href="#breakpointbinder">BreakpointBinder</a></li>
+
+<li class="tocentry"><a href="#responsive-gridview">Responsive GridView</a></li>
+
+<li class="tocentry"><a href="#one-row-mode">One row mode</a></li>
+
+<li class="tocentry"><a href="#responsive-variable-sized-gridview">Responsive variable sized GridView</a></li>
+
+<li class="tocentry"><a href="#busy-indicator">Busy Indicator</a></li>
+
+
+
+</ul>
+<li class="tocentry"><a href="LICENSE.htm">LICENSE</a>
+</li>
+</ul>
+				<div class="toc-footer">
+					<span class="text-small">
+						<hr/>
+						<a href="https://github.com/FransBouma/DocNet" target="_blank">Made with <i class="fa fa-github"></i> DocNet</a>
+					</span>
+				</div>	
+			</div>
+            &nbsp;
+        </nav>
+        <section data-toggle="nav-shift" class="nav-content-wrap">
+            <nav class="nav-top" role="navigation" aria-label="top navigation">
+                <i data-toggle="nav-top" class="fa fa-bars"></i>
+                <a href="index.htm">MvvmLib Documentation</a>
+            </nav>
+            <div class="nav-content">
+                <div role="navigation" aria-label="breadcrumbs navigation">
+                    <div class="breadcrumbs">
+<ul><li><a href="index.htm">Home</a></li> / <li><a href="Adaptive_Uwp.htm">MvvmLib.Adaptive.Windows</a></li></ul>
+					
+                    </div>
+                    <hr />
+                </div>
+                <div role="main">
+                    <div class="section">
+<h1 id="adaptive">Adaptive<a class="headerlink" href="#adaptive" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
+<ul>
+<li><strong>BreakpointBinder</strong>: allows to <strong>bind controls</strong> and make the page &quot;<strong>responsive</strong>&quot;</li>
+<li><strong>BreakpointListener</strong>: allows to define a list of breakpoints and be notified on current breakpoint changed</li>
+<li><strong>ResponsiveGridView</strong> and <strong>ResponsiveVariableSizedGridView</strong></li>
+<li><strong>BusyIndicator</strong></li>
+</ul>
+<h2 id="breakpointlistener">BreakpointListener<a class="headerlink" href="#breakpointlistener" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example:</p>
+<pre><code class="cs">var listener = new BreakpointListener();
+
+// register breakpoints
+listener.AddBreakpoint(0);
+listener.AddBreakpoint(320);
+listener.AddBreakpoint(640);
+listener.AddBreakpoint(960);
+listener.AddBreakpoint(1280);
+listener.AddBreakpoint(1600);
+
+listener.BreakpointChanged += (s, e) =&gt;
+{
+      // notified on active breakpoint changed
+      // e.Width
+};
+</code></pre>
+
+<h2 id="breakpointbinder">BreakpointBinder<a class="headerlink" href="#breakpointbinder" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h3 id="datacontext-code-behind-or-viewmodel">DataContext (code-behind or ViewModel)<a class="headerlink" href="#datacontext-code-behind-or-viewmodel" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<p>Example:</p>
+<pre><code class="cs">public class MyViewModel : ViewModelBase
+{
+        private Dictionary&lt;string, object&gt; active;
+        public Dictionary&lt;string, object&gt; Active
+        {
+            get { return active; }
+            set { Set(ref this.active, value); }
+        }
+
+        private void OnActiveChanged(object sender, ActiveChangedEventArgs e)
+        {
+            this.Active = e.Active;
+        }
+
+        public override async void OnNavigatedTo(object parameter)
+        {
+            var binder = new BreakpointBinder();
+
+            // with dictionary string : object
+            binder.AddBreakpointWithBindings(0, new Dictionary&lt;string, object&gt; { { &quot;TitleFontSize&quot;, &quot;14&quot; }, { &quot;TitleColor&quot;, &quot;Green&quot; } });
+
+            // with Adaptive container helper
+            binder.AddBreakpointWithBindings(640, AdaptiveContainer.Create().Set(&quot;TitleFontSize&quot;, &quot;80&quot;).Set(&quot;TitleColor&quot;, &quot;Red&quot;).Get());
+            binder.AddBreakpointWithBindings(960, AdaptiveContainer.Create().Set(&quot;TitleFontSize&quot;, &quot;160&quot;).Set(&quot;TitleColor&quot;, &quot;Blue&quot;).Get());
+
+            // deferred
+            // await Task.Delay(4000);
+
+            binder.ActiveChanged += OnActiveChanged;
+        }
+}
+</code></pre>
+
+<p>Define the <strong>DataContext</strong> of the view to the <strong>viewModel</strong></p>
+<p>And bind controls to the Active dictionary values</p>
+<pre><code class="xml">&lt;TextBlock Text=&quot;My adaptive text&quot; 
+           FontSize=&quot;{Binding Active.TitleFontSize}&quot; 
+           Foreground=&quot;{Binding Active.TitleColor}&quot;&gt;&lt;/TextBlock&gt;
+</code></pre>
+
+<h3 id="control">Control<a class="headerlink" href="#control" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<p>Add to the view the control and load for example from json file</p>
+<p><em>In this example, the font size and the foreground change with the window size</em></p>
+<pre><code class="xml">&lt;!-- Control --&gt;
+&lt;Adaptive:BreakpointBinder x:Name=&quot;bp&quot; File=&quot;Breakpoints/AsControlView.json&quot; /&gt;
+        
+&lt;TextBlock Text=&quot;My adaptive text&quot; 
+           FontSize=&quot;{Binding ElementName=bp,Path=Active.TitleFontSize}&quot; 
+           Foreground=&quot;{Binding ElementName=bp,Path=Active.TitleColor}&quot;&gt;&lt;/TextBlock&gt;
+</code></pre>
+
+<p>Define the <strong>json file</strong> as <strong>content</strong> in properties panel</p>
+<pre><code class="json">[
+  {
+    &quot;minwidth&quot;: 0,
+    &quot;bindings&quot;: {
+      &quot;TitleFontSize&quot;: &quot;20&quot;,
+      &quot;TitleColor&quot;: &quot;red&quot;
+    }
+  },
+  {
+    &quot;minwidth&quot;: 640,
+    &quot;bindings&quot;: {
+      &quot;TitleFontSize&quot;: &quot;50&quot;,
+      &quot;TitleColor&quot;: &quot;blue&quot;
+    }
+  },
+  {
+    &quot;minwidth&quot;: 960,
+    &quot;bindings&quot;: {
+      &quot;TitleFontSize&quot;: &quot;100&quot;,
+      &quot;TitleColor&quot;: &quot;green&quot;
+    }
+  }
+]
+</code></pre>
+
+<p>Namespace</p>
+<pre class="nocode">xmlns:adaptive=&quot;using:UwpLib.Adaptive&quot;
+</pre><h2 id="responsive-gridview">Responsive GridView<a class="headerlink" href="#responsive-gridview" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="xml">&lt;adaptive:ResponsiveGridView x:Name=&quot;NormalGridView&quot;
+                                     Columns=&quot;6&quot;
+                                     ItemHeight=&quot;200&quot;
+                                     ItemsSource=&quot;{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}&quot;
+                                     ItemTemplate=&quot;{StaticResource SquareTemplate}&quot;
+                                     ItemClickCommand=&quot;{Binding ElementName=ThisPage,Path=Command}&quot; Grid.Row=&quot;1&quot;&gt;
+ &lt;/adaptive:ResponsiveGridView&gt;
+</code></pre>
+
+<h2 id="one-row-mode">One row mode<a class="headerlink" href="#one-row-mode" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="xml">&lt;adaptive:ResponsiveGridView x:Name=&quot;OneRowModeGridView&quot;
+                                     OneRowMode=&quot;True&quot;
+                                     Columns=&quot;3&quot;
+                                     ItemHeight=&quot;300&quot;
+                                     ItemsSource=&quot;{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}&quot;
+                                     ItemTemplate=&quot;{StaticResource SquareTemplate}&quot;
+                                     ItemClickCommand=&quot;{Binding ElementName=ThisPage,Path=Command}&quot; Grid.Row=&quot;1&quot;&gt;
+&lt;/adaptive:ResponsiveGridView&gt;
+</code></pre>
+
+<h3 id="with-breakpoints">With Breakpoints<a class="headerlink" href="#with-breakpoints" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<pre><code class="xml">&lt;adaptive:BreakpointBinder x:Name=&quot;bp&quot; File=&quot;path/to/breakpoints.json&quot;/&gt;
+
+&lt;adaptive:ResponsiveGridView x:Name=&quot;ResponsiveGridView&quot;                                        
+                                         ItemsSource=&quot;{Binding ElementName=ThisPage,Path=Items,Mode=OneWay}&quot;
+                                         ItemTemplate=&quot;{StaticResource SquareTemplate}&quot;
+                                         ItemClickCommand=&quot;{Binding ElementName=ThisPage,Path=Command}&quot; 
+                                         Columns=&quot;{Binding Active.columns, ElementName=bp,FallbackValue=4}&quot;
+                                         ItemHeight=&quot;300&quot;
+                                         Grid.Row=&quot;1&quot;&gt;
+&lt;/adaptive:ResponsiveGridView&gt;
+</code></pre>
+
+<p>The Json file</p>
+<pre><code class="json">[
+    {
+        &quot;minwidth&quot;: 0,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 2
+        }
+    },
+    {
+        &quot;minwidth&quot;: 600,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 3
+        }
+    },
+    {
+        &quot;minwidth&quot;: 960,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 4
+        }
+    }
+]
+</code></pre>
+
+<h2 id="responsive-variable-sized-gridview">Responsive variable sized GridView<a class="headerlink" href="#responsive-variable-sized-gridview" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="xml"> &lt;ScrollViewer&gt;
+            &lt;adaptive:ResponsiveVariableSizedGridView x:Name=&quot;GridView&quot;
+            Columns=&quot;6&quot;
+            ItemHeight=&quot;150&quot;
+            ItemsSource=&quot;{Binding ElementName=ThisPage,Path=Items}&quot;&gt;
+                &lt;adaptive:ResponsiveVariableSizedGridView.ItemTemplate&gt;
+                    &lt;DataTemplate&gt;
+                        &lt;Grid Background=&quot;{Binding Color}&quot;  Margin=&quot;4&quot;&gt;
+                            &lt;TextBlock Text=&quot;{Binding Title}&quot;
+                                       HorizontalAlignment=&quot;Center&quot; VerticalAlignment=&quot;Center&quot;/&gt;
+                        &lt;/Grid&gt;
+                    &lt;/DataTemplate&gt;
+                &lt;/adaptive:ResponsiveVariableSizedGridView.ItemTemplate&gt;
+            &lt;/adaptive:ResponsiveVariableSizedGridView&gt;
+&lt;/ScrollViewer&gt;
+</code></pre>
+
+<p>Items source have to inherit from &quot;VariableSizedGridViewItem&quot;. It allows to define ColumnSpan and RowSpan for each item.</p>
+<pre><code class="cs">public class VariableItem : VariableSizedGridViewItem
+{
+        public string Title { get; set; }
+        public string Color { get; set; }
+}
+</code></pre>
+
+<p>Example for items source</p>
+<pre><code class="cs"> var result = new List&lt;VariableItem&gt;()
+{
+                new VariableItem { ColumnSpan=2,RowSpan=2,Color=&quot;DarkRed&quot;, Title=&quot;Item 1&quot; },
+                new VariableItem { ColumnSpan=1,RowSpan=1,Color=&quot;DarkGray&quot;, Title=&quot;Item 2&quot; },
+                new VariableItem { ColumnSpan=1,RowSpan=1,Color=&quot;Brown&quot;, Title=&quot;Item 3&quot; },
+                new VariableItem { ColumnSpan=2,RowSpan=2,Color=&quot;DarkGreen&quot;, Title=&quot;Item 4&quot; },
+                new VariableItem { ColumnSpan=1,RowSpan=1,Color=&quot;DarkOrange&quot;, Title=&quot;Item 5&quot; },
+                new VariableItem { ColumnSpan=1,RowSpan=1,Color=&quot;DarkCyan&quot;, Title=&quot;Item 6&quot; },
+};
+</code></pre>
+
+<h3 id="with-breakpoints-1">With breakpoints<a class="headerlink" href="#with-breakpoints-1" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<pre><code class="xml">&lt;adaptive:BreakpointBinder x:Name=&quot;bp&quot; File=&quot;path/to/breakpoints.json&quot;/&gt;
+
+ &lt;adaptive:ResponsiveVariableSizedGridView x:Name=&quot;ResponsiveVariableSizedGridView&quot;
+                                                      Columns=&quot;{Binding Active.columns, ElementName=bp,FallbackValue=6}&quot;
+                                                      ItemHeight=&quot;150&quot;
+                                                      ItemsSource=&quot;{Binding ElementName=ThisPage,Path=VariableSizedItems,Mode=OneWay}&quot;
+                                                      ItemTemplate=&quot;{StaticResource SquareTemplate}&quot; Grid.Row=&quot;1&quot;&gt;
+&lt;/adaptive:ResponsiveVariableSizedGridView&gt;
+</code></pre>
+
+<p>The Json file</p>
+<pre><code class="json">[
+    {
+        &quot;minwidth&quot;: 0,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 2
+        }
+    },
+    {
+        &quot;minwidth&quot;: 600,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 4
+        }
+    },
+    {
+        &quot;minwidth&quot;: 960,
+        &quot;bindings&quot;: {
+            &quot;columns&quot;: 6
+        }
+    }
+]
+</code></pre>
+
+<p><img src="http://res.cloudinary.com/romagny13/image/upload/v1515717015/resizing3_iubnqj.png" /></p>
+<h3 id="datatemplateselector">DataTemplateSelector<a class="headerlink" href="#datatemplateselector" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<p>Responsive GridViews support DataTemplateSelectors.</p>
+<h2 id="busy-indicator">Busy Indicator<a class="headerlink" href="#busy-indicator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="xml">&lt;Grid Background=&quot;{ThemeResource ApplicationPageBackgroundThemeBrush}&quot;&gt;
+    &lt;Grid.RowDefinitions&gt;
+        &lt;RowDefinition Height=&quot;Auto&quot;/&gt;
+        &lt;RowDefinition /&gt;
+    &lt;/Grid.RowDefinitions&gt;
+
+    &lt;!-- content --&gt;
+
+    &lt;adaptive:BusyIndicator x:Name=&quot;BusyIndicator&quot; Grid.RowSpan=&quot;2&quot;&gt;&lt;/adaptive:BusyIndicator&gt;
+    
+&lt;/Grid&gt;
+</code></pre>
+
+<pre><code class="cs">this.BusyIndicator.IsActive = true;
+
+await Task.Delay(2000);
+
+this.BusyIndicator.IsActive = false;
+</code></pre>
+
+
+                    </div>
+                </div>
+                <footer>
+                    <hr />
+                    <div role="contentinfo">
+MvvmLib Documentation. &copy;2019. <a href='https://github.com/romagny13/MvvmLib' target='_blank'>GitHub</a> | <a href='https://www.nuget.org/profiles/romagny13' target='_blank'>NuGet</a>.
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/modernizr-2.8.3.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script src="js/theme.js"></script>
+
+</body>
+</html>

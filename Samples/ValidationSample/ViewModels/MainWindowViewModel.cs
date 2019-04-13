@@ -32,6 +32,8 @@ namespace ValidationSample.ViewModels
             {
                 Id = 1
             });
+
+
             this.user.BeginEdit();
 
             SaveCommand = new RelayCommand(OnSave);

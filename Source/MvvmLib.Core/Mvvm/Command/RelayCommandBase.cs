@@ -2,54 +2,36 @@
 
 namespace MvvmLib.Mvvm
 {
+
     /// <summary>
-    /// Base class for commands.
+    /// The base class for commands.
     /// </summary>
     public abstract class RelayCommandBase : IRelayCommand
     {
         /// <summary>
-        /// Can Execute changed event handler.
+        /// Can execute changed event.
         /// </summary>
         public event EventHandler CanExecuteChanged;
 
         /// <summary>
-        /// Checks if the command have to be executed.
+        /// Checks if commands have to be executed.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        /// <returns></returns>
-        public bool CanExecute(object parameter)
-        {
-            return this.EvaluateCondition(parameter);
-        }
+        /// <returns>True if all commands can execute</returns>
+        public abstract bool CanExecute(object parameter);
 
         /// <summary>
-        /// Invokes the execute method.
+        /// Invokes the execute command.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        public void Execute(object parameter)
-        {
-            this.InvokeCallback(parameter);
-        }
+        public abstract void Execute(object parameter);
 
         /// <summary>
-        /// Invokes <see cref="CanExecute(object)"/>.
+        /// Notify that the can execute method have to be executed.
         /// </summary>
-        public void RaiseCanExecuteChanged()
+        public virtual void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        /// <summary>
-        /// Checks if the command have to be executed.
-        /// </summary>
-        /// <param name="parameter">The parameter</param>
-        /// <returns>True if the command can be executed</returns>
-        public abstract bool EvaluateCondition(object parameter);
-
-        /// <summary>
-        /// Invokes the execute method.
-        /// </summary>
-        /// <param name="parameter">The parameter</param>
-        public abstract void InvokeCallback(object parameter);
     }
 }

@@ -26,7 +26,7 @@ namespace NavigationSample.ViewModels
         public PageAViewModel(IDialogService dialogService, INavigationManager navigationManager)
         {
             this.dialogService = dialogService;
-            this.navigationManager = navigationManager;
+            this.navigationManager = navigationManager;            
 
             NavigateCommand = new RelayCommand(() =>
             {

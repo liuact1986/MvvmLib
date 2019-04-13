@@ -4,9 +4,11 @@
 
 This package is going to merge my 3 other projects ([WpfLib](https://github.com/romagny13/WpfLib), [UwpLib](https://github.com/romagny13/UwpLib), [XFLib](https://github.com/romagny13/XFLib)) in one single solution. 
 
+[Documentation](https://romagny13.github.io/MvvmLib/)
+
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
-* **BindableBase**, **Validatable**, **Editable**, **ValidateAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Editable**, **Validatable**  and **ModelWrapper** base classes for _Models and ViewModels_
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**

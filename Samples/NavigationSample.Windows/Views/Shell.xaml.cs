@@ -26,11 +26,11 @@ namespace NavigationSample.Windows.Views
         {
             navigationService = navigationManager.GetDefault();
             navigationService.Navigated += OnNavigated;
-            navigationService.NavigationCanceled += OnNavigationCanceled;
+            navigationService.NavigationCancelled += OnNavigationCancelled;
 
             // back request (Title bar + NavigationView)
             backRequestManager.Handle(MainFrame, () => HandleBackRequested());
-            NavigationView.BackRequested += (se, ex) => HandleBackRequested();
+            NavigationView.BackRequested += (se, ev) => HandleBackRequested();
 
             // navigate to home page on load
             await navigationService.NavigateAsync(typeof(HomePage));
@@ -64,7 +64,7 @@ namespace NavigationSample.Windows.Views
             SyncMenuItem();
         }
 
-        private void OnNavigationCanceled(object sender, FrameNavigationCanceledEventArgs e)
+        private void OnNavigationCancelled(object sender, FrameNavigationCanceledEventArgs e)
         {
             SyncMenuItem();
         }

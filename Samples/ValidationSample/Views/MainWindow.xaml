@@ -32,12 +32,12 @@
 
             <Label VerticalAlignment="Center"  Margin="3" HorizontalAlignment="Left" Grid.Row="1" Content="First Name:"/>
             <TextBox x:Name="firstNameTextBox" Width="120" VerticalAlignment="Center" 
-                 Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                 Text="{Binding User.FirstName, UpdateSourceTrigger=PropertyChanged}" 
                  Margin="3,3,3,12" Height="23" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"/>
 
             <Label VerticalAlignment="Center" Grid.Row="2" Margin="3" HorizontalAlignment="Left" Content="Last Name:"/>
             <TextBox x:Name="lastNameTextBox" Width="120" VerticalAlignment="Center" 
-                 Text="{Binding User.LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                 Text="{Binding User.LastName, UpdateSourceTrigger=PropertyChanged}"
                  Grid.Row="2"  Margin="3,3,3,12" Height="23" HorizontalAlignment="Left" Grid.Column="1"/>
 
         </Grid>

@@ -1,21 +1,17 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace MvvmLib.Mvvm
 {
-    public class ModelWrapper<TModel> : Validatable, IEditableObject
+    public class ModelWrapper<TModel> : Validatable
     {
         public TModel Model { get; set; }
 
-        protected IEditableObjectService editableObjectService;
-
-        public ModelWrapper(TModel model, IEditableObjectService editableObjectService)
-            : base(model)
+        public ModelWrapper(TModel model, IEditableObjectService editableService)
+            : base(editableService, model)
         {
             Model = model;
-            this.editableObjectService = editableObjectService;
         }
 
         public ModelWrapper(TModel model)
@@ -55,29 +51,6 @@ namespace MvvmLib.Mvvm
                 this.ValidateProperty(propertyName, value);
             }
         }
-
-        #region Editable 
-
-        public void BeginEdit()
-        {
-            this.editableObjectService.Store(Model);
-        }
-
-        public void CancelEdit()
-        {
-            this.editableObjectService.Restore(Model);
-            this.Reset();
-            this.RaisePropertyChanged(string.Empty);
-        }
-
-        public void EndEdit()
-        {
-            this.editableObjectService.Clear();
-            this.RaisePropertyChanged(string.Empty);
-        }
-
-        #endregion // Editable
     }
-
 
 }

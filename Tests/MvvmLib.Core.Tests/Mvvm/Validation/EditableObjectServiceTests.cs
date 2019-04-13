@@ -31,7 +31,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         }
     }
 
-    public class UserValidatableAndEditable : ValidatableAndEditable
+    public class UserValidatableAndEditable : Validatable
     {
         private string firstName;
         [Required(ErrorMessage = "FirstName required")]

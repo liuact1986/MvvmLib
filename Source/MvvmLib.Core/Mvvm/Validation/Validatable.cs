@@ -64,7 +64,7 @@ namespace MvvmLib.Mvvm
         }
     }
 
-    public class Validatable : BindableBase, INotifyDataErrorInfo
+    public class Validatable : BindableBase, INotifyDataErrorInfo, IEditableObject
     {
         public BindableErrorContainer Errors { get; } = new BindableErrorContainer();
 
@@ -165,10 +165,17 @@ namespace MvvmLib.Mvvm
 
         // end IDataErrorInfo
 
-        public Validatable(object model = null)
+        protected IEditableObjectService editableService;
+
+        public Validatable(IEditableObjectService editableService, object model = null)
         {
+            this.editableService = editableService;
             this.Source = model ?? (this);
         }
+
+        public Validatable(object model = null) 
+            : this(new EditableObjectService(), model)
+        { }
 
         public bool ContainPropertyToIgnore(string propertyName)
         {
@@ -230,6 +237,7 @@ namespace MvvmLib.Mvvm
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
             base.RaisePropertyChanged(nameof(HasErrors));
+            base.RaisePropertyChanged(nameof(Errors));
         }
 
         // validate
@@ -335,6 +343,24 @@ namespace MvvmLib.Mvvm
                 this.ValidateProperty(propertyName, value);
             }
             return result;
+        }
+
+        public void BeginEdit()
+        {
+            this.editableService.Store(this);
+        }
+
+        public void CancelEdit()
+        {
+            this.editableService.Restore(this);
+            this.Reset();
+            this.RaisePropertyChanged(string.Empty);
+        }
+
+        public void EndEdit()
+        {
+            this.editableService.Clear();
+            this.RaisePropertyChanged(string.Empty);
         }
 
     }

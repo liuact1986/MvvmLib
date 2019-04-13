@@ -2,52 +2,65 @@
 
 namespace MvvmLib.Mvvm
 {
-
     /// <summary>
-    /// Parameter less command (no CommandParameter value passed to callback and condition)
+    /// A command with no parameter.
     /// </summary>
     public class RelayCommand : RelayCommandBase
     {
         /// <summary>
-        /// The execute method.
+        /// The action to execute.
         /// </summary>
-        protected Action callback;
+        protected Action executeCommand;
+
 
         /// <summary>
-        /// The predicate.
+        /// The function to check if command have to be executed.
         /// </summary>
-        protected Func<bool> condition;
+        protected Func<bool> canExecuteCommand;
 
         /// <summary>
-        /// Creates the relay command.
+        /// Creates a Relay command.
         /// </summary>
-        /// <param name="callback">The execute method</param>
-        /// <param name="condition">The predicate</param>
-        public RelayCommand(Action callback, Func<bool> condition = null)
+        /// <param name="executeCommand">The action to execute</param>
+        /// <param name="canExecuteCommand">The function to check if command have to be executed</param>
+        public RelayCommand(Action executeCommand, Func<bool> canExecuteCommand)
         {
-            this.callback = callback;
-            this.condition = condition;
-        }
-
-
-        /// <summary>
-        /// Checks if the command have to be executed.
-        /// </summary>
-        /// <param name="parameter">The parameter</param>
-        /// <returns>True if the command can be executed</returns>
-        public override bool EvaluateCondition(object parameter)
-        {
-            return this.condition == null ? true : this.condition();
+            this.executeCommand = executeCommand;
+            this.canExecuteCommand = canExecuteCommand;
         }
 
         /// <summary>
-        /// Invokes the execute method.
+        /// Creates a Relay command.
+        /// </summary>
+        /// <param name="executeCommand">The action to execute</param>
+        public RelayCommand(Action executeCommand)
+            : this(executeCommand, null)
+        { }
+
+        /// <summary>
+        /// Checks if command have to be executed.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        public override void InvokeCallback(object parameter)
+        /// <returns>True if command have to be executed</returns>
+        public override bool CanExecute(object parameter)
         {
-            this.callback();
+            if (canExecuteCommand != null)
+            {
+                var canExecute = canExecuteCommand.Invoke();
+                return canExecute;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Invokes the execute command.
+        /// </summary>
+        /// <param name="parameter">The parameter</param>
+        public override void Execute(object parameter)
+        {
+            executeCommand.Invoke();
         }
     }
+
 
 }

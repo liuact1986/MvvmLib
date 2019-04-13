@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MvvmLib.Windows - MvvmLib Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="css/theme_colors.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles/vs.css">
+    <link rel="stylesheet" href="css/font-awesome.4.5.0.min.css">
+</head>
+<body role="document">
+    <div class="grid-for-nav">
+        <nav data-toggle="nav-shift" class="nav-side stickynav">
+            <div class="side-nav-search">
+                <a href="index.htm"><i class="fa fa-home"></i> MvvmLib Documentation</a>
+                <div role="search">
+                    <form id="search-form" class="form" action="Docnet_search.htm" method="get">
+                        <input type="text" name="q" placeholder="Search docs" />
+                    </form>
+                </div>
+            </div>
+            <div class="menu menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+<ul>
+<li class="tocentry"><a href="index.htm">Home</a>
+</li>
+
+<li class="tocentry"><a href="Mvvm.htm">MvvmLib.Core</a>
+</li>
+<li class="tocentry"><a href="DI.htm">MvvmLib.IoC</a>
+</li>
+<li class="tocentry"><a href="Navigation.htm">MvvmLib.Wpf</a>
+</li>
+<li class="tocentry current"><a class="current" href="Navigation_Uwp.htm">MvvmLib.Windows</a>
+<ul class="currentrelative">
+<li class="tocentry"><a href="#mvvmlib.windows-navigation-uwp">MvvmLib.Windows (Navigation) [uwp]</a></li>
+
+<li class="tocentry"><a href="#viewmodellocator">ViewModelLocator</a></li>
+
+<li class="tocentry"><a href="#navigationmanager">NavigationManager</a></li>
+
+<li class="tocentry"><a href="#inavigatable">INavigatable</a></li>
+
+<li class="tocentry"><a href="#ideactivatable-navigation-guard">IDeactivatable Navigation Guard</a></li>
+
+<li class="tocentry"><a href="#backrequestmanager">BackRequestManager</a></li>
+
+</ul>
+<li class="tocentry"><a href="Navigation_XF.htm">MvvmLib.XF</a>
+</li>
+<li class="tocentry"><a href="Adaptive.htm">MvvmLib.Adaptive.Wpf</a>
+</li>
+<li class="tocentry"><a href="Adaptive_Uwp.htm">MvvmLib.Adaptive.Windows</a>
+</li>
+<li class="tocentry"><a href="LICENSE.htm">LICENSE</a>
+</li>
+</ul>
+				<div class="toc-footer">
+					<span class="text-small">
+						<hr/>
+						<a href="https://github.com/FransBouma/DocNet" target="_blank">Made with <i class="fa fa-github"></i> DocNet</a>
+					</span>
+				</div>	
+			</div>
+            &nbsp;
+        </nav>
+        <section data-toggle="nav-shift" class="nav-content-wrap">
+            <nav class="nav-top" role="navigation" aria-label="top navigation">
+                <i data-toggle="nav-top" class="fa fa-bars"></i>
+                <a href="index.htm">MvvmLib Documentation</a>
+            </nav>
+            <div class="nav-content">
+                <div role="navigation" aria-label="breadcrumbs navigation">
+                    <div class="breadcrumbs">
+<ul><li><a href="index.htm">Home</a></li> / <li><a href="Navigation_Uwp.htm">MvvmLib.Windows</a></li></ul>
+					
+                    </div>
+                    <hr />
+                </div>
+                <div role="main">
+                    <div class="section">
+<h2 id="mvvmlib.windows-navigation-uwp">MvvmLib.Windows (Navigation) [uwp]<a class="headerlink" href="#mvvmlib.windows-navigation-uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for views</li>
+<li><strong>NavigationManager</strong>: allows to create and manage <strong>navigation services</strong></li>
+<li><strong>FrameNavigationService</strong>: allows to <strong>navigate</strong>, go back, go forward, <strong>cancel navigation</strong> and <strong>notify viewmodel</strong></li>
+<li><strong>INavigatable</strong>: allows the view models to be notified on navigate</li>
+<li><strong>IDeactivatable</strong>: allows to <strong>cancel</strong> navigation</li>
+<li><strong>ILoadedEventListener</strong>: allows to be notified from view model when the <strong>view</strong> is <strong>loaded</strong></li>
+<li><strong>BackRequestManager</strong>: allows to show the <strong>back button</strong> in <strong>title bar</strong></li>
+<li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+</ul>
+<h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to resolve automatically the ViewModel for the view with <strong>ResolveViewModel</strong> Attached Property.</p>
+</blockquote>
+<p>Default <strong>convention</strong>:</p>
+<ul>
+<li>Views in <code>Views</code> namespace</li>
+<li>View models in <code>ViewModels</code> namespace</li>
+<li>View model name: <em>view name + &quot;ViewModel&quot;</em> (example: MainPageViewModel for MainPage)</li>
+</ul>
+<p>On each view that requires to resolve the view model:</p>
+<pre><code class="xml">&lt;Page ...
+    xmlns:nav=&quot;using:MvvmLib.Navigation&quot;
+    nav:ViewModelLocator.ResolveViewModel=&quot;True&quot;&gt;
+</code></pre>
+
+<h3 id="change-the-default-convention">Change the default convention<a class="headerlink" href="#change-the-default-convention" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<p>Example with &quot;View&quot; and &quot;ViewModel&quot; directories/namespaces</p>
+<p>(App)</p>
+<pre><code class="cs">ViewModelLocationProvider.SetViewTypeToViewModelTypeResolver((viewType) =&gt;
+        {
+            var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
+
+            var viewName = viewType.FullName;
+            viewName = viewName.Replace(&quot;.View.&quot;, &quot;.ViewModel.&quot;); // &lt;=
+            var viewModelName = String.Format(CultureInfo.InvariantCulture, &quot;{0}ViewModel, {1}&quot;, viewName, viewAssemblyName);
+
+            return Type.GetType(viewModelName);
+        });
+</code></pre>
+
+<h2 id="navigationmanager">NavigationManager<a class="headerlink" href="#navigationmanager" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to register Navigation services.</p>
+</blockquote>
+<p><strong>Static methods</strong>:</p>
+<ul>
+<li><strong>Register</strong>: register a frame, with a key if the application have more than one frame</li>
+<li><strong>IsRegistered</strong></li>
+<li><strong>Unregister</strong></li>
+</ul>
+<p>(App)</p>
+<pre><code class="cs">NavigationManager.Register(rootFrame);
+</code></pre>
+
+<p><em>Tip</em> : x:FieldModifier=&quot;Public&quot; allows to access to a frame in a page. For example register a frame for a page with a NavigationView or a SplitView.</p>
+<pre><code class="cs">var frame = ((Shell)shell).MainFrame; //  x:FieldModifier=&quot;Public&quot;
+NavigationManager.Register(frame);
+</code></pre>
+
+<p>Use a Bootstrapper. Sample Create a Boostrapper with MvvmLib IoC Container.</p>
+<p>We could use any IoC container (Unity, StructureMap, etc.)</p>
+<pre><code class="cs">public abstract class MvvmBootstrapper : BootstrapperBase
+{
+    protected IInjector container;
+
+    public MvvmBootstrapper(IInjector container)
+    {
+        this.container = container;
+    }
+
+    protected override void SetViewModelFactory()
+    {
+        ViewModelLocationProvider.SetViewModelFactory((viewModelType) =&gt; container.GetInstance(viewModelType));
+    }
+
+    protected override void RegisterRequiredTypes()
+    {
+        container.RegisterType&lt;INavigationManager, NavigationManager&gt;();
+        container.RegisterType&lt;IBackRequestManager, BackRequestManager&gt;();
+    }
+}
+</code></pre>
+
+<p>... The create a Bootstrapper class</p>
+<pre><code class="cs">public class Bootstrapper : MvvmBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        : base(container)
+    { }
+
+    protected override void RegisterTypes()
+    {
+        container.RegisterType&lt;IMyService, MyService&gt;();
+        container.RegisterSingleton&lt;PageBViewModel&gt;();
+    }
+
+    protected override Page CreateShell()
+    {
+        return container.GetInstance&lt;Shell&gt;();
+    }
+
+    protected override void ConfigureNavigation(Page shell)
+    {
+        var frame = ((Shell)shell).MainFrame; //  x:FieldModifier=&quot;Public&quot;
+        NavigationManager.Register(frame);
+    }
+
+    protected override void InitializeShell(Page shell)
+    {
+        Window.Current.Content = shell;
+    }
+}
+</code></pre>
+
+<p>In App</p>
+<pre><code class="cs">sealed partial class App : Application
+{
+    public App()
+    {
+        this.InitializeComponent();
+        this.Suspending += OnSuspending;
+    }
+
+    private const string NavigationStateName = &quot;__navigationstate__&quot;;
+
+    public new static App Current =&gt; (App)Application.Current;
+
+    public IInjector Container { get; private set; } = new Injector();
+
+    public INavigationManager NavigationManager { get; private set; }
+
+    protected override void OnLaunched(LaunchActivatedEventArgs e)
+    {
+        // create and run a boostrapper with the ioc container
+        var bootstrapper = new Bootstrapper(Container);
+        bootstrapper.Run();
+
+        NavigationManager = Container.GetInstance&lt;INavigationManager&gt;();
+
+        // App lifeycle 
+        if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+        {
+            if (ApplicationData.Current.LocalSettings.Values.ContainsKey(NavigationStateName))
+            {
+                var navigationState = ApplicationData.Current.LocalSettings.Values[NavigationStateName].ToString();
+                NavigationManager.GetDefault().SetNavigationState(navigationState);
+            }
+        }
+    }
+
+    private void OnSuspending(object sender, SuspendingEventArgs e)
+    {
+        var deferral = e.SuspendingOperation.GetDeferral();
+
+        var navigationState = NavigationManager.GetDefault().GetNavigationState();
+        ApplicationData.Current.LocalSettings.Values[NavigationStateName] = navigationState;
+
+        deferral.Complete();
+    }
+}
+</code></pre>
+
+<p><strong>Methods</strong>:</p>
+<p>Use a IoC container to create and inject the service (INavigationmanager) in ViewModels/ views</p>
+<p>Get The Navigation Service:</p>
+<ul>
+<li><strong>GetDefault</strong></li>
+<li><strong>GetNamed</strong> for a frame registered with a key </li>
+</ul>
+<p>Sample:</p>
+<pre><code class="cs">await navigationManager.GetDefault().NavigateAsync(typeof(MainPage));
+// with parameter
+await navigationManager.GetDefault().NavigateAsync(typeof(MainPage), &quot;My parameter&quot;);
+
+// go back
+await navigationManager.GetDefault().GoBackAsync();
+
+// go forward
+await navigationManager.GetDefault().GoForwardAsync();
+
+// redirect
+await navigationManager.GetDefault().RedirectAsync(typeof(LoginPage), &quot;My parameter&quot;);
+</code></pre>
+
+<p>Navigation Service Methods:</p>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Method</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>NavigateAsync</td>
+	<td>Allows to navigate to a new page</td>
+</tr>
+<tr>
+	<td>GoBackAsync</td>
+	<td>Allows to go to the previous page</td>
+</tr>
+<tr>
+	<td>GoForwardAsync</td>
+	<td>Allows to go the next page</td>
+</tr>
+<tr>
+	<td>RedirectAsync</td>
+	<td>Allows to redirect to a page and do not add/ oremove current page from history</td>
+</tr>
+<tr>
+	<td>GetNavigationState</td>
+	<td>Allows to get frame navigation state for app lifeycle</td>
+</tr>
+<tr>
+	<td>SetNavigationState</td>
+	<td>Allows to restore frame navigation state</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Property</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>BackStack</td>
+	<td>Frame Back stack</td>
+</tr>
+<tr>
+	<td>ForwardStack</td>
+	<td>Frame Forward stack</td>
+</tr>
+<tr>
+	<td>CanGoBack</td>
+	<td>Returns true if back stack history have more then one entry</td>
+</tr>
+<tr>
+	<td>CanGoForward</td>
+	<td>Returns true if forward stack history have one or more entries</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Event</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>CanGoBackChanged</td>
+	<td>Invoked after can go back changed</td>
+</tr>
+<tr>
+	<td>CanGoForwardChanged</td>
+	<td>Invoked after can go forward changed</td>
+</tr>
+<tr>
+	<td>Navigating</td>
+	<td>Invoked before navigation starts</td>
+</tr>
+<tr>
+	<td>Navigated</td>
+	<td>Invoked after navigation ends</td>
+</tr>
+<tr>
+	<td>NavigatingFailed</td>
+	<td>Invoked after navigation was cancelled</td>
+</tr>
+</tbody>
+</table>
+<h2 id="inavigatable">INavigatable<a class="headerlink" href="#inavigatable" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>For View and/or View model</p>
+<p>Example:</p>
+<pre><code class="cs">public class MainPageViewModel : INavigatable
+{
+    // Invoked after navigation ends
+    public void OnNavigatedTo(object parameter)
+    {
+        
+    }
+
+    // Invoked before leaving
+    public void OnNavigatingFrom()
+    {
+        
+    }
+}
+</code></pre>
+
+<h2 id="ideactivatable-navigation-guard">IDeactivatable Navigation Guard<a class="headerlink" href="#ideactivatable-navigation-guard" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allow to cancel navigation</p>
+</blockquote>
+<p>Sample:</p>
+<pre><code class="cs">public class PageAViewModel :  IDeactivatable
+{
+
+    public async Task&lt;bool&gt; CanDeactivateAsync()
+    {
+        bool result = true;
+
+        var dialog = new MessageDialog(&quot;Deactivate PageA?&quot;);
+        dialog.Commands.Add(new UICommand(&quot;Ok&quot;, cmd =&gt; { }));
+        dialog.Commands.Add(new UICommand(&quot;Cancel&quot;, cmd =&gt; { result = false; }));
+
+        await dialog.ShowAsync();
+
+        return result;
+    }
+}
+</code></pre>
+
+<p>MvvmLib.Windows has not IActivatable interface, because it's the frame that creates the view instance and we cannot access the the instance before navigating.</p>
+<p>But its possible <strong>cancel navigation</strong> from view model <strong>with redirectAsync</strong> method. Example:</p>
+<pre><code class="cs">public class HomePageViewModel :  INavigatable
+{
+    private INavigationManager navigationManager;
+
+    public HomePageViewModel(INavigationManager navigationManager)
+    {
+        this.navigationManager = navigationManager;
+    }
+
+    public async void OnNavigatedTo(object parameter, NavigationMode navigationMode)
+    {
+        // cancel navigation, remove the home page from history
+        await navigationManager.GetDefault().RedirectAsync(typeof(LoginPage));
+    }
+
+    public void OnNavigatingFrom(bool isSuspending)
+    {
+
+    }
+}
+</code></pre>
+
+<h2 id="backrequestmanager">BackRequestManager<a class="headerlink" href="#backrequestmanager" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to show/ hide back button in title bar and handle back button clicked.</p>
+</blockquote>
+<pre><code class="cs">var backRequestManager = new BackRequestManager(); // Or inject with a ioc container
+backRequestManager.Handle(MainFrame, () =&gt; HandleBackRequested());
+</code></pre>
+
+<pre><code class="cs">private async void HandleBackRequested()
+{
+    if (navigationService.CanGoBack)
+    {
+        await navigationService.GoBackAsync();
+    }
+}
+</code></pre>
+
+
+                    </div>
+                </div>
+                <footer>
+                    <hr />
+                    <div role="contentinfo">
+MvvmLib Documentation. &copy;2019. <a href='https://github.com/romagny13/MvvmLib' target='_blank'>GitHub</a> | <a href='https://www.nuget.org/profiles/romagny13' target='_blank'>NuGet</a>.
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/modernizr-2.8.3.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script src="js/theme.js"></script>
+
+</body>
+</html>

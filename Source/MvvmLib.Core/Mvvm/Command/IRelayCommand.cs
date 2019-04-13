@@ -3,12 +3,12 @@
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// The relay command contract.
+    /// Contract for relay commands.
     /// </summary>
     public interface IRelayCommand : ICommand
     {
         /// <summary>
-        /// Invokes when the condition have to be checked.
+        /// Notify that the can execute method have to be executed.
         /// </summary>
         void RaiseCanExecuteChanged();
     }

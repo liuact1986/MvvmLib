@@ -5,15 +5,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ValidationSample.Models
 {
-    public class User : Validatable
+    public class User
     {
         public int Id { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 2)]
+        [StringLength(5)]
         public string FirstName { get; set; }
 
-        [StringLength(50, MinimumLength = 2)]
+        [StringLength(2)]
         public string LastName { get; set; }
 
         // object, list , etc.

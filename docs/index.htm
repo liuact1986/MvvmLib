@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Home - MvvmLib Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="css/theme_colors.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles/vs.css">
+    <link rel="stylesheet" href="css/font-awesome.4.5.0.min.css">
+</head>
+<body role="document">
+    <div class="grid-for-nav">
+        <nav data-toggle="nav-shift" class="nav-side stickynav">
+            <div class="side-nav-search">
+                <a href="index.htm"><i class="fa fa-home"></i> MvvmLib Documentation</a>
+                <div role="search">
+                    <form id="search-form" class="form" action="Docnet_search.htm" method="get">
+                        <input type="text" name="q" placeholder="Search docs" />
+                    </form>
+                </div>
+            </div>
+            <div class="menu menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+<ul>
+<li class="tocentry"><a href="index.htm">Home</a>
+</li>
+
+<li class="tocentry"><a href="Mvvm.htm">MvvmLib.Core</a>
+</li>
+<li class="tocentry"><a href="DI.htm">MvvmLib.IoC</a>
+</li>
+<li class="tocentry"><a href="Navigation.htm">MvvmLib.Wpf</a>
+</li>
+<li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
+</li>
+<li class="tocentry"><a href="Navigation_XF.htm">MvvmLib.XF</a>
+</li>
+<li class="tocentry"><a href="Adaptive.htm">MvvmLib.Adaptive.Wpf</a>
+</li>
+<li class="tocentry"><a href="Adaptive_Uwp.htm">MvvmLib.Adaptive.Windows</a>
+</li>
+<li class="tocentry"><a href="LICENSE.htm">LICENSE</a>
+</li>
+</ul>
+				<div class="toc-footer">
+					<span class="text-small">
+						<hr/>
+						<a href="https://github.com/FransBouma/DocNet" target="_blank">Made with <i class="fa fa-github"></i> DocNet</a>
+					</span>
+				</div>	
+			</div>
+            &nbsp;
+        </nav>
+        <section data-toggle="nav-shift" class="nav-content-wrap">
+            <nav class="nav-top" role="navigation" aria-label="top navigation">
+                <i data-toggle="nav-top" class="fa fa-bars"></i>
+                <a href="index.htm">MvvmLib Documentation</a>
+            </nav>
+            <div class="nav-content">
+                <div role="navigation" aria-label="breadcrumbs navigation">
+                    <div class="breadcrumbs">
+<ul><li><a href="index.htm">Home</a></li></ul>
+					
+                    </div>
+                    <hr />
+                </div>
+                <div role="main">
+                    <div class="section">
+<h1 id="mvvmlib">MvvmLib<a class="headerlink" href="#mvvmlib" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
+<blockquote>
+<p>Mvvm Library for .NET projects.</p>
+</blockquote>
+<p>This package is going to merge my 3 other projects (<a href="https://github.com/romagny13/WpfLib" target="_blank">WpfLib</a>, <a href="https://github.com/romagny13/UwpLib" target="_blank">UwpLib</a>, <a href="https://github.com/romagny13/XFLib" target="_blank">XFLib</a>) in one single solution. </p>
+<h2 id="mvvmlib.core-netstandard-2.0-net-4.5">MvvmLib.Core [netstandard 2.0, net 4.5]<a class="headerlink" href="#mvvmlib.core-netstandard-2.0-net-4.5" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>BindableBase</strong>, <strong>Validatable</strong>, <strong>Editable</strong>, <strong>ValidateAndEditable</strong> and <strong>ModelWrapper</strong> base classes for <em>Models and ViewModels</em></li>
+<li><strong>Commands</strong> and <strong>composite</strong> command</li>
+<li><strong>Sync</strong> <em>extensions for list and collections</em>. Allows to <strong>sync data</strong></li>
+<li><strong>Singleton</strong></li>
+<li><strong>Messenger</strong> : allows to <strong>subscribe</strong>, <strong>publish</strong> and filter messages</li>
+</ul>
+<h2 id="mvvmlib.ioc-dependency-injection-netstandard-2.0-net-4.5">MvvmLib.IoC (Dependency Injection) [netstandard 2.0, net 4.5]<a class="headerlink" href="#mvvmlib.ioc-dependency-injection-netstandard-2.0-net-4.5" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>Injector</strong>: allows to <strong>register Types, Singletons, Instances, values, auto discover types, etc.</strong>.</li>
+</ul>
+<h2 id="mvvmlib.wpf-navigation-net-4.5">MvvmLib.Wpf (Navigation) [net 4.5]<a class="headerlink" href="#mvvmlib.wpf-navigation-net-4.5" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>Regions</strong>: change and animate the content of <strong>ContentRegion</strong> (ContentControl) and <strong>ItemsRegions</strong> (ItemsControl, TabControl, ... and more with Adapters) </li>
+<li><strong>ViewModelLocator</strong>: allows to resolve ViewModel for regions and for window with <strong>ResolveWindowViewModel</strong></li>
+<li><strong>RegionManager</strong>: allows to get a region, then <strong>navigate</strong> <em>with regions</em> </li>
+<li><strong>INavigatable</strong>: allows the views and view models to be notified on navigate</li>
+<li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
+<li><strong>ILoadedEventListener</strong>: allows to be notified when the view or window is loaded</li>
+<li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+</ul>
+<h2 id="mvvmlib.windows-navigation-uwp">MvvmLib.Windows (Navigation) [uwp]<a class="headerlink" href="#mvvmlib.windows-navigation-uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>NavigationManager</strong>: allows to create and manage <strong>navigation services</strong></li>
+<li><strong>FrameNavigationService</strong>: allows to <strong>navigate</strong>, go back, go forward, <strong>cancel navigation</strong> and <strong>notify viewmodel</strong></li>
+<li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for views</li>
+<li><strong>INavigatable</strong>: allows the view models to be notified on navigate</li>
+<li><strong>IDeactivatable</strong>: allows to <strong>cancel</strong> navigation</li>
+<li><strong>ILoadedEventListener</strong>: allows to be notified from view model when the <strong>view</strong> is <strong>loaded</strong></li>
+<li><strong>BackRequestManager</strong>: allows to show the <strong>back button</strong> in <strong>title bar</strong></li>
+<li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+</ul>
+<h2 id="mvvmlib.xf-navigation-xamarin">MvvmLib.XF (Navigation) [Xamarin]<a class="headerlink" href="#mvvmlib.xf-navigation-xamarin" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>NavigationManager</strong>: allows to create and manage <strong>navigation services</strong></li>
+<li><strong>PageNavigationService</strong>: allows to <strong>push</strong>, push modal, pop, pop modal, pop to root, handle system go back, <strong>cancel navigation</strong> and <strong>notify viewmodel</strong></li>
+<li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for views</li>
+<li><strong>INavigatable</strong>: allows the view models to be notified on navigate</li>
+<li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
+<li><strong>INavigationParameterKnowledge</strong>: allows to store navigation parameter in the view model for system go back</li>
+<li><strong>IPageKnowledge</strong>: allows to receive in view model the page</li>
+<li><strong>DialogService</strong>: allows to display alerts and action sheets</li>
+<li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+<li><strong>EventToCommandBehavior</strong> and <strong>BehaviorBase</strong></li>
+</ul>
+<h2 id="mvvmlib.adaptive.wpf-net-4.5">MvvmLib.Adaptive.Wpf [net 4.5]<a class="headerlink" href="#mvvmlib.adaptive.wpf-net-4.5" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>BreakpointBinder</strong>: allows to <strong>bind controls</strong> and make the page &quot;<strong>responsive</strong>&quot;</li>
+<li><strong>BreakpointListener</strong>: allows to define a list of breakpoints and be notified on current breakpoint changed</li>
+</ul>
+<h2 id="mvvmlib.adaptive.windows-uwp">MvvmLib.Adaptive.Windows [uwp]<a class="headerlink" href="#mvvmlib.adaptive.windows-uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>BreakpointBinder</strong>: allows to <strong>bind controls</strong> and make the page &quot;<strong>responsive</strong>&quot;</li>
+<li><strong>BreakpointListener</strong>: allows to define a list of breakpoints and be notified on current breakpoint changed</li>
+<li><strong>ResponsiveGridView</strong> and <strong>ResponsiveVariableSizedGridView</strong></li>
+<li><strong>BusyIndicator</strong></li>
+</ul>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h3 id="wpf">Wpf<a class="headerlink" href="#wpf" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Package</th>
+	<th>Required</th>
+	<th>Description</th>
+	<th>NuGet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Core/" target="_blank">MvvmLib.Core</a></td>
+	<td>Yes</td>
+	<td>BindableBase, Validation, commands, Messenger</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Wpf/" target="_blank">MvvmLib.Wpf</a></td>
+	<td>Yes</td>
+	<td>Navigation with view model, view composition</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Wpf.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.IoC/" target="_blank">MvvmLib.IoC</a></td>
+	<td>No</td>
+	<td>IoC Container or use Unity, Autofac, etc.</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/" target="_blank">MvvmLib.Adaptive.Wpf</a></td>
+	<td>No</td>
+	<td>Make the view &quot;responsive&quot;</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+</tbody>
+</table>
+<pre class="nocode">PM&gt; Install-Package MvvmLib.Core
+PM&gt; Install-Package MvvmLib.Wpf
+PM&gt; Install-Package MvvmLib.IoC
+PM&gt; Install-Package MvvmLib.Adaptive.Wpf
+</pre><h3 id="uwp">Uwp<a class="headerlink" href="#uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Package</th>
+	<th>Required</th>
+	<th>Description</th>
+	<th>NuGet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Core/" target="_blank">MvvmLib.Core</a></td>
+	<td>Yes</td>
+	<td>BindableBase, Validation, commands, Messenger</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Windows/" target="_blank">MvvmLib.Windows</a></td>
+	<td>Yes</td>
+	<td>Navigation with view model</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Windows.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.IoC/" target="_blank">MvvmLib.IoC</a></td>
+	<td>No</td>
+	<td>IoC Container or use Unity, Autofac, etc.</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Adaptive.Windows/" target="_blank">MvvmLib.Adaptive.Windows</a></td>
+	<td>No</td>
+	<td>Make the page &quot;responsive&quot;</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Adaptive.Windows.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+</tbody>
+</table>
+<pre class="nocode">PM&gt; Install-Package MvvmLib.Core
+PM&gt; Install-Package MvvmLib.Windows
+PM&gt; Install-Package MvvmLib.IoC
+PM&gt; Install-Package MvvmLib.Adaptive.Windows
+</pre><h3 id="xamarin">Xamarin<a class="headerlink" href="#xamarin" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Package</th>
+	<th>Required</th>
+	<th>Description</th>
+	<th>NuGet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.Core/" target="_blank">MvvmLib.Core</a></td>
+	<td>No</td>
+	<td>BindableBase, Validation, commands, Messenger</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.XF/" target="_blank">MvvmLib.XF</a></td>
+	<td>Yes</td>
+	<td>Navigation with view model</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.XF.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+<tr>
+	<td><a href="https://www.nuget.org/packages/MvvmLib.IoC/" target="_blank">MvvmLib.IoC</a></td>
+	<td>No</td>
+	<td>IoC Container or use Unity, Autofac, etc.</td>
+	<td><img src="https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square" alt="Nuget" /></td>
+</tr>
+</tbody>
+</table>
+<pre class="nocode">PM&gt; Install-Package MvvmLib.Core
+PM&gt; Install-Package MvvmLib.XF
+PM&gt; Install-Package MvvmLib.IoC
+</pre><p align="center">
+<img src="https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png">
+</p>
+
+                    </div>
+                </div>
+                <footer>
+                    <hr />
+                    <div role="contentinfo">
+MvvmLib Documentation. &copy;2019. <a href='https://github.com/romagny13/MvvmLib' target='_blank'>GitHub</a> | <a href='https://www.nuget.org/profiles/romagny13' target='_blank'>NuGet</a>.
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/modernizr-2.8.3.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script src="js/theme.js"></script>
+
+</body>
+</html>

@@ -4,75 +4,75 @@
         <name>MvvmLib.Wpf</name>
     </assembly>
     <members>
-        <member name="T:MvvmLib.Mvvm.BootstrapperBase">
+        <member name="T:MvvmLib.Navigation.BootstrapperBase">
             <summary>
             The Bootstrapper base class.
             </summary>
         </member>
-        <member name="F:MvvmLib.Mvvm.BootstrapperBase.logger">
+        <member name="F:MvvmLib.Navigation.BootstrapperBase.logger">
             <summary>
             The bootstrapper logger.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.CreateLogger">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.CreateLogger">
             <summary>
             Creates the bootstrapper logger (DebugLogger by default)
             </summary>
             <returns>The logger to use</returns>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.RegisterRequiredTypes">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.RegisterRequiredTypes">
             <summary>
             Registers library services.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.RegisterTypes">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.RegisterTypes">
             <summary>
             Registers application dependencies.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.CreateShell">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.CreateShell">
             <summary>
             Creates the Main Window of the Application.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.ConfigureServiceLocator">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.ConfigureServiceLocator">
             <summary>
             Configures the service locator (Microsoft Common Service Locator) if used.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.ConfigureContainer">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.ConfigureContainer">
             <summary>
             Used to configure the IoC Container.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.SetViewFactory">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.SetViewFactory">
             <summary>
             Sets the View Factory.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.SetViewModelFactory">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.SetViewModelFactory">
             <summary>
             Sets the View Model Factory.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.InitializeShell(System.Windows.Window)">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.InitializeShell(System.Windows.Window)">
             <summary>
             Sets the Application Current Window to the shell.
             </summary>
-            <param name="shell">The Window created with <see cref="M:MvvmLib.Mvvm.BootstrapperBase.CreateShell"/></param>
+            <param name="shell">The Window created with <see cref="M:MvvmLib.Navigation.BootstrapperBase.CreateShell"/></param>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.RegisterCustomRegionAdapters">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.RegisterCustomRegionAdapters">
             <summary>
             Registers custom region adapters.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.OnInitialized">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.OnInitialized">
             <summary>
             Called after the bootstrapper process ends.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BootstrapperBase.Run">
+        <member name="M:MvvmLib.Navigation.BootstrapperBase.Run">
             <summary>
             Runs the bootstrapper.
             </summary>

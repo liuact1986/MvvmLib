@@ -27,7 +27,7 @@ namespace HelloWorld.ViewModels
 
         public void OnNavigatingFrom()
         {
-           
+
         }
     }
 }
