@@ -4,7 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>0.0.6</Version>
     <Authors>romagny13</Authors>
-    <Description>Library for Xamarin Forms with Navigation, Guards and view model participation.</Description>
+    <Description>Library for Xamarin Forms with Navigation, Guards and view model participation.
+
+* NavigationManager: allows to create and manage navigation services
+* PageNavigationService: allows to push, push modal, pop, pop modal, pop to root, handle system go back, cancel navigation and notify viewmodel
+* ViewModelLocator: allows to resolve ViewModel for views
+* INavigatable: allows the view models to be notified on navigate
+* IActivatable, IDeactivatable: allow to cancel navigation
+* INavigationParameterKnowledge: allows to store navigation parameter in the view model for system go back
+* IPageKnowledge: allows to receive in view model the page
+* DialogService: allows to display alerts and action sheets
+* BootstrapperBase: bootstrapper base class
+* EventToCommandBehavior and BehaviorBase</Description>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>

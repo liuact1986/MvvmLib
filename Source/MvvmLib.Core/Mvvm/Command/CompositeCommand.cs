@@ -3,53 +3,69 @@ using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace MvvmLib.Mvvm
-{
+{ 
 
     /// <summary>
     /// The composite can executes multiple commands.
     /// </summary>
-    public class CompositeCommand : RelayCommandBase
+    public class CompositeCommand : ICommand
     {
         /// <summary>
-        /// The list of the commands to be executed.
+        /// Can execute changed event.
         /// </summary>
-        protected List<ICommand> commands = new List<ICommand>();
+        public event EventHandler CanExecuteChanged;
+
+        /// <summary>
+        /// The list of the commands to execute.
+        /// </summary>
+        protected IList<ICommand> commands;
 
         /// <summary>
         /// Creates a composite command and add commands.
         /// </summary>
         public CompositeCommand()
-        { }
-
-        /// <summary>
-        /// Creates a composite command and add commands.
-        /// </summary>
-        /// <param name="commands">The commands to add</param>
-        public CompositeCommand(params ICommand[] commands)
         {
-            this.AddRange(commands);
-        }
-
-
-        /// <summary>
-        /// Add a the commands to the composite command.
-        /// </summary>
-        /// <param name="commands">The commands to add</param>
-        public void AddRange(IEnumerable<ICommand> commands)
-        {
-            foreach (var command in commands)
-            {
-                this.commands.Add(command);
-            }
+            commands = new List<ICommand>();
         }
 
         /// <summary>
         /// Adds a new command to the composite command.
         /// </summary>
         /// <param name="command">The command</param>
-        public void Add(ICommand command)
+        public virtual void Add(ICommand command)
         {
-            this.commands.Add(command);
+            if (command == null) { throw new ArgumentNullException(nameof(command)); }
+            if (commands.Contains(command)) { throw new ArgumentException("Command already registered"); }
+
+            commands.Add(command);
+            command.CanExecuteChanged += OnCommandCanExecuteChanged;
+        }
+
+        /// <summary>
+        /// Remove the command from commands list.
+        /// </summary>
+        /// <param name="command">The command</param>
+        public virtual bool Remove(ICommand command)
+        {
+            if (command == null) { throw new ArgumentNullException(nameof(command)); }
+
+            if (commands.Contains(command))
+            {
+                command.CanExecuteChanged -= OnCommandCanExecuteChanged;
+                var removed = commands.Remove(command);
+                return removed;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Allows the composite command to be notified on command can execute changed.
+        /// </summary>
+        /// <param name="sender">The command</param>
+        /// <param name="e">The event args</param>
+        protected virtual void OnCommandCanExecuteChanged(object sender, EventArgs e)
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -57,7 +73,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         /// <param name="parameter">The parameter</param>
         /// <returns>True if all commands can execute</returns>
-        public override bool CanExecute(object parameter)
+        public virtual bool CanExecute(object parameter)
         {
             foreach (var command in commands)
             {
@@ -66,21 +82,22 @@ namespace MvvmLib.Mvvm
                     return false;
                 }
             }
+
             return true;
         }
 
         /// <summary>
-        /// Execute all commands of composite command.
+        /// Invokes the execute command.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        public override void Execute(object parameter)
+        public virtual void Execute(object parameter)
         {
             foreach (var command in commands)
             {
                 command.Execute(parameter);
             }
         }
-    }
 
+    }
 
 }

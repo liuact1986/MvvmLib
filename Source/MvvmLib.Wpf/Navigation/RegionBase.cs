@@ -334,12 +334,8 @@ namespace MvvmLib.Navigation
             RaiseNavigationCancelled(source, parameter);
         }
 
-        protected virtual void DoLoaded(object view, object context, object parameter)
+        protected virtual void DoLoaded(object context, object parameter)
         {
-            if (view is ILoadedEventListener)
-            {
-                ((ILoadedEventListener)view).OnLoaded(parameter);
-            }
             if (context != null && context is ILoadedEventListener)
             {
                 ((ILoadedEventListener)context).OnLoaded(parameter);

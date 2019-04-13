@@ -34,7 +34,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         /// <param name="executeCommand">The action to execute</param>
         public RelayCommand(Action executeCommand)
-            : this(executeCommand, null)
+            : this(executeCommand, () => true)
         { }
 
         /// <summary>
@@ -44,12 +44,14 @@ namespace MvvmLib.Mvvm
         /// <returns>True if command have to be executed</returns>
         public override bool CanExecute(object parameter)
         {
-            if (canExecuteCommand != null)
-            {
-                var canExecute = canExecuteCommand.Invoke();
-                return canExecute;
-            }
-            return true;
+            //if (canExecuteCommand != null)
+            //{
+            //    var canExecute = canExecuteCommand.Invoke();
+            //    return canExecute;
+            //}
+            //return true;
+            var canExecute = canExecuteCommand.Invoke();
+            return canExecute;
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace MvvmLib.Mvvm
         {
             executeCommand.Invoke();
         }
-    }
 
+    }
 
 }

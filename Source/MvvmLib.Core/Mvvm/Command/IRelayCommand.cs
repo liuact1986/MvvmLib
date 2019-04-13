@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 
 namespace MvvmLib.Mvvm
 {
@@ -12,4 +13,5 @@ namespace MvvmLib.Mvvm
         /// </summary>
         void RaiseCanExecuteChanged();
     }
+
 }

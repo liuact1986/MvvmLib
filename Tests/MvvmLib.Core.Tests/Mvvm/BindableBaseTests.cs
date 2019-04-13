@@ -5,43 +5,44 @@ using MvvmLib.Mvvm;
 
 namespace MvvmLib.Core.Tests.Mvvm
 {
-    public class Observed : BindableBase
+    public class MyModel : BindableBase
     {
+        public bool valueHasChanged = false;
+
         private string _firstName;
         public string FirstName
         {
-            get
-            {
-                return this._firstName;
-            }
+            get { return this._firstName; }
             set
             {
-                this.SetProperty(ref this._firstName, value);
+                valueHasChanged = this.SetProperty(ref this._firstName, value); // set value and raise if value not equals old value
             }
         }
 
         private string _lastName;
         public string LastName
         {
-            get
-            {
-                return this._lastName;
-            }
+            get { return this._lastName; }
             set
             {
                 this._lastName = value;
-                this.RaisePropertyChanged();
-                this.RaisePropertyChanged("FullName");
+                this.RaisePropertyChanged(); // raise current property
+                this.RaisePropertyChanged("FullName"); // raise other property
             }
         }
 
-        public string FullName
+        private string email;
+        public string Email
         {
-            get
+            get { return email; }
+            set
             {
-                return this.FirstName + " " + this.LastName;
+                email = value;
+                RaisePropertyChanged(() => Email); // expression
             }
         }
+
+        public string FullName => $"t{FirstName} {LastName}";
     }
 
     [TestClass]
@@ -52,16 +53,33 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             string property = "";
 
-            var obs = new Observed();
-            obs.PropertyChanged += (sender,e) =>
+            var model = new MyModel();
+            model.PropertyChanged += (sender, e) =>
             {
                 property = e.PropertyName;
             };
 
-            obs.FirstName = "new value";
+            model.FirstName = "new value";
 
             Assert.AreEqual("FirstName", property);
-            Assert.AreEqual("new value", obs.FirstName);
+            Assert.AreEqual("new value", model.FirstName);
+        }
+
+        [TestMethod]
+        public void Do_Not_Change_with_same_value()
+        {
+
+            var model = new MyModel();
+            model.FirstName = "V1";
+            Assert.IsTrue(model.valueHasChanged);
+
+
+            model.valueHasChanged = false;
+            model.FirstName = "V1";
+            Assert.IsFalse(model.valueHasChanged);
+
+            model.FirstName = "V2";
+            Assert.IsTrue(model.valueHasChanged);
         }
 
         [TestMethod]
@@ -69,17 +87,34 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var properties = new List<string>();
 
-            var obs = new Observed();
-            obs.PropertyChanged += (sender, e) =>
+            var model = new MyModel();
+            model.PropertyChanged += (sender, e) =>
             {
                 properties.Add(e.PropertyName);
             };
 
-            obs.LastName = "new value";
+            model.LastName = "new value";
 
             Assert.AreEqual(2, properties.Count);
             Assert.IsTrue(properties.Contains("LastName"));
             Assert.IsTrue(properties.Contains("FullName"));
+        }
+
+        [TestMethod]
+        public void TestRaise_With_Expression()
+        {
+            string property = "";
+
+            var model = new MyModel();
+            model.PropertyChanged += (sender, e) =>
+            {
+                property = e.PropertyName;
+            };
+
+            model.Email = "name@mail.com";
+
+            Assert.AreEqual("Email", property);
+            Assert.AreEqual("name@mail.com", model.Email);
         }
     }
 }

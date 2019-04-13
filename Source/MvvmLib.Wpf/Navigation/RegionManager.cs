@@ -5,8 +5,13 @@ using System.Windows;
 
 namespace MvvmLib.Navigation
 {
+    /// <summary>
+    /// Allows to register content regions and items region with dependency properties, get region for navigation with RegionManager instance.
+    /// </summary>
     public class RegionManager : IRegionManager
     {
+        #region Static members
+
         internal static Dictionary<string, List<ContentRegion>> contentRegions { get; }
 
         internal static Dictionary<string, List<ItemsRegion>> itemsRegions { get; }
@@ -227,70 +232,6 @@ namespace MvvmLib.Navigation
             ClearItemsRegions();
         }
 
-        /// <summary>
-        /// Returns the first content region for the region name.
-        /// </summary>
-        /// <param name="regionName">The region name</param>
-        /// <returns></returns>
-        public ContentRegion GetContentRegion(string regionName)
-        {
-            if (RegionManager.IsContentRegionNameRegistered(regionName))
-            {
-                var region = RegionManager.contentRegions[regionName].LastOrDefault();
-                if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
-                return region;
-            }
-            throw new Exception("No content region registered for the region name \"" + regionName + "\"");
-        }
-
-        /// <summary>
-        /// Returns the content region.
-        /// </summary>
-        /// <param name="regionName">The region name</param>
-        /// <param name="name">The control name property</param>
-        /// <returns></returns>
-        public ContentRegion GetContentRegion(string regionName, string name)
-        {
-            var region = RegionManager.GetContentRegionByName(regionName, name);
-            if (region == null) { throw new Exception("No region found for the region name \"" + regionName + "\" with the name \"" + name + "\""); }
-            return region;
-        }
-
-        public List<ContentRegion> GetContentRegions(string regionName)
-        {
-            if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
-            if (!IsContentRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
-
-            return contentRegions[regionName];
-        }
-
-        public ItemsRegion GetItemsRegion(string regionName)
-        {
-            if (RegionManager.IsItemsRegionNameRegistered(regionName))
-            {
-                var region = RegionManager.itemsRegions[regionName].LastOrDefault();
-                if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
-                return region;
-            }
-            throw new Exception("No items region registered for the region name \"" + regionName + "\"");
-        }
-
-        public ItemsRegion GetItemsRegion(string regionName, string name)
-        {
-            var region = RegionManager.GetItemsRegionByName(regionName, name);
-            if (region == null) { throw new Exception("No region found for the region name \"" + regionName + "\" with the name \"" + name + "\""); }
-            return region;
-        }
-
-        public List<ItemsRegion> GetItemsRegions(string regionName)
-        {
-            if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
-            if (!IsItemsRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
-
-            return itemsRegions[regionName];
-
-        }
-
         public static void CleanContentRegions()
         {
             lock (contentRegions)
@@ -349,5 +290,102 @@ namespace MvvmLib.Navigation
             CleanContentRegions();
         }
 
+        #endregion // Static members
+
+        /// <summary>
+        /// Gets the first content region for the region name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <returns>The content region</returns>
+        public ContentRegion GetContentRegion(string regionName)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
+
+            if (IsContentRegionNameRegistered(regionName))
+            {
+                var region = contentRegions[regionName].LastOrDefault();
+                if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
+
+                return region;
+            }
+            throw new Exception("No content region registered for the region name \"" + regionName + "\"");
+        }
+
+        /// <summary>
+        /// Gets the content region for the region name and the control name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <param name="name">The control name property</param>
+        /// <returns>The content region</returns>
+        public ContentRegion GetContentRegion(string regionName, string name)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentNullException(nameof(name)); }
+
+            var region = GetContentRegionByName(regionName, name);
+            if (region == null) { throw new Exception("No region found for the region name \"" + regionName + "\" with the name \"" + name + "\""); }
+            return region;
+        }
+
+        /// <summary>
+        /// Gets the items region for the region name and the control name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <param name="name">The control name property</param>
+        /// <returns>The items region</returns>
+        public ItemsRegion GetItemsRegion(string regionName, string name)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
+            if (string.IsNullOrWhiteSpace(name)) { throw new ArgumentNullException(nameof(name)); }
+
+            var region = RegionManager.GetItemsRegionByName(regionName, name);
+            if (region == null) { throw new Exception("No region found for the region name \"" + regionName + "\" with the name \"" + name + "\""); }
+            return region;
+        }
+
+        /// <summary>
+        /// Get the items region for the region name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <returns>A list of items regions</returns>
+        public ItemsRegion GetItemsRegion(string regionName)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
+
+            if (IsItemsRegionNameRegistered(regionName))
+            {
+                var region = RegionManager.itemsRegions[regionName].LastOrDefault();
+                if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
+                return region;
+            }
+            throw new Exception("No items region registered for the region name \"" + regionName + "\"");
+        }
+
+        /// <summary>
+        /// Get all content region for the region name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <returns>A list of content regions</returns>
+        public List<ContentRegion> GetContentRegions(string regionName)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
+            if (!IsContentRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+
+            return contentRegions[regionName];
+        }
+
+        /// <summary>
+        /// Gets the items region for the region name.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <returns>A list of items regions</returns>
+        public List<ItemsRegion> GetItemsRegions(string regionName)
+        {
+            if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
+            if (!IsItemsRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+
+            return itemsRegions[regionName];
+
+        }
     }
 }

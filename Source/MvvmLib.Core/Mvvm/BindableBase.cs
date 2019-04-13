@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace MvvmLib.Mvvm
@@ -27,10 +29,12 @@ namespace MvvmLib.Mvvm
             {
                 return false;
             }
-
-            storage = value;
-            RaisePropertyChanged(propertyName);
-            return true;
+            else
+            {
+                storage = value;
+                RaisePropertyChanged(propertyName);
+                return true;
+            }
         }
 
         /// <summary>
@@ -40,6 +44,22 @@ namespace MvvmLib.Mvvm
         protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        /// <summary>
+        /// Allows to raise to the view that a property value has changed.
+        /// </summary>
+        /// <typeparam name="T">The property type</typeparam>
+        /// <param name="expression">The Linq expression</param>
+        protected virtual void RaisePropertyChanged<T>(Expression<Func<T>> expression)
+        {
+            var memberExpression = expression.Body as MemberExpression;
+            if (memberExpression != null)
+            {
+                string propertyName = memberExpression.Member.Name;
+                RaisePropertyChanged(propertyName);
+            }
         }
     }
 }

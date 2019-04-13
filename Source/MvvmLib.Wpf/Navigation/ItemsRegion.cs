@@ -5,18 +5,31 @@ using System.Windows.Controls.Primitives;
 
 namespace MvvmLib.Navigation
 {
+    /// <summary>
+    /// The Items Region class.
+    /// </summary>
     public class ItemsRegion : RegionBase
     {
-        protected IItemsRegionAdapter itemsRegionAdapter;
+        private IItemsRegionAdapter itemsRegionAdapter;
+        private SelectableResolver selectableResolver;
 
-        protected SelectableResolver selectableResolver;
-
-        public override NavigationEntry CurrentEntry => this.History.Current;
-
+        /// <summary>
+        /// Gets the history.
+        /// </summary>
         public IListHistory History { get; }
 
-        public int Count => this.History.List.Count;
+        /// <summary>
+        /// Gets the current history entry.
+        /// </summary>
+        public override NavigationEntry CurrentEntry => this.History.Current;
 
+        /// <summary>
+        /// Creates an ItemsRegion.
+        /// </summary>
+        /// <param name="history">The history</param>
+        /// <param name="contentStrategy">The content strategy</param>
+        /// <param name="regionName">The region name</param>
+        /// <param name="control">The control</param>
         public ItemsRegion(IListHistory history, IAnimatedContentStrategy contentStrategy, string regionName, object control)
             : base(contentStrategy, regionName, control)
         {
@@ -24,12 +37,17 @@ namespace MvvmLib.Navigation
             this.selectableResolver = new SelectableResolver();
         }
 
+        /// <summary>
+        /// Creates an ItemsRegion.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <param name="control">The control</param>
         public ItemsRegion(string regionName, object control)
             : this(new ListHistory(),
                new AnimatedContentStrategy(), regionName, control)
         { }
 
-        protected IItemsRegionAdapter GetItemsRegionAdapter()
+        private IItemsRegionAdapter GetItemsRegionAdapter()
         {
             if (itemsRegionAdapter != null)
             {
@@ -42,27 +60,41 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task AddAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        /// <summary>
+        /// Add a view to the items region.
+        /// </summary>
+        /// <param name="sourceType">The view or object type</param>
+        /// <param name="entranceTransitionType">The entrance navigation type</param>
+        /// <returns></returns>
+        public async Task AddAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
         {
             await this.AddAsync(sourceType, null, entranceTransitionType);
         }
 
-        public virtual async Task AddAsync(Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        /// <summary>
+        /// Add a view to the items region.
+        /// </summary>
+        /// <param name="sourceType">The view or object type</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="entranceTransitionType">The entrance navigation type</param>
+        public async Task AddAsync(Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
         {
             await this.InsertAsync(History.List.Count, sourceType, parameter, entranceTransitionType);
         }
 
-        public async Task InsertAsync(int index, Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
-        {
-            await this.InsertAsync(index, sourceType, entranceTransitionType);
-        }
-
-        public bool IsValidIndex(int index)
+        private bool IsValidIndex(int index)
         {
             return index >= 0 && index <= this.History.List.Count;
         }
 
-        public virtual async Task InsertAsync(int index, Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        /// <summary>
+        /// Insert a view to the items region.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="sourceType">The view or object type</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="entranceTransitionType">The entrance navigation type</param>
+        public async Task InsertAsync(int index, Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
         {
             // index valide ?
             if (IsValidIndex(index))
@@ -110,7 +142,7 @@ namespace MvvmLib.Navigation
                                 listener.Unsubscribe();
                                 listener = null;
 
-                                this.DoLoaded(viewOrObject, context, parameter);
+                                this.DoLoaded(context, parameter);
                             });
                         }
 
@@ -145,7 +177,23 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task RemoveAtAsync(int index, ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        /// <summary>
+        /// Insert a view to the items region.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="sourceType">The view or object type</param>
+        /// <param name="entranceTransitionType">The entrance navigation type</param>
+        public async Task InsertAsync(int index, Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        {
+            await this.InsertAsync(index, sourceType, entranceTransitionType);
+        }
+
+        /// <summary>
+        /// Remove a view from the items region.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="exitTransitionType">The exit navigation type</param>
+        public async Task RemoveAtAsync(int index, ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             if (this.IsValidIndex(index))
             {
@@ -182,15 +230,22 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task RemoveLastAsync(ExitTransitionType transitionType = ExitTransitionType.None)
+        /// <summary>
+        /// Remove the last view from the items region.
+        /// </summary>
+        /// <param name="exitTransitionType">The exit navigation type</param>
+        public async Task RemoveLastAsync(ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             if (this.History.List.Count > 0)
             {
-                await this.RemoveAtAsync(this.History.List.Count - 1, transitionType);
+                await this.RemoveAtAsync(this.History.List.Count - 1, exitTransitionType);
             }
         }
 
-        public virtual async void Clear()
+        /// <summary>
+        /// Clear the items region.
+        /// </summary>
+        public async void Clear()
         {
             while (true)
             {

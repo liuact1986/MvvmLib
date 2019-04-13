@@ -19,7 +19,6 @@ namespace MvvmLib.Core.Tests.Mvvm
             command.Execute(null);
 
             Assert.IsTrue(isCalled);
-
         }
 
         [TestMethod]

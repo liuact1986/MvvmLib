@@ -60,6 +60,25 @@ public class UserViewModel : BindableBase
 }
 ```
 
+Or with **Linq** Expression
+
+```cs
+public class User : BindableBase
+{
+
+    private string firstName;
+    public string FirstName
+    {
+        get { return firstName; }
+        set
+        {
+            firstName = value;
+            RaisePropertyChanged(() => FirstName);
+        }
+    }
+}
+```
+
 
 ## Editable 
 
@@ -283,7 +302,8 @@ public class UserDetailViewModel : BindableBase
 Binding
 
 ```xml
- <TextBox Text="{Binding User.FirstName, UpdateSourceTrigger=PropertyChanged}" />
+<!-- the default value of UpdateSourceTrigger is LostFocus -->
+<TextBox Text="{Binding User.FirstName, UpdateSourceTrigger=PropertyChanged}" />
 ```
 
 Create a Style that displays errors
@@ -356,11 +376,11 @@ And use it
 Example
 
 ```cs
-public class PageOneViewModel : ViewModel
+public class PageAViewModel : ViewModel
 {
         public IRelayCommand MyCommand { get; }
 
-        public PageOneViewModel()
+        public PageAViewModel()
         {     
             this.MyCommand = new RelayCommand(() => {  /* do something */ });
         }
@@ -376,19 +396,13 @@ And in the view
 Other example **with parameter and condition**
 
 ```cs
-public class PageOneViewModel
+public class PageAViewModel
 {
         public ICommand MyCommand { get; }
 
-        public PageOneViewModel()
+        public PageAViewModel()
         {     
-            this.MyCommand = new RelayCommand<string>((value) =>
-            {
-                // 
-            }, (value)=>
-            {
-                return true;
-            });
+            this.MyCommand = new RelayCommand<string>((value) =>{  /* do something */ }, (value) => true);
         }
 }
 ```
@@ -419,74 +433,157 @@ compositeCommand.Add(commandB);
 compositeCommand.Execute(null);
 ```
 
-Or register commands with composite command constructor
+_Real sample_
+
+Create an interface and a class with a composite command. This allows to inject the service to view models with an IoC container.
 
 ```cs
-var commandA = new RelayCommand(() => {  /* do something */ });
-var commandB = new RelayCommand(() => {  /* do something */ });
-
-var compositeCommand = new CompositeCommand(commandA, commandB); // <= params ICommand[] commands
-
-compositeCommand.Execute(null);
-```
-
-Or with AddRange
-
-```cs
-var compositeCommand = new CompositeCommand();
-
-compositeCommand.AddRange(new List<ICommand>
+public interface IApplicationCommands
 {
-    new RelayCommand(() => { /* do something */ }),
-    new RelayCommand(() => { /* do something */ })
-});
+    CompositeCommand SaveAllCommand { get; }
+}
 
-compositeCommand.Execute("My parameter");
-```
-
-With parameter. Each command receives the parameter.
-
-```cs
-var compositeCommand = new CompositeCommand();
-
-var commandA = new RelayCommand<string>((p) => { /* do something */ });
-var commandB = new RelayCommand<string>((p) => { /* do something */ });
-
-compositeCommand.Add(commandA);
-compositeCommand.Add(commandB);
-
-compositeCommand.Execute("My parameter");
-```
-
-Check if command can be executed
-
-```cs
-// if all command can be excecuted, all commands of composite command are executed
-if (compositeCommand.CanExecute("My parameter"))
+public class ApplicationCommands : IApplicationCommands
 {
-    compositeCommand.Execute("My parameter");
+    public CompositeCommand SaveAllCommand { get; } = new CompositeCommand();
 }
 ```
 
-Bind the command or composite command in **Xaml**
-
-Create a ViewModel with a command and set the DataContext to this ViewModel
+Register with MvvmLib.IoC Container at App Startup for example:
 
 ```cs
-public class ShellViewModel
-{
-    public ICommand MyCommand { get; set; }
+ container.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+```
+Create a view and view model (for a tabcontrol for example)
 
-    public ShellViewModel()
+```cs
+public class TabViewModel : BindableBase, INavigatable
+{
+    // other properties, etc.
+
+    private bool canSave;
+    public bool CanSave
     {
-        MyCommand = new RelayCommand(() => MessageBox.Show("My command works!"));
+        get { return canSave; }
+        set
+        {
+            if (SetProperty(ref canSave, value))
+            {
+                // the composite is notified that can execute of this command changed (enable/disable the SaveAllCommand button)
+                SaveCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public IRelayCommand SaveCommand { get; set; }
+
+    public TabViewModel(IApplicationCommands applicationCommands)
+    {
+        canSave = true;
+        SaveCommand = new RelayCommand(OnSave, CheckCanSave);
+
+        // add the command to the composte command
+        applicationCommands.SaveAllCommand.Add(SaveCommand);
+    }
+
+    private void OnSave()
+    {
+        var message = $"Save TabView {Title}! {DateTime.Now.ToLongTimeString()}";
+        MessageBox.Show(message);
+        SaveMessage = message;
+    }
+
+    private bool CheckCanSave()
+    {
+        return canSave;
+    }
+
+    // INavigatable implementation, etc.
+}
+```
+
+Bind the command in the view
+
+```xml
+<UserControl x:Class="CompositeCommandSample.Views.TabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompositeCommandSample.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Margin="4"></TextBlock>
+        <CheckBox IsChecked="{Binding CanSave}" Content="Can save?" Margin="4"></CheckBox>
+        <Button Content="Save" Command="{Binding SaveCommand}" Margin="4"></Button>
+        <!-- the button is disabled if cannot save -->
+        <TextBlock Text="{Binding SaveMessage}" Margin="4"></TextBlock>
+    </StackPanel>
+
+</UserControl>
+```
+
+Create the shell and the ShellViewModel (Sample with Wpf)
+
+```cs
+public class ShellViewModel : ILoadedEventListener
+{
+    public CompositeCommand SaveAllCommand { get; }
+
+    private IRegionManager regionManager;
+
+    public ShellViewModel(IApplicationCommands applicationCommands, IRegionManager regionManager)
+    {
+        SaveAllCommand = applicationCommands.SaveAllCommand;
+        this.regionManager = regionManager;
+    }
+
+    public async void OnLoaded(object parameter)
+    {
+        // create 3 tabs for a tab control
+        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
+        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");
+        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabC");
     }
 }
 ```
 
+Bind the composite command in the Shell
+
 ```xml
-<Button Content="My command" Command="{Binding MyCommand}" CommandParameter="My parameter"></Button>
+<Window x:Class="CompositeCommandSample.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompositeCommandSample.Views"
+        xmlns:nav="http://mvvmlib.com/"
+        nav:ViewModelLocator.ResolveWindowViewModel="True"
+        mc:Ignorable="d"
+        Title="Shell" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!-- the button is disabled if on command cannot save -->
+        <Button Content="Save All" Command="{Binding SaveAllCommand}" Width="120" Margin="4" HorizontalAlignment="Left"></Button>
+
+        <TabControl nav:RegionManager.ItemsRegion="TabRegion" Grid.Row="1">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem">
+                    <Setter Property="Header" Value="{Binding Title}" />
+                </Style>
+            </TabControl.ItemContainerStyle>
+        </TabControl>
+        
+    </Grid>
+</Window>
 ```
+
 
 ## Sync Data
 

@@ -29,9 +29,23 @@ namespace MvvmLib.Navigation
 
         static Func<Type, object> viewModelFactory = (viewModelType) => Activator.CreateInstance(viewModelType);
 
+        /// <summary>
+        /// Allows to change the convention used to resolve ViewModels for the views.
+        /// </summary>
+        /// <param name="viewTypeToViewModelTypeResolver">The new convention</param>
         public static void SetViewTypeToViewModelTypeResolver(Func<Type, Type> viewTypeToViewModelTypeResolver)
         {
             ViewModelLocationProvider.viewTypeToViewModelTypeResolver = viewTypeToViewModelTypeResolver;
+        }
+
+        /// <summary>
+        /// Registers a ViewModelType for a ViewType.
+        /// </summary>
+        /// <param name="viewType">The view type</param>
+        /// <param name="viewModelType">The view model type</param>
+        public static void RegisterCustom(Type viewType, Type viewModelType)
+        {
+            viewTypeToViewModelTypeCustomRegistrations[viewType] = viewModelType;
         }
 
         /// <summary>
@@ -43,7 +57,7 @@ namespace MvvmLib.Navigation
             ViewModelLocationProvider.viewModelFactory = viewModelFactory;
         }
 
-        public static Type ResolveViewModelType(Type viewType)
+        internal static Type ResolveViewModelType(Type viewType)
         {
             if (viewTypeToViewModelTypeCache.ContainsKey(viewType))
             {
@@ -63,17 +77,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        /// <summary>
-        /// Registers a ViewModelType for a ViewType.
-        /// </summary>
-        /// <param name="viewType">The view type</param>
-        /// <param name="viewModelType">The view model type</param>
-        public static void RegisterCustom(Type viewType, Type viewModelType)
-        {
-            viewTypeToViewModelTypeCustomRegistrations[viewType] = viewModelType;
-        }
-
-        public static object ResolveViewModel(Type viewModelType)
+        internal static object ResolveViewModel(Type viewModelType)
         {
             return viewModelFactory(viewModelType);
         }

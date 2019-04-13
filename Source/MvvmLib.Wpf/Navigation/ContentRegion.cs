@@ -2,46 +2,26 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace MvvmLib.Navigation
 {
+    /// <summary>
+    /// The Content Region class.
+    /// </summary>
     public class ContentRegion : RegionBase
     {
+        private IContentRegionAdapter contentRegionAdapter;
+
+        /// <summary>
+        /// The active view or objects.
+        /// </summary>
         public Dictionary<Type, object> ActiveViewOrObjects { get; }
 
-        public INavigationHistory History { get; protected set; }
-
-        protected IContentRegionAdapter contentRegionAdapter;
-
-        public bool CanGoBack => this.History.BackStack.Count > 0;
-
-        public bool CanGoForward => this.History.ForwardStack.Count > 0;
-
-        public override NavigationEntry CurrentEntry => this.History.Current;
+        private bool storeActiveViewOrObjects = true;
 
         /// <summary>
-        /// Invoked when the can go back value changed.
+        /// Allows to never store views created.
         /// </summary>
-        protected readonly List<EventHandler> canGoBackChanged = new List<EventHandler>();
-        public event EventHandler CanGoBackChanged
-        {
-            add { if (!canGoBackChanged.Contains(value)) canGoBackChanged.Add(value); }
-            remove { if (canGoBackChanged.Contains(value)) canGoBackChanged.Remove(value); }
-        }
-
-        /// <summary>
-        /// Invoked when can the go forward value changed.
-        /// </summary>
-        protected readonly List<EventHandler> canGoForwardChanged = new List<EventHandler>();
-        public event EventHandler CanGoForwardChanged
-        {
-            add { if (!canGoForwardChanged.Contains(value)) canGoForwardChanged.Add(value); }
-            remove { if (canGoForwardChanged.Contains(value)) canGoForwardChanged.Remove(value); }
-        }
-
-
-        protected bool storeActiveViewOrObjects = true;
         public bool StoreActiveViewOrObjects
         {
             get { return storeActiveViewOrObjects; }
@@ -55,6 +35,53 @@ namespace MvvmLib.Navigation
             }
         }
 
+        /// <summary>
+        /// Gets the history.
+        /// </summary>
+        public INavigationHistory History { get; private set; }
+
+        /// <summary>
+        /// Gets the current history entry.
+        /// </summary>
+        public override NavigationEntry CurrentEntry => this.History.Current;
+
+        /// <summary>
+        /// Chekcs if the content region can go back.
+        /// </summary>
+        public bool CanGoBack => this.History.BackStack.Count > 0;
+
+        /// <summary>
+        /// Chekcs if the content region can go forward.
+        /// </summary>
+        public bool CanGoForward => this.History.ForwardStack.Count > 0;
+
+        private readonly List<EventHandler> canGoBackChanged = new List<EventHandler>();
+        /// <summary>
+        /// Invoked when the can go back value changed.
+        /// </summary>
+        public event EventHandler CanGoBackChanged
+        {
+            add { if (!canGoBackChanged.Contains(value)) canGoBackChanged.Add(value); }
+            remove { if (canGoBackChanged.Contains(value)) canGoBackChanged.Remove(value); }
+        }
+
+        private readonly List<EventHandler> canGoForwardChanged = new List<EventHandler>();
+        /// <summary>
+        /// Invoked when can the go forward value changed.
+        /// </summary>
+        public event EventHandler CanGoForwardChanged
+        {
+            add { if (!canGoForwardChanged.Contains(value)) canGoForwardChanged.Add(value); }
+            remove { if (canGoForwardChanged.Contains(value)) canGoForwardChanged.Remove(value); }
+        }
+
+        /// <summary>
+        /// Creates an ContentRegion.
+        /// </summary>
+        /// <param name="history">The history</param>
+        /// <param name="contentStrategy">The content strategy</param>
+        /// <param name="regionName">The region name</param>
+        /// <param name="control">The control</param>
         public ContentRegion(INavigationHistory history, IAnimatedContentStrategy contentStrategy, string regionName, object control)
             : base(contentStrategy, regionName, control)
         {
@@ -65,6 +92,11 @@ namespace MvvmLib.Navigation
             history.CanGoForwardChanged += OnCanGoForwardChanged;
         }
 
+        /// <summary>
+        /// Creates an ContentRegion.
+        /// </summary>
+        /// <param name="regionName">The region name</param>
+        /// <param name="control">The control</param>
         public ContentRegion(string regionName, object control)
             : this(new NavigationHistory(), new AnimatedContentStrategy(), regionName, control)
         { }
@@ -85,7 +117,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected IContentRegionAdapter GetContentRegionAdapter()
+        private IContentRegionAdapter GetContentRegionAdapter()
         {
             if (contentRegionAdapter != null)
             {
@@ -98,7 +130,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected void AddOrUpdateActiveViewOrObject(Type sourceType, object viewOrObject)
+        private void AddOrUpdateActiveViewOrObject(Type sourceType, object viewOrObject)
         {
             if (StoreActiveViewOrObjects)
             {
@@ -106,7 +138,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected virtual object GetOrCreateViewOrObject(Type sourceType)
+        private object GetOrCreateViewOrObject(Type sourceType)
         {
             if (this.ActiveViewOrObjects.TryGetValue(sourceType, out object viewOrObject))
             {
@@ -136,7 +168,7 @@ namespace MvvmLib.Navigation
             });
         }
 
-        protected virtual void DoOnLeave(object content, ExitTransitionType exitTransitionType, Action cb)
+        private void DoOnLeave(object content, ExitTransitionType exitTransitionType, Action cb)
         {
             if (content != null && content is FrameworkElement)
             {
@@ -148,7 +180,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected virtual void DoOnEnter(object view, EntranceTransitionType entranceTransitionType, Action cb)
+        private void DoOnEnter(object view, EntranceTransitionType entranceTransitionType, Action cb)
         {
             if (view != null && view is FrameworkElement)
             {
@@ -164,7 +196,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected virtual async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter,
+        private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter,
             EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
             ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
@@ -207,7 +239,7 @@ namespace MvvmLib.Navigation
                             listener.Unsubscribe();
                             listener = null;
 
-                            this.DoLoaded(viewOrObject, context, parameter);
+                            this.DoLoaded(context, parameter);
                         });
                     }
 
@@ -258,20 +290,35 @@ namespace MvvmLib.Navigation
             return navigationSuccess;
         }
 
-        public virtual async Task NavigateAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
-        {
-            await this.ProcessNavigateAsync(sourceType, null, entranceTransitionType, exitTransitionType);
-        }
-
-        public virtual async Task NavigateAsync(Type sourceType, object parameter,
+        /// <summary>
+        /// Navigates to view and notify viewmodel.
+        /// </summary>
+        /// <param name="sourceType">The view type</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="entranceTransitionType">The entrance transition type</param>
+        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <returns></returns>
+        public async Task NavigateAsync(Type sourceType, object parameter,
             EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
             ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             await this.ProcessNavigateAsync(sourceType, parameter, entranceTransitionType, exitTransitionType);
         }
 
-        protected virtual async Task DoSideNavigationAsync(NavigationEntry toGoEntry,
+        /// <summary>
+        /// Navigates to view and notify viewmodel.
+        /// </summary>
+        /// <param name="sourceType">The view type</param>
+        /// <param name="entranceTransitionType">The entrance transition type</param>
+        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <returns></returns>
+        public async Task NavigateAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
+            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        {
+            await this.ProcessNavigateAsync(sourceType, null, entranceTransitionType, exitTransitionType);
+        }
+
+        private async Task DoSideNavigationAsync(NavigationEntry toGoEntry,
            RegionNavigationType regionNavigationType,
            Action<object, object> setContentCallback,
            Action onCompleteCallback,
@@ -315,7 +362,13 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task GoBackAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
+        /// <summary>
+        /// Navigates to previous view.
+        /// </summary>
+        /// <param name="entranceTransitionType">The entrance transition type</param>
+        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <returns></returns>
+        public async Task GoBackAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
           ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             if (this.CanGoBack)
@@ -328,7 +381,13 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task GoForwardAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
+        /// <summary>
+        /// Navigates to next view.
+        /// </summary>
+        /// <param name="entranceTransitionType">The entrance transition type</param>
+        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <returns></returns>
+        public async Task GoForwardAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
             ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             if (this.CanGoForward)
@@ -341,7 +400,13 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public virtual async Task NavigateToRootAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
+        /// <summary>
+        /// Navigates to the root view.
+        /// </summary>
+        /// <param name="entranceTransitionType">The entrance transition type</param>
+        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <returns></returns>
+        public async Task NavigateToRootAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
           ExitTransitionType exitTransitionType = ExitTransitionType.None)
         {
             if (this.CanGoBack)

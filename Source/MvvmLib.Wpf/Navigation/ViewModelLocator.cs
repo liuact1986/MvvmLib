@@ -1,20 +1,34 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 
 namespace MvvmLib.Navigation
 {
+    /// <summary>
+    /// Allows to resolve the ViewModel for a view.
+    /// </summary>
     public class ViewModelLocator
     {
+        /// <summary>
+        /// Allows to resolve ViewModel for a Window.
+        /// </summary>
         public static readonly DependencyProperty ResolveWindowViewModelProperty =
            DependencyProperty.RegisterAttached("ResolveWindowViewModel", typeof(bool), typeof(ViewModelLocator),
                new PropertyMetadata(false, OnResolveWindowViewModelChanged));
 
+        /// <summary>
+        /// Gets The resolve view model value.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static bool GetResolveWindowViewModel(DependencyObject obj)
         {
             return (bool)obj.GetValue(ResolveWindowViewModelProperty);
         }
 
+        /// <summary>
+        /// Sets The resolve view model value.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
         public static void SetResolveWindowViewModel(DependencyObject obj, bool value)
         {
             obj.SetValue(ResolveWindowViewModelProperty, value);
