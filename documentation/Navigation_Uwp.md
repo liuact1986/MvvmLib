@@ -211,8 +211,8 @@ Navigation Service Methods:
 | NavigateAsync | Allows to navigate to a new page |
 | GoBackAsync | Allows to go to the previous page|
 | GoForwardAsync | Allows to go the next page |
-| RedirectAsync | Allows to redirect to a page and do not add/ oremove current page from history |
-| GetNavigationState | Allows to get frame navigation state for app lifeycle |
+| RedirectAsync | Allows to redirect to a page and do not add/ remove current page from history |
+| GetNavigationState | Allows to get frame navigation state for app lifecycle |
 | SetNavigationState | Allows to restore frame navigation state |
 
 | Property | Description |

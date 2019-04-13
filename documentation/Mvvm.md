@@ -70,7 +70,7 @@ Allows to cancel and **restore** **old values**. Entity Framework (ICollection, 
 | Method | Description |
 | --- | --- |
 |  BeginEdit | Store model values |
-|  CancelEdit | Resstore model values |
+|  CancelEdit | Restore model values |
 
 Example
 
