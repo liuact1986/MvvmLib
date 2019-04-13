@@ -180,7 +180,7 @@ sealed partial class App : Application
 
 **Methods**:
 
-Use a IoC container to create and inject the service (INavigationmanager) in ViewModels/ views
+Use a IoC container to create and inject the service (INavigationManager) in ViewModels/ views
 
 Get The Navigation Service:
 
@@ -309,7 +309,7 @@ public class HomePageViewModel :  INavigatable
 > Allows to show/ hide back button in title bar and handle back button clicked.
 
 ```cs
-var backRequestManager = new BackRequestManager(); // Or inject with a ioc container
+var backRequestManager = new BackRequestManager(); // Or inject with an ioc container
 backRequestManager.Handle(MainFrame, () => HandleBackRequested());
 ```
 

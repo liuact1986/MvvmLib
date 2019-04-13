@@ -127,7 +127,7 @@ Allows to **validate** the model with **Data Annotations** and **custom validati
 |  BeginEdit | Store model values |
 |  CancelEdit | Restore model values and errors |
 
-The model require to use SetProperty
+The model requires to use SetProperty
 
 ```cs
 public class User : Validatable
@@ -179,7 +179,7 @@ user.CancelEdit();
 
 > Allows to wrap, edit and validate a model.
 
-The model do not require to use SetProperty
+The model does not require to use SetProperty
 
 ```cs
 public class User
@@ -316,7 +316,7 @@ Create a Style that displays errors
 **Uwp**
 
 ```xml
- <TextBox Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+<TextBox Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 <TextBlock Text="{Binding User.Errors[FirstName][0]}" Foreground="Red"></TextBlock>
 ```
 
@@ -362,10 +362,7 @@ public class PageOneViewModel : ViewModel
 
         public PageOneViewModel()
         {     
-            this.MyCommand = new RelayCommand(() =>
-            {
-
-            });
+            this.MyCommand = new RelayCommand(() => {  /* do something */ });
         }
 }
 ```
@@ -399,6 +396,8 @@ public class PageOneViewModel
 ```xml
 <Button Command="{Binding MyCommand}" CommandParameter="my parameter">Do something</Button>
 ```
+
+**RaiseCanExecuteChanged** allows to invoke the can execute method "on demand".
 
 ## Composite command
 

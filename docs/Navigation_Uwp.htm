@@ -250,7 +250,7 @@ NavigationManager.Register(frame);
 </code></pre>
 
 <p><strong>Methods</strong>:</p>
-<p>Use a IoC container to create and inject the service (INavigationmanager) in ViewModels/ views</p>
+<p>Use a IoC container to create and inject the service (INavigationManager) in ViewModels/ views</p>
 <p>Get The Navigation Service:</p>
 <ul>
 <li><strong>GetDefault</strong></li>
@@ -430,7 +430,7 @@ await navigationManager.GetDefault().RedirectAsync(typeof(LoginPage), &quot;My p
 <blockquote>
 <p>Allows to show/ hide back button in title bar and handle back button clicked.</p>
 </blockquote>
-<pre><code class="cs">var backRequestManager = new BackRequestManager(); // Or inject with a ioc container
+<pre><code class="cs">var backRequestManager = new BackRequestManager(); // Or inject with an ioc container
 backRequestManager.Handle(MainFrame, () =&gt; HandleBackRequested());
 </code></pre>
 
