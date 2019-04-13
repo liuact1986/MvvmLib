@@ -318,7 +318,7 @@ public class ShellViewModel : ILoadedEventListener
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegions("ContentRegion").NavigateAsync(currentEntry.SourceType);
+        await regionManager.GetContentRegions("ContentRegion").NavigateAsync(typeof(HomeView));
     }
 }
 ```

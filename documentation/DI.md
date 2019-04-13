@@ -8,6 +8,12 @@ The injector can **resolve all types automatically** (views, view models, ect.)
 * **Singletons**
 
 
+Namespace: required for extensions methods
+
+```cs
+using MvvmLib.Ioc;
+```
+
  Inject the service (recommanded)
 
 ```cs

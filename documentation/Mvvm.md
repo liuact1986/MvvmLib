@@ -317,7 +317,6 @@ Create a Style that displays errors
 
 ```xml
  <TextBox Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-<!-- with converter -->
 <TextBlock Text="{Binding User.Errors[FirstName][0]}" Foreground="Red"></TextBlock>
 ```
 

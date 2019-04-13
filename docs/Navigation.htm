@@ -414,7 +414,7 @@ region.Animation.DefaultFromRightValue = 700;
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegions(&quot;ContentRegion&quot;).NavigateAsync(currentEntry.SourceType);
+        await regionManager.GetContentRegions(&quot;ContentRegion&quot;).NavigateAsync(typeof(HomeView));
     }
 }
 </code></pre>
