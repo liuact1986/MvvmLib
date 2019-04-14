@@ -1,6 +1,7 @@
 ﻿using MvvmLib.Mvvm;
 using System.Linq;
 using MvvmLib.Navigation;
+using System.Windows;
 
 namespace RegionSample.ViewModels
 {
@@ -13,7 +14,7 @@ namespace RegionSample.ViewModels
             this.regionManager = regionManager;
         }
 
-        public async void OnLoaded(object parameter)
+        public async void OnLoaded(FrameworkElement view, object parameter)
         {
             var regions = regionManager.GetContentRegions("ContentRegion");
             var region = regions.FirstOrDefault();

@@ -84,7 +84,7 @@ namespace RegionSample.ViewModels
 
         }
 
-        public void OnLoaded(object parameter)
+        public void OnLoaded(FrameworkElement view, object parameter)
         {
             LoadedMessage = "Loaded with parameter : " + parameter?.ToString() + ", " + DateTime.Now.ToLongTimeString();
         }

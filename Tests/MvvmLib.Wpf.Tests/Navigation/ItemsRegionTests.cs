@@ -21,7 +21,7 @@ namespace MvvmLib.Wpf.Tests
 
             Assert.AreEqual("X1", service.RegionName);
             Assert.AreEqual(i, service.Control);
-            Assert.AreEqual("i1", service.Name);
+            Assert.AreEqual("i1", service.ControlName);
 
             await service.AddAsync(typeof(NavigatableView), "p1");
             Assert.AreEqual(true, NavigatableView.isOkOnNavigatedTo);
@@ -65,7 +65,7 @@ namespace MvvmLib.Wpf.Tests
 
             Assert.AreEqual("X1", service.RegionName);
             Assert.AreEqual(i, service.Control);
-            Assert.AreEqual("i1", service.Name);
+            Assert.AreEqual("i1", service.ControlName);
 
             await service.AddAsync(typeof(NavigatableView), "p1");
 

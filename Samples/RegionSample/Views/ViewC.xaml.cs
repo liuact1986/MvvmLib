@@ -1,6 +1,7 @@
 ﻿using RegionSample.ViewModels;
 using System.Windows.Controls;
 using MvvmLib.Navigation;
+using System.Windows;
 
 namespace RegionSample.Views
 {
@@ -13,7 +14,7 @@ namespace RegionSample.Views
             DataContext = new ViewCViewModel();
         }
 
-        public void OnLoaded(object parameter)
+        public void OnLoaded(FrameworkElement view, object parameter)
         {
             LoadedMessage.Text = "ViewC loaded (code-behind) with parameter " + parameter.ToString();
         }

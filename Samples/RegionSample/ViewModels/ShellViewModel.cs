@@ -36,7 +36,7 @@ namespace RegionSample.ViewModels
             contentRegion2.CanGoBackChanged += OnContentRegionCanGoBackChanged;
             contentRegion2.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
 
-            var itemsRegion = regionManager.GetItemsRegion("ItemsRegion", "ItemsRegion1");
+            var itemsRegion = regionManager.GetItemsRegion("ItemsRegion");
             var stackPanelRegion = regionManager.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
             var tabControlRegion = regionManager.GetItemsRegion("TabControlRegion", "TabControlRegion1");
 
@@ -183,7 +183,7 @@ namespace RegionSample.ViewModels
 
         private void ContentRegion_NavigationFailed(object sender, RegionNavigationFailedEventArgs e)
         {
-            Debug.WriteLine("Navigation failed , source: " + e.Source.ToString() + ", parameter: " + e.Parameter?.ToString());
+            //Debug.WriteLine("Navigation failed , source: " + e.Exception);
         }
 
         private void ShellViewModel_Navigated(object sender, RegionNavigationEventArgs e)

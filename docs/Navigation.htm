@@ -51,6 +51,8 @@
 
 <li class="tocentry"><a href="#iselectable">ISelectable</a></li>
 
+<li class="tocentry"><a href="#iviewlifetimestrategy">IViewLifetimeStrategy</a></li>
+
 <li class="tocentry"><a href="#create-a-region-adapter">Create a region Adapter</a></li>
 
 </ul>
@@ -97,6 +99,8 @@
 <li><strong>INavigatable</strong>: allows the views and view models to be notified on navigate</li>
 <li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
 <li><strong>ILoadedEventListener</strong>: allows to be notified when the view or window is loaded</li>
+<li><strong>IViewLifetimeStrategy</strong>: Allows to get always the same instance of a view (Singleton) for a region</li>
+<li><strong>ISelectable</strong>: allows to select a view </li>
 <li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
 </ul>
 <h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -421,7 +425,8 @@ region.Animation.DefaultFromRightValue = 700;
 </code></pre>
 
 <h2 id="iselectable">ISelectable<a class="headerlink" href="#iselectable" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Allows to select an existing item and not re-create a new item (for example with a tabcontrol). Only with ItemsRegions.</p>
+<p>Allows to select an existing item and not re-create a new item (for example with a tabcontrol). </p>
+<p>Example with ItemsRegion. Select a TabITem for a TabControl </p>
 <pre><code class="cs">public class MyTabViewModel : ISelectable
 {
     public string Title =&gt; &quot;My Tab&quot;;
@@ -431,6 +436,68 @@ region.Animation.DefaultFromRightValue = 700;
        // check the view type or the navigation parameter (id) for example
         return viewType == typeof(MyTabView);
     }
+}
+</code></pre>
+
+<p>Example with Content Region</p>
+<pre><code class="cs">public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable 
+{
+    private Person person;
+    public Person Person
+    {
+        get { return person; }
+        set { SetProperty(ref person, value); }
+    }
+
+    private IRegionManager regionManager;
+
+    private IFakePeopleService fakePeopleService;
+
+    public PersonDetailsViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+    {
+        this.regionManager = regionManager;
+        this.fakePeopleService = fakePeopleService;
+    }
+
+    public void OnNavigatingFrom()
+    {
+
+    }
+
+    public void OnNavigatingTo(object parameter)
+    {
+        int id = (int)parameter;
+        var person = fakePeopleService.GetPersonById(id);
+        Person = person;
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+
+    }
+
+    // we have a list of active views
+    // select the view (note do not use Singleton with IViewLifetimeStrategy for this scenario)
+    public bool IsTarget(Type viewType, object parameter)
+    {
+        if (parameter != null)
+        {
+            return person.Id == (int)parameter; // pass the id as parameter
+        }
+        return false;
+    }
+}
+</code></pre>
+
+<h2 id="iviewlifetimestrategy">IViewLifetimeStrategy<a class="headerlink" href="#iviewlifetimestrategy" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to get always the same instance of a view (Singleton) for a region.</p>
+</blockquote>
+<pre><code class="cs">public class PersonDetailsViewModel : IViewLifetimeStrategy
+{
+    public StrategyType Strategy =&gt; StrategyType.Singleton;
+
+    // etc.
 }
 </code></pre>
 

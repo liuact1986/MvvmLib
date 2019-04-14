@@ -6,6 +6,8 @@
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
 * **ILoadedEventListener**: allows to be notified when the view or window is loaded
+* **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
+* **ISelectable**: allows to select a view 
 * **BootstrapperBase**: bootstrapper base class
 
 ## ViewModelLocator
@@ -326,7 +328,10 @@ public class ShellViewModel : ILoadedEventListener
 
 ## ISelectable
 
-Allows to select an existing item and not re-create a new item (for example with a tabcontrol). Only with ItemsRegions.
+Allows to select an existing item and not re-create a new item (for example with a tabcontrol). 
+
+
+Example with ItemsRegion. Select a TabITem for a TabControl 
 
 ```cs
 public class MyTabViewModel : ISelectable
@@ -341,6 +346,71 @@ public class MyTabViewModel : ISelectable
 }
 ```
 
+Example with Content Region
+
+```cs
+public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable 
+{
+    private Person person;
+    public Person Person
+    {
+        get { return person; }
+        set { SetProperty(ref person, value); }
+    }
+
+    private IRegionManager regionManager;
+
+    private IFakePeopleService fakePeopleService;
+
+    public PersonDetailsViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+    {
+        this.regionManager = regionManager;
+        this.fakePeopleService = fakePeopleService;
+    }
+
+    public void OnNavigatingFrom()
+    {
+
+    }
+
+    public void OnNavigatingTo(object parameter)
+    {
+        int id = (int)parameter;
+        var person = fakePeopleService.GetPersonById(id);
+        Person = person;
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+
+    }
+
+    // we have a list of active views
+    // select the view (note do not use Singleton with IViewLifetimeStrategy for this scenario)
+    public bool IsTarget(Type viewType, object parameter)
+    {
+        if (parameter != null)
+        {
+            return person.Id == (int)parameter; // pass the id as parameter
+        }
+        return false;
+    }
+}
+```
+
+## IViewLifetimeStrategy
+
+> Allows to get always the same instance of a view (Singleton) for a region.
+
+
+```cs
+public class PersonDetailsViewModel : IViewLifetimeStrategy
+{
+    public StrategyType Strategy => StrategyType.Singleton;
+
+    // etc.
+}
+```
 
 ## Create a region Adapter
 

@@ -75,7 +75,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- ItemsControlRegion (1) -->
-                    <ItemsControl x:Name="ItemsRegion1" nav:RegionManager.ItemsRegion="ItemsRegion"></ItemsControl>
+                    <ItemsControl nav:RegionManager.ItemsRegion="ItemsRegion"></ItemsControl>
 
                     <StackPanel x:Name="StackPanelRegion1" nav:RegionManager.ItemsRegion="StackPanelRegion" Grid.Row="1" Margin="12"></StackPanel>
 

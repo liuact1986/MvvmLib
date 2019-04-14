@@ -43,12 +43,12 @@ namespace MvvmLib.Navigation
             if (element != null)
             {
                 var regionName = e.NewValue.ToString();
-                var region = RegionManager.RegisterContentRegion(regionName, d);
+                var region = RegionManager.AddContentRegion(regionName, d);
 
                 var listener = new FrameworkElementLoaderListener(element);
                 listener.Subscribe((o, c) =>
                 {
-                    region.IsLoaded = true;
+                    region.isLoaded = true;
 
                     listener.Unsubscribe();
                 });
@@ -78,12 +78,12 @@ namespace MvvmLib.Navigation
             if (element != null)
             {
                 var regionName = e.NewValue.ToString();
-                var region = RegionManager.RegisterItemsRegion(regionName, d);
+                var region = RegionManager.AddItemsRegion(regionName, d);
 
                 var listener = new FrameworkElementLoaderListener(element);
                 listener.Subscribe((o, c) =>
                 {
-                    region.IsLoaded = true;
+                    region.isLoaded = true;
 
                     listener.Unsubscribe();
                 });
@@ -96,19 +96,19 @@ namespace MvvmLib.Navigation
             itemsRegions = new Dictionary<string, List<ItemsRegion>>();
         }
 
-        public static bool IsContentRegionNameRegistered(string regionName)
+        public static bool ContainContentRegionName(string regionName)
         {
             return contentRegions.ContainsKey(regionName);
         }
 
-        public static bool IsItemsRegionNameRegistered(string regionName)
+        public static bool ContainItemsRegionName(string regionName)
         {
             return itemsRegions.ContainsKey(regionName);
         }
 
-        public static ContentRegion RegisterContentRegion(string regionName, DependencyObject element)
+        public static ContentRegion AddContentRegion(string regionName, DependencyObject element)
         {
-            if (!IsContentRegionNameRegistered(regionName))
+            if (!ContainContentRegionName(regionName))
             {
                 contentRegions[regionName] = new List<ContentRegion>();
             }
@@ -123,12 +123,12 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
             if (string.IsNullOrWhiteSpace(controlName)) { throw new Exception("Control name required"); }
-            if (!IsContentRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             var regions = contentRegions[regionName];
             foreach (var region in regions)
             {
-                if (region.Name == controlName)
+                if (region.ControlName == controlName)
                 {
                     return region;
                 }
@@ -138,7 +138,7 @@ namespace MvvmLib.Navigation
 
         internal static ContentRegion FindContentRegion(string regionName, DependencyObject child)
         {
-            if (!IsContentRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             var regions = contentRegions[regionName];
             foreach (var region in regions)
@@ -155,12 +155,12 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
             if (string.IsNullOrWhiteSpace(controlName)) { throw new Exception("Control name required"); }
-            if (!IsItemsRegionNameRegistered(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
+            if (!ContainItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
 
             var regions = itemsRegions[regionName];
             foreach (var region in regions)
             {
-                if (region.Name == controlName)
+                if (region.ControlName == controlName)
                 {
                     return region;
                 }
@@ -170,7 +170,7 @@ namespace MvvmLib.Navigation
 
         internal static ItemsRegion FindItemsRegion(string regionName, DependencyObject child)
         {
-            if (!IsItemsRegionNameRegistered(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
+            if (!ContainItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
 
             var regions = itemsRegions[regionName];
             foreach (var region in regions)
@@ -183,9 +183,9 @@ namespace MvvmLib.Navigation
             return null;
         }
 
-        public static ItemsRegion RegisterItemsRegion(string regionName, DependencyObject element)
+        public static ItemsRegion AddItemsRegion(string regionName, DependencyObject element)
         {
-            if (!IsItemsRegionNameRegistered(regionName))
+            if (!ContainItemsRegionName(regionName))
             {
                 itemsRegions[regionName] = new List<ItemsRegion>();
             }
@@ -196,22 +196,38 @@ namespace MvvmLib.Navigation
             return region;
         }
 
-        public static bool UnregisterContentRegions(string regionName)
+        public static bool RemoveContentRegion(ContentRegion contentRegion)
         {
-            if (IsContentRegionNameRegistered(regionName))
+            string regionName = contentRegion.RegionName;
+            lock (contentRegions)
             {
-                contentRegions.Remove(regionName);
-                return true;
+                if (ContainContentRegionName(regionName))
+                {
+                    contentRegions[regionName].Remove(contentRegion);
+                    if (contentRegions[regionName].Count == 0)
+                    {
+                        contentRegions.Remove(regionName);
+                    }
+                    return true;
+                }
             }
             return false;
         }
 
-        public static bool UnregisterItemsRegions(string regionName)
+        public static bool RemoveItemsRegion(ItemsRegion itemsRegion)
         {
-            if (IsItemsRegionNameRegistered(regionName))
+            string regionName = itemsRegion.RegionName;
+            lock (itemsRegions)
             {
-                itemsRegions.Remove(regionName);
-                return true;
+                if (ContainItemsRegionName(regionName))
+                {
+                    itemsRegions[regionName].Remove(itemsRegion);
+                    if (itemsRegions[regionName].Count == 0)
+                    {
+                        itemsRegions.Remove(regionName);
+                    }
+                    return true;
+                }
             }
             return false;
         }
@@ -232,7 +248,7 @@ namespace MvvmLib.Navigation
             ClearItemsRegions();
         }
 
-        public static void CleanContentRegions()
+        internal static void RemoveNonLoadedContentRegions()
         {
             lock (contentRegions)
             {
@@ -241,7 +257,7 @@ namespace MvvmLib.Navigation
                     var regionsToRemove = new List<ContentRegion>();
                     foreach (var region in regions)
                     {
-                        if (!region.IsLoaded)
+                        if (!region.isLoaded)
                         {
                             regionsToRemove.Add(region);
                         }
@@ -259,7 +275,7 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public static void CleanItemsRegions()
+        internal static void RemoveNonLoadedItemsRegions()
         {
             lock (itemsRegions)
             {
@@ -268,7 +284,7 @@ namespace MvvmLib.Navigation
                     var regionsToRemove = new List<ItemsRegion>();
                     foreach (var region in regions)
                     {
-                        if (!region.IsLoaded)
+                        if (!region.isLoaded)
                         {
                             regionsToRemove.Add(region);
                         }
@@ -285,9 +301,10 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public static void Clean()
+        internal static void RemoveNonLoadedRegions()
         {
-            CleanContentRegions();
+            RemoveNonLoadedContentRegions();
+            RemoveNonLoadedItemsRegions();
         }
 
         #endregion // Static members
@@ -301,7 +318,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
 
-            if (IsContentRegionNameRegistered(regionName))
+            if (ContainContentRegionName(regionName))
             {
                 var region = contentRegions[regionName].LastOrDefault();
                 if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
@@ -352,7 +369,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
 
-            if (IsItemsRegionNameRegistered(regionName))
+            if (ContainItemsRegionName(regionName))
             {
                 var region = RegionManager.itemsRegions[regionName].LastOrDefault();
                 if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
@@ -369,7 +386,7 @@ namespace MvvmLib.Navigation
         public List<ContentRegion> GetContentRegions(string regionName)
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
-            if (!IsContentRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             return contentRegions[regionName];
         }
@@ -382,7 +399,7 @@ namespace MvvmLib.Navigation
         public List<ItemsRegion> GetItemsRegions(string regionName)
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
-            if (!IsItemsRegionNameRegistered(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainItemsRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             return itemsRegions[regionName];
 

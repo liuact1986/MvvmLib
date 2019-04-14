@@ -14,4 +14,14 @@ namespace MvvmLib.Navigation
         /// <returns>True or false</returns>
         Task<bool> CanActivateAsync(object parameter);
     }
+
+    public interface IRegionKnowledge
+    {
+        void GetRegion(IRegion region);
+    }
+
+    public interface IRegionKnowledge<T> where T : IRegion
+    {
+        void GetRegion(T region);
+    }
 }

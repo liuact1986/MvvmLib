@@ -68,7 +68,6 @@ namespace MvvmLib.Navigation
             if (isReadOnly) { throw new InvalidOperationException("List is readonly"); }
 
             this.Insert(list.Count, item);
-
         }
 
         public void Clear()
@@ -77,7 +76,8 @@ namespace MvvmLib.Navigation
 
             if (list.Count > 0)
             {
-                for (int i = 0; i < list.Count; i++)
+                int count = list.Count;
+                for (int i = count - 1; i >= 0; i--)
                 {
                     this.RemoveAt(i);
                 }

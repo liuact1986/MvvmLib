@@ -1,4 +1,6 @@
-﻿namespace MvvmLib.Navigation
+﻿using System.Windows;
+
+namespace MvvmLib.Navigation
 {
     /// <summary>
     /// Allows to notify the view model when view is loaded.
@@ -8,7 +10,8 @@
         /// <summary>
         /// Invoked when view is loaded.
         /// </summary>
+        /// <param name="view">The view</param>
         /// <param name="parameter">The parameter</param>
-        void OnLoaded(object parameter);
+        void OnLoaded(FrameworkElement view, object parameter);
     }
 }

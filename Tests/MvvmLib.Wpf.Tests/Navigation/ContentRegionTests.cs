@@ -73,7 +73,7 @@ namespace MvvmLib.Wpf.Tests
     }
 
 
-    public class SimpleView
+    public class SimpleView : UserControl
     {
 
     }
@@ -134,10 +134,10 @@ namespace MvvmLib.Wpf.Tests
         }
     }
 
-    public class ViewAndVm : ContentControl, INavigatable, IActivatable, IDeactivatable
+    public class ViewWithViewModelDataContext : ContentControl, INavigatable, IActivatable, IDeactivatable
     {
 
-        public ViewAndVm()
+        public ViewWithViewModelDataContext()
         {
             this.DataContext = new Vm();
         }
@@ -196,7 +196,7 @@ namespace MvvmLib.Wpf.Tests
         }
     }
 
-    public class NavigatableView : INavigatable
+    public class NavigatableView : UserControl, INavigatable
     {
         public static bool isOkOnNavigatedTo = false;
         public static object p = null;
@@ -227,7 +227,7 @@ namespace MvvmLib.Wpf.Tests
         }
     }
 
-    public class ActivatableView : INavigatable, IActivatable, IDeactivatable
+    public class ActivatableView : UserControl, INavigatable, IActivatable, IDeactivatable
     {
         public static bool isOkOnNavigatedTo = false;
         public static object p = null;
@@ -283,7 +283,7 @@ namespace MvvmLib.Wpf.Tests
         }
     }
 
-    [TestClass]
+        [TestClass]
     public class ContentRegionTests
     {
         [TestInitialize()]
@@ -294,7 +294,7 @@ namespace MvvmLib.Wpf.Tests
 
         public ContentRegion GetService(ContentControl c)
         {
-            RegionManager.RegisterContentRegion("C1", c);
+            RegionManager.AddContentRegion("C1", c);
             return new ContentRegion(new NavigationHistory(), new FakeContentStrategy(), "C1", c);
         }
 
@@ -311,7 +311,7 @@ namespace MvvmLib.Wpf.Tests
 
             Assert.AreEqual("R1", service.RegionName);
             Assert.AreEqual(c, service.Control);
-            Assert.AreEqual("c1", service.Name);
+            Assert.AreEqual("c1", service.ControlName);
 
             await service.NavigateAsync(typeof(NavigatableView), "p1");
             Assert.AreEqual(true, NavigatableView.isOkOnNavigatedTo);
@@ -692,19 +692,19 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public async Task Navigatable_WithView_And_Vm()
         {
-            ViewAndVm.Reset();
+            ViewWithViewModelDataContext.Reset();
             Vm.Reset();
 
             var c = new MyControl();
             c.Name = "c1";
             var service = new ContentRegion("R1", c);
 
-            await service.NavigateAsync(typeof(ViewAndVm), "p1");
+            await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
-            Assert.AreEqual(true, ViewAndVm.isOkOnNavigatedTo);
-            Assert.AreEqual("p1", ViewAndVm.p);
-            Assert.AreEqual(false, ViewAndVm.isOkOnNavigatingFrom);
-            Assert.AreEqual(true, ViewAndVm.isOkCanActivate);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkOnNavigatedTo);
+            Assert.AreEqual("p1", ViewWithViewModelDataContext.p);
+            Assert.AreEqual(false, ViewWithViewModelDataContext.isOkOnNavigatingFrom);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanActivate);
 
             Assert.AreEqual(true, Vm.isOkOnNavigatedTo);
             Assert.AreEqual("p1", Vm.p);
@@ -715,18 +715,18 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public async Task Navigatable_From_WithView_And_Vm()
         {
-            ViewAndVm.Reset();
+            ViewWithViewModelDataContext.Reset();
 
             var c = new MyControl();
             c.Name = "c1";
             var service = new ContentRegion("R1", c);
 
-            await service.NavigateAsync(typeof(ViewAndVm), "p1");
+            await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
             await service.NavigateAsync(typeof(SimpleView));
 
-            Assert.AreEqual(true, ViewAndVm.isOkCanDeactivate);
-            Assert.AreEqual(true, ViewAndVm.isOkOnNavigatingFrom);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanDeactivate);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkOnNavigatingFrom);
 
             Assert.AreEqual(true, Vm.isOkCanDeactivate);
             Assert.AreEqual(true, Vm.isOkOnNavigatingFrom);
@@ -735,7 +735,7 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public async Task Notify_OnNavigatedTo()
         {
-            ViewAndVm.Reset();
+            ViewWithViewModelDataContext.Reset();
 
             var c = new MyControl();
             c.Name = "c1";
@@ -750,10 +750,10 @@ namespace MvvmLib.Wpf.Tests
                 service = null;
             };
 
-            await service.NavigateAsync(typeof(ViewAndVm), "p1");
+            await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ViewAndVm), ev.SourcePageType);
+            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourcePageType);
             Assert.AreEqual("p1", ev.Parameter);
             Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);       
         }
@@ -761,7 +761,7 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public async Task Notify_OnNavigatingFrom()
         {
-            ViewAndVm.Reset();
+            ViewWithViewModelDataContext.Reset();
 
             var c = new MyControl();
             c.Name = "c1";
@@ -776,11 +776,11 @@ namespace MvvmLib.Wpf.Tests
                 service = null;
             };
 
-            await service.NavigateAsync(typeof(ViewAndVm), "p1");
+            await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
             await service.NavigateAsync(typeof(SimpleView));
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ViewAndVm), ev.SourcePageType);
+            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourcePageType);
             Assert.AreEqual("p1", ev.Parameter);
             Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);
         }
@@ -807,8 +807,8 @@ namespace MvvmLib.Wpf.Tests
             await service.NavigateAsync(typeof(ActivatableView), "p1");
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ActivatableView), ev.Source.GetType());
-            Assert.AreEqual("p1", ev.Parameter);
+            Assert.AreEqual(typeof(ActivatableView), ev.Exception.ViewOrContext.GetType());
+            //Assert.AreEqual("p1", ev.Parameter);
         }
     }
 }

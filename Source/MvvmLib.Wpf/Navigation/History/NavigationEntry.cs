@@ -7,7 +7,7 @@ namespace MvvmLib.Navigation
     public class NavigationEntry
     {
         public Type SourceType { get; }
-        public object ViewOrObject { get; }
+        public object ViewOrObject { get;  }
         public object Parameter { get; }
         public object Context { get; }
 

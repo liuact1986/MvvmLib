@@ -57,13 +57,9 @@ namespace MvvmLib.Navigation
 
             window.Activated -= OnWindowActivated;
 
-            if (window is ILoadedEventListener)
+            if (context != null && context is ILoadedEventListener p)
             {
-                ((ILoadedEventListener)window).OnLoaded(null);
-            }
-            if (context != null && context is ILoadedEventListener)
-            {
-                ((ILoadedEventListener)context).OnLoaded(null);
+                p.OnLoaded(window, null);
             }
         }
     }

@@ -5,7 +5,7 @@ using MvvmLib.Navigation;
 
 namespace RegionSample.ViewModels
 {
-    public class ViewBViewModel : BindableBase, INavigatable, ISelectable
+    public class ViewBViewModel : BindableBase, INavigatable, ISelectable, IRegionKnowledge
     {
         private string message;
         public string Message
@@ -52,6 +52,11 @@ namespace RegionSample.ViewModels
         }
 
         public void OnNavigatingFrom()
+        {
+            
+        }
+
+        public void GetRegion(IRegion region)
         {
             
         }

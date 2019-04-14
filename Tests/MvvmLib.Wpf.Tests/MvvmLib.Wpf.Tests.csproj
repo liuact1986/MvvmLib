@@ -55,8 +55,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Navigation\BindableListTests.cs" />
     <Compile Include="Navigation\ContentRegionTests.cs" />
-    <Compile Include="Navigation\Guard\NavigationGuardTests.cs" />
     <Compile Include="Navigation\History\ListHistoryTest.cs" />
     <Compile Include="Navigation\History\NavigationHistoryTest.cs" />
     <Compile Include="Navigation\ItemsRegionTests.cs" />

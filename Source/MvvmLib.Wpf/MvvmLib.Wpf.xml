@@ -77,15 +77,80 @@
             Runs the bootstrapper.
             </summary>
         </member>
-        <member name="F:MvvmLib.Navigation.ContentRegion.canGoBackChanged">
+        <member name="T:MvvmLib.Navigation.ContentRegion">
+            <summary>
+            The Content Region class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ContentRegion.History">
+            <summary>
+            Gets the history.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ContentRegion.CurrentEntry">
+            <summary>
+            Gets the current history entry.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ContentRegion.CanGoBack">
+            <summary>
+            Chekcs if the content region can go back.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ContentRegion.CanGoForward">
+            <summary>
+            Chekcs if the content region can go forward.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.ContentRegion.CanGoBackChanged">
             <summary>
             Invoked when the can go back value changed.
             </summary>
         </member>
-        <member name="F:MvvmLib.Navigation.ContentRegion.canGoForwardChanged">
+        <member name="E:MvvmLib.Navigation.ContentRegion.CanGoForwardChanged">
             <summary>
             Invoked when can the go forward value changed.
             </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(MvvmLib.Navigation.INavigationHistory,MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+            <summary>
+            Creates an ContentRegion.
+            </summary>
+            <param name="history">The history</param>
+            <param name="contentStrategy">The content strategy</param>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(System.String,System.Object)">
+            <summary>
+            Creates an ContentRegion.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.ClearContent">
+            <summary>
+            Clear content with no animation.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Navigates to view and notify viewmodel.
+            </summary>
+            <param name="sourceType">The view type</param>
+            <param name="parameter">The parameter</param>
+            <param name="entranceTransitionType">The entrance transition type</param>
+            <param name="exitTransitionType">The exit transition type</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Navigates to view and notify viewmodel.
+            </summary>
+            <param name="sourceType">The view type</param>
+            <param name="entranceTransitionType">The entrance transition type</param>
+            <param name="exitTransitionType">The exit transition type</param>
+            <returns></returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
             <summary>
@@ -106,6 +171,158 @@
             <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.GoBackAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Navigates to previous view.
+            </summary>
+            <param name="entranceTransitionType">The entrance transition type</param>
+            <param name="exitTransitionType">The exit transition type</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.GoForwardAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Navigates to next view.
+            </summary>
+            <param name="entranceTransitionType">The entrance transition type</param>
+            <param name="exitTransitionType">The exit transition type</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateToRootAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Navigates to the root view.
+            </summary>
+            <param name="entranceTransitionType">The entrance transition type</param>
+            <param name="exitTransitionType">The exit transition type</param>
+            <returns></returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.INavigationHistory">
+            <summary>
+            History for content regions.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.BackStack">
+            <summary>
+            The back stack.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.Current">
+            <summary>
+            Gets the current entry. 
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.ForwardStack">
+            <summary>
+            The forward Stack.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.Next">
+            <summary>
+            Gets the next entry. 
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.Previous">
+            <summary>
+            Gets the previous entry. 
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.INavigationHistory.Root">
+            <summary>
+            Gets the root entry. 
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.INavigationHistory.CanGoBackChanged">
+            <summary>
+            Invoked when the can go back value changed.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.INavigationHistory.CanGoForwardChanged">
+            <summary>
+            Invoked when the can go forward value changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.Clear">
+            <summary>
+            Clear the history.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.GoBack">
+            <summary>
+            Moves back the history.
+            </summary>
+            <returns>The previous entry</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.GoForward">
+            <summary>
+            Moves forward the history.
+            </summary>
+            <returns>The next entry</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.HandleGoBackChanged">
+            <summary>
+            Handles go back changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.HandleGoForwardChanged">
+            <summary>
+            Handles go forward changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.Navigate(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Moves to the the entry.
+            </summary>
+            <param name="navigationEntry">The new entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.NavigateToRoot">
+            <summary>
+            Handles go back changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.UnhandleGoBackChanged">
+            <summary>
+            Unhandles go back changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.INavigationHistory.UnhandleGoForwardChanged">
+            <summary>
+            Unhandles go forward changed.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.NavigationHistory">
+            <summary>
+            History for content regions.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.BackStack">
+            <summary>
+            The back stack.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.ForwardStack">
+            <summary>
+            The forward Stack.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.Root">
+            <summary>
+            Gets the root entry. 
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.Previous">
+            <summary>
+            Get the previous entry.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.Next">
+            <summary>
+            Get the next entry.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.NavigationHistory.Current">
+            <summary>
+            Get the current entry.
+            </summary>
+        </member>
         <member name="E:MvvmLib.Navigation.NavigationHistory.CanGoBackChanged">
             <summary>
             Invoked when the can go back value changed.
@@ -115,6 +332,94 @@
             <summary>
             Invoked when can the go forward value changed.
             </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.#ctor">
+            <summary>
+            Creates the history.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.HandleGoBackChanged">
+            <summary>
+            Handles go back changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.UnhandleGoBackChanged">
+            <summary>
+            Unhandles go back changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.HandleGoForwardChanged">
+            <summary>
+            Handles go forward changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.UnhandleGoForwardChanged">
+            <summary>
+            Unhandles go forward changed.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.Navigate(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Moves to the the entry.
+            </summary>
+            <param name="navigationEntry">The new entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.NavigateToRoot">
+            <summary>
+            Moves to root entry.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.GoBack">
+            <summary>
+            Moves back the history.
+            </summary>
+            <returns>The previous entry</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.GoForward">
+            <summary>
+            Moves forward the history.
+            </summary>
+            <returns>The next entry</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.NavigationHistory.Clear">
+            <summary>
+            The clear the history.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.IActivatable">
+            <summary>
+            Activation guard for views and view models.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)">
+            <summary>
+            Checks if can activate the view or view model.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns>True or false</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.IDeactivatable">
+            <summary>
+            Deactivation guard for views and view models.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync">
+            <summary>
+            Checks if can deactivate the view or view model.
+            </summary>
+            <returns>True or false</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.ILoadedEventListener">
+            <summary>
+            Allows to notify the view model when view is loaded.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ILoadedEventListener.OnLoaded(System.Windows.FrameworkElement,System.Object)">
+            <summary>
+            Invoked when view is loaded.
+            </summary>
+            <param name="view">The view</param>
+            <param name="parameter">The parameter</param>
         </member>
         <member name="T:MvvmLib.Navigation.INavigatable">
             <summary>
@@ -138,31 +443,342 @@
             </summary>
             <param name="parameter">The parameter</param>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String)">
+        <member name="T:MvvmLib.Navigation.IRegionManager">
             <summary>
-            Returns the first content region for the region name.
+            Allows to get region for navigation with RegionManager instance.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegion(System.String)">
+            <summary>
+            Gets the first content region for the region name.
             </summary>
             <param name="regionName">The region name</param>
-            <returns></returns>
+            <returns>The content region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String,System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegion(System.String,System.String)">
             <summary>
-            Returns the content region.
+            Gets the content region for the region name and the control name.
             </summary>
             <param name="regionName">The region name</param>
             <param name="name">The control name property</param>
+            <returns>The content region</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegion(System.String,System.String)">
+            <summary>
+            Gets the items region for the region name and the control name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="name">The control name property</param>
+            <returns>The items region</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegion(System.String)">
+            <summary>
+            Get the items region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of items regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegions(System.String)">
+            <summary>
+            Get all content region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of content regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegions(System.String)">
+            <summary>
+            Gets the items region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of items regions</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.ISelectable">
+            <summary>
+            Allows to select a view model.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ISelectable.IsTarget(System.Type,System.Object)">
+            <summary>
+            Checks if the current view model is target.
+            </summary>
+            <param name="viewType">The view type</param>
+            <param name="parameter">The parameter</param>
+            <returns>True if the view model is the target</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.StrategyType">
+            <summary>
+            Strategy type.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.StrategyType.Singleton">
+            <summary>
+            Always the same instance.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.StrategyType.Transcient">
+            <summary>
+            Always a new instance.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.IViewLifetimeStrategy">
+            <summary>
+            Allows to get always the same instance of view (Singleton) or always a new instance (Transcient).
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.IViewLifetimeStrategy.Strategy">
+            <summary>
+            Gets the strategy.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.ItemsRegion">
+            <summary>
+            The Items Region class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ItemsRegion.History">
+            <summary>
+            Gets the history.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ItemsRegion.CurrentEntry">
+            <summary>
+            Gets the current history entry.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(MvvmLib.Navigation.IListHistory,MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+            <summary>
+            Creates an ItemsRegion.
+            </summary>
+            <param name="history">The history</param>
+            <param name="contentStrategy">The content strategy</param>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(System.String,System.Object)">
+            <summary>
+            Creates an ItemsRegion.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType)">
+            <summary>
+            Insert a view to the items region.
+            </summary>
+            <param name="index">The index</param>
+            <param name="sourceType">The view or object type</param>
+            <param name="parameter">The parameter</param>
+            <param name="entranceTransitionType">The entrance navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type,MvvmLib.Navigation.EntranceTransitionType)">
+            <summary>
+            Insert a view to the items region.
+            </summary>
+            <param name="index">The index</param>
+            <param name="sourceType">The view or object type</param>
+            <param name="entranceTransitionType">The entrance navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,MvvmLib.Navigation.EntranceTransitionType)">
+            <summary>
+            Add a view to the items region.
+            </summary>
+            <param name="sourceType">The view or object type</param>
+            <param name="entranceTransitionType">The entrance navigation type</param>
             <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType)">
+            <summary>
+            Add a view to the items region.
+            </summary>
+            <param name="sourceType">The view or object type</param>
+            <param name="parameter">The parameter</param>
+            <param name="entranceTransitionType">The entrance navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32,MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Remove a view from the items region.
+            </summary>
+            <param name="index">The index</param>
+            <param name="exitTransitionType">The exit navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveLastAsync(MvvmLib.Navigation.ExitTransitionType)">
+            <summary>
+            Remove the last view from the items region.
+            </summary>
+            <param name="exitTransitionType">The exit navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.Clear">
+            <summary>
+            Clear the items region.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionBase">
+            <summary>
+            The Reghion base class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.RegionName">
+            <summary>
+            The region name.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.Control">
+            <summary>
+            The control for this region.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.ControlName">
+            <summary>
+            The name of the control. Can be used to get a region by region name and control name.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.isLoaded">
+            <summary>
+            Checks if region is loaded.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.animatedContentStrategy">
+            <summary>
+            Allows to animate the content of region on enter and leave.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.CurrentEntry">
+            <summary>
+            Gets the current entry of history.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.Animation">
+            <summary>
+            Allows to configure animation.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.logger">
+            <summary>
+            The region logger.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.Logger">
+            <summary>
+            The logger used by the Region
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CreateLogger">
+            <summary>
+            Creates the logger (DebugLogger by default)
+            </summary>
+            <returns>The logger to use</returns>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.navigating">
+            <summary>
+            Navigating event handlers list.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.RegionBase.Navigating">
+            <summary>
+            Invoked before navigation starts.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.navigated">
+            <summary>
+            Navigated event handlers list.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.RegionBase.Navigated">
+            <summary>
+            Invoked after navigation ends.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.navigationFailed">
+            <summary>
+            NavigatiionFailed event handlers list.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.Navigation.RegionBase.NavigationFailed">
+            <summary>
+            Invoked on navigation cancelled or on exception.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.#ctor(MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+            <summary>
+            Creates the region.
+            </summary>
+            <param name="contentStrategy"></param>
+            <param name="regionName"></param>
+            <param name="control"></param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.IsView(System.Object)">
+            <summary>
+            Checks if the instance is a FrameworkElement.
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>True or false</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CreateViewOrObjectInstance(System.Type)">
+            <summary>
+            Creates a new instance with the view resolver.
+            </summary>
+            <param name="viewOrObjectType">The type of the instance</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionManager">
+            <summary>
+            Allows to register content regions and items region with dependency properties, get region for navigation with RegionManager instance.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String)">
+            <summary>
+            Gets the first content region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>The content region</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String,System.String)">
+            <summary>
+            Gets the content region for the region name and the control name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="name">The control name property</param>
+            <returns>The content region</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegion(System.String,System.String)">
+            <summary>
+            Gets the items region for the region name and the control name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="name">The control name property</param>
+            <returns>The items region</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegion(System.String)">
+            <summary>
+            Get the items region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of items regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegions(System.String)">
+            <summary>
+            Get all content region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of content regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegions(System.String)">
+            <summary>
+            Gets the items region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A list of items regions</returns>
         </member>
         <member name="T:MvvmLib.Navigation.ViewModelLocationProvider">
             <summary>
             The ViewModelLocationProvider class locates the view model for the view.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.SetViewModelFactory(System.Func{System.Type,System.Object})">
+        <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.SetViewTypeToViewModelTypeResolver(System.Func{System.Type,System.Type})">
             <summary>
-            The view model factory receives a view model type and have to create an instance of the view model. It could uses a ioc container to create the instance and resolve view model dependences.
+            Allows to change the convention used to resolve ViewModels for the views.
             </summary>
-            <param name="viewModelFactory"></param>
+            <param name="viewTypeToViewModelTypeResolver">The new convention</param>
         </member>
         <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.RegisterCustom(System.Type,System.Type)">
             <summary>
@@ -171,16 +787,46 @@
             <param name="viewType">The view type</param>
             <param name="viewModelType">The view model type</param>
         </member>
+        <member name="M:MvvmLib.Navigation.ViewModelLocationProvider.SetViewModelFactory(System.Func{System.Type,System.Object})">
+            <summary>
+            The view model factory receives a view model type and have to create an instance of the view model. It could uses a ioc container to create the instance and resolve view model dependences.
+            </summary>
+            <param name="viewModelFactory"></param>
+        </member>
+        <member name="T:MvvmLib.Navigation.ViewModelLocator">
+            <summary>
+            Allows to resolve the ViewModel for a view.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.ViewModelLocator.ResolveWindowViewModelProperty">
+            <summary>
+            Allows to resolve ViewModel for a Window.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewModelLocator.GetResolveWindowViewModel(System.Windows.DependencyObject)">
+            <summary>
+            Gets The resolve view model value.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewModelLocator.SetResolveWindowViewModel(System.Windows.DependencyObject,System.Boolean)">
+            <summary>
+            Sets The resolve view model value.
+            </summary>
+            <param name="obj"></param>
+            <param name="value"></param>
+        </member>
         <member name="T:MvvmLib.Navigation.ViewResolver">
             <summary>
-            Creates an instance of a view. 
+            Allows to create instances of views.
             </summary>
         </member>
         <member name="M:MvvmLib.Navigation.ViewResolver.SetViewFactory(System.Func{System.Type,System.Object})">
             <summary>
-            The view factory receives a view type and have to get always a new instance of a view.
+            Allows to change the default view factory (Activator CreateInstance).
             </summary>
-            <param name="viewFactory">The view factory</param>
+            <param name="viewFactory">The new view factory</param>
         </member>
         <member name="T:MvvmLib.Wpf.Properties.Resources">
             <summary>

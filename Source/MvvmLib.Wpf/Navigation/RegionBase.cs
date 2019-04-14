@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.Logger;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -6,152 +7,435 @@ using System.Windows.Media;
 
 namespace MvvmLib.Navigation
 {
+    /// <summary>
+    /// The Reghion base class.
+    /// </summary>
     public abstract class RegionBase : IRegion
     {
+        private readonly ILogger DefaultLogger = new DebugLogger();
+
+        /// <summary>
+        /// The region name.
+        /// </summary>
         public string RegionName { get; protected set; }
 
+        /// <summary>
+        /// The control for this region.
+        /// </summary>
         public object Control { get; }
 
-        public string Name => ((FrameworkElement)Control).Name;
+        /// <summary>
+        /// The name of the control. Can be used to get a region by region name and control name.
+        /// </summary>
+        public string ControlName => ((FrameworkElement)Control).Name;
 
-        public bool IsLoaded { get; internal set; }
+        /// <summary>
+        /// Checks if region is loaded.
+        /// </summary>
+        protected internal bool isLoaded;
 
-        protected IAnimatedContentStrategy contentStrategy;
+        /// <summary>
+        /// Allows to animate the content of region on enter and leave.
+        /// </summary>
+        protected IAnimatedContentStrategy animatedContentStrategy;
 
-        protected NavigationGuard guard;
-
+        /// <summary>
+        /// Gets the current entry of history.
+        /// </summary>
         public abstract NavigationEntry CurrentEntry { get; }
 
-        public IAnimatedContentStrategy Animation => this.contentStrategy;
+        /// <summary>
+        /// Allows to configure animation.
+        /// </summary>
+        public IAnimatedContentStrategy Animation => this.animatedContentStrategy;
 
+        /// <summary>
+        /// The region logger.
+        /// </summary>
+        protected ILogger logger;
+
+        /// <summary>
+        /// The logger used by the Region
+        /// </summary>
+        public ILogger Logger
+        {
+            get { return logger ?? DefaultLogger; }
+            set { logger = value; }
+        }
+
+        /// <summary>
+        /// Creates the logger (DebugLogger by default)
+        /// </summary>
+        /// <returns>The logger to use</returns>
+        protected ILogger CreateLogger()
+        {
+            return new DebugLogger();
+        }
+
+        /// <summary>
+        /// Navigating event handlers list.
+        /// </summary>
         protected readonly List<EventHandler<RegionNavigationEventArgs>> navigating = new List<EventHandler<RegionNavigationEventArgs>>();
+        /// <summary>
+        /// Invoked before navigation starts.
+        /// </summary>
         public event EventHandler<RegionNavigationEventArgs> Navigating
         {
             add { if (!navigating.Contains(value)) navigating.Add(value); }
             remove { if (navigating.Contains(value)) navigating.Remove(value); }
         }
 
+        /// <summary>
+        /// Navigated event handlers list.
+        /// </summary>
         protected readonly List<EventHandler<RegionNavigationEventArgs>> navigated = new List<EventHandler<RegionNavigationEventArgs>>();
+        /// <summary>
+        /// Invoked after navigation ends.
+        /// </summary>
         public event EventHandler<RegionNavigationEventArgs> Navigated
         {
             add { if (!navigated.Contains(value)) navigated.Add(value); }
             remove { if (navigated.Contains(value)) navigated.Remove(value); }
         }
 
+        /// <summary>
+        /// NavigatiionFailed event handlers list.
+        /// </summary>
         protected readonly List<EventHandler<RegionNavigationFailedEventArgs>> navigationFailed = new List<EventHandler<RegionNavigationFailedEventArgs>>();
+        /// <summary>
+        /// Invoked on navigation cancelled or on exception.
+        /// </summary>
         public event EventHandler<RegionNavigationFailedEventArgs> NavigationFailed
         {
             add { if (!navigationFailed.Contains(value)) navigationFailed.Add(value); }
             remove { if (navigationFailed.Contains(value)) navigationFailed.Remove(value); }
         }
 
+        /// <summary>
+        /// Creates the region.
+        /// </summary>
+        /// <param name="contentStrategy"></param>
+        /// <param name="regionName"></param>
+        /// <param name="control"></param>
         public RegionBase(IAnimatedContentStrategy contentStrategy, string regionName, object control)
         {
-            this.contentStrategy = contentStrategy;
-            this.guard = new NavigationGuard();
-            this.guard.SetCancellationCallback(OnActivationCancel, OnDeactivationCancel);
-
+            this.animatedContentStrategy = contentStrategy;
             this.RegionName = regionName;
             this.Control = control;
         }
 
+        /// <summary>
+        /// Checks if the instance is a FrameworkElement.
+        /// </summary>
+        /// <param name="instance">The instance</param>
+        /// <returns>True or false</returns>
         protected bool IsView(object instance)
         {
             return instance is FrameworkElement;
         }
 
-        protected virtual object CreateInstance(Type viewType)
+        /// <summary>
+        /// Creates a new instance with the view resolver.
+        /// </summary>
+        /// <param name="viewOrObjectType">The type of the instance</param>
+        /// <returns>The instance</returns>
+        protected object CreateViewOrObjectInstance(Type viewOrObjectType)
         {
-            return ViewResolver.Resolve(viewType);
+            var viewOrObject = ViewResolver.Resolve(viewOrObjectType);
+            return viewOrObject;
         }
 
-        protected virtual object GetOrSetViewContext(Type sourceType, FrameworkElement view)
+        #region Deactivatable management
+
+        protected async Task<bool> CanDeactivateViewAsync(FrameworkElement currentView)
         {
-            object context = null;
-            if (view.DataContext != null)
+            if (currentView is IDeactivatable p)
             {
-                context = view.DataContext;
+                var canDeactivate = await p.CanDeactivateAsync();
+                return canDeactivate;
+            }
+            return true;
+        }
+
+        protected async Task<bool> CanDeactivateContextAsync(object currentContext)
+        {
+            if (currentContext is IDeactivatable p)
+            {
+                var canDeactivate = await p.CanDeactivateAsync();
+                return canDeactivate;
+            }
+            return true;
+        }
+
+        protected async Task CheckCanDeactivateChildRegionsAsync(List<RegionBase> childRegions)
+        {
+            // sub child => child => parent
+            foreach (var child in childRegions)
+            {
+                var currentEntry = child.CurrentEntry;
+                if (currentEntry != null)
+                {
+                    // sub child regions
+                    if (currentEntry.ChildRegions.Count > 0)
+                    {
+                        await child.CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions);
+                    }
+
+                    // current child
+                    if (IsView(currentEntry.ViewOrObject))
+                    {
+                        if (!await child.CanDeactivateViewAsync((FrameworkElement)currentEntry.ViewOrObject))
+                        {
+                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.View, currentEntry.ViewOrObject, this);
+                        }
+                    }
+
+                    if (currentEntry.Context != null)
+                    {
+                        if (!await child.CanDeactivateContextAsync(currentEntry.Context))
+                        {
+                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, currentEntry.Context, this);
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion // Deactivatable management
+
+        #region IActivatable management
+
+        protected async Task<bool> CanActivateContextAsync(object context, object parameter)
+        {
+            if (context is IActivatable p)
+            {
+                var canActivate = await p.CanActivateAsync(parameter);
+                return canActivate;
+            }
+            return true;
+        }
+
+        protected async Task<bool> CanActivateViewAsync(FrameworkElement view, object parameter)
+        {
+            if (view is IActivatable p)
+            {
+                var canActivate = await p.CanActivateAsync(parameter);
+                return canActivate;
+            }
+            return true;
+        }
+
+        protected async Task CheckCanActivateChildRegionsAsync(List<RegionBase> childRegions)
+        {
+            // parent => child => sub child
+            foreach (var child in childRegions)
+            {
+                var currentEntry = child.CurrentEntry;
+                if (currentEntry != null)
+                {
+                    // current child
+                    if (IsView(currentEntry.ViewOrObject))
+                    {
+                        if (!await child.CanActivateViewAsync((FrameworkElement)currentEntry.ViewOrObject, currentEntry.Parameter))
+                        {
+                            throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.View, currentEntry.ViewOrObject, this);
+                        }
+                    }
+
+                    if (currentEntry.Context != null)
+                    {
+                        if (!await child.CanActivateContextAsync(currentEntry.Context, currentEntry.Parameter))
+                        {
+                            throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.Context, currentEntry.Context, this);
+                        }
+                    }
+
+                    // sub child regions
+                    if (currentEntry.ChildRegions.Count > 0)
+                    {
+                        await child.CheckCanActivateChildRegionsAsync(currentEntry.ChildRegions);
+                    }
+                }
+            }
+        }
+
+        #endregion // IActivatable management
+
+        #region INavigatable management
+
+        protected void OnNavigatingFromView(FrameworkElement currentView)
+        {
+            if (currentView is INavigatable p)
+            {
+                p.OnNavigatingFrom();
+            }
+        }
+
+        protected void OnNavigatingFromContext(object currentContext)
+        {
+            if (currentContext is INavigatable p)
+            {
+                p.OnNavigatingFrom();
+            }
+        }
+
+        protected void OnNavigatingToView(FrameworkElement view, object parameter)
+        {
+            if (view is INavigatable p)
+            {
+                p.OnNavigatingTo(parameter);
+            }
+        }
+
+        protected void OnNavigatingToContext(object context, object parameter)
+        {
+            if (context is INavigatable p)
+            {
+                p.OnNavigatingTo(parameter);
+            }
+        }
+
+        protected void OnNavigatedToView(FrameworkElement view, object parameter)
+        {
+            if (view is INavigatable p)
+            {
+                p.OnNavigatedTo(parameter);
+            }
+        }
+
+        protected void OnNavigatedToContext(object context, object parameter)
+        {
+            if (context is INavigatable p)
+            {
+                p.OnNavigatedTo(parameter);
+            }
+        }
+
+        protected void OnNavigatingFromChildRegions(List<RegionBase> childRegions)
+        {
+            foreach (var childRegion in childRegions)
+            {
+                var currentEntry = childRegion.CurrentEntry;
+                if (currentEntry != null)
+                {
+                    // sub child regions
+                    if (currentEntry.ChildRegions.Count > 0)
+                    {
+                        childRegion.OnNavigatingFromChildRegions(currentEntry.ChildRegions);
+                    }
+
+                    // current child region
+                    if (IsView(currentEntry.ViewOrObject))
+                    {
+                        childRegion.OnNavigatingFromView((FrameworkElement)currentEntry.ViewOrObject);
+                    }
+                    if (currentEntry.Context != null)
+                    {
+                        childRegion.OnNavigatingFromContext(currentEntry.Context);
+                    }
+                }
+            }
+        }
+
+        protected void OnNavigatingToChildRegions(List<RegionBase> childRegions)
+        {
+            foreach (var childRegion in childRegions)
+            {
+                var currentEntry = childRegion.CurrentEntry;
+                if (currentEntry != null)
+                {
+                    // sub child
+                    if (currentEntry.ChildRegions.Count > 0)
+                    {
+                        childRegion.OnNavigatingToChildRegions(currentEntry.ChildRegions);
+                    }
+
+                    // current child region
+                    if (IsView(currentEntry.ViewOrObject))
+                    {
+                        childRegion.OnNavigatingToView((FrameworkElement)currentEntry.ViewOrObject, currentEntry.Parameter);
+                    }
+                    if (currentEntry.Context != null)
+                    {
+                        childRegion.OnNavigatingToContext(currentEntry.Context, currentEntry.Parameter);
+                    }
+                }
+            }
+        }
+
+        protected void OnNavigatedToChildRegions(List<RegionBase> childRegions)
+        {
+            foreach (var childRegion in childRegions)
+            {
+                var currentEntry = childRegion.CurrentEntry;
+                if (currentEntry != null)
+                {
+                    // sub child
+                    if (currentEntry.ChildRegions.Count > 0)
+                    {
+                        childRegion.OnNavigatedToChildRegions(currentEntry.ChildRegions);
+                    }
+
+                    // current child region
+                    if (IsView(currentEntry.ViewOrObject))
+                    {
+                        childRegion.OnNavigatedToView((FrameworkElement)currentEntry.ViewOrObject, currentEntry.Parameter);
+                    }
+                    if (currentEntry.Context != null)
+                    {
+                        childRegion.OnNavigatedToContext(currentEntry.Context, currentEntry.Parameter);
+                    }
+                }
+            }
+        }
+
+        #endregion INavigatable management
+
+        #region Animation Content strategy
+
+        protected void AnimateOnLeave(object content, ExitTransitionType exitTransitionType, Action cb)
+        {
+            if (content != null && content is FrameworkElement)
+            {
+                this.animatedContentStrategy.OnLeave((FrameworkElement)content, exitTransitionType, cb);
             }
             else
             {
-                var viewModelType = ViewModelLocationProvider.ResolveViewModelType(sourceType); // singleton or new instance
-                if (viewModelType != null)
+                cb();
+            }
+        }
+
+        protected void AnimateOnEnter(object view, EntranceTransitionType entranceTransitionType, Action cb)
+        {
+            if (view != null && view is FrameworkElement)
+            {
+                // animate on enter new view
+                this.animatedContentStrategy.OnEnter((FrameworkElement)view, () =>
                 {
-                    context = ViewModelLocationProvider.ResolveViewModel(viewModelType);
-                    view.DataContext = context;
-                }
+                    cb();
+                }, entranceTransitionType);
             }
-            return context;
-        }
-
-        protected virtual async Task<bool> CheckCanDeactivateAsync(object view, object context)
-        {
-            var canDeactivateView = view is IDeactivatable ? await this.guard.CheckCanDeactivateAsync((IDeactivatable)view) : true;
-            if (!canDeactivateView)
+            else
             {
-                return false;
-            }
-            var canDeactivateViewModel = context != null && context is IDeactivatable ?
-                await this.guard.CheckCanDeactivateAsync((IDeactivatable)context)
-                : true;
-            return canDeactivateViewModel;
-        }
-
-        protected virtual async Task<bool> CheckCanActivateAsync(object viewOrObject, object context, object parameter)
-        {
-            var canActivateView = viewOrObject is IActivatable ?
-                await this.guard.CheckCanActivateAsync((IActivatable)viewOrObject, parameter)
-                : true;
-            if (!canActivateView)
-            {
-                return false;
-            }
-
-            var canActivateViewModel = context != null && context is IActivatable ?
-                await this.guard.CheckCanActivateAsync((IActivatable)context, parameter)
-                : true;
-            return canActivateViewModel;
-        }
-
-        protected virtual void DoOnNavigatingFrom(object view, object context)
-        {
-            if (view is INavigatable)
-            {
-                ((INavigatable)view).OnNavigatingFrom();
-            }
-            if (context != null && context is INavigatable)
-            {
-                ((INavigatable)context).OnNavigatingFrom();
+                cb();
             }
         }
 
-        protected virtual void DoOnNavigatingTo(object view, object context, object parameter)
+        #endregion // Animation Content strategy
+        protected object ResolveContextWithViewModelLocator(Type viewType)
         {
-            if (view is INavigatable)
+            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType); // singleton or new instance
+            if (viewModelType != null)
             {
-                ((INavigatable)view).OnNavigatingTo(parameter);
+                var context = ViewModelLocationProvider.ResolveViewModel(viewModelType);
+                return context;
             }
-            if (context != null && context is INavigatable)
-            {
-                ((INavigatable)context).OnNavigatingTo(parameter);
-            }
+            return null;
         }
 
-        protected virtual void DoOnNavigatedTo(object view, object context, object parameter)
+        protected List<RegionBase> FindChildRegions(DependencyObject parent)
         {
-            if (view is INavigatable)
-            {
-                ((INavigatable)view).OnNavigatedTo(parameter);
-            }
-            if (context != null && context is INavigatable)
-            {
-                ((INavigatable)context).OnNavigatedTo(parameter);
-            }
-        }
-
-        protected virtual List<RegionBase> FindChildRegions(DependencyObject parent)
-        {
-            var result = new List<RegionBase>();
+            var childRegions = new List<RegionBase>();
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
@@ -164,7 +448,7 @@ namespace MvvmLib.Navigation
                     var region = RegionManager.FindContentRegion(regionName, child);
                     if (region != null)
                     {
-                        result.Add(region);
+                        childRegions.Add(region);
                     }
                 }
                 else if (child.GetValue(RegionManager.ItemsRegionProperty) != null)
@@ -173,16 +457,16 @@ namespace MvvmLib.Navigation
                     var region = RegionManager.FindItemsRegion(regionName, child);
                     if (region != null)
                     {
-                        result.Add(region);
+                        childRegions.Add(region);
                     }
                 }
-                result.AddRange(FindChildRegions(child));
+                childRegions.AddRange(FindChildRegions(child));
             }
-            return result;
+            return childRegions;
 
         }
 
-        protected void DoClearChildRegions(NavigationEntry entry)
+        protected void ClearChildRegions(NavigationEntry entry)
         {
             /*
             clear items child
@@ -206,139 +490,82 @@ namespace MvvmLib.Navigation
             */
 
             // sub child => child => parent
-            if (entry.ChildRegions.Count > 0)
+            foreach (var child in entry.ChildRegions)
             {
-                foreach (var child in entry.ChildRegions)
+                // sub child
+                if (child.CurrentEntry != null && child.CurrentEntry.ChildRegions.Count > 0)
                 {
-                    // sub child
-                    if (child.CurrentEntry != null && child.CurrentEntry.ChildRegions.Count > 0)
-                    {
-                        child.DoClearChildRegions(child.CurrentEntry);
-                    }
+                    child.ClearChildRegions(child.CurrentEntry);
+                }
 
-                    if (child is ContentRegion)
-                    {
-                        var contentRegion = child as ContentRegion;
-                        contentRegion.SetContent(null);
-                        contentRegion.History.Clear();
+                if (child is ContentRegion)
+                {
+                    var contentRegion = child as ContentRegion;
+                    contentRegion.ClearContent();
+                    contentRegion.History.Clear();
 
-                        RegionManager.contentRegions[contentRegion.RegionName].Remove(contentRegion);
-                    }
-                    else
-                    {
-                        var itemsRegion = child as ItemsRegion;
-                        itemsRegion.ClearItems();
-                        itemsRegion.History.Clear();
+                    RegionManager.RemoveContentRegion(contentRegion);
+                }
+                else
+                {
+                    var itemsRegion = child as ItemsRegion;
+                    itemsRegion.ClearItems();
+                    itemsRegion.History.Clear();
 
-                        RegionManager.itemsRegions[itemsRegion.RegionName].Remove(itemsRegion);
-                    }
+                    RegionManager.RemoveItemsRegion(itemsRegion);
                 }
             }
         }
 
-        protected async Task<bool> CheckCanDeactivateChildRegionsAsync(List<RegionBase> childRegions)
+        protected void NotifyLoadedListener(FrameworkElement view, object context, object parameter)
         {
-            // sub child => child => parent
-            foreach (var child in childRegions)
+            if (context != null && context is ILoadedEventListener p)
             {
-                var currentEntry = child.CurrentEntry;
-                if (currentEntry != null)
-                {
-                    var canDeactivateSubChild = currentEntry.ChildRegions.Count > 0 ?
-                         await child.CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions)
-                         : true;
-                    if (!canDeactivateSubChild)
-                    {
-                        return false;
-                    }
-                    if (!await child.CheckCanDeactivateAsync(currentEntry.ViewOrObject, currentEntry.Context))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        protected virtual void DoOnNavigatingFromChildRegions(List<RegionBase> childRegions)
-        {
-            foreach (var child in childRegions)
-            {
-                var currentEntry = child.CurrentEntry;
-                if (currentEntry != null)
-                {
-                    // sub child
-                    if (currentEntry.ChildRegions.Count > 0)
-                    {
-                        child.DoOnNavigatingFromChildRegions(currentEntry.ChildRegions);
-                    }
-
-                    // child
-                    child.DoOnNavigatingFrom(currentEntry.ViewOrObject, currentEntry.Context);
-                }
+                p.OnLoaded(view, parameter);
             }
         }
 
-        protected virtual void DoOnNavigatedToChildRegions(List<RegionBase> childRegions)
+        protected Type GetGenericRegionKnowledge(Type contextType)
         {
-            foreach (var child in childRegions)
+            var interfaces = contextType.GetInterfaces();
+            foreach (var inter in interfaces)
             {
-                var currentEntry = child.CurrentEntry;
-                if (currentEntry != null)
+                if (inter.IsGenericType && inter.GetGenericTypeDefinition() == typeof(IRegionKnowledge<>))
                 {
-                    // sub child
-                    if (currentEntry.ChildRegions.Count > 0)
-                    {
-                        child.DoOnNavigatedToChildRegions(currentEntry.ChildRegions);
-                    }
-
-                    // child
-                    child.DoOnNavigatedTo(currentEntry.ViewOrObject, currentEntry.Context, currentEntry.Parameter);
+                    var regionType = inter.GetGenericArguments()[0];
+                    return regionType;
                 }
             }
+
+            return null;
         }
 
-        protected async Task<bool> CheckCanActivateChildRegionsAsync(List<RegionBase> childRegions)
+        protected void NotifyRegionKnowledge(IRegion region, object context)
         {
-            // parent => child => sub child
-            foreach (var child in childRegions)
+            if (context != null)
             {
-                var currentEntry = child.CurrentEntry;
-                if (currentEntry != null)
+                // IRegionKnowledge
+                if (context is IRegionKnowledge p)
                 {
-                    if (!await child.CheckCanActivateAsync(currentEntry.ViewOrObject, currentEntry.Context, currentEntry.Parameter))
-                    {
-                        return false;
-                    }
+                    p.GetRegion(region);
+                }
 
-                    var canActivateSubChild = currentEntry.ChildRegions.Count > 0 ?
-                         await child.CheckCanActivateChildRegionsAsync(currentEntry.ChildRegions)
-                         : true;
-                    if (!canActivateSubChild)
+                // IRegionKnowledge<T>
+                Type contextType = context.GetType();
+                var regionType = GetGenericRegionKnowledge(contextType);
+                if (regionType != null)
+                {
+                    var method = contextType.GetMethod("GetRegion", new Type[] { regionType });
+                    if (method != null)
                     {
-                        return false;
+                        if (region.GetType() != regionType)
+                        {
+                            throw new InvalidOperationException($"Invalid region type. Expected \"{regionType.Name}\", Current \"{region.GetType().Name}\"");
+                        }
+
+                        method.Invoke(context, new object[] { region });
                     }
                 }
-            }
-            return true;
-        }
-
-
-        protected virtual void OnDeactivationCancel(IDeactivatable source)
-        {
-            RaiseNavigationCancelled(source);
-        }
-
-        protected virtual void OnActivationCancel(IActivatable source, object parameter)
-        {
-            RaiseNavigationCancelled(source, parameter);
-        }
-
-        protected virtual void DoLoaded(object context, object parameter)
-        {
-            if (context != null && context is ILoadedEventListener)
-            {
-                ((ILoadedEventListener)context).OnLoaded(parameter);
             }
         }
 
@@ -360,9 +587,9 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected void RaiseNavigationCancelled(object source, object parameter = null)
+        protected void RaiseNavigationNavigationFailed(NavigationFailedException exception)
         {
-            var context = new RegionNavigationFailedEventArgs(source, parameter);
+            var context = new RegionNavigationFailedEventArgs(exception);
             foreach (var handler in this.navigationFailed)
             {
                 handler(this, context);

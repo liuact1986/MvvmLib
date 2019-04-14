@@ -5,7 +5,7 @@ namespace MvvmLib.Navigation
     public interface IRegion
     {
         object Control { get; }
-        string Name { get; }
+        string ControlName { get; }
         string RegionName { get; }
 
         event EventHandler<RegionNavigationEventArgs> Navigated;

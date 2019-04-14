@@ -4,13 +4,11 @@ namespace MvvmLib.Navigation
 {
     public class RegionNavigationFailedEventArgs : EventArgs
     {
-        public object Source { get; }
-        public object Parameter { get; }
+        public NavigationFailedException Exception { get; }
 
-        public RegionNavigationFailedEventArgs(object source, object parameter)
+        public RegionNavigationFailedEventArgs(NavigationFailedException exception)
         {
-            this.Source = source;
-            this.Parameter = parameter;
+            this.Exception = exception;
         }
     }
 

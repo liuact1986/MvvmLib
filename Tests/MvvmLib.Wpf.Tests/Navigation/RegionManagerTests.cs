@@ -23,17 +23,17 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ContentControl();
             control2.Name = "c2";
 
-            var region = RegionManager.RegisterContentRegion(regionName, control);
+            var region = RegionManager.AddContentRegion(regionName, control);
 
             Assert.AreEqual(typeof(ContentRegion), region.GetType());
             Assert.AreEqual(regionName, region.RegionName);
             Assert.AreEqual(control, region.Control);
-            Assert.AreEqual("c1", region.Name);
+            Assert.AreEqual("c1", region.ControlName);
 
-            RegionManager.RegisterContentRegion(regionName, control2);
+            RegionManager.AddContentRegion(regionName, control2);
 
             var r2 = RegionManager.GetContentRegionByName(regionName, "c2");
-            Assert.AreEqual("c2", r2.Name);
+            Assert.AreEqual("c2", r2.ControlName);
 
             Assert.IsTrue(RegionManager.UnregisterContentRegions(regionName));
 
@@ -53,17 +53,17 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ItemsControl();
             control2.Name = "i2";
 
-            var region = RegionManager.RegisterItemsRegion(regionName, control);
+            var region = RegionManager.AddItemsRegion(regionName, control);
 
             Assert.AreEqual(typeof(ItemsRegion), region.GetType());
             Assert.AreEqual(regionName, region.RegionName);
             Assert.AreEqual(control, region.Control);
-            Assert.AreEqual("i1", region.Name);
+            Assert.AreEqual("i1", region.ControlName);
 
-            RegionManager.RegisterItemsRegion(regionName, control2);
+            RegionManager.AddItemsRegion(regionName, control2);
 
             var r2 = RegionManager.GetItemsRegionByName(regionName, "i2");
-            Assert.AreEqual("i2", r2.Name);
+            Assert.AreEqual("i2", r2.ControlName);
 
             Assert.IsTrue(RegionManager.UnregisterItemsRegions(regionName));
 
@@ -85,16 +85,16 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ContentControl();
             control2.Name = "c2";
 
-            RegionManager.RegisterContentRegion(regionName, control);
-            RegionManager.RegisterContentRegion(regionName, control2);
+            RegionManager.AddContentRegion(regionName, control);
+            RegionManager.AddContentRegion(regionName, control2);
 
             var r = new RegionManager();
 
             var c1 = r.GetContentRegion(regionName); // last
             var c2 = r.GetContentRegion(regionName, "c2");
 
-            Assert.AreEqual("c2", c1.Name);
-            Assert.AreEqual("c2", c2.Name);
+            Assert.AreEqual("c2", c1.ControlName);
+            Assert.AreEqual("c2", c2.ControlName);
 
             RegionManager.ClearRegions();
         }
@@ -113,16 +113,16 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ItemsControl();
             control2.Name = "i2";
 
-            RegionManager.RegisterItemsRegion(regionName, control);
-            RegionManager.RegisterItemsRegion(regionName, control2);
+            RegionManager.AddItemsRegion(regionName, control);
+            RegionManager.AddItemsRegion(regionName, control2);
 
             var r = new RegionManager();
 
             var c1 = r.GetItemsRegion(regionName);
             var c2 = r.GetItemsRegion(regionName, "i2");
 
-            Assert.AreEqual("i2", c1.Name); // last
-            Assert.AreEqual("i2", c2.Name);
+            Assert.AreEqual("i2", c1.ControlName); // last
+            Assert.AreEqual("i2", c2.ControlName);
 
             RegionManager.ClearRegions();
         }
