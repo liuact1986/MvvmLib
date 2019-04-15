@@ -1,7 +1,7 @@
 # Mvvm
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
-* **NotifyPropertyChangedObserver** and **FilteredNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
+* **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**
