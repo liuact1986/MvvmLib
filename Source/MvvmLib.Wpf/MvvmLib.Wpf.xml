@@ -4,6 +4,27 @@
         <name>MvvmLib.Wpf</name>
     </assembly>
     <members>
+        <member name="T:MvvmLib.Core.Mvvm.BindableObject`1">
+            <summary>
+            Allows to bind a value or object to Value dependency property and be notified on value changed.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="E:MvvmLib.Core.Mvvm.BindableObject`1.PropertyChanged">
+            <summary>
+            The property changed to subscribe to be notified on value changed.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Core.Mvvm.BindableObject`1.Value">
+            <summary>
+            The Value.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Core.Mvvm.BindableObject`1.ValueProperty">
+            <summary>
+            The value property.
+            </summary>
+        </member>
         <member name="T:MvvmLib.Navigation.BootstrapperBase">
             <summary>
             The Bootstrapper base class.

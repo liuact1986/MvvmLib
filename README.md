@@ -8,7 +8,8 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
-* **BindableBase**, **Editable**, **Validatable**  and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Validatable**, **Editable**, **ValidateAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **NotifyPropertyChangedObserver** and **FilteredNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**
@@ -28,8 +29,10 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
 * **ILoadedEventListener**: allows to be notified when the view or window is loaded
+* **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
+* **ISelectable**: allows to select a view 
 * **BootstrapperBase**: bootstrapper base class
-
+* **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
 
 ## MvvmLib.Windows (Navigation) [uwp]
   

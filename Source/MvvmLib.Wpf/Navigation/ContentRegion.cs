@@ -14,9 +14,9 @@ namespace MvvmLib.Navigation
     {
         private readonly IContentRegionAdapter contentRegionAdapter;
 
-        private readonly Dictionary<Type, object> viewOrObjectsSingletons;
+        private readonly Dictionary<Type, object> singletonViewOrObjects;
 
-        private readonly Dictionary<Type, List<KeyValuePair<object, object>>> activeViewOrObjects;
+        private readonly Dictionary<Type, List<KeyValuePair<object, object>>> selectableViewOrObjects;
 
         /// <summary>
         /// Gets the history.
@@ -68,8 +68,8 @@ namespace MvvmLib.Navigation
         public ContentRegion(INavigationHistory history, IAnimatedContentStrategy contentStrategy, string regionName, object control)
             : base(contentStrategy, regionName, control)
         {
-            viewOrObjectsSingletons = new Dictionary<Type, object>();
-            activeViewOrObjects = new Dictionary<Type, List<KeyValuePair<object, object>>>();
+            singletonViewOrObjects = new Dictionary<Type, object>();
+            selectableViewOrObjects = new Dictionary<Type, List<KeyValuePair<object, object>>>();
             this.History = history;
             this.contentRegionAdapter = RegionAdapterContainer.GetContentRegionAdapter(control.GetType());
 
@@ -113,7 +113,7 @@ namespace MvvmLib.Navigation
                 if (p.Strategy == StrategyType.Singleton)
                 {
                     isSingleton = true;
-                    viewOrObjectsSingletons[sourceType] = viewOrObject;
+                    singletonViewOrObjects[sourceType] = viewOrObject;
                 }
             }
             else if (context != null && context is IViewLifetimeStrategy p2)
@@ -121,33 +121,36 @@ namespace MvvmLib.Navigation
                 if (p2.Strategy == StrategyType.Singleton)
                 {
                     isSingleton = true;
-                    viewOrObjectsSingletons[sourceType] = viewOrObject;
+                    singletonViewOrObjects[sourceType] = viewOrObject;
                 }
             }
 
             if (!isSingleton)
             {
-                if (!activeViewOrObjects.ContainsKey(sourceType))
+                if (context != null && context is ISelectable)
                 {
-                    activeViewOrObjects[sourceType] = new List<KeyValuePair<object, object>>();
+                    if (!selectableViewOrObjects.ContainsKey(sourceType))
+                    {
+                        selectableViewOrObjects[sourceType] = new List<KeyValuePair<object, object>>();
+                    }
+                    selectableViewOrObjects[sourceType].Add(new KeyValuePair<object, object>(viewOrObject, context));
                 }
-                activeViewOrObjects[sourceType].Add(new KeyValuePair<object, object>(viewOrObject, context));
             }
         }
 
 
-        private object TryGetExistingViewOrObjectSingleton(Type sourceType)
+        private object TryGetExistingSingletonViewOrObject(Type sourceType)
         {
-            if (viewOrObjectsSingletons.TryGetValue(sourceType, out object viewSingleton))
+            if (singletonViewOrObjects.TryGetValue(sourceType, out object viewSingleton))
             {
                 return viewSingleton;
             }
             return null;
         }
 
-        private object TryGetExistingViewOrObject(Type sourceType, object parameter)
+        private object TryGetExistingSelectableViewOrObject(Type sourceType, object parameter)
         {
-            if (activeViewOrObjects.TryGetValue(sourceType, out List<KeyValuePair<object, object>> instances))
+            if (selectableViewOrObjects.TryGetValue(sourceType, out List<KeyValuePair<object, object>> instances))
             {
                 foreach (var instance in instances)
                 {
@@ -167,13 +170,13 @@ namespace MvvmLib.Navigation
 
         private ViewOrObjectInstanceResult GetOrCreateViewOrObjectInstance(Type sourceType, object parameter)
         {
-            var singletonViewOrObject = TryGetExistingViewOrObjectSingleton(sourceType);
+            var singletonViewOrObject = TryGetExistingSingletonViewOrObject(sourceType);
             if (singletonViewOrObject != null)
             {
                 return new ViewOrObjectInstanceResult(ResolutionType.Singleton, singletonViewOrObject);
             }
 
-            var existingViewOrObject = TryGetExistingViewOrObject(sourceType, parameter);
+            var existingViewOrObject = TryGetExistingSelectableViewOrObject(sourceType, parameter);
             if (existingViewOrObject != null)
             {
                 return new ViewOrObjectInstanceResult(ResolutionType.Existing, existingViewOrObject);
@@ -192,6 +195,20 @@ namespace MvvmLib.Navigation
         public void ClearContent()
         {
             contentRegionAdapter.OnNavigate(Control, null);
+        }
+
+        private void ClearRegionAndChildRegions(IList<NavigationEntry> entries)
+        {
+            foreach (var entry in entries)
+            {
+                // sub child => child => parent
+                if (entry.ChildRegions.Count > 0)
+                    ClearChildRegions(entry);
+
+                // current
+                if (selectableViewOrObjects.ContainsKey(entry.SourceType))
+                    selectableViewOrObjects.Remove(entry.SourceType);
+            }
         }
 
         private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter,
@@ -315,9 +332,6 @@ namespace MvvmLib.Navigation
                     }
                     if (currentContext != null)
                         OnNavigatingFromContext(currentContext);
-
-                    if (currentEntry.ChildRegions.Count > 0)
-                        this.ClearChildRegions(currentEntry);
                 }
 
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
@@ -348,6 +362,8 @@ namespace MvvmLib.Navigation
                 }
 
                 // history
+                // clear regions for forward stack before updating history
+                ClearRegionAndChildRegions(History.ForwardStack);
                 History.Navigate(navigationEntry);
 
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
@@ -438,6 +454,7 @@ namespace MvvmLib.Navigation
                     var entry = this.History.Previous;
                     if (entry != null && entry.SourceType == currentSourceType)
                     {
+                        ClearChildRegions(entry);
                         this.History.BackStack.Remove(entry);
                     }
                 }
@@ -460,7 +477,7 @@ namespace MvvmLib.Navigation
 
         private async Task DoSideNavigationAsync(NavigationEntry toGoEntry, RegionNavigationType regionNavigationType,
             Action<object, object> setContentCallback,
-            Action onCompleteCallback,
+            Action updateHistoryCallback,
             EntranceTransitionType entranceTransitionType,
             ExitTransitionType exitTransitionType)
         {
@@ -545,8 +562,6 @@ namespace MvvmLib.Navigation
                     });
                 });
 
-                onCompleteCallback();
-
                 // on navigated to
                 if (isView)
                 {
@@ -556,6 +571,8 @@ namespace MvvmLib.Navigation
                 {
                     this.OnNavigatingToContext(context, parameter);
                 }
+
+                updateHistoryCallback();
 
                 this.OnNavigatedToChildRegions(toGoEntry.ChildRegions);
                 this.RaiseNavigated(toGoEntry.SourceType, parameter, regionNavigationType);
@@ -624,7 +641,12 @@ namespace MvvmLib.Navigation
             {
                 await this.DoSideNavigationAsync(History.Root, RegionNavigationType.Root,
                   (control, view) => contentRegionAdapter.OnNavigate(control, view),
-                  () => History.NavigateToRoot(),
+                  () =>
+                  {
+                      ClearRegionAndChildRegions(History.BackStack);
+                      ClearRegionAndChildRegions(History.ForwardStack);
+                      History.NavigateToRoot();
+                  },
                   entranceTransitionType,
                   exitTransitionType);
             }

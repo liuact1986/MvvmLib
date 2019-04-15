@@ -149,6 +149,9 @@ namespace MvvmLib.Navigation
         /// <param name="navigationEntry">The new entry</param>
         public void Navigate(NavigationEntry navigationEntry)
         {
+            // navigate => always new entry
+            // push current if exists to backstack
+            // clear forward stack
             if (this.Current != null)
             {
                 this.BackStack.Add(this.Current);
@@ -164,6 +167,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void NavigateToRoot()
         {
+            // set current to root entry
+            // clear back stack
+            // clear forward stack
+
             this.Current = this.Root;
             this.BackStack.Clear();
             this.ForwardStack.Clear();

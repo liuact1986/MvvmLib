@@ -1,5 +1,0 @@
-* MvvmLib.Core
-* 0.0.2
-- Update Validatable and Model Wrapper classes
-* 0.0.4
-- Add redirect (Wpf, Windows)

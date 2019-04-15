@@ -29,10 +29,11 @@ namespace CompositeCommandSample.ViewModels
             get { return canSave; }
             set
             {
-                if (SetProperty(ref canSave, value))
-                {
-                    SaveCommand.RaiseCanExecuteChanged();
-                }
+                SetProperty(ref canSave, value);
+                //if (SetProperty(ref canSave, value))
+                //{
+                //    SaveCommand.RaiseCanExecuteChanged(); // or with ObserveProperty
+                //}
             }
         }
 
@@ -41,7 +42,8 @@ namespace CompositeCommandSample.ViewModels
         public TabViewModel(IApplicationCommands applicationCommands)
         {
             canSave = true;
-            SaveCommand = new RelayCommand(OnSave, CheckCanSave);
+            SaveCommand = new RelayCommand(OnSave, CheckCanSave)
+                .ObserveProperty(() => CanSave);
 
             applicationCommands.SaveAllCommand.Add(SaveCommand);
         }

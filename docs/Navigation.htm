@@ -55,6 +55,8 @@
 
 <li class="tocentry"><a href="#create-a-region-adapter">Create a region Adapter</a></li>
 
+<li class="tocentry"><a href="#bindableobject">BindableObject<T></a></li>
+
 </ul>
 <li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
 </li>
@@ -102,6 +104,7 @@
 <li><strong>IViewLifetimeStrategy</strong>: Allows to get always the same instance of a view (Singleton) for a region</li>
 <li><strong>ISelectable</strong>: allows to select a view </li>
 <li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+<li><strong>BindableObject</strong>: Allows to bind a value or object to Value dependency property and be notified on value changed.</li>
 </ul>
 <h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
@@ -562,6 +565,32 @@ namespace RegionSample.Adapters
 
 <p>And use it</p>
 <pre><code class="xml">&lt;StackPanel nav:RegionManager.ItemsRegion=&quot;{x:Static local:RegionNames.StackPanelRegionName}&quot;&gt;&lt;/StackPanel&gt;
+</code></pre>
+
+<h2 id="bindableobject">BindableObject<T><a class="headerlink" href="#bindableobject" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to bind a value or object to <code>Value</code> dependency property and be notified on value changed.</p>
+</blockquote>
+<p>Example 1:</p>
+<pre><code class="cs">var bindableObject = new BindableObject&lt;string&gt;();
+bindableObject.PropertyChanged += (s, e) =&gt;
+{
+    MessageBox.Show(e.PropertyName);
+};
+bindableObject.Value = &quot;my value&quot;;
+</code></pre>
+
+<p>Example 2:</p>
+<p>binding in Xaml</p>
+<pre><code class="xml">&lt;TextBox Text=&quot;{Binding Value, UpdateSourceTrigger=PropertyChanged}&quot;&gt;&lt;/TextBox&gt;
+</code></pre>
+
+<pre><code class="cs">var bindableObject = new BindableObject&lt;string&gt;();
+bindableObject.PropertyChanged += (s, e) =&gt;
+{
+    MessageBox.Show(e.PropertyName);
+};
+this.DataContext = bindableObject;
 </code></pre>
 
 

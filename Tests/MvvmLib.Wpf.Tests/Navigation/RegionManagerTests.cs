@@ -35,7 +35,7 @@ namespace MvvmLib.Wpf.Tests
             var r2 = RegionManager.GetContentRegionByName(regionName, "c2");
             Assert.AreEqual("c2", r2.ControlName);
 
-            Assert.IsTrue(RegionManager.UnregisterContentRegions(regionName));
+            //Assert.IsTrue(RegionManager.UnregisterContentRegions(regionName));
 
             RegionManager.ClearRegions();
         }
@@ -65,7 +65,7 @@ namespace MvvmLib.Wpf.Tests
             var r2 = RegionManager.GetItemsRegionByName(regionName, "i2");
             Assert.AreEqual("i2", r2.ControlName);
 
-            Assert.IsTrue(RegionManager.UnregisterItemsRegions(regionName));
+            //Assert.IsTrue(RegionManager.RemoveItemsRegion(regionName));
 
             RegionManager.ClearRegions();
         }

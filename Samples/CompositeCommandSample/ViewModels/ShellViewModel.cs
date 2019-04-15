@@ -2,6 +2,7 @@
 using CompositeCommandSample.Views;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using System.Windows;
 
 namespace CompositeCommandSample.ViewModels
 {
@@ -17,7 +18,7 @@ namespace CompositeCommandSample.ViewModels
             this.regionManager = regionManager;
         }
 
-        public async void OnLoaded(object parameter)
+        public async void OnLoaded(FrameworkElement view, object parameter)
         {
             await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
             await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");

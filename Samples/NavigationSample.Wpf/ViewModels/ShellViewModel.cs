@@ -21,7 +21,7 @@ namespace NavigationSample.Wpf.ViewModels
         private async void OnNavigate(Type viewType)
         {
             await regionManager.GetContentRegion("MainRegion")
-                .NavigateAsync(viewType, EntranceTransitionType.SlideInFromLeft, ExitTransitionType.SlideOutToRight);
+                .NavigateAsync(viewType, EntranceTransitionType.SlideInFromRight, ExitTransitionType.SlideOutToRight);
         }
     }
 }

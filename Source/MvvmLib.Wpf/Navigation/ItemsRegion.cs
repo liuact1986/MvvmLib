@@ -9,7 +9,7 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// The Items Region class.
     /// </summary>
-    public class ItemsRegion : RegionBase
+    public sealed class ItemsRegion : RegionBase
     {
         private IItemsRegionAdapter itemsRegionAdapter;
         private SelectableResolver selectableResolver;

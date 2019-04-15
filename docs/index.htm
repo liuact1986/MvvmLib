@@ -80,6 +80,7 @@
 <h2 id="mvvmlib.core-netstandard-2.0-net-4.5">MvvmLib.Core [netstandard 2.0, net 4.5]<a class="headerlink" href="#mvvmlib.core-netstandard-2.0-net-4.5" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <ul>
 <li><strong>BindableBase</strong>, <strong>Validatable</strong>, <strong>Editable</strong>, <strong>ValidateAndEditable</strong> and <strong>ModelWrapper</strong> base classes for <em>Models and ViewModels</em></li>
+<li><strong>NotifyPropertyChangedObserver</strong> and <strong>FilteredNotifyPropertyChangedObserver</strong>: allows to observe and filter an object that implements INotifyPropertyChanged</li>
 <li><strong>Commands</strong> and <strong>composite</strong> command</li>
 <li><strong>Sync</strong> <em>extensions for list and collections</em>. Allows to <strong>sync data</strong></li>
 <li><strong>Singleton</strong></li>
@@ -97,7 +98,10 @@
 <li><strong>INavigatable</strong>: allows the views and view models to be notified on navigate</li>
 <li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
 <li><strong>ILoadedEventListener</strong>: allows to be notified when the view or window is loaded</li>
+<li><strong>IViewLifetimeStrategy</strong>: Allows to get always the same instance of a view (Singleton) for a region</li>
+<li><strong>ISelectable</strong>: allows to select a view </li>
 <li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+<li><strong>BindableObject</strong>: Allows to bind a value or object to Value dependency property and be notified on value changed.</li>
 </ul>
 <h2 id="mvvmlib.windows-navigation-uwp">MvvmLib.Windows (Navigation) [uwp]<a class="headerlink" href="#mvvmlib.windows-navigation-uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <ul>

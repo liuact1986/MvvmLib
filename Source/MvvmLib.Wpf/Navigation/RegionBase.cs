@@ -422,6 +422,7 @@ namespace MvvmLib.Navigation
         }
 
         #endregion // Animation Content strategy
+
         protected object ResolveContextWithViewModelLocator(Type viewType)
         {
             var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType); // singleton or new instance

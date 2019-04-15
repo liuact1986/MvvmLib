@@ -9,6 +9,7 @@
 * **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
 * **ISelectable**: allows to select a view 
 * **BootstrapperBase**: bootstrapper base class
+* **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
 
 ## ViewModelLocator
 
@@ -480,4 +481,36 @@ And use it
 
 ```xml
 <StackPanel nav:RegionManager.ItemsRegion="{x:Static local:RegionNames.StackPanelRegionName}"></StackPanel>
+```
+
+## BindableObject<T>
+
+> Allows to bind a value or object to `Value` dependency property and be notified on value changed.
+
+Example 1:
+
+```cs
+var bindableObject = new BindableObject<string>();
+bindableObject.PropertyChanged += (s, e) =>
+{
+    MessageBox.Show(e.PropertyName);
+};
+bindableObject.Value = "my value";
+```
+
+Example 2:
+
+binding in Xaml
+
+```xml
+<TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+```
+
+```cs
+var bindableObject = new BindableObject<string>();
+bindableObject.PropertyChanged += (s, e) =>
+{
+    MessageBox.Show(e.PropertyName);
+};
+this.DataContext = bindableObject;
 ```

@@ -1,6 +1,7 @@
 # Mvvm
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **NotifyPropertyChangedObserver** and **FilteredNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**
@@ -371,6 +372,45 @@ And use it
 <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" Foreground="Red"></TextBlock>
 ```
 
+## NotifyPropertyChangedObserver and FilteredNotifyPropertyChangedObserver
+
+> Allows to observe and filter an object that implements INotifyPropertyChanged
+
+Example 1:
+
+```cs
+var owner = new User();
+var propertyName = "FirstName";
+
+// the callback is invoked only if the property name is "FirstName" for example
+var filter = new Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool>((s, e) => e.PropertyName == propertyName);
+
+var propertyChangedObserver = new FilterableNotifyPropertyChangedObserver(owner, filter);
+propertyChangedObserver.SubscribeToPropertyChanged((e) => RaiseCanExecuteChanged());
+```
+
+Example 2:
+The owner can be any object that implements INotifyPropertyChanged. Example with the ItemCollection of a TabControl. Notification on tab item count changed.
+
+```cs
+var observer = new NotifyPropertyChangedObserver(MyTabControl.Items);
+observer.SubscribeToPropertyChanged((e) =>
+{
+    MessageBox.Show(e.PropertyName);
+});
+```
+
+We can use PropertyDescriptor in Wpf.
+
+```cs
+DependencyPropertyDescriptor
+    .FromProperty(TabControl.HasItemsProperty, typeof(TabControl))
+    .AddValueChanged(MyTabControl, (s, e) =>
+    {
+        MessageBox.Show(e.ToString()); // raised when the tab items collection is empty
+    });
+```
+
 ## Relay command
 
 Example
@@ -412,6 +452,80 @@ public class PageAViewModel
 ```
 
 **RaiseCanExecuteChanged** allows to invoke the can execute method "on demand".
+
+```cs
+public class TabViewModel : BindableBase
+{
+    private bool canSave;
+    public bool CanSave
+    {
+        get { return canSave; }
+        set
+        {
+            if (SetProperty(ref canSave, value))
+            {
+                SaveCommand.RaiseCanExecuteChanged(); // <=
+            }
+        }
+    }
+
+    public IRelayCommand SaveCommand { get; set; }
+
+    public TabViewModel()
+    {
+        canSave = true;
+        SaveCommand = new RelayCommand(OnSave, CheckCanSave);
+    }
+
+    private void OnSave()
+    {
+        var message = $"Save TabView {Title}! {DateTime.Now.ToLongTimeString()}";
+        MessageBox.Show(message);
+        SaveMessage = message;
+    }
+
+    private bool CheckCanSave()
+    {
+        return canSave;
+    }  
+}
+```
+
+Or with **ObserveProperty**. This method allows to **observe a property** and **raise can execute changed automatically** on property changed. 
+
+```cs
+public class TabViewModel : BindableBase
+{
+    private bool canSave;
+    public bool CanSave
+    {
+        get { return canSave; }
+        set { SetProperty(ref canSave, value); }
+    }
+
+    public IRelayCommand SaveCommand { get; set; }
+
+    public TabViewModel()
+    {
+        canSave = true;
+        SaveCommand = new RelayCommand(OnSave, CheckCanSave)
+            .ObserveProperty(() => CanSave); // <=
+    }
+
+    private void OnSave()
+    {
+        var message = $"Save TabView {Title}! {DateTime.Now.ToLongTimeString()}";
+        MessageBox.Show(message);
+        SaveMessage = message;
+    }
+
+    private bool CheckCanSave()
+    {
+        return canSave;
+    }  
+}
+```
+
 
 ## Composite command
 
