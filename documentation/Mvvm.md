@@ -372,7 +372,7 @@ And use it
 <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" Foreground="Red"></TextBlock>
 ```
 
-## NotifyPropertyChangedObserver and FilteredNotifyPropertyChangedObserver
+## NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver
 
 > Allows to observe and filter an object that implements INotifyPropertyChanged
 
