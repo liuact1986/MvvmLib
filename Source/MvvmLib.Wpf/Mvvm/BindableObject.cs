@@ -6,7 +6,7 @@ namespace MvvmLib.Core.Mvvm
     /// <summary>
     /// Allows to bind a value or object to Value dependency property and be notified on value changed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of the value to observe</typeparam>
     public class BindableObject<T> : DependencyObject, INotifyPropertyChanged
     {
         /// <summary>
@@ -33,7 +33,8 @@ namespace MvvmLib.Core.Mvvm
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var bindableObject = (BindableObject<T>)d;
-            bindableObject.PropertyChanged?.Invoke(bindableObject, new PropertyChangedEventArgs("Value"));
+            if (bindableObject != null)
+                bindableObject.PropertyChanged?.Invoke(bindableObject, new PropertyChangedEventArgs("Value"));
         }
     }
 }

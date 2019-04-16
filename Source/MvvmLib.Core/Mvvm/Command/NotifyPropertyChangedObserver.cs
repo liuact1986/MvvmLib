@@ -68,10 +68,10 @@ namespace MvvmLib.Mvvm
         public Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool> Filter { get; }
 
         /// <summary>
-        /// The default constructor.
+        /// Creates the filterable notify property changed observer class.
         /// </summary>
         /// <param name="owner">The owner class</param>
-        /// <param name="filter"></param>
+        /// <param name="filter">The filter</param>
         public FilterableNotifyPropertyChangedObserver(INotifyPropertyChanged owner, 
             Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool> filter)
             : base(owner)

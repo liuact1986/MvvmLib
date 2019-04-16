@@ -13,7 +13,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**
-* **Messenger** : allows to **subscribe**, **publish** and filter messages
+* **EventAggregator** : allows to **subscribe**, **publish** and filter messages
 
 
 ## MvvmLib.IoC (Dependency Injection) [netstandard 2.0, net 4.5]

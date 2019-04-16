@@ -51,7 +51,7 @@
 
 <li class="tocentry"><a href="#singleton">Singleton</a></li>
 
-<li class="tocentry"><a href="#messenger">Messenger</a></li>
+<li class="tocentry"><a href="#eventaggregator">EventAggregator</a></li>
 
 
 
@@ -102,7 +102,7 @@
 <li><strong>Commands</strong> and <strong>composite</strong> command</li>
 <li><strong>Sync</strong> <em>extensions for list and collections</em>. Allows to <strong>sync data</strong></li>
 <li><strong>Singleton</strong></li>
-<li><strong>Messenger</strong> : allows to <strong>subscribe</strong>, <strong>publish</strong> and filter messages</li>
+<li><strong>EventAggregator</strong> : allows to <strong>subscribe</strong>, <strong>publish</strong> and filter messages</li>
 </ul>
 <h2 id="bindablebase">BindableBase<a class="headerlink" href="#bindablebase" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
@@ -869,59 +869,61 @@ oldItems.Sync(newItems);
 <pre><code class="cs">Singleton&lt;MyService&gt;.Instance.DoSomething();
 </code></pre>
 
-<h2 id="messenger">Messenger<a class="headerlink" href="#messenger" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Inject the service</p>
-<pre><code class="cs">public class ShellViewModel
+<h2 id="eventaggregator">EventAggregator<a class="headerlink" href="#eventaggregator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>allows to subscribe, publish and filter messages</p>
+</blockquote>
+<p><strong>Subscribe</strong> and <strong>publish</strong> with empty event (no parameter)</p>
+<p>Register the eventAggregator as singleton with an ioc container. </p>
+<pre><code class="cs">public class ShellViewModel : BindableBase
 {
-    IMessenger messenger;
-    
-    public ShellViewModel(IMessenger messenger)
+    public ShellViewModel(EventAggregator eventAggregator)
     {
-        this.messenger = messenger;
+
     }
 }
 </code></pre>
 
-<p><strong>Subscribe</strong> and <strong>publish</strong> with empty event (no parameter)</p>
-<p>Create the event class</p>
-<pre><code class="cs">public class MyEvent : EmptyEvent
-{
-
-}
+<p>Or without an ioc container, use the Singleton class.</p>
+<pre><code class="cs">var eventAggregator = Singleton&lt;EventAggregator&gt;.Instance;
 </code></pre>
 
-<pre><code class="cs">messenger.GetEvent&lt;MyEvent&gt;().Subscribe(() =&gt;
-{
+<p>Create the event class</p>
+<pre><code class="cs">public class MyEvent : EmptyEvent
+{ }
+</code></pre>
 
-});
+<pre><code class="cs">// subscriber
+eventAggregator.GetEvent&lt;MyEvent&gt;().Subscribe(() =&gt; { /* do something with args.Message */ });
+</code></pre>
 
-messenger.GetEvent&lt;MyEvent&gt;().Publish();
+<pre><code class="cs">// publisher
+eventAggregator.GetEvent&lt;MyEvent&gt;().Publish();
 </code></pre>
 
 <p><strong>Subscribe</strong> and <strong>publish</strong> with parameter</p>
-<p>Example with a string parameter</p>
-<p>Create the event class</p>
-<pre><code class="cs">public class MyStringEvent : ParameterizedEvent&lt;string&gt;
+<pre><code class="cs">public class DataSavedEvent : ParameterizedEvent&lt;DataSavedEventArgs&gt;
+{ }
+
+public class DataSavedEventArgs
 {
+    public string Message { get; set; }
 }
 </code></pre>
 
-<pre><code class="cs">messenger.GetEvent&lt;MyStringEvent&gt;().Subscribe((parameter) =&gt;
-{
+<pre><code class="cs">// subscriber
+eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Subscribe(args =&gt; { /* do something with args.Message */ });
+</code></pre>
 
-});
-
-messenger.GetEvent&lt;MyStringEvent&gt;().Publish(&quot;my parameter&quot;);
+<pre><code class="cs">// publisher
+eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Publish(new DataSavedEventArgs { Message = &quot;Data saved.&quot; })
 </code></pre>
 
 <p><strong>Filter</strong></p>
-<p>Exemple: Filter on &quot;user id&quot;</p>
-<pre><code class="cs">messenger.GetEvent&lt;MyUserEvent&gt;().Subscribe((result) =&gt;
-{
+<p>Example: Filter on &quot;user id&quot;</p>
+<pre><code class="cs">eventAggregator.GetEvent&lt;MyUserEvent&gt;().Subscribe(user =&gt; { /* do something */ }).WithFilter(user =&gt; user.Id == 1); // &lt;= not notified
 
-}, (user) =&gt; user.Id == 1); // subscriber not notified
-
-messenger.GetEvent&lt;MyUserEvent&gt;().Publish(new User { Id = 2, UserName = &quot;Marie&quot; });
+messenger.GetEvent&lt;MyUserEvent&gt;().Publish(new User { Id = 2, UserName = &quot;Marie&quot; });  // &lt;=
 </code></pre>
 
 <p>The event class:</p>
@@ -929,35 +931,19 @@ messenger.GetEvent&lt;MyUserEvent&gt;().Publish(new User { Id = 2, UserName = &q
 { }
 </code></pre>
 
-<p>Result <strong>with callback</strong> (the publisher receive a response from the subscriber).</p>
-<pre><code class="cs">public class MyCallbackEvent : ParameterizedEvent&lt;MyCallbackResult&gt;
-{
-
-}
-
-public class MyCallbackResult : ResultWithCallback&lt;string&gt;
-{
-    public string Message { get; set; }
-
-    public MyCallbackResult(string message, Action&lt;string&gt; callback)
-        : base(callback)
-    {
-        this.Message = message;
-    }
-}
+<p><strong>Execution strategy</strong>:</p>
+<ul>
+<li><strong>PublisherThread</strong> (default)</li>
+<li><strong>UIThread</strong></li>
+<li><strong>BackgroundThread</strong></li>
+</ul>
+<pre><code class="cs">eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Subscribe(_ =&gt; { }).WithExecutionStrategy(ExecutionStrategyType.UIThread);
 </code></pre>
 
-<pre><code class="cs">messenger.GetEvent&lt;MyCallbackEvent&gt;().Subscribe((result) =&gt;
-{
-   // result.Message
-    result.InvokeCallback(&quot;my response&quot;);
-});
+<p><strong>Unsubscribe</strong> with the token received on subscription.</p>
+<pre><code class="cs">var subscriberOptions = eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Subscribe(_ =&gt; { });
 
-
-messenger.GetEvent&lt;MyCallbackEvent&gt;().Publish(new MyCallbackResult(&quot;first message&quot;,(response) =&gt;
-{
-    // &quot;my response&quot;
-}));
+var success = eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Unsubscribe(subscriberOptions.Token);
 </code></pre>
 
 

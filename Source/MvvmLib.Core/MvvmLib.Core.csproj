@@ -3,16 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.8</Version>
+    <Version>0.1.0</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
 * Mvvm
   * BindableBase, Validatable, Editable, ValidateAndEditable and ModelWrapper base classes for Models and ViewModels
+  * NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver: allows to observe and filter an object that implements INotifyPropertyChanged
   * Commands and composite command
   * Sync extensions for list and collections. Allows to sync data
   * Singleton
-* Messenger : allows to subscribe, publish and filter messages</Description>
+* EventAggregator : allows to subscribe, publish and filter messages</Description>
     <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <Authors>romagny13</Authors>

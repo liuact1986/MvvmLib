@@ -5,7 +5,7 @@
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
 * **Singleton**
-* **Messenger** : allows to **subscribe**, **publish** and filter messages
+* **EventAggregator** : allows to **subscribe**, **publish** and filter messages
 
 ## BindableBase
 
@@ -786,109 +786,98 @@ Example:
 Singleton<MyService>.Instance.DoSomething();
 ```
 
-## Messenger
+## EventAggregator
 
-Inject the service
+> allows to subscribe, publish and filter messages
+
+**Subscribe** and **publish** with empty event (no parameter)
+
+Register the eventAggregator as singleton with an ioc container. 
 
 ```cs
-public class ShellViewModel
+public class ShellViewModel : BindableBase
 {
-    IMessenger messenger;
-    
-    public ShellViewModel(IMessenger messenger)
+    public ShellViewModel(EventAggregator eventAggregator)
     {
-        this.messenger = messenger;
+
     }
 }
 ```
 
-**Subscribe** and **publish** with empty event (no parameter)
+Or without an ioc container, use the Singleton class.
+```cs
+var eventAggregator = Singleton<EventAggregator>.Instance;
+```
 
 Create the event class
 ```cs
 public class MyEvent : EmptyEvent
-{
-
-}
+{ }
 ```
 
 ```cs
-messenger.GetEvent<MyEvent>().Subscribe(() =>
-{
+// subscriber
+eventAggregator.GetEvent<MyEvent>().Subscribe(() => { /* do something with args.Message */ });
+```
 
-});
-
-messenger.GetEvent<MyEvent>().Publish();
+```cs
+// publisher
+eventAggregator.GetEvent<MyEvent>().Publish();
 ```
 
 **Subscribe** and **publish** with parameter
 
-Example with a string parameter
-
-Create the event class
 ```cs
-public class MyStringEvent : ParameterizedEvent<string>
+public class DataSavedEvent : ParameterizedEvent<DataSavedEventArgs>
+{ }
+
+public class DataSavedEventArgs
 {
+    public string Message { get; set; }
 }
 ```
 
 ```cs
-messenger.GetEvent<MyStringEvent>().Subscribe((parameter) =>
-{
+// subscriber
+eventAggregator.GetEvent<DataSavedEvent>().Subscribe(args => { /* do something with args.Message */ });
+```
 
-});
-
-messenger.GetEvent<MyStringEvent>().Publish("my parameter");
+```cs
+// publisher
+eventAggregator.GetEvent<DataSavedEvent>().Publish(new DataSavedEventArgs { Message = "Data saved." })
 ```
 
 **Filter**
 
-Exemple: Filter on "user id"
+Example: Filter on "user id"
 
 ```cs
-messenger.GetEvent<MyUserEvent>().Subscribe((result) =>
-{
+eventAggregator.GetEvent<MyUserEvent>().Subscribe(user => { /* do something */ }).WithFilter(user => user.Id == 1); // <= not notified
 
-}, (user) => user.Id == 1); // subscriber not notified
-
-messenger.GetEvent<MyUserEvent>().Publish(new User { Id = 2, UserName = "Marie" });
+messenger.GetEvent<MyUserEvent>().Publish(new User { Id = 2, UserName = "Marie" });  // <=
 ```
 The event class:
+
 ```cs
 public class MyUserEvent : ParameterizedEvent<User>
 { }
 ```
 
-Result **with callback** \(the publisher receive a response from the subscriber\).
+**Execution strategy**:
+
+* **PublisherThread** (default)
+* **UIThread**
+* **BackgroundThread**
 
 ```cs
-public class MyCallbackEvent : ParameterizedEvent<MyCallbackResult>
-{
-
-}
-
-public class MyCallbackResult : ResultWithCallback<string>
-{
-    public string Message { get; set; }
-
-    public MyCallbackResult(string message, Action<string> callback)
-        : base(callback)
-    {
-        this.Message = message;
-    }
-}
+eventAggregator.GetEvent<DataSavedEvent>().Subscribe(_ => { }).WithExecutionStrategy(ExecutionStrategyType.UIThread);
 ```
+
+**Unsubscribe** with the token received on subscription.
 
 ```cs
-messenger.GetEvent<MyCallbackEvent>().Subscribe((result) =>
-{
-   // result.Message
-    result.InvokeCallback("my response");
-});
+var subscriberOptions = eventAggregator.GetEvent<DataSavedEvent>().Subscribe(_ => { });
 
-
-messenger.GetEvent<MyCallbackEvent>().Publish(new MyCallbackResult("first message",(response) =>
-{
-    // "my response"
-}));
+var success = eventAggregator.GetEvent<DataSavedEvent>().Unsubscribe(subscriberOptions.Token);
 ```
+

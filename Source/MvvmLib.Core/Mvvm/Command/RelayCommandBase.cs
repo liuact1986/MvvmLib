@@ -75,11 +75,11 @@ namespace MvvmLib.Mvvm
         /// Observes <see cref="INotifyPropertyChanged"/> event for a property and raises <see cref="RaiseCanExecuteChanged"/> automatically.
         /// </summary>
         /// <typeparam name="T">The type of property</typeparam>
-        /// <param name="expression">The property expression</param>
+        /// <param name="propertyExpression">The property expression</param>
         /// <returns>The command</returns>
-        public RelayCommandBase ObserveProperty<T>(Expression<Func<T>> expression)
+        public RelayCommandBase ObserveProperty<T>(Expression<Func<T>> propertyExpression)
         {
-            this.ObservePropertyInternal(expression);
+            this.ObservePropertyInternal(propertyExpression);
             return this;
         }
     }
