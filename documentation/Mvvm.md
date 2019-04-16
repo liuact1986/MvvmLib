@@ -790,7 +790,6 @@ Singleton<MyService>.Instance.DoSomething();
 
 > allows to subscribe, publish and filter messages
 
-**Subscribe** and **publish** with empty event (no parameter)
 
 Register the eventAggregator as singleton with an ioc container. 
 
@@ -808,6 +807,8 @@ Or without an ioc container, use the Singleton class.
 ```cs
 var eventAggregator = Singleton<EventAggregator>.Instance;
 ```
+
+**Subscribe** and **publish** with empty event (no parameter)
 
 Create the event class
 ```cs

@@ -873,7 +873,6 @@ oldItems.Sync(newItems);
 <blockquote>
 <p>allows to subscribe, publish and filter messages</p>
 </blockquote>
-<p><strong>Subscribe</strong> and <strong>publish</strong> with empty event (no parameter)</p>
 <p>Register the eventAggregator as singleton with an ioc container. </p>
 <pre><code class="cs">public class ShellViewModel : BindableBase
 {
@@ -888,6 +887,7 @@ oldItems.Sync(newItems);
 <pre><code class="cs">var eventAggregator = Singleton&lt;EventAggregator&gt;.Instance;
 </code></pre>
 
+<p><strong>Subscribe</strong> and <strong>publish</strong> with empty event (no parameter)</p>
 <p>Create the event class</p>
 <pre><code class="cs">public class MyEvent : EmptyEvent
 { }
