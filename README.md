@@ -4,12 +4,16 @@
 
 This package is going to merge my 3 other projects ([WpfLib](https://github.com/romagny13/WpfLib), [UwpLib](https://github.com/romagny13/UwpLib), [XFLib](https://github.com/romagny13/XFLib)) in one single solution. 
 
+<br />
+
+[Documentation](https://romagny13.github.io/MvvmLib/)
+
+<p></p>
 
 ##### If you enjoy what I build then please <a href='https://ko-fi.com/R6R7TXJE' target='_blank'><img height='30' style='border:0px;height:30px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> :-)
 ___
 
 
-[Documentation](https://romagny13.github.io/MvvmLib/)
 
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
