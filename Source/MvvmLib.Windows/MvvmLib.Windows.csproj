@@ -131,7 +131,7 @@
     <Compile Include="Navigation\FrameFacade.cs" />
     <Compile Include="Navigation\FrameNavigatedEventArgs.cs" />
     <Compile Include="Navigation\FrameNavigatingEventArgs.cs" />
-    <Compile Include="Navigation\FrameNavigationCanceledEventArgs.cs" />
+    <Compile Include="Navigation\FrameNavigationCancelledEventArgs.cs" />
     <Compile Include="Navigation\FrameNavigationService.cs" />
     <Compile Include="Navigation\Interfaces\IBackRequestManager.cs" />
     <Compile Include="Navigation\Interfaces\IDeactivatable.cs" />

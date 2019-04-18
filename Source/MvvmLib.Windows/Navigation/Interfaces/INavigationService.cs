@@ -45,7 +45,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Invoked when the navigation is canceled.
         /// </summary>
-        event EventHandler<FrameNavigationCanceledEventArgs> NavigationCancelled;
+        event EventHandler<FrameNavigationCancelledEventArgs> NavigationCancelled;
 
         /// <summary>
         /// The frame back stack.

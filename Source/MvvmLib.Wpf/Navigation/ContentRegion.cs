@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MvvmLib.Navigation
 {
@@ -12,11 +13,17 @@ namespace MvvmLib.Navigation
     /// </summary>
     public sealed class ContentRegion : RegionBase
     {
-        private readonly IContentRegionAdapter contentRegionAdapter;
+        private ViewOrObjectManager ViewOrObjectManager;
+        private IContentRegionAnimation defaultRegionNavigationAnimation;
 
-        private readonly Dictionary<Type, object> singletonViewOrObjects;
+        /// <summary>
+        /// The default animation for the region.
+        /// </summary>
+        public IContentRegionAnimation DefaultRegionAnimation
+        {
+            get { return defaultRegionNavigationAnimation; }
+        }
 
-        private readonly Dictionary<Type, List<KeyValuePair<object, object>>> selectableViewOrObjects;
 
         /// <summary>
         /// Gets the history.
@@ -62,16 +69,18 @@ namespace MvvmLib.Navigation
         /// Creates an ContentRegion.
         /// </summary>
         /// <param name="history">The history</param>
-        /// <param name="contentStrategy">The content strategy</param>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ContentRegion(INavigationHistory history, IAnimatedContentStrategy contentStrategy, string regionName, object control)
-            : base(contentStrategy, regionName, control)
+        public ContentRegion(INavigationHistory history, string regionName, object control)
+            : base(regionName, control)
         {
-            singletonViewOrObjects = new Dictionary<Type, object>();
-            selectableViewOrObjects = new Dictionary<Type, List<KeyValuePair<object, object>>>();
+            if (!(control is ContentControl)) { throw new NotSupportedException($"Only the \"ContentControl\" is supported for ContentRegion. Type of {control.GetType().Name}"); }
+
             this.History = history;
-            this.contentRegionAdapter = RegionAdapterContainer.GetContentRegionAdapter(control.GetType());
+            this.ViewOrObjectManager = new ViewOrObjectManager();
+
+
+            this.defaultRegionNavigationAnimation = new ContentRegionAnimation((ContentControl)control);
 
             history.CanGoBackChanged += OnCanGoBackChanged; ;
             history.CanGoForwardChanged += OnCanGoForwardChanged;
@@ -83,8 +92,21 @@ namespace MvvmLib.Navigation
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
         public ContentRegion(string regionName, object control)
-            : this(new NavigationHistory(), new AnimatedContentStrategy(), regionName, control)
+            : this(new NavigationHistory(), regionName, control)
         { }
+
+        /// <summary>
+        /// Short hand to configure kickly the default animation.
+        /// </summary>
+        /// <param name="entranceAnimation">The entrance animation</param>
+        /// <param name="exitAnimation">The exite animation</param>
+        /// <param name="simultaneous">Playing behavior</param>
+        public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation, bool simultaneous = false)
+        {
+            defaultRegionNavigationAnimation.EntranceAnimation = entranceAnimation;
+            defaultRegionNavigationAnimation.ExitAnimation = exitAnimation;
+            defaultRegionNavigationAnimation.Simultaneous = simultaneous;
+        }
 
         private void OnCanGoBackChanged(object sender, EventArgs e)
         {
@@ -104,97 +126,54 @@ namespace MvvmLib.Navigation
 
         #region View or object management
 
-        private void AddActiveViewOrObject(Type sourceType, object viewOrObject, object context)
+        private void TryAddViewOrObject(Type sourceType, object viewOrObject, object context)
         {
-            bool isSingleton = false;
-            // singleton 
-            if (viewOrObject is IViewLifetimeStrategy p)
-            {
-                if (p.Strategy == StrategyType.Singleton)
-                {
-                    isSingleton = true;
-                    singletonViewOrObjects[sourceType] = viewOrObject;
-                }
-            }
-            else if (context != null && context is IViewLifetimeStrategy p2)
-            {
-                if (p2.Strategy == StrategyType.Singleton)
-                {
-                    isSingleton = true;
-                    singletonViewOrObjects[sourceType] = viewOrObject;
-                }
-            }
-
-            if (!isSingleton)
-            {
-                if (context != null && context is ISelectable)
-                {
-                    if (!selectableViewOrObjects.ContainsKey(sourceType))
-                    {
-                        selectableViewOrObjects[sourceType] = new List<KeyValuePair<object, object>>();
-                    }
-                    selectableViewOrObjects[sourceType].Add(new KeyValuePair<object, object>(viewOrObject, context));
-                }
-            }
-        }
-
-
-        private object TryGetExistingSingletonViewOrObject(Type sourceType)
-        {
-            if (singletonViewOrObjects.TryGetValue(sourceType, out object viewSingleton))
-            {
-                return viewSingleton;
-            }
-            return null;
-        }
-
-        private object TryGetExistingSelectableViewOrObject(Type sourceType, object parameter)
-        {
-            if (selectableViewOrObjects.TryGetValue(sourceType, out List<KeyValuePair<object, object>> instances))
-            {
-                foreach (var instance in instances)
-                {
-                    var context = instance.Value;
-                    if (context != null && context is ISelectable p)
-                    {
-                        if (p.IsTarget(sourceType, parameter))
-                        {
-                            // view
-                            return instance.Key;
-                        }
-                    }
-                }
-            }
-            return null;
+            ViewOrObjectManager.TryAddViewOrObject(sourceType, viewOrObject, context);
         }
 
         private ViewOrObjectInstanceResult GetOrCreateViewOrObjectInstance(Type sourceType, object parameter)
         {
-            var singletonViewOrObject = TryGetExistingSingletonViewOrObject(sourceType);
-            if (singletonViewOrObject != null)
-            {
-                return new ViewOrObjectInstanceResult(ResolutionType.Singleton, singletonViewOrObject);
-            }
-
-            var existingViewOrObject = TryGetExistingSelectableViewOrObject(sourceType, parameter);
-            if (existingViewOrObject != null)
-            {
-                return new ViewOrObjectInstanceResult(ResolutionType.Existing, existingViewOrObject);
-            }
-
-            var newViewOrObject = CreateViewOrObjectInstance(sourceType);
-            return new ViewOrObjectInstanceResult(ResolutionType.New, newViewOrObject);
+            return ViewOrObjectManager.GetOrCreateViewOrObjectInstance(sourceType, parameter);
         }
 
         #endregion // View or object management
 
+        private object GetOrSetContext(ViewOrObjectInstanceResult viewOrObjectResult)
+        {
+            object context = null;
+            if (viewOrObjectResult.ResolutionType == ResolutionType.New)
+            {
+                var view = viewOrObjectResult.Instance as FrameworkElement;
+                if (view != null)
+                {
+                    if (view.DataContext != null)
+                    {
+                        context = view.DataContext;
+                    }
+                    else
+                    {
+                        context = ResolveContextWithViewModelLocator(viewOrObjectResult.SourceType);
+                        if (context != null)
+                            view.DataContext = context;
+                    }
+                }
+            }
+            else
+            {
+                var view = viewOrObjectResult.Instance as FrameworkElement;
+                if (view != null)
+                    if (view.DataContext != null)
+                        context = view.DataContext;
+            }
+            return context;
+        }
 
         /// <summary>
         /// Clear content with no animation.
         /// </summary>
         public void ClearContent()
         {
-            contentRegionAdapter.OnNavigate(Control, null);
+            ((ContentControl)Control).Content = null;
         }
 
         private void ClearRegionAndChildRegions(IList<NavigationEntry> entries)
@@ -206,14 +185,11 @@ namespace MvvmLib.Navigation
                     ClearChildRegions(entry);
 
                 // current
-                if (selectableViewOrObjects.ContainsKey(entry.SourceType))
-                    selectableViewOrObjects.Remove(entry.SourceType);
+                ViewOrObjectManager.RemoveSelectable(entry.SourceType);
             }
         }
 
-        private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter,
-            EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter, IContentRegionAnimation regionAnimation)
         {
             if (sourceType == null) { throw new ArgumentNullException(nameof(sourceType)); }
 
@@ -222,161 +198,74 @@ namespace MvvmLib.Navigation
             try
             {
                 var currentEntry = this.History.Current;
-                var hasCurrentEntry = currentEntry != null;
-                bool currentIsView = false;
-                FrameworkElement currentView = null;
-                object currentContext = null;
-                if (hasCurrentEntry)
+
+                if (currentEntry != null)
                 {
+                    // navigating event
                     this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.New);
 
-                    currentIsView = IsView(currentEntry.ViewOrObject);
-                    if (currentIsView)
-                    {
-                        currentView = currentEntry.ViewOrObject as FrameworkElement;
-                    }
-                    currentContext = currentEntry.Context;
+                    // Can Deactivate
+                    await CheckCanDeactivateAsync(currentEntry);
                 }
 
-                // Can deactivate current
-                if (hasCurrentEntry)
-                {
-                    // throw a navigation failed exception on fail
-                    await CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions);
-
-                    if (currentIsView)
-                    {
-                        if (!await CanDeactivateViewAsync(currentView))
-                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.View, currentView, this);
-                    }
-
-                    if (currentContext != null)
-                    {
-                        if (!await CanDeactivateContextAsync(currentContext))
-                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, currentContext, this);
-                    }
-                }
-
-                // view and context
+                // view or object
                 var viewOrObjectResult = GetOrCreateViewOrObjectInstance(sourceType, parameter);
+                var context = GetOrSetContext(viewOrObjectResult);
+
+                // context
                 object viewOrObject = viewOrObjectResult.Instance;
+                var view = viewOrObject as FrameworkElement;
 
-                var isView = IsView(viewOrObject);
-                var view = viewOrObject as FrameworkElement; // hum ?
-                object context = null;
-                if (viewOrObjectResult.ResolutionType == ResolutionType.New)
-                {
-                    if (isView)
-                    {
-                        if (view.DataContext != null)
-                        {
-                            context = view.DataContext;
-                        }
-                        else
-                        {
-                            context = ResolveContextWithViewModelLocator(sourceType);
-                            if (context != null)
-                                view.DataContext = context;
-                        }
-                    }
-                }
-                else
-                {
-                    if (isView)
-                        if (view.DataContext != null)
-                            context = view.DataContext;
-                }
-
+                // loaded
                 var navigationEntry = new NavigationEntry(sourceType, viewOrObject, parameter, context);
-
-                if (viewOrObjectResult.ResolutionType == ResolutionType.New && isView)
+                if (viewOrObjectResult.ResolutionType == ResolutionType.New && view != null)
                 {
-                    // Called only after "control.Content = view"
-                    var listener = new FrameworkElementLoaderListener(view);
-                    listener.Subscribe((s, e) =>
+                    HandleLoaded(view, (s, e) =>
                     {
                         var childRegions = FindChildRegions((DependencyObject)s);
                         navigationEntry.ChildRegions = childRegions;
-                        listener.Unsubscribe();
-                        listener = null;
 
                         this.NotifyLoadedListener(view, context, parameter);
                     });
                 }
 
-                // can activate new 
-                if (isView)
-                {
-                    if (!await CanActivateViewAsync(view, parameter))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.View, view, this);
-
-                    if (context != null)
-                    {
-                        if (!await CanActivateContextAsync(context, parameter))
-                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, context, this);
-                    }
-                }
+                // Can Activate
+                if (view != null)
+                    await CheckCanActivateAsync(view, context, parameter);
 
                 if (context != null)
-                {
-                    this.NotifyRegionKnowledge(this, context);
-                }
+                    this.NotifyRegionKnowledge(this, context); // ?
 
                 // on navigating from
-                if (hasCurrentEntry)
-                {
-                    if (currentIsView)
-                    {
-                        OnNavigatingFromChildRegions(currentEntry.ChildRegions);
-                        OnNavigatingFromView(currentView);
-                    }
-                    if (currentContext != null)
-                        OnNavigatingFromContext(currentContext);
-                }
+                if (currentEntry != null)
+                    OnNavigatingFrom(currentEntry);
 
+                // on navigating to
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
                 {
-                    // on navigating to
-                    if (isView)
-                    {
-                        OnNavigatingToView(view, parameter);
-                        if (context != null)
-                            OnNavigatingToContext(context, parameter);
-                    }
+                    if (view != null)
+                        OnNavigatingTo(view, context, parameter);
                 }
 
                 // change content
-                var currentRegionContent = contentRegionAdapter.GetContent(Control);
-                this.AnimateOnLeave(currentRegionContent, exitTransitionType, () =>
-                {
-                    this.AnimateOnEnter(view, entranceTransitionType, () =>
-                    {
-                        // change region content
-                        contentRegionAdapter.OnNavigate(Control, viewOrObject);
-                    });
-                });
+                regionAnimation.Start(viewOrObject);
 
-                if (viewOrObjectResult.ResolutionType == ResolutionType.New)
-                {
-                    AddActiveViewOrObject(sourceType, viewOrObject, context);
-                }
-
-                // history
-                // clear regions for forward stack before updating history
-                ClearRegionAndChildRegions(History.ForwardStack);
-                History.Navigate(navigationEntry);
-
+                // on navigated to
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
                 {
-                    // on navigated to
-                    if (isView)
-                    {
-                        OnNavigatedToView(view, parameter);
-                        if (context != null)
-                            OnNavigatedToContext(context, parameter);
-                    }
+                    if (view != null)
+                        OnNavigatedTo(view, context, parameter);
                 }
 
+                // clear region and child regions for forward stack
+                ClearRegionAndChildRegions(History.ForwardStack);
+                // hsitory
+                History.Navigate(navigationEntry);
+
+                if (viewOrObjectResult.ResolutionType == ResolutionType.New)
+                    TryAddViewOrObject(sourceType, viewOrObject, context);
+
+                // navigated event
                 this.RaiseNavigated(sourceType, parameter, RegionNavigationType.New);
             }
             catch (NavigationFailedException ex)
@@ -394,9 +283,7 @@ namespace MvvmLib.Navigation
             }
 
             if (!navigationSuccess)
-            {
                 RegionManager.RemoveNonLoadedRegions();
-            }
 
             return navigationSuccess;
         }
@@ -405,48 +292,38 @@ namespace MvvmLib.Navigation
         /// Navigates to view and notify viewmodel.
         /// </summary>
         /// <param name="sourceType">The view type</param>
-        /// <param name="parameter">The parameter</param>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task NavigateAsync(Type sourceType, object parameter,
-            EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task NavigateAsync(Type sourceType)
         {
-            await this.ProcessNavigateAsync(sourceType, parameter, entranceTransitionType, exitTransitionType);
+            await this.ProcessNavigateAsync(sourceType, null, defaultRegionNavigationAnimation);
         }
 
         /// <summary>
         /// Navigates to view and notify viewmodel.
         /// </summary>
         /// <param name="sourceType">The view type</param>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
+        /// <param name="parameter">The parameter</param>
         /// <returns></returns>
-        public async Task NavigateAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task NavigateAsync(Type sourceType, object parameter)
         {
-            await this.ProcessNavigateAsync(sourceType, null, entranceTransitionType, exitTransitionType);
+            await this.ProcessNavigateAsync(sourceType, parameter, defaultRegionNavigationAnimation);
         }
+
 
         /// <summary>
         /// Redirect to the view and remove the previous entry from history.
         /// </summary>
         /// <param name="sourceType">The type of the view to redirect</param>
         /// <param name="parameter">The parameter</param>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task RedirectAsync(Type sourceType, object parameter,
-            EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task RedirectAsync(Type sourceType, object parameter)
         {
             var currentSourceType = this.History.Current?.SourceType;
 
             // delay 
             await Task.Delay(1);
 
-            if (await this.ProcessNavigateAsync(sourceType, parameter, entranceTransitionType, exitTransitionType))
+            if (await this.ProcessNavigateAsync(sourceType, parameter, defaultRegionNavigationAnimation))
             {
                 if (currentSourceType != null)
                 {
@@ -465,117 +342,47 @@ namespace MvvmLib.Navigation
         /// Redirect to the view and remove the previous entry from history.
         /// </summary>
         /// <param name="sourceType">The type of the view to redirect</param>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task RedirectAsync(Type sourceType,
-            EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task RedirectAsync(Type sourceType)
         {
-            await RedirectAsync(sourceType, null, entranceTransitionType, exitTransitionType);
+            await RedirectAsync(sourceType, null);
         }
 
         private async Task DoSideNavigationAsync(NavigationEntry toGoEntry, RegionNavigationType regionNavigationType,
-            Action<object, object> setContentCallback,
             Action updateHistoryCallback,
-            EntranceTransitionType entranceTransitionType,
-            ExitTransitionType exitTransitionType)
+            IContentRegionAnimation regionAnimation)
         {
 
             try
             {
                 var currentEntry = this.History.Current;
-                this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.Back);
+                // navigating event
+                this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.New);
 
-                bool currentIsView = false;
-                FrameworkElement currentView = null;
-                currentIsView = IsView(currentEntry.ViewOrObject);
-                if (currentIsView)
-                {
-                    currentView = currentEntry.ViewOrObject as FrameworkElement;
-                }
-                object currentContext = currentEntry.Context;
+                // Can Deactivate
+                await CheckCanDeactivateAsync(currentEntry);
 
-                // Can deactivate current
-                if (currentIsView)
-                {
-                    // throw a navigation failed exception on fail
-                    await CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions);
-
-                    if (!await CanDeactivateViewAsync(currentView))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.View, currentView, this);
-                }
-
-                if (currentContext != null)
-                {
-                    if (!await CanDeactivateContextAsync(currentContext))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, currentContext, this);
-                }
-
-                // can activate parent => child regions => sub child regions
-                var parameter = toGoEntry.Parameter;
-                if (IsView(toGoEntry.ViewOrObject))
-                {
-                    if (!await CanActivateViewAsync((FrameworkElement)toGoEntry.ViewOrObject, parameter))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.View, toGoEntry.ViewOrObject, this);
-
-                }
-                if (toGoEntry.Context != null)
-                {
-                    if (!await CanActivateContextAsync(toGoEntry.Context, parameter))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.Context, toGoEntry.Context, this);
-
-                }
-                // child regions
-                await CheckCanActivateChildRegionsAsync(toGoEntry.ChildRegions);
-
+                // Can Activate
+                await CheckCanActivateAsync(toGoEntry);
 
                 // on navigating from
-                this.OnNavigatingFromChildRegions(currentEntry.ChildRegions);
-                if (currentIsView)
-                {
-                    this.OnNavigatingFromView(currentView);
-                }
+                this.OnNavigatingFrom(currentEntry);
 
-                // on navigating to
-                bool isView = IsView(toGoEntry.ViewOrObject);
-                FrameworkElement view = null;
-                object context = toGoEntry.Context;
-                if (isView)
-                {
-                    view = toGoEntry.ViewOrObject as FrameworkElement;
-                    this.OnNavigatingToView(view, parameter);
-                }
-                if (toGoEntry.Context != null)
-                {
-                    this.OnNavigatingToContext(context, parameter);
-                }
-                this.OnNavigatingToChildRegions(toGoEntry.ChildRegions);
+                // on navigating
+                OnNavigatingTo(toGoEntry);
 
                 // change content
-                var currentRegionContent = contentRegionAdapter.GetContent(Control);
-                this.AnimateOnLeave(currentRegionContent, exitTransitionType, () =>
-                {
-                    this.AnimateOnEnter(view, entranceTransitionType, () =>
-                    {
-                        setContentCallback(Control, toGoEntry.ViewOrObject);
-                    });
-                });
+                var viewOrObject = toGoEntry.ViewOrObject;
+                regionAnimation.Start(viewOrObject);
 
                 // on navigated to
-                if (isView)
-                {
-                    this.OnNavigatedToView(view, parameter);
-                }
-                if (context != null)
-                {
-                    this.OnNavigatingToContext(context, parameter);
-                }
+                OnNavigatedTo(toGoEntry);
 
+                // history
                 updateHistoryCallback();
 
-                this.OnNavigatedToChildRegions(toGoEntry.ChildRegions);
-                this.RaiseNavigated(toGoEntry.SourceType, parameter, regionNavigationType);
+                // navigated event
+                this.RaiseNavigated(toGoEntry.SourceType, toGoEntry.Parameter, regionNavigationType);
             }
             catch (NavigationFailedException ex)
             {
@@ -593,65 +400,51 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Navigates to previous view.
         /// </summary>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task GoBackAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-          ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task GoBackAsync()
         {
             if (this.CanGoBack)
             {
                 await this.DoSideNavigationAsync(History.Previous, RegionNavigationType.Back,
-                    (control, view) => contentRegionAdapter.OnGoBack(control, view),
                     () => History.GoBack(),
-                    entranceTransitionType,
-                    exitTransitionType);
+                    defaultRegionNavigationAnimation);
             }
         }
+
 
         /// <summary>
         /// Navigates to next view.
         /// </summary>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task GoForwardAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-            ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task GoForwardAsync()
         {
             if (this.CanGoForward)
             {
                 await this.DoSideNavigationAsync(History.Next, RegionNavigationType.Forward,
-                   (control, view) => contentRegionAdapter.OnGoForward(control, view),
                    () => History.GoForward(),
-                   entranceTransitionType,
-                   exitTransitionType);
+                   defaultRegionNavigationAnimation);
             }
         }
+
 
         /// <summary>
         /// Navigates to the root view.
         /// </summary>
-        /// <param name="entranceTransitionType">The entrance transition type</param>
-        /// <param name="exitTransitionType">The exit transition type</param>
         /// <returns></returns>
-        public async Task NavigateToRootAsync(EntranceTransitionType entranceTransitionType = EntranceTransitionType.None,
-          ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task NavigateToRootAsync()
         {
             if (this.CanGoBack)
             {
                 await this.DoSideNavigationAsync(History.Root, RegionNavigationType.Root,
-                  (control, view) => contentRegionAdapter.OnNavigate(control, view),
                   () =>
                   {
                       ClearRegionAndChildRegions(History.BackStack);
                       ClearRegionAndChildRegions(History.ForwardStack);
                       History.NavigateToRoot();
                   },
-                  entranceTransitionType,
-                  exitTransitionType);
+                  defaultRegionNavigationAnimation);
             }
         }
-
     }
 }
 

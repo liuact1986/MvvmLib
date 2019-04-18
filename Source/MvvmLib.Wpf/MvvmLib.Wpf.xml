@@ -8,7 +8,7 @@
             <summary>
             Allows to bind a value or object to Value dependency property and be notified on value changed.
             </summary>
-            <typeparam name="T"></typeparam>
+            <typeparam name="T">The type of the value to observe</typeparam>
         </member>
         <member name="E:MvvmLib.Core.Mvvm.BindableObject`1.PropertyChanged">
             <summary>
@@ -98,9 +98,54 @@
             Runs the bootstrapper.
             </summary>
         </member>
+        <member name="T:MvvmLib.Navigation.CanActivateGuard">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for views and view models and returns the result.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.CanActivateGuard.CanActivateViewAsync(System.Windows.FrameworkElement,System.Object)">
+            <summary>
+             Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for the view.
+            </summary>
+            <param name="view">The view</param>
+            <param name="parameter">The parameter</param>
+            <returns>True if Can Activate</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.CanActivateGuard.CanActivateContextAsync(System.Object,System.Object)">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for the view model.
+            </summary>
+            <param name="context">The DataContext</param>
+            <param name="parameter">The paarmeter</param>
+            <returns>True if Can Activate</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.CanDeactivateGuard">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> for views and view models and returns the result.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.CanDeactivateGuard.CanDeactivateViewAsync(System.Windows.FrameworkElement)">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> if the view implements <see cref="T:MvvmLib.Navigation.IDeactivatable"/>.
+            </summary>
+            <param name="currentView">The view</param>
+            <returns>True if Can Deactivate</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.CanDeactivateGuard.CanDeactivateContextAsync(System.Object)">
+            <summary>
+            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> if the view model implements <see cref="T:MvvmLib.Navigation.IDeactivatable"/>.
+            </summary>
+            <param name="currentContext">The current DataContext</param>
+            <returns>True if Can Deactivate</returns>
+        </member>
         <member name="T:MvvmLib.Navigation.ContentRegion">
             <summary>
             The Content Region class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ContentRegion.DefaultRegionAnimation">
+            <summary>
+            The default animation for the region.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.ContentRegion.History">
@@ -133,12 +178,11 @@
             Invoked when can the go forward value changed.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(MvvmLib.Navigation.INavigationHistory,MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(MvvmLib.Navigation.INavigationHistory,System.String,System.Object)">
             <summary>
             Creates an ContentRegion.
             </summary>
             <param name="history">The history</param>
-            <param name="contentStrategy">The content strategy</param>
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
@@ -149,71 +193,65 @@
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.ConfigureAnimation(MvvmLib.Navigation.IContentAnimation,MvvmLib.Navigation.IContentAnimation,System.Boolean)">
+            <summary>
+            Short hand to configure kickly the default animation.
+            </summary>
+            <param name="entranceAnimation">The entrance animation</param>
+            <param name="exitAnimation">The exite animation</param>
+            <param name="simultaneous">Playing behavior</param>
+        </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.ClearContent">
             <summary>
             Clear content with no animation.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type)">
+            <summary>
+            Navigates to view and notify viewmodel.
+            </summary>
+            <param name="sourceType">The view type</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,System.Object)">
             <summary>
             Navigates to view and notify viewmodel.
             </summary>
             <param name="sourceType">The view type</param>
             <param name="parameter">The parameter</param>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
-            <summary>
-            Navigates to view and notify viewmodel.
-            </summary>
-            <param name="sourceType">The view type</param>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
-            <returns></returns>
-        </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type,System.Object)">
             <summary>
             Redirect to the view and remove the previous entry from history.
             </summary>
             <param name="sourceType">The type of the view to redirect</param>
             <param name="parameter">The parameter</param>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type,MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type)">
             <summary>
             Redirect to the view and remove the previous entry from history.
             </summary>
             <param name="sourceType">The type of the view to redirect</param>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.GoBackAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.GoBackAsync">
             <summary>
             Navigates to previous view.
             </summary>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.GoForwardAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.GoForwardAsync">
             <summary>
             Navigates to next view.
             </summary>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateToRootAsync(MvvmLib.Navigation.EntranceTransitionType,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.NavigateToRootAsync">
             <summary>
             Navigates to the root view.
             </summary>
-            <param name="entranceTransitionType">The entrance transition type</param>
-            <param name="exitTransitionType">The exit transition type</param>
             <returns></returns>
         </member>
         <member name="T:MvvmLib.Navigation.INavigationHistory">
@@ -556,6 +594,11 @@
             The Items Region class.
             </summary>
         </member>
+        <member name="P:MvvmLib.Navigation.ItemsRegion.DefaultRegionNavigationAnimation">
+            <summary>
+            The default animation for the region.
+            </summary>
+        </member>
         <member name="P:MvvmLib.Navigation.ItemsRegion.History">
             <summary>
             Gets the history.
@@ -566,12 +609,11 @@
             Gets the current history entry.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(MvvmLib.Navigation.IListHistory,MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(MvvmLib.Navigation.IListHistory,System.String,System.Object)">
             <summary>
             Creates an ItemsRegion.
             </summary>
             <param name="history">The history</param>
-            <param name="contentStrategy">The content strategy</param>
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
@@ -582,51 +624,59 @@
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.ConfigureAnimation(MvvmLib.Navigation.IContentAnimation,MvvmLib.Navigation.IContentAnimation)">
+            <summary>
+            Short hand to configure kickly the default animation.
+            </summary>
+            <param name="entranceAnimation">The entrance animation</param>
+            <param name="exitAnimation">The exite animation</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type,System.Object)">
             <summary>
             Insert a view to the items region.
             </summary>
             <param name="index">The index</param>
             <param name="sourceType">The view or object type</param>
             <param name="parameter">The parameter</param>
-            <param name="entranceTransitionType">The entrance navigation type</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type,MvvmLib.Navigation.EntranceTransitionType)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type)">
             <summary>
             Insert a view to the items region.
             </summary>
             <param name="index">The index</param>
             <param name="sourceType">The view or object type</param>
-            <param name="entranceTransitionType">The entrance navigation type</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,MvvmLib.Navigation.EntranceTransitionType)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,System.Object)">
             <summary>
             Add a view to the items region.
             </summary>
             <param name="sourceType">The view or object type</param>
-            <param name="entranceTransitionType">The entrance navigation type</param>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type)">
+            <summary>
+            Add a view to the items region.
+            </summary>
+            <param name="sourceType">The view or object type</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,System.Object,MvvmLib.Navigation.EntranceTransitionType)">
-            <summary>
-            Add a view to the items region.
-            </summary>
-            <param name="sourceType">The view or object type</param>
-            <param name="parameter">The parameter</param>
-            <param name="entranceTransitionType">The entrance navigation type</param>
-        </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32,MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32,MvvmLib.Navigation.IItemsRegionAnimation)">
             <summary>
             Remove a view from the items region.
             </summary>
             <param name="index">The index</param>
-            <param name="exitTransitionType">The exit navigation type</param>
+            <param name="regionAnimation">The region animation</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveLastAsync(MvvmLib.Navigation.ExitTransitionType)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32)">
+            <summary>
+            Remove a view from the items region.
+            </summary>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveLastAsync">
             <summary>
             Remove the last view from the items region.
             </summary>
-            <param name="exitTransitionType">The exit navigation type</param>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.Clear">
             <summary>
@@ -658,19 +708,19 @@
             Checks if region is loaded.
             </summary>
         </member>
-        <member name="F:MvvmLib.Navigation.RegionBase.animatedContentStrategy">
+        <member name="F:MvvmLib.Navigation.RegionBase.canDeactivateGuard">
             <summary>
-            Allows to animate the content of region on enter and leave.
+            Can Deactivate Guard.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.canActivateGuard">
+            <summary>
+            Can Activate Guard.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.RegionBase.CurrentEntry">
             <summary>
             Gets the current entry of history.
-            </summary>
-        </member>
-        <member name="P:MvvmLib.Navigation.RegionBase.Animation">
-            <summary>
-            Allows to configure animation.
             </summary>
         </member>
         <member name="F:MvvmLib.Navigation.RegionBase.logger">
@@ -682,12 +732,6 @@
             <summary>
             The logger used by the Region
             </summary>
-        </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.CreateLogger">
-            <summary>
-            Creates the logger (DebugLogger by default)
-            </summary>
-            <returns>The logger to use</returns>
         </member>
         <member name="F:MvvmLib.Navigation.RegionBase.navigating">
             <summary>
@@ -719,20 +763,12 @@
             Invoked on navigation cancelled or on exception.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.#ctor(MvvmLib.Navigation.IAnimatedContentStrategy,System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.RegionBase.#ctor(System.String,System.Object)">
             <summary>
             Creates the region.
             </summary>
-            <param name="contentStrategy"></param>
             <param name="regionName"></param>
             <param name="control"></param>
-        </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.IsView(System.Object)">
-            <summary>
-            Checks if the instance is a FrameworkElement.
-            </summary>
-            <param name="instance">The instance</param>
-            <returns>True or false</returns>
         </member>
         <member name="M:MvvmLib.Navigation.RegionBase.CreateViewOrObjectInstance(System.Type)">
             <summary>
@@ -740,6 +776,20 @@
             </summary>
             <param name="viewOrObjectType">The type of the instance</param>
             <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateChildRegionsAsync(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
+            <summary>
+            Check Can Deactivate for child regions.
+            </summary>
+            <param name="childRegions">The child regions</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateAsync(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Check Can Deactivate for child regions and current entry.
+            </summary>
+            <param name="currentEntry">The current navigation entry.</param>
+            <returns></returns>
         </member>
         <member name="T:MvvmLib.Navigation.RegionManager">
             <summary>
@@ -837,6 +887,71 @@
             </summary>
             <param name="obj"></param>
             <param name="value"></param>
+        </member>
+        <member name="T:MvvmLib.Navigation.ViewOrObjectManager">
+            <summary>
+            Allows to manage view or object instances for regions.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ViewOrObjectManager.Singletons">
+            <summary>
+            Registered View or objects as Singletons that implement <see cref="T:MvvmLib.Navigation.IViewLifetimeStrategy"/>.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.ViewOrObjectManager.Selectables">
+            <summary>
+            Registered View or objects that implement <see cref="T:MvvmLib.Navigation.ISelectable"/>.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.#ctor">
+            <summary>
+            Creates the view or object maanager.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.TryAddViewOrObject(System.Type,System.Object,System.Object)">
+            <summary>
+            Add view or object that implements <see cref="T:MvvmLib.Navigation.IViewLifetimeStrategy"/> or <see cref="T:MvvmLib.Navigation.ISelectable"/>.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="viewOrObject">The instance</param>
+            <param name="context">The context</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.TryGetSingleton(System.Type)">
+            <summary>
+            Tries to get a singleton for the type.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <returns>The singleton found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.TryGetSelectable(System.Type,System.Object)">
+            <summary>
+            Tries to get a registered selectable for the type.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="parameter">The parameter</param>
+            <returns>The selectable found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.CreateInstance(System.Type)">
+            <summary>
+            Creates an new instance of the type.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <returns>The new instance</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.GetOrCreateViewOrObjectInstance(System.Type,System.Object)">
+            <summary>
+            Gets a singleton, a selectable or an new instance.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="parameter">The parameter</param>
+            <returns>The instance with <see cref="T:MvvmLib.Navigation.ResolutionType"/></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.ViewOrObjectManager.RemoveSelectable(System.Type)">
+            <summary>
+            Removes the selectable.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <returns>True if removed</returns>
         </member>
         <member name="T:MvvmLib.Navigation.ViewResolver">
             <summary>

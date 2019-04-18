@@ -11,9 +11,19 @@ namespace MvvmLib.Navigation
     /// </summary>
     public sealed class ItemsRegion : RegionBase
     {
+        private readonly IItemsRegionAnimation emptyRegionAnimation = new ItemsRegionAnimation();
+
         private IItemsRegionAdapter itemsRegionAdapter;
         private SelectableResolver selectableResolver;
+        private readonly IItemsRegionAnimation defaultRegionNavigationAnimation;
 
+        /// <summary>
+        /// The default animation for the region.
+        /// </summary>
+        public IItemsRegionAnimation DefaultRegionNavigationAnimation
+        {
+            get { return defaultRegionNavigationAnimation; }
+        }
         /// <summary>
         /// Gets the history.
         /// </summary>
@@ -28,14 +38,14 @@ namespace MvvmLib.Navigation
         /// Creates an ItemsRegion.
         /// </summary>
         /// <param name="history">The history</param>
-        /// <param name="contentStrategy">The content strategy</param>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ItemsRegion(IListHistory history, IAnimatedContentStrategy contentStrategy, string regionName, object control)
-            : base(contentStrategy, regionName, control)
+        public ItemsRegion(IListHistory history, string regionName, object control)
+            : base(regionName, control)
         {
             this.History = history;
             this.selectableResolver = new SelectableResolver();
+            this.defaultRegionNavigationAnimation = new ItemsRegionAnimation();
             this.itemsRegionAdapter = RegionAdapterContainer.GetItemsRegionAdapter(control.GetType());
         }
 
@@ -45,16 +55,44 @@ namespace MvvmLib.Navigation
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
         public ItemsRegion(string regionName, object control)
-            : this(new ListHistory(),
-               new AnimatedContentStrategy(), regionName, control)
+            : this(new ListHistory(), regionName, control)
         { }
+
+        /// <summary>
+        /// Short hand to configure kickly the default animation.
+        /// </summary>
+        /// <param name="entranceAnimation">The entrance animation</param>
+        /// <param name="exitAnimation">The exite animation</param>
+        public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation)
+        {
+            defaultRegionNavigationAnimation.EntranceAnimation = entranceAnimation;
+            defaultRegionNavigationAnimation.ExitAnimation = exitAnimation;
+        }
 
         private bool IsValidIndex(int index)
         {
             return index >= 0 && index <= this.History.List.Count;
         }
 
-        private async Task<bool> ProcessInsertAsync(int index, Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        private object GetOrSetContext(Type sourceType, object ViewOrObject)
+        {
+            object context = null;
+            var view = ViewOrObject as FrameworkElement;
+            if (view != null)
+            {
+                if (view.DataContext != null)
+                    context = view.DataContext;
+                else
+                {
+                    context = ResolveContextWithViewModelLocator(sourceType);
+                    if (context != null)
+                        view.DataContext = context;
+                }
+            }
+            return context;
+        }
+
+        private async Task<bool> ProcessInsertAsync(int index, Type sourceType, object parameter, IItemsRegionAnimation regionAnimation)
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
@@ -66,104 +104,65 @@ namespace MvvmLib.Navigation
                 if (selectedIndex != -1)
                 {
                     if (Control is Selector)
-                    {
                         ((Selector)Control).SelectedIndex = selectedIndex;
-                    }
                 }
                 else
                 {
                     var currentEntry = this.History.Current;
+
                     if (currentEntry != null)
-                    {
-                        this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.Insert);
-                    }
+                        // navigating event
+                        this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.New);
 
-                    // create a view for each region container
+                    // view or object
                     var viewOrObject = this.CreateViewOrObjectInstance(sourceType);
-                    if (viewOrObject == null) { throw new InvalidOperationException("View or object null \"" + sourceType.Name + "\""); }
+                    if (viewOrObject == null) { throw new ArgumentException($"View or object null \"{sourceType.Name}\""); }
 
-                    var isView = IsView(viewOrObject);
-                    var view = viewOrObject as FrameworkElement;// hum ?
-
-                    object context = null;
-                    if (isView)
-                    {
-                        if (view.DataContext != null)
-                        {
-                            context = view.DataContext;
-                        }
-                        else
-                        {
-                            context = ResolveContextWithViewModelLocator(sourceType);
-                            if (context != null)
-                                view.DataContext = context;
-                        }
-                    }
-
-                    if (isView)
-                    {
-                        if (!await CanActivateViewAsync(view, parameter))
-                            throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.View, view, this);
-                    }
-
-                    if (context != null)
-                    {
-                        if (!await CanActivateContextAsync(context, parameter))
-                            throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, context, this);
-                    }
-
-                    if (context != null)
-                    {
-                        this.NotifyRegionKnowledge(this, context);
-                    }
+                    // context
+                    var context = GetOrSetContext(sourceType, viewOrObject);
 
                     var navigationEntry = new NavigationEntry(sourceType, viewOrObject, parameter, context);
 
-                    if (isView)
+                    var view = viewOrObject as FrameworkElement;
+                    if (view != null)
                     {
-                        var listener = new FrameworkElementLoaderListener(view);
-                        listener.Subscribe((s, e) =>
+                        // loaded
+                        HandleLoaded(view, (s, e) =>
                         {
                             var childRegions = FindChildRegions((DependencyObject)s);
                             navigationEntry.ChildRegions = childRegions;
-                            listener.Unsubscribe();
-                            listener = null;
 
                             this.NotifyLoadedListener(view, context, parameter);
                         });
+
+                        // Can Activate
+                        await CheckCanActivateAsync(view, context, parameter);
                     }
+
+                    if (context != null)
+                        this.NotifyRegionKnowledge(this, context); // ?
 
                     // on navigating to
-                    if (isView)
-                    {
-                        OnNavigatingToView(view, parameter);
-                        if (context != null)
-                            OnNavigatingToContext(context, parameter);
-                    }
+                    if (view != null)
+                        OnNavigatingTo(view, context, parameter);
 
-                    // animate
-                    if (isView)
+                    // insert
+                    if (view != null)
                     {
-                        AnimateOnEnter(view, entranceTransitionType, () =>
-                        {
-                            itemsRegionAdapter.OnInsert(Control, viewOrObject, index);
-                        });
+                        itemsRegionAdapter.OnInsert(Control, view, index);
+                        regionAnimation.DoOnEnter(view, () => { });
                     }
                     else
-                    {
                         itemsRegionAdapter.OnInsert(Control, viewOrObject, index);
-                    }
+
+                    // on navigated to
+                    if (view != null)
+                        OnNavigatedTo(view, context, parameter);
 
                     // history
                     this.History.Insert(index, navigationEntry);
 
-                    // on navigated to
-                    if (isView)
-                    {
-                        OnNavigatedToView(view, parameter);
-                        if (context != null)
-                            OnNavigatedToContext(context, parameter);
-                    }
+                    // navigated event
                     this.RaiseNavigated(sourceType, parameter, RegionNavigationType.Insert);
                 }
             }
@@ -195,10 +194,9 @@ namespace MvvmLib.Navigation
         /// <param name="index">The index</param>
         /// <param name="sourceType">The view or object type</param>
         /// <param name="parameter">The parameter</param>
-        /// <param name="entranceTransitionType">The entrance navigation type</param>
-        public async Task InsertAsync(int index, Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        public async Task InsertAsync(int index, Type sourceType, object parameter)
         {
-            await this.ProcessInsertAsync(index, sourceType, parameter, entranceTransitionType);
+            await this.ProcessInsertAsync(index, sourceType, parameter, defaultRegionNavigationAnimation);
         }
 
         /// <summary>
@@ -206,96 +204,64 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="index">The index</param>
         /// <param name="sourceType">The view or object type</param>
-        /// <param name="entranceTransitionType">The entrance navigation type</param>
-        public async Task InsertAsync(int index, Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        public async Task InsertAsync(int index, Type sourceType)
         {
-            await this.InsertAsync(index, sourceType, entranceTransitionType);
+            await this.ProcessInsertAsync(index, sourceType, null, defaultRegionNavigationAnimation);
         }
 
-        /// <summary>
-        /// Add a view to the items region.
-        /// </summary>
-        /// <param name="sourceType">The view or object type</param>
-        /// <param name="entranceTransitionType">The entrance navigation type</param>
-        /// <returns></returns>
-        public async Task AddAsync(Type sourceType, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
-        {
-            await this.AddAsync(sourceType, null, entranceTransitionType);
-        }
 
         /// <summary>
         /// Add a view to the items region.
         /// </summary>
         /// <param name="sourceType">The view or object type</param>
         /// <param name="parameter">The parameter</param>
-        /// <param name="entranceTransitionType">The entrance navigation type</param>
-        public async Task AddAsync(Type sourceType, object parameter, EntranceTransitionType entranceTransitionType = EntranceTransitionType.None)
+        public async Task AddAsync(Type sourceType, object parameter)
         {
-            await this.InsertAsync(History.List.Count, sourceType, parameter, entranceTransitionType);
+            await this.ProcessInsertAsync(History.List.Count, sourceType, parameter, defaultRegionNavigationAnimation);
+        }
+
+        /// <summary>
+        /// Add a view to the items region.
+        /// </summary>
+        /// <param name="sourceType">The view or object type</param>
+        /// <returns></returns>
+        public async Task AddAsync(Type sourceType)
+        {
+            await this.ProcessInsertAsync(History.List.Count, sourceType, null, defaultRegionNavigationAnimation);
         }
 
         /// <summary>
         /// Remove a view from the items region.
         /// </summary>
         /// <param name="index">The index</param>
-        /// <param name="exitTransitionType">The exit navigation type</param>
-        public async Task RemoveAtAsync(int index, ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        /// <param name="regionAnimation">The region animation</param>
+        public async Task RemoveAtAsync(int index, IItemsRegionAnimation regionAnimation)
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
             try
             {
                 var entry = this.History.List[index];
+                // navigating event
                 this.RaiseNavigating(entry.SourceType, entry.Parameter, RegionNavigationType.Remove);
 
-                bool isView = IsView(entry.ViewOrObject);
-                FrameworkElement view = entry.ViewOrObject as FrameworkElement;
-                object context = entry.Context;
-
-                // can deactivate sub child regions => child regions => current region
-                if (entry.ChildRegions.Count > 0)
-                {
-                    await CheckCanDeactivateChildRegionsAsync(entry.ChildRegions);
-                }
-                if (isView)
-                {
-                    if (!await this.CanDeactivateViewAsync(view))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.View, view, this);
-                }
-                if (context != null)
-                {
-                    if (!await CanDeactivateContextAsync(context))
-                        throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, context, this);
-                }
+                // Can Deactivate
+                await CheckCanDeactivateAsync(entry);
 
                 // on navigating from
-                this.OnNavigatingFromChildRegions(entry.ChildRegions);
+                this.OnNavigatingFrom(entry);
 
-                if (isView)
-                {
-                    this.OnNavigatingFromView(view);
-                }
-                if (context != null)
-                {
-                    this.OnNavigatingFromContext(context);
-                }
-                if (entry.ChildRegions.Count > 0)
-                    this.ClearChildRegions(entry);
-
-                // animate on leave
-                if (isView)
-                {
-                    AnimateOnLeave(view, exitTransitionType, () =>
-                    {
-                        itemsRegionAdapter.OnRemoveAt(Control, index);
-                    });
-                }
+                // remove
+                var view = entry.ViewOrObject as FrameworkElement;
+                if (view != null)
+                    regionAnimation.DoOnLeave(view, () => itemsRegionAdapter.OnRemoveAt(Control, index));
                 else
-                {
-                    itemsRegionAdapter.OnRemoveAt(Control, index);
-                }
+                    itemsRegionAdapter.OnInsert(Control, entry.ViewOrObject, index);
 
+                // history
                 this.History.RemoveAt(index);
+
+                // navigated event
                 this.RaiseNavigated(entry.SourceType, entry.Parameter, RegionNavigationType.Remove);
             }
             catch (NavigationFailedException ex)
@@ -312,15 +278,21 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Remove a view from the items region.
+        /// </summary>
+        /// <param name="index">The index</param>
+        public async Task RemoveAtAsync(int index)
+        {
+            await this.RemoveAtAsync(index, defaultRegionNavigationAnimation);
+        }
+
+        /// <summary>
         /// Remove the last view from the items region.
         /// </summary>
-        /// <param name="exitTransitionType">The exit navigation type</param>
-        public async Task RemoveLastAsync(ExitTransitionType exitTransitionType = ExitTransitionType.None)
+        public async Task RemoveLastAsync()
         {
             if (this.History.List.Count > 0)
-            {
-                await this.RemoveAtAsync(this.History.List.Count - 1, exitTransitionType);
-            }
+                await this.RemoveAtAsync(this.History.List.Count - 1, defaultRegionNavigationAnimation);
         }
 
         /// <summary>
@@ -335,7 +307,7 @@ namespace MvvmLib.Navigation
                     break;
                 }
 
-                await this.RemoveAtAsync(this.History.List.Count - 1);
+                await this.RemoveAtAsync(this.History.List.Count - 1, emptyRegionAnimation);
             }
         }
 

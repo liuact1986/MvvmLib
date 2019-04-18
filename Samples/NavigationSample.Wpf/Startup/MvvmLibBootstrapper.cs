@@ -17,7 +17,7 @@ namespace NavigationSample
         protected override void RegisterRequiredTypes()
         {
             container.RegisterInstance<IInjector>(container);
-            container.RegisterSingleton<IMessenger, Messenger>();
+            container.RegisterSingleton<IEventAggregator, EventAggregator>();
             container.RegisterSingleton<IRegionManager, RegionManager>();
         }
 

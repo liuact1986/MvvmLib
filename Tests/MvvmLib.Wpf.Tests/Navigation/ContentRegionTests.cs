@@ -9,40 +9,40 @@ using System.Windows.Controls;
 namespace MvvmLib.Wpf.Tests
 {
 
-    public class FakeContentStrategy : IAnimatedContentStrategy
-    {
-        public FrameworkElement view;
-        public object content;
-        public Action cb;
-        public EntranceTransitionType navigationTransitionType;
+    //public class FakeContentStrategy : IAnimatedContentStrategy
+    //{
+    //    public FrameworkElement view;
+    //    public object content;
+    //    public Action cb;
+    //    public EntranceTransitionType navigationTransitionType;
 
-        public int DefaultAnimationDuration { get; set; }
-        public IEasingFunction DefaultEaseFunction { get; set; }
-        public double DefaultFromBottomValue { get; set; }
-        public double DefaultFromLeftValue { get; set; }
-        public double DefaultFromRightValue { get; set; }
-        public double DefaultFromTopValue { get; set; }
-        public double DefaultToBottomValue { get; set; }
-        public double DefaultToLeftValue { get; set; }
-        public double DefaultToRightValue { get; set; }
-        public double DefaultToTopValue { get; set; }
+    //    public int DefaultAnimationDuration { get; set; }
+    //    public IEasingFunction DefaultEaseFunction { get; set; }
+    //    public double DefaultFromBottomValue { get; set; }
+    //    public double DefaultFromLeftValue { get; set; }
+    //    public double DefaultFromRightValue { get; set; }
+    //    public double DefaultFromTopValue { get; set; }
+    //    public double DefaultToBottomValue { get; set; }
+    //    public double DefaultToLeftValue { get; set; }
+    //    public double DefaultToRightValue { get; set; }
+    //    public double DefaultToTopValue { get; set; }
 
-        public void OnEnter(FrameworkElement view, Action setContentCallback, EntranceTransitionType entranceTransitionType, Action cb = null)
-        {
-            this.view = view;
-            this.navigationTransitionType = entranceTransitionType;
-            this.cb = cb;
+    //    public void OnEnter(FrameworkElement view, Action setContentCallback, EntranceTransitionType entranceTransitionType, Action cb = null)
+    //    {
+    //        this.view = view;
+    //        this.navigationTransitionType = entranceTransitionType;
+    //        this.cb = cb;
 
-            //setContentCallback();
-            // cb();
-        }
+    //        //setContentCallback();
+    //        // cb();
+    //    }
 
-        public void OnLeave(FrameworkElement view, ExitTransitionType exitTransitionType, Action cb = null)
-        {
-            cb();
-        }
+    //    public void OnLeave(FrameworkElement view, ExitTransitionType exitTransitionType, Action cb = null)
+    //    {
+    //        cb();
+    //    }
 
-    }
+    //}
 
     public class MyContentAdapter : ContentRegionAdapterBase<MyControl>
     {
@@ -295,7 +295,7 @@ namespace MvvmLib.Wpf.Tests
         public ContentRegion GetService(ContentControl c)
         {
             RegionManager.AddContentRegion("C1", c);
-            return new ContentRegion(new NavigationHistory(), new FakeContentStrategy(), "C1", c);
+            return new ContentRegion(new NavigationHistory(), "C1", c);
         }
 
         private const string defaultKey = "default";

@@ -3,6 +3,8 @@ using System;
 using System.Diagnostics;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace RegionSample.ViewModels
 {
@@ -28,49 +30,74 @@ namespace RegionSample.ViewModels
         {
             this.regionManager = regionManager;
 
+            var entranceFadeAnimation = new OpacityAnimation { From = 0, To = 1 };
+            var exitFadeAnimation = new OpacityAnimation { From = 1, To = 0 };
+
+            var entranceScaleAnimation = new ScaleAnimation
+            {
+                From = 0,
+                To = 1,
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+            };
+            var exitScaleAnimation = new ScaleAnimation
+            {
+                From = 1,
+                To = 0,
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+            };
+
+            var entranceTranslateAnimation = new TranslateAnimation { From = 800, To = 0 };
+            var exitTranslateAnimation = new TranslateAnimation { From = 0, To = 800 };
+
             var contentRegion = regionManager.GetContentRegion("ContentRegion", "ContentRegion1");
+            // animation
+            contentRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation, true);
+            // handlers
             contentRegion.CanGoBackChanged += OnContentRegionCanGoBackChanged;
             contentRegion.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
+            contentRegion.Navigated += ShellViewModel_Navigated;
+            contentRegion.NavigationFailed += ContentRegion_NavigationFailed;
 
             var contentRegion2 = regionManager.GetContentRegion("ContentRegion", "ContentRegion2");
+            // animation
+            contentRegion2.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
+            // handlers
             contentRegion2.CanGoBackChanged += OnContentRegionCanGoBackChanged;
             contentRegion2.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
+            contentRegion2.Navigated += ShellViewModel_Navigated;
 
             var itemsRegion = regionManager.GetItemsRegion("ItemsRegion");
+            itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitFadeAnimation);
+
             var stackPanelRegion = regionManager.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
             var tabControlRegion = regionManager.GetItemsRegion("TabControlRegion", "TabControlRegion1");
 
-            contentRegion.Navigated += ShellViewModel_Navigated;
-            contentRegion.NavigationFailed += ContentRegion_NavigationFailed;
-            contentRegion2.Navigated += ShellViewModel_Navigated;
-
             NavigateToRootCommand = new RelayCommand(async () =>
             {
-                await contentRegion.NavigateToRootAsync(EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
-                await contentRegion2.NavigateToRootAsync(EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
+                await contentRegion.NavigateToRootAsync();
+                await contentRegion2.NavigateToRootAsync();
             },
             () => contentRegion.CanGoBack || contentRegion2.CanGoBack);
 
             NavigateCommand = new RelayCommand<Type>(async (viewOrViewModelType) =>
             {
-                await contentRegion.NavigateAsync(viewOrViewModelType, viewOrViewModelType.Name + " [default]",
-                    EntranceTransitionType.SlideInFromRight, ExitTransitionType.SlideOutToRight);
-
-                await contentRegion2.NavigateAsync(viewOrViewModelType, viewOrViewModelType.Name + " [default]",
-                   EntranceTransitionType.SlideInFromRight, ExitTransitionType.SlideOutToRight);
+                await contentRegion.NavigateAsync(viewOrViewModelType, viewOrViewModelType.Name + " [default]");
+                await contentRegion2.NavigateAsync(viewOrViewModelType, viewOrViewModelType.Name + " [default]");
             });
 
             GoBackCommand = new RelayCommand(async () =>
             {
-                await contentRegion.GoBackAsync(EntranceTransitionType.SlideInFromLeft, ExitTransitionType.SlideOutToLeft);
-                await contentRegion2.GoBackAsync(EntranceTransitionType.SlideInFromLeft, ExitTransitionType.SlideOutToLeft);
+                await contentRegion.GoBackAsync();
+                await contentRegion2.GoBackAsync();
             },
             () => contentRegion.CanGoBack || contentRegion2.CanGoBack);
 
             GoForwardCommand = new RelayCommand(async () =>
             {
-                await contentRegion.GoForwardAsync(EntranceTransitionType.SlideInFromBottom, ExitTransitionType.SlideOutToBottom);
-                await contentRegion2.GoForwardAsync(EntranceTransitionType.SlideInFromBottom, ExitTransitionType.SlideOutToBottom);
+                await contentRegion.GoForwardAsync();
+                await contentRegion2.GoForwardAsync();
             },
             () => contentRegion.CanGoForward || contentRegion2.CanGoForward);
 
@@ -84,13 +111,12 @@ namespace RegionSample.ViewModels
             {
                 try
                 {
-                    await contentRegion.NavigateAsync(typeof(ComposedView), EntranceTransitionType.FadeIn);
+                    await contentRegion.NavigateAsync(typeof(ComposedView));
 
                     await regionManager.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter");
 
                     await regionManager.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
                     await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
-                    //await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
                 }
                 catch
                 {
@@ -113,17 +139,16 @@ namespace RegionSample.ViewModels
                 {
                     if (viewType == typeof(ComposedView))
                     {
-                        await itemsRegion.AddAsync(viewType, viewType.Name + " [default] [Items]", EntranceTransitionType.SlideInFromRight);
+                        await itemsRegion.AddAsync(viewType, viewType.Name + " [default] [Items]");
                         await regionManager.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter [items]");
                         await regionManager.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
                         await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
-                        //await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
                     }
                     else
                     {
-                        await itemsRegion.AddAsync(viewType, viewType.Name + " [default] [Items]", EntranceTransitionType.SlideInFromRight);
-                        await stackPanelRegion.AddAsync(viewType, viewType.Name + " [default] [StackPanel]", EntranceTransitionType.SlideInFromTop);
-                        await tabControlRegion.AddAsync(viewType, viewType.Name + " [default] [TabControl]", EntranceTransitionType.SlideInFromTop);
+                        await itemsRegion.AddAsync(viewType, viewType.Name + " [default] [Items]");
+                        await stackPanelRegion.AddAsync(viewType, viewType.Name + " [default] [StackPanel]");
+                        await tabControlRegion.AddAsync(viewType, viewType.Name + " [default] [TabControl]");
                     }
                 }
                 catch
@@ -138,9 +163,9 @@ namespace RegionSample.ViewModels
                 int index = 0;
                 if (int.TryParse(indexString, out index))
                 {
-                    await itemsRegion.InsertAsync(index, typeof(ViewD), "Insert parameter", EntranceTransitionType.FadeIn);
-                    await stackPanelRegion.InsertAsync(index, typeof(ViewD), "Insert parameter", EntranceTransitionType.FadeIn);
-                    await tabControlRegion.InsertAsync(index, typeof(ViewD), "Insert parameter", EntranceTransitionType.FadeIn);
+                    await itemsRegion.InsertAsync(index, typeof(ViewD), "Insert parameter");
+                    await stackPanelRegion.InsertAsync(index, typeof(ViewD), "Insert parameter");
+                    await tabControlRegion.InsertAsync(index, typeof(ViewD), "Insert parameter");
                 }
             });
 
@@ -151,11 +176,11 @@ namespace RegionSample.ViewModels
                 {
                     try
                     {
-                        await itemsRegion.RemoveAtAsync(index, ExitTransitionType.SlideOutToBottom);
-                        await stackPanelRegion.RemoveAtAsync(index, ExitTransitionType.SlideOutToBottom);
-                        await tabControlRegion.RemoveAtAsync(index, ExitTransitionType.SlideOutToBottom);
+                        await itemsRegion.RemoveAtAsync(index);
+                        await stackPanelRegion.RemoveAtAsync(index);
+                        await tabControlRegion.RemoveAtAsync(index);
                     }
-                    catch 
+                    catch
                     {
 
                     }
@@ -188,9 +213,7 @@ namespace RegionSample.ViewModels
 
         private void ShellViewModel_Navigated(object sender, RegionNavigationEventArgs e)
         {
-            //NavigateToRootCommand.RaiseCanExecuteChanged();
-            //GoBackCommand.RaiseCanExecuteChanged();
-            //GoForwardCommand.RaiseCanExecuteChanged();
+
         }
 
     }

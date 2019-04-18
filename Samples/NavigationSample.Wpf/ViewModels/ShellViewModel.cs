@@ -1,11 +1,12 @@
 ﻿using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ShellViewModel
+    public class ShellViewModel  :ILoadedEventListener
     {
         private IRegionManager regionManager;
 
@@ -20,8 +21,22 @@ namespace NavigationSample.Wpf.ViewModels
 
         private async void OnNavigate(Type viewType)
         {
-            await regionManager.GetContentRegion("MainRegion")
-                .NavigateAsync(viewType, EntranceTransitionType.SlideInFromRight, ExitTransitionType.SlideOutToRight);
+            await regionManager.GetContentRegion("MainRegion").NavigateAsync(viewType);
+        }
+
+        public void OnLoaded(FrameworkElement view, object parameter)
+        {
+            var region = regionManager.GetContentRegion("MainRegion");
+            region.DefaultRegionAnimation.EntranceAnimation = new OpacityAnimation
+            {
+                From = 0,
+                To = 1
+            };
+            region.DefaultRegionAnimation.ExitAnimation = new OpacityAnimation
+            {
+                From = 1,
+                To = 0
+            };
         }
     }
 }

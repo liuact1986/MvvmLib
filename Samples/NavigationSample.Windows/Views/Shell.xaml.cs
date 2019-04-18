@@ -64,7 +64,7 @@ namespace NavigationSample.Windows.Views
             SyncMenuItem();
         }
 
-        private void OnNavigationCancelled(object sender, FrameNavigationCanceledEventArgs e)
+        private void OnNavigationCancelled(object sender, FrameNavigationCancelledEventArgs e)
         {
             SyncMenuItem();
         }

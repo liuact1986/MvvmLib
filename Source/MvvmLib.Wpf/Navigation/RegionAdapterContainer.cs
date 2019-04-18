@@ -21,7 +21,6 @@ namespace MvvmLib.Navigation
             contentRegionAdapters.Clear();
             itemsRegionAdapters.Clear();
 
-            RegisterAdapter(new ContentControlRegionAdapter());
             RegisterAdapter(new ItemsControlAdapter());
             RegisterAdapter(new TabControlAdapter());
         }

@@ -39,7 +39,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Invoked when the navigation is canceled.
         /// </summary>
-        public event EventHandler<FrameNavigationCanceledEventArgs> NavigationCancelled;
+        public event EventHandler<FrameNavigationCancelledEventArgs> NavigationCancelled;
 
         /// <summary>
         /// Gets the value that indicates if the frame can go back.
@@ -152,7 +152,7 @@ namespace MvvmLib.Navigation
             }
             else
             {
-                this.NavigationCancelled?.Invoke(this, new FrameNavigationCanceledEventArgs(this.frameFacade.Content));
+                this.NavigationCancelled?.Invoke(this, new FrameNavigationCancelledEventArgs(this.frameFacade.Content));
             }
         }
 

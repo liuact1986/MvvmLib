@@ -248,12 +248,101 @@ await WpfNavigationService.Default.GetItemsRegion(RegionNames.ItemsControlRegion
 
 ### Animation
 
-Change the default values, example:
+Define an entrance and an exit animation. Example:
 
 ```cs
-var region = regionNamanger.GetContentRegion("MyContentRegion");
-region.Animation.DefaultAnimationDuration = 500;
-region.Animation.DefaultFromRightValue = 700;
+var entranceScaleAnimation = new ScaleAnimation
+{
+    From = 0,
+    To = 1,
+    RenderTransformOrigin = new Point(0.5, 0.5),
+    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+};
+var exitScaleAnimation = new ScaleAnimation
+{
+    From = 1,
+    To = 0,
+    RenderTransformOrigin = new Point(0.5, 0.5),
+    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+};
+
+var region = regionManager.GetContentRegion("ContentRegion");
+ region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
+```
+
+Playing the entrance and exit animations simultanously:
+
+```cs
+ region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
+ ```
+
+ Animation classes awailables:
+
+* **OpacityAnimation**
+* **TranslateAnimation**
+* **SkewAnimation**
+* **ScaleAnimation**
+* **RotateAnimation**
+* **FxCornerEntranceAnimation** and **FxCornerExitAnimation**
+
+Create a custom animation class:
+
+```cs
+// 1. inherit from ContentAnimationBase or TransformAnimationBase
+public class MyAnimation : TransformAnimationBase
+{
+    // 2. implements the base class
+    public override void CancelAnimation()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void BeginAnimation()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override AnimationTimeline CreateAnimation()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+```
+
+Example with the OpacityAnimation class:
+
+```cs
+public class OpacityAnimation : ContentAnimationBase
+{
+    protected override double DefaultFrom => 0;
+    protected override double DefaultTo => 1;
+
+    public override void CancelAnimation()
+    {
+        // on animation cancelled
+        if (Element != null)
+        {
+            Element.BeginAnimation(Control.OpacityProperty, null);
+            AnimationWasCancelled = true;
+            IsAnimating = false;
+        }
+    }
+
+    protected override AnimationTimeline CreateAnimation()
+    {
+        // return an animation
+        var animation = new DoubleAnimation(From, To, Duration);
+        if (EasingFunction != null)
+            animation.EasingFunction = EasingFunction;
+        return animation;
+    }
+
+    protected override void BeginAnimation()
+    {
+        // begin the animation
+        Element.BeginAnimation(Control.OpacityProperty, Animation);
+    }
+}
 ```
 
 ## INavigatable
@@ -413,11 +502,86 @@ public class PersonDetailsViewModel : IViewLifetimeStrategy
 }
 ```
 
+## Create a Bootsrapper
+
+
+Example: using MvvmLib.IoC Container (or Unity, StructureMap, etc.)
+
+```cs
+public abstract class MvvmLibBootstrapper : BootstrapperBase
+{
+    protected IInjector container;
+
+    public MvvmLibBootstrapper(IInjector container)
+    {
+        this.container = container;
+    }
+
+    protected override void RegisterRequiredTypes()
+    {
+        container.RegisterInstance<IInjector>(container);
+        container.RegisterSingleton<IEventAggregator, EventAggregator>();
+        container.RegisterSingleton<IRegionManager, RegionManager>();
+    }
+
+    protected override void SetViewFactory()
+    {
+        ViewResolver.SetViewFactory((viewType) => container.GetNewInstance(viewType));
+    }
+
+    protected override void SetViewModelFactory()
+    {
+        ViewModelLocationProvider.SetViewModelFactory((viewModelType) => container.GetInstance(viewModelType));
+    }
+}
+```
+
+The implementation class
+
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container) 
+        : base(container)
+    {  }
+
+    protected override Window CreateShell()
+    {
+        return container.GetInstance<Shell>();
+    }
+
+    protected override void RegisterTypes()
+    {
+        container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
+    }
+}
+```
+
+(App)
+
+**Replace StartupUri** by the **Startup event**
+
+```xml
+<Application ...
+             Startup="Application_Startup">
+
+</Application>
+```
+
+```cs
+public partial class App : Application
+{
+    private void Application_Startup(object sender, StartupEventArgs e)
+    {
+        var bootstrapper = new Bootstrapper(new Injector());
+        bootstrapper.Run();
+    }
+}
+```
+
+
 ## Create a region Adapter
 
-2 types of region adapters:
-
-* ContentRegionAdapter for controls with a content property for example (ContentControl)
 * ItemsRegionAdapter for controls with a collection of items or children (ItemsControl, ListView, TabControl,... StackPanel)
 
 Example for a StackPanel

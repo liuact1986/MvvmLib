@@ -62,8 +62,7 @@ namespace RegionSample.ViewModels
             else
             {
                 // redirect
-                await regionManager.GetContentRegion("ContentRegion","ContentRegion1")
-                    .NavigateAsync(typeof(LoginView), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
+                await regionManager.GetContentRegion("ContentRegion","ContentRegion1").NavigateAsync(typeof(LoginView));
                 return false;
             }
         }
