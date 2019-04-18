@@ -307,22 +307,6 @@ await regionManager.GetContentRegion(&quot;MyContentRegion&quot;, &quot;MyConten
 </tr>
 </tbody>
 </table>
-<p><strong>Entrance Animation Types</strong> :</p>
-<ul>
-<li><strong>FadeIn</strong></li>
-<li><strong>SlideInFromLeft</strong></li>
-<li><strong>SlideInFromRight</strong></li>
-<li><strong>SlideInFromTop</strong></li>
-<li><strong>SlideInFromBottom</strong></li>
-</ul>
-<p><strong>Exit Animation Types</strong> :</p>
-<ul>
-<li><strong>FadeOut</strong></li>
-<li><strong>SlideOutToLeft</strong></li>
-<li><strong>SlideOutToRight</strong></li>
-<li><strong>SlideOutToTop</strong></li>
-<li><strong>SlideOutToBottom</strong></li>
-</ul>
 <h4 id="with-items-region">With Items Region<a class="headerlink" href="#with-items-region" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h4>
 <p>AddAsync</p>
 <pre><code class="cs">await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA));
@@ -380,9 +364,9 @@ var region = regionManager.GetContentRegion(&quot;ContentRegion&quot;);
  region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
 </code></pre>
 
-<p>Playing the entrance and exit animations simultanously:</p>
+<p>Playing the entrance and exit animations simultaneously:</p>
 <p><code>cs
- region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);</code></p>
+ region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation, true);</code></p>
 <p>Animation classes awailables:</p>
 <ul>
 <li><strong>OpacityAnimation</strong></li>

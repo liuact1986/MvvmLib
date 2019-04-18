@@ -185,22 +185,6 @@ await regionManager.GetContentRegion("MyContentRegion").NavigateAsync(typeof(Vie
 | Navigated | Invoked after navigation ends |
 | NavigatingFailed | Invoked after navigation was cancelled |
 
-**Entrance Animation Types** :
-
-* **FadeIn**
-* **SlideInFromLeft**
-* **SlideInFromRight**
-* **SlideInFromTop**
-* **SlideInFromBottom**
-
-**Exit Animation Types** :
-
-* **FadeOut**
-* **SlideOutToLeft**
-* **SlideOutToRight**
-* **SlideOutToTop**
-* **SlideOutToBottom**
-
 #### With Items Region
 
 AddAsync
@@ -270,10 +254,10 @@ var region = regionManager.GetContentRegion("ContentRegion");
  region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
 ```
 
-Playing the entrance and exit animations simultanously:
+Playing the entrance and exit animations simultaneously:
 
 ```cs
- region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
+ region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation, true);
  ```
 
  Animation classes awailables:
