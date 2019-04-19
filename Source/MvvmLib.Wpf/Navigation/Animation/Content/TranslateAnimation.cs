@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Diagnostics;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace MvvmLib.Navigation
@@ -32,21 +33,22 @@ namespace MvvmLib.Navigation
             set { y = value; }
         }
 
-        private TranslateTransform translate;
-        public TranslateTransform Translate
+        private TranslateTransform translateTransform;
+        public TranslateTransform TranslateTransform
         {
-            get { return translate; }
-            protected set { translate = value; }
+            get { return translateTransform; }
+            protected set { translateTransform = value; }
         }
 
         protected override AnimationTimeline CreateAnimation()
         {
-            Translate = new TranslateTransform();
+            translateTransform = new TranslateTransform();
+
             if (X.HasValue)
-                Translate.X = X.Value;
+                translateTransform.X = X.Value;
             if (Y.HasValue)
-                Translate.Y = Y.Value;
-            Element.RenderTransform = Translate;
+                translateTransform.Y = Y.Value;
+            Element.RenderTransform = translateTransform;
             Element.RenderTransformOrigin = RenderTransformOrigin;
 
             var animation = new DoubleAnimation(From, To, Duration);
@@ -62,20 +64,18 @@ namespace MvvmLib.Navigation
                 TranslateTransform.XProperty
                 : TranslateTransform.YProperty;
 
-            Translate.BeginAnimation(dp, Animation);
+            translateTransform.BeginAnimation(dp, Animation);
         }
 
         public override void CancelAnimation()
         {
-            if (Element != null)
+            if (TranslateTransform != null)
             {
                 var dp = TransformDirection == TransformDirection.X ?
                     TranslateTransform.XProperty
                     : TranslateTransform.YProperty;
 
-                Translate.BeginAnimation(dp, null);
-                AnimationWasCancelled = true;
-                IsAnimating = false;
+                translateTransform.BeginAnimation(dp, null);
             }
         }
     }

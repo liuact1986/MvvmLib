@@ -73,18 +73,18 @@ xmlns:nav="http://mvvmlib.com/"
 With a ContentControl
 
 ```xml
-<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegion="MyContentRegion"></ContentControl>
+<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
 ```
 
 With an ItemsControl
 
 ```xml
-<ItemsControl nav:RegionManager.ItemsRegion="MyItemsRegion"></ItemsControl>
+<ItemsControl nav:RegionManager.ItemsRegionName="MyItemsRegion"></ItemsControl>
 ```
 
 With a TabControl (with the Header binded to the property Title of the ViewModel for example)
 ```xml
-<TabControl nav:RegionManager.ItemsRegion="MyTabRegion">
+<TabControl nav:RegionManager.ItemsRegionName="MyTabRegion">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
                     <Setter Property="Header" Value="{Binding Title}" />
@@ -98,8 +98,8 @@ The control name could be used to resolve the region if more than one region wit
 Example:
 
 ```xml
-<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegion="MyContentRegion"></ContentControl>
-<ContentControl x:Name="MyContentRegion2" nav:RegionManager.ContentRegion="MyContentRegion"></ContentControl>
+<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
+<ContentControl x:Name="MyContentRegion2" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
 ```
 
 **Tip**: create a class with region names
@@ -116,7 +116,7 @@ internal class RegionNames
 ... And change the name
 
 ```xml
-<ContentControl nav:RegionManager.ContentRegion="{x:Static local:RegionNames.ContentControlRegionName}"></ContentControl>
+<ContentControl nav:RegionManager.ContentRegionName="{x:Static local:RegionNames.ContentControlRegionName}"></ContentControl>
 ```
 
 ### Navigate
@@ -268,6 +268,8 @@ Playing the entrance and exit animations simultaneously:
 * **ScaleAnimation**
 * **RotateAnimation**
 * **FxCornerEntranceAnimation** and **FxCornerExitAnimation**
+* **FallEntranceAnimation** and **FallExitAnimation**
+* **FxVscaleEntranceAnimation** and **FxVscaleExitAnimation**
 
 Create a custom animation class:
 
@@ -275,7 +277,7 @@ Create a custom animation class:
 // 1. inherit from ContentAnimationBase or TransformAnimationBase
 public class MyAnimation : TransformAnimationBase
 {
-    // 2. implements the base class
+    // 2. implement the base class
     public override void CancelAnimation()
     {
         throw new System.NotImplementedException();
@@ -628,7 +630,7 @@ public class Bootstrapper : WpfLibBootstrapper
 And use it
 
 ```xml
-<StackPanel nav:RegionManager.ItemsRegion="{x:Static local:RegionNames.StackPanelRegionName}"></StackPanel>
+<StackPanel nav:RegionManager.ItemsRegionName="{x:Static local:RegionNames.StackPanelRegionName}"></StackPanel>
 ```
 
 ## BindableObject<T>

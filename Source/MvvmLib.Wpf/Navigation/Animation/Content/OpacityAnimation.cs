@@ -12,11 +12,7 @@ namespace MvvmLib.Navigation
         public override void CancelAnimation()
         {
             if (Element != null)
-            {
                 Element.BeginAnimation(Control.OpacityProperty, null);
-                AnimationWasCancelled = true;
-                IsAnimating = false;
-            }
         }
 
         protected override AnimationTimeline CreateAnimation()

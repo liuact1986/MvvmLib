@@ -69,7 +69,7 @@ namespace RegionSample.ViewModels
             contentRegion2.Navigated += ShellViewModel_Navigated;
 
             var itemsRegion = regionManager.GetItemsRegion("ItemsRegion");
-            itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitFadeAnimation);
+            itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation);
 
             var stackPanelRegion = regionManager.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
             var tabControlRegion = regionManager.GetItemsRegion("TabControlRegion", "TabControlRegion1");

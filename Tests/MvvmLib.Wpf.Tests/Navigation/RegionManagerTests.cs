@@ -23,14 +23,14 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ContentControl();
             control2.Name = "c2";
 
-            var region = RegionManager.AddContentRegion(regionName, control);
+            var region = RegionManager.RegisterContentRegion(regionName, control);
 
             Assert.AreEqual(typeof(ContentRegion), region.GetType());
             Assert.AreEqual(regionName, region.RegionName);
             Assert.AreEqual(control, region.Control);
             Assert.AreEqual("c1", region.ControlName);
 
-            RegionManager.AddContentRegion(regionName, control2);
+            RegionManager.RegisterContentRegion(regionName, control2);
 
             var r2 = RegionManager.GetContentRegionByName(regionName, "c2");
             Assert.AreEqual("c2", r2.ControlName);
@@ -53,14 +53,14 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ItemsControl();
             control2.Name = "i2";
 
-            var region = RegionManager.AddItemsRegion(regionName, control);
+            var region = RegionManager.RegisterItemsRegion(regionName, control);
 
             Assert.AreEqual(typeof(ItemsRegion), region.GetType());
             Assert.AreEqual(regionName, region.RegionName);
             Assert.AreEqual(control, region.Control);
             Assert.AreEqual("i1", region.ControlName);
 
-            RegionManager.AddItemsRegion(regionName, control2);
+            RegionManager.RegisterItemsRegion(regionName, control2);
 
             var r2 = RegionManager.GetItemsRegionByName(regionName, "i2");
             Assert.AreEqual("i2", r2.ControlName);
@@ -85,8 +85,8 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ContentControl();
             control2.Name = "c2";
 
-            RegionManager.AddContentRegion(regionName, control);
-            RegionManager.AddContentRegion(regionName, control2);
+            RegionManager.RegisterContentRegion(regionName, control);
+            RegionManager.RegisterContentRegion(regionName, control2);
 
             var r = new RegionManager();
 
@@ -113,8 +113,8 @@ namespace MvvmLib.Wpf.Tests
             var control2 = new ItemsControl();
             control2.Name = "i2";
 
-            RegionManager.AddItemsRegion(regionName, control);
-            RegionManager.AddItemsRegion(regionName, control2);
+            RegionManager.RegisterItemsRegion(regionName, control);
+            RegionManager.RegisterItemsRegion(regionName, control2);
 
             var r = new RegionManager();
 

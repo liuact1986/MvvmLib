@@ -778,7 +778,7 @@ public class ApplicationCommands : IApplicationCommands
         &lt;!-- the button is disabled if one command cannot save --&gt;
         &lt;Button Content=&quot;Save All&quot; Command=&quot;{Binding SaveAllCommand}&quot; Width=&quot;120&quot; Margin=&quot;4&quot; HorizontalAlignment=&quot;Left&quot;&gt;&lt;/Button&gt;
 
-        &lt;TabControl nav:RegionManager.ItemsRegion=&quot;TabRegion&quot; Grid.Row=&quot;1&quot;&gt;
+        &lt;TabControl nav:RegionManager.ItemsRegionName=&quot;TabRegion&quot; Grid.Row=&quot;1&quot;&gt;
             &lt;TabControl.ItemContainerStyle&gt;
                 &lt;Style TargetType=&quot;TabItem&quot;&gt;
                     &lt;Setter Property=&quot;Header&quot; Value=&quot;{Binding Title}&quot; /&gt;

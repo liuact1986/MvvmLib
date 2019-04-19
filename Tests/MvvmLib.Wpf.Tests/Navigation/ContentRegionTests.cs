@@ -294,7 +294,7 @@ namespace MvvmLib.Wpf.Tests
 
         public ContentRegion GetService(ContentControl c)
         {
-            RegionManager.AddContentRegion("C1", c);
+            RegionManager.RegisterContentRegion("C1", c);
             return new ContentRegion(new NavigationHistory(), "C1", c);
         }
 

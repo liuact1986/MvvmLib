@@ -71,6 +71,8 @@ namespace MvvmLib.Wpf.Tests
 
             NavigatableView.Reset();
 
+            await Task.Delay(1000);
+
             await service.RemoveAtAsync(0);
 
             Assert.AreEqual(false, NavigatableView.isOkOnNavigatedTo);

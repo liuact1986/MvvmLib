@@ -50,6 +50,16 @@ namespace MvvmLib.Navigation
             set { simultaneous = value; }
         }
 
+        public bool IsAnimating
+        {
+            get
+            {
+                var isAnimating = (entranceAnimation != null && entranceAnimation.IsAnimating)
+                    || (exitAnimation != null && exitAnimation.IsAnimating);
+                return isAnimating;
+            }
+        }
+
         public ContentRegionAnimation(ContentControl control)
         {
             ViewContainer = new Grid();

@@ -19,8 +19,10 @@
                     CommandParameter="{x:Type views:MasterDetailView}" Margin="5"></Button>
             <Button Content="Animation" Command="{Binding NavigateCommand}" 
                     CommandParameter="{x:Type views:AnimationView}" Margin="5"></Button>
+            <Button Content="Animation Queue" Command="{Binding NavigateCommand}" 
+                    CommandParameter="{x:Type views:AnimationQueueView}" Margin="5"></Button>
         </StackPanel>
 
-        <ContentControl nav:RegionManager.ContentRegion="MainRegion" Grid.Row="1"></ContentControl>
+        <ContentControl nav:RegionManager.ContentRegionName="MainRegion" Grid.Row="1"></ContentControl>
     </Grid>
 </Window>

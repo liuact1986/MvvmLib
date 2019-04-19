@@ -20,9 +20,9 @@
             <TextBlock Text="IActivatable (code-behind)"  Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"></TextBlock>
         </StackPanel>
         
-        <ContentControl x:Name="SubChildControl" nav:RegionManager.ContentRegion="SubChildRegion" Grid.Row="1"></ContentControl>
+        <ContentControl x:Name="SubChildControl" nav:RegionManager.ContentRegionName="SubChildRegion" Grid.Row="1"></ContentControl>
 
-        <ContentControl x:Name="SubChildControl2" nav:RegionManager.ContentRegion="SubChildRegion" Grid.Row="2"></ContentControl>
+        <ContentControl x:Name="SubChildControl2" nav:RegionManager.ContentRegionName="SubChildRegion" Grid.Row="2"></ContentControl>
     </Grid>
 
 </UserControl>

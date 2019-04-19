@@ -16,11 +16,10 @@ namespace MvvmLib.Navigation
 
         public override void CancelAnimation()
         {
-            if (Element != null)
+            if (ScaleTransform != null)
             {
                 ScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, null);
                 ScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-                IsAnimating = false;
             }
         }
 

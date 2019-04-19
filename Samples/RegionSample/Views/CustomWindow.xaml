@@ -17,15 +17,15 @@
         <TextBlock Text="{Binding Title}"  Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,10"></TextBlock>
 
         <!-- ContentRegion (3) ... -->
-        <ContentControl x:Name="ContentRegion3" nav:RegionManager.ContentRegion="ContentRegion" Grid.Row="1"></ContentControl>
+        <ContentControl x:Name="ContentRegion3" nav:RegionManager.ContentRegionName="ContentRegion" Grid.Row="1"></ContentControl>
         
-        <TabControl nav:RegionManager.ItemsRegion="TabControlRegion" Grid.Row="2">
+        <TabControl nav:RegionManager.ItemsRegionName="TabControlRegion" Grid.Row="2">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
                     <Setter Property="Header" Value="{Binding Message}" />
                 </Style>
             </TabControl.ItemContainerStyle>
         </TabControl>
-        <!--<ItemsControl nav:RegionManager.ItemsRegion="{x:Static local:RegionNames.ItemsControlRegionName}" Grid.Row="2"></ItemsControl>-->
+        <!--<ItemsControl nav:RegionManager.ItemsRegionName="{x:Static local:RegionNames.ItemsControlRegionName}" Grid.Row="2"></ItemsControl>-->
     </Grid>
 </Window>

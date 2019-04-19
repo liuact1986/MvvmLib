@@ -98,46 +98,6 @@
             Runs the bootstrapper.
             </summary>
         </member>
-        <member name="T:MvvmLib.Navigation.CanActivateGuard">
-            <summary>
-            Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for views and view models and returns the result.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Navigation.CanActivateGuard.CanActivateViewAsync(System.Windows.FrameworkElement,System.Object)">
-            <summary>
-             Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for the view.
-            </summary>
-            <param name="view">The view</param>
-            <param name="parameter">The parameter</param>
-            <returns>True if Can Activate</returns>
-        </member>
-        <member name="M:MvvmLib.Navigation.CanActivateGuard.CanActivateContextAsync(System.Object,System.Object)">
-            <summary>
-            Invokes <see cref="M:MvvmLib.Navigation.IActivatable.CanActivateAsync(System.Object)" /> for the view model.
-            </summary>
-            <param name="context">The DataContext</param>
-            <param name="parameter">The paarmeter</param>
-            <returns>True if Can Activate</returns>
-        </member>
-        <member name="T:MvvmLib.Navigation.CanDeactivateGuard">
-            <summary>
-            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> for views and view models and returns the result.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Navigation.CanDeactivateGuard.CanDeactivateViewAsync(System.Windows.FrameworkElement)">
-            <summary>
-            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> if the view implements <see cref="T:MvvmLib.Navigation.IDeactivatable"/>.
-            </summary>
-            <param name="currentView">The view</param>
-            <returns>True if Can Deactivate</returns>
-        </member>
-        <member name="M:MvvmLib.Navigation.CanDeactivateGuard.CanDeactivateContextAsync(System.Object)">
-            <summary>
-            Invokes <see cref="M:MvvmLib.Navigation.IDeactivatable.CanDeactivateAsync" /> if the view model implements <see cref="T:MvvmLib.Navigation.IDeactivatable"/>.
-            </summary>
-            <param name="currentContext">The current DataContext</param>
-            <returns>True if Can Deactivate</returns>
-        </member>
         <member name="T:MvvmLib.Navigation.ContentRegion">
             <summary>
             The Content Region class.
@@ -706,16 +666,6 @@
         <member name="F:MvvmLib.Navigation.RegionBase.isLoaded">
             <summary>
             Checks if region is loaded.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Navigation.RegionBase.canDeactivateGuard">
-            <summary>
-            Can Deactivate Guard.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Navigation.RegionBase.canActivateGuard">
-            <summary>
-            Can Activate Guard.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.RegionBase.CurrentEntry">

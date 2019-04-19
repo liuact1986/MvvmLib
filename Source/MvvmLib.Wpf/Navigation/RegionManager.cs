@@ -17,33 +17,32 @@ namespace MvvmLib.Navigation
         internal static Dictionary<string, List<ItemsRegion>> itemsRegions { get; }
 
         public static int ContentRegionsCount => contentRegions.Count;
-
         public static int ItemsRegionsCount => itemsRegions.Count;
 
-        public static readonly DependencyProperty ContentRegionProperty =
-             DependencyProperty.RegisterAttached("ContentRegion", typeof(string), typeof(RegionManager), new PropertyMetadata(OnSetContentRegion));
-
-        public static void SetContentRegion(DependencyObject target, string regionName)
+        public static void SetContentRegionName(DependencyObject target, string regionName)
         {
             if (target == null) { throw new ArgumentNullException(nameof(target)); }
 
-            target.SetValue(ContentRegionProperty, regionName);
+            target.SetValue(ContentRegionNameProperty, regionName);
         }
 
-        public static string GetContentRegion(DependencyObject target)
+        public static string GetContentRegionName(DependencyObject target)
         {
             if (target == null) { throw new ArgumentNullException(nameof(target)); }
 
-            return target.GetValue(ContentRegionProperty) as string;
+            return target.GetValue(ContentRegionNameProperty) as string;
         }
 
-        private static void OnSetContentRegion(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty ContentRegionNameProperty =
+             DependencyProperty.RegisterAttached("ContentRegionName", typeof(string), typeof(RegionManager), new PropertyMetadata(OnSetContentRegionName));
+
+        private static void OnSetContentRegionName(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var element = d as FrameworkElement;
             if (element != null)
             {
                 var regionName = e.NewValue.ToString();
-                var region = RegionManager.AddContentRegion(regionName, d);
+                var region = RegionManager.RegisterContentRegion(regionName, d);
 
                 var listener = new FrameworkElementLoaderListener(element);
                 listener.Subscribe((o, c) =>
@@ -55,30 +54,30 @@ namespace MvvmLib.Navigation
             }
         }
 
-        public static readonly DependencyProperty ItemsRegionProperty =
-            DependencyProperty.RegisterAttached("ItemsRegion", typeof(string), typeof(RegionManager), new PropertyMetadata(OnSetItemsRegion));
-
-        public static void SetItemsRegion(DependencyObject target, string regionName)
+        public static void SetItemsRegionName(DependencyObject target, string regionName)
         {
             if (target == null) { throw new ArgumentNullException(nameof(target)); }
 
-            target.SetValue(ItemsRegionProperty, regionName);
+            target.SetValue(ItemsRegionNameProperty, regionName);
         }
 
-        public static string GetItemsRegion(DependencyObject target)
+        public static string GetItemsRegionName(DependencyObject target)
         {
             if (target == null) { throw new ArgumentNullException(nameof(target)); }
 
-            return target.GetValue(ItemsRegionProperty) as string;
+            return target.GetValue(ItemsRegionNameProperty) as string;
         }
 
-        private static void OnSetItemsRegion(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty ItemsRegionNameProperty =
+            DependencyProperty.RegisterAttached("ItemsRegionName", typeof(string), typeof(RegionManager), new PropertyMetadata(OnSetItemsRegionName));
+
+        private static void OnSetItemsRegionName(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var element = d as FrameworkElement;
             if (element != null)
             {
                 var regionName = e.NewValue.ToString();
-                var region = RegionManager.AddItemsRegion(regionName, d);
+                var region = RegionManager.RegisterItemsRegion(regionName, d);
 
                 var listener = new FrameworkElementLoaderListener(element);
                 listener.Subscribe((o, c) =>
@@ -96,22 +95,20 @@ namespace MvvmLib.Navigation
             itemsRegions = new Dictionary<string, List<ItemsRegion>>();
         }
 
-        public static bool ContainContentRegionName(string regionName)
+        public static bool ContainsContentRegionName(string regionName)
         {
             return contentRegions.ContainsKey(regionName);
         }
 
-        public static bool ContainItemsRegionName(string regionName)
+        public static bool ContainsItemsRegionName(string regionName)
         {
             return itemsRegions.ContainsKey(regionName);
         }
 
-        public static ContentRegion AddContentRegion(string regionName, DependencyObject element)
+        public static ContentRegion RegisterContentRegion(string regionName, DependencyObject element)
         {
-            if (!ContainContentRegionName(regionName))
-            {
+            if (!ContainsContentRegionName(regionName))
                 contentRegions[regionName] = new List<ContentRegion>();
-            }
 
             var region = new ContentRegion(regionName, element);
             contentRegions[regionName].Add(region);
@@ -123,7 +120,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
             if (string.IsNullOrWhiteSpace(controlName)) { throw new Exception("Control name required"); }
-            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             var regions = contentRegions[regionName];
             foreach (var region in regions)
@@ -138,7 +135,7 @@ namespace MvvmLib.Navigation
 
         internal static ContentRegion FindContentRegion(string regionName, DependencyObject child)
         {
-            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             var regions = contentRegions[regionName];
             foreach (var region in regions)
@@ -155,7 +152,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
             if (string.IsNullOrWhiteSpace(controlName)) { throw new Exception("Control name required"); }
-            if (!ContainItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
 
             var regions = itemsRegions[regionName];
             foreach (var region in regions)
@@ -170,7 +167,7 @@ namespace MvvmLib.Navigation
 
         internal static ItemsRegion FindItemsRegion(string regionName, DependencyObject child)
         {
-            if (!ContainItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsItemsRegionName(regionName)) { throw new Exception("No items region registered with the region name \"" + regionName + "\""); }
 
             var regions = itemsRegions[regionName];
             foreach (var region in regions)
@@ -183,9 +180,9 @@ namespace MvvmLib.Navigation
             return null;
         }
 
-        public static ItemsRegion AddItemsRegion(string regionName, DependencyObject element)
+        public static ItemsRegion RegisterItemsRegion(string regionName, DependencyObject element)
         {
-            if (!ContainItemsRegionName(regionName))
+            if (!ContainsItemsRegionName(regionName))
             {
                 itemsRegions[regionName] = new List<ItemsRegion>();
             }
@@ -196,30 +193,28 @@ namespace MvvmLib.Navigation
             return region;
         }
 
-        public static bool RemoveContentRegion(ContentRegion contentRegion)
+        public static bool UnregisterContentRegion(ContentRegion contentRegion)
         {
             string regionName = contentRegion.RegionName;
             lock (contentRegions)
             {
-                if (ContainContentRegionName(regionName))
+                if (ContainsContentRegionName(regionName))
                 {
                     contentRegions[regionName].Remove(contentRegion);
                     if (contentRegions[regionName].Count == 0)
-                    {
                         contentRegions.Remove(regionName);
-                    }
                     return true;
                 }
             }
             return false;
         }
 
-        public static bool RemoveItemsRegion(ItemsRegion itemsRegion)
+        public static bool UnregisterItemsRegion(ItemsRegion itemsRegion)
         {
             string regionName = itemsRegion.RegionName;
             lock (itemsRegions)
             {
-                if (ContainItemsRegionName(regionName))
+                if (ContainsItemsRegionName(regionName))
                 {
                     itemsRegions[regionName].Remove(itemsRegion);
                     if (itemsRegions[regionName].Count == 0)
@@ -318,7 +313,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
 
-            if (ContainContentRegionName(regionName))
+            if (ContainsContentRegionName(regionName))
             {
                 var region = contentRegions[regionName].LastOrDefault();
                 if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
@@ -369,7 +364,7 @@ namespace MvvmLib.Navigation
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
 
-            if (ContainItemsRegionName(regionName))
+            if (ContainsItemsRegionName(regionName))
             {
                 var region = RegionManager.itemsRegions[regionName].LastOrDefault();
                 if (region == null) { throw new Exception("No region registered for the region name \"" + regionName + "\""); }
@@ -386,7 +381,7 @@ namespace MvvmLib.Navigation
         public List<ContentRegion> GetContentRegions(string regionName)
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new Exception("Region name required"); }
-            if (!ContainContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsContentRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             return contentRegions[regionName];
         }
@@ -399,7 +394,7 @@ namespace MvvmLib.Navigation
         public List<ItemsRegion> GetItemsRegions(string regionName)
         {
             if (string.IsNullOrWhiteSpace(regionName)) { throw new ArgumentNullException(nameof(regionName)); }
-            if (!ContainItemsRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
+            if (!ContainsItemsRegionName(regionName)) { throw new Exception("No content region registered with the region name \"" + regionName + "\""); }
 
             return itemsRegions[regionName];
 

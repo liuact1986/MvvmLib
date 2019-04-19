@@ -5,11 +5,11 @@ namespace MvvmLib.Navigation
 {
     public class RotateAnimation : TransformAnimationBase
     {
-        private RotateTransform rotate;
-        public RotateTransform Rotate
+        private RotateTransform rotateTransform;
+        public RotateTransform RotateTransform
         {
-            get { return rotate; }
-            protected set { rotate = value; }
+            get { return rotateTransform; }
+            protected set { rotateTransform = value; }
         }
 
         private double? centerX;
@@ -36,15 +36,15 @@ namespace MvvmLib.Navigation
         protected override AnimationTimeline CreateAnimation()
         {
             // Angle , CenterX, CenterY
-            Rotate = new RotateTransform();
+            RotateTransform = new RotateTransform();
             if (Angle.HasValue)
-                Rotate.Angle = Angle.Value;
+                RotateTransform.Angle = Angle.Value;
             if (CenterX.HasValue)
-                Rotate.CenterX = CenterX.Value;
+                RotateTransform.CenterX = CenterX.Value;
             if (CenterY.HasValue)
-                Rotate.CenterY = CenterY.Value;
+                RotateTransform.CenterY = CenterY.Value;
 
-            Element.RenderTransform = Rotate;
+            Element.RenderTransform = RotateTransform;
             Element.RenderTransformOrigin = RenderTransformOrigin;
 
             var animation = new DoubleAnimation(From, To, Duration);
@@ -56,17 +56,13 @@ namespace MvvmLib.Navigation
 
         protected override void BeginAnimation()
         {
-            Rotate.BeginAnimation(RotateTransform.AngleProperty, Animation);
+            RotateTransform.BeginAnimation(RotateTransform.AngleProperty, Animation);
         }
 
         public override void CancelAnimation()
         {
-            if (Element != null)
-            {
-                Rotate.BeginAnimation(RotateTransform.AngleProperty, null);
-                AnimationWasCancelled = true;
-                IsAnimating = false;
-            }
+            if (RotateTransform != null)
+                RotateTransform.BeginAnimation(RotateTransform.AngleProperty, null);
         }
     }
 

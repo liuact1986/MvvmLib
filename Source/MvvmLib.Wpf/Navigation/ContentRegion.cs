@@ -24,7 +24,6 @@ namespace MvvmLib.Navigation
             get { return defaultRegionNavigationAnimation; }
         }
 
-
         /// <summary>
         /// Gets the history.
         /// </summary>
@@ -74,16 +73,30 @@ namespace MvvmLib.Navigation
         public ContentRegion(INavigationHistory history, string regionName, object control)
             : base(regionName, control)
         {
-            if (!(control is ContentControl)) { throw new NotSupportedException($"Only the \"ContentControl\" is supported for ContentRegion. Type of {control.GetType().Name}"); }
+            if (!(control is ContentControl)) { throw new NotSupportedException($"Only\"ContentControls\" are supported for ContentRegion. Type of {control.GetType().Name}"); }
 
             this.History = history;
             this.ViewOrObjectManager = new ViewOrObjectManager();
 
+            ((FrameworkElement)control).Unloaded += OnControlUnloaded;
 
             this.defaultRegionNavigationAnimation = new ContentRegionAnimation((ContentControl)control);
 
             history.CanGoBackChanged += OnCanGoBackChanged; ;
             history.CanGoForwardChanged += OnCanGoForwardChanged;
+        }
+
+        private void OnControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            History.CanGoBackChanged -= OnCanGoBackChanged;
+            History.CanGoForwardChanged -= OnCanGoForwardChanged;
+
+            ClearRegionAndChildRegions(History.ForwardStack);
+            ClearRegionAndChildRegions(History.BackStack);
+            if (History.Current != null)
+                ClearChildRegions(History.Current);
+            if (!RegionManager.UnregisterContentRegion(this))
+                this.Logger.Log($"Failed to unregister the content region \"{RegionName}\", control name:\"{ControlName}\"", Category.Exception, Priority.High);
         }
 
         /// <summary>
@@ -111,17 +124,13 @@ namespace MvvmLib.Navigation
         private void OnCanGoBackChanged(object sender, EventArgs e)
         {
             foreach (var handler in this.canGoBackChanged)
-            {
                 handler(this, EventArgs.Empty);
-            }
         }
 
         private void OnCanGoForwardChanged(object sender, EventArgs e)
         {
             foreach (var handler in this.canGoForwardChanged)
-            {
                 handler(this, EventArgs.Empty);
-            }
         }
 
         #region View or object management
@@ -147,9 +156,7 @@ namespace MvvmLib.Navigation
                 if (view != null)
                 {
                     if (view.DataContext != null)
-                    {
                         context = view.DataContext;
-                    }
                     else
                     {
                         context = ResolveContextWithViewModelLocator(viewOrObjectResult.SourceType);
@@ -161,9 +168,8 @@ namespace MvvmLib.Navigation
             else
             {
                 var view = viewOrObjectResult.Instance as FrameworkElement;
-                if (view != null)
-                    if (view.DataContext != null)
-                        context = view.DataContext;
+                if (view != null && view.DataContext != null)
+                    context = view.DataContext;
             }
             return context;
         }
@@ -171,12 +177,12 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Clear content with no animation.
         /// </summary>
-        public void ClearContent()
+        internal void ClearContent()
         {
             ((ContentControl)Control).Content = null;
         }
 
-        private void ClearRegionAndChildRegions(IList<NavigationEntry> entries)
+        private void ClearRegionAndChildRegions(IEnumerable<NavigationEntry> entries)
         {
             foreach (var entry in entries)
             {
@@ -192,6 +198,8 @@ namespace MvvmLib.Navigation
         private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter, IContentRegionAnimation regionAnimation)
         {
             if (sourceType == null) { throw new ArgumentNullException(nameof(sourceType)); }
+
+            if (regionAnimation.IsAnimating) return false;
 
             bool navigationSuccess = true;
 
@@ -210,13 +218,16 @@ namespace MvvmLib.Navigation
 
                 // view or object
                 var viewOrObjectResult = GetOrCreateViewOrObjectInstance(sourceType, parameter);
+                // context
                 var context = GetOrSetContext(viewOrObjectResult);
 
-                // context
                 object viewOrObject = viewOrObjectResult.Instance;
-                var view = viewOrObject as FrameworkElement;
+
+                // Can Activate
+                await CheckCanActivateAsync(viewOrObject, context, parameter);
 
                 // loaded
+                var view = viewOrObject as FrameworkElement;
                 var navigationEntry = new NavigationEntry(sourceType, viewOrObject, parameter, context);
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New && view != null)
                 {
@@ -225,13 +236,9 @@ namespace MvvmLib.Navigation
                         var childRegions = FindChildRegions((DependencyObject)s);
                         navigationEntry.ChildRegions = childRegions;
 
-                        this.NotifyLoadedListener(view, context, parameter);
+                        this.NotifyLoadedListeners(view, context, parameter);
                     });
                 }
-
-                // Can Activate
-                if (view != null)
-                    await CheckCanActivateAsync(view, context, parameter);
 
                 if (context != null)
                     this.NotifyRegionKnowledge(this, context); // ?
@@ -242,20 +249,14 @@ namespace MvvmLib.Navigation
 
                 // on navigating to
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
-                {
-                    if (view != null)
-                        OnNavigatingTo(view, context, parameter);
-                }
+                    OnNavigatingTo(viewOrObject, context, parameter);
 
                 // change content
                 regionAnimation.Start(viewOrObject);
 
                 // on navigated to
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
-                {
-                    if (view != null)
-                        OnNavigatedTo(view, context, parameter);
-                }
+                    OnNavigatedTo(viewOrObject, context, parameter);
 
                 // clear region and child regions for forward stack
                 ClearRegionAndChildRegions(History.ForwardStack);
@@ -352,6 +353,8 @@ namespace MvvmLib.Navigation
             Action updateHistoryCallback,
             IContentRegionAnimation regionAnimation)
         {
+
+            if (regionAnimation.IsAnimating) return;
 
             try
             {

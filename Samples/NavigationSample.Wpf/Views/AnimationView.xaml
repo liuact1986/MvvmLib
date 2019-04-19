@@ -30,8 +30,14 @@
 
             <Button Content="FxCorner ViewA" Command="{Binding GoViewAWithFxCornerAnimationCommand}"></Button>
             <Button Content="FxCorner ViewB"  Command="{Binding GoViewBWithFxCornerAnimationCommand}"></Button>
+
+            <Button Content="Fall ViewA" Command="{Binding GoViewAWithFallAnimationCommand}"></Button>
+            <Button Content="Fall ViewB"  Command="{Binding GoViewBWithFallAnimationCommand}"></Button>
+
+            <Button Content="FxVscale ViewA" Command="{Binding GoViewAWithFxVscaleAnimationCommand}"></Button>
+            <Button Content="FxVscale ViewB"  Command="{Binding GoViewBWithFxVscaleAnimationCommand}"></Button>
         </WrapPanel>
 
-        <ContentControl nav:RegionManager.ContentRegion="AnimationSample" Grid.Row="1"></ContentControl>
+        <ContentControl nav:RegionManager.ContentRegionName="AnimationSample" Grid.Row="1"></ContentControl>
     </Grid>
 </UserControl>

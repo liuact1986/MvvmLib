@@ -43,27 +43,27 @@ namespace MvvmLib.Navigation
             set { angleY = value; }
         }
 
-        private SkewTransform skew;
-        public SkewTransform Skew
+        private SkewTransform skewTransform;
+        public SkewTransform SkewTransform
         {
-            get { return skew; }
-            protected set { skew = value; }
+            get { return skewTransform; }
+            protected set { skewTransform = value; }
         }
 
         protected override AnimationTimeline CreateAnimation()
         {
             // AngleX, AngleY, CenterX, CenterY
-            Skew = new SkewTransform();
+            SkewTransform = new SkewTransform();
             if (AngleX.HasValue)
-                Skew.AngleX = AngleX.Value;
+                SkewTransform.AngleX = AngleX.Value;
             if (AngleY.HasValue)
-                Skew.AngleY = AngleY.Value;
+                SkewTransform.AngleY = AngleY.Value;
             if (CenterX.HasValue)
-                Skew.CenterX = CenterX.Value;
+                SkewTransform.CenterX = CenterX.Value;
             if (CenterY.HasValue)
-                Skew.CenterY = CenterY.Value;
+                SkewTransform.CenterY = CenterY.Value;
 
-            Element.RenderTransform = Skew;
+            Element.RenderTransform = SkewTransform;
             Element.RenderTransformOrigin = RenderTransformOrigin;
 
             var animation = new DoubleAnimation(From, To, Duration);
@@ -79,20 +79,18 @@ namespace MvvmLib.Navigation
                 SkewTransform.AngleXProperty
                 : SkewTransform.AngleYProperty;
 
-            Skew.BeginAnimation(dp, Animation);
+            SkewTransform.BeginAnimation(dp, Animation);
         }
 
         public override void CancelAnimation()
         {
-            if (Element != null)
+            if (SkewTransform != null)
             {
                 var dp = TransformDirection == TransformDirection.X ?
                   SkewTransform.AngleXProperty
                   : SkewTransform.AngleYProperty;
 
-                Skew.BeginAnimation(dp, null);
-                AnimationWasCancelled = true;
-                IsAnimating = false;
+                SkewTransform.BeginAnimation(dp, null);
             }
         }
     }

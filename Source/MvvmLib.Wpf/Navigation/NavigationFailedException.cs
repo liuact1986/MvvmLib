@@ -12,7 +12,7 @@ namespace MvvmLib.Navigation
 
     public enum NavigationFailedSourceType
     {
-        View,
+        ViewOrObject,
         Context,
         InnerException
     }

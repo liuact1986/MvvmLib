@@ -686,7 +686,7 @@ Bind the composite command in the Shell
         <!-- the button is disabled if one command cannot save -->
         <Button Content="Save All" Command="{Binding SaveAllCommand}" Width="120" Margin="4" HorizontalAlignment="Left"></Button>
 
-        <TabControl nav:RegionManager.ItemsRegion="TabRegion" Grid.Row="1">
+        <TabControl nav:RegionManager.ItemsRegionName="TabRegion" Grid.Row="1">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
                     <Setter Property="Header" Value="{Binding Title}" />

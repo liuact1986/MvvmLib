@@ -13,9 +13,9 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ContentControl nav:RegionManager.ContentRegion="Master"></ContentControl>
+        <ContentControl nav:RegionManager.ContentRegionName="Master"></ContentControl>
 
-        <ContentControl nav:RegionManager.ContentRegion="Detail" Grid.Column="1"></ContentControl>
+        <ContentControl nav:RegionManager.ContentRegionName="Detail" Grid.Column="1"></ContentControl>
 
     </Grid>
 </UserControl>

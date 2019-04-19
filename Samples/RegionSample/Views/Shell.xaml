@@ -39,8 +39,8 @@
                 <Button Content="Open Window" Command="{Binding OpenWindowCommand}" Margin="4,0,0,0"></Button>
             </WrapPanel>
 
-            <ContentControl x:Name="ContentRegion1" nav:RegionManager.ContentRegion="ContentRegion" Grid.Row="1"></ContentControl>
-            <ContentControl x:Name="ContentRegion2" nav:RegionManager.ContentRegion="ContentRegion" Grid.Row="2"></ContentControl>
+            <ContentControl x:Name="ContentRegion1" nav:RegionManager.ContentRegionName="ContentRegion" Grid.Row="1"></ContentControl>
+            <ContentControl x:Name="ContentRegion2" nav:RegionManager.ContentRegionName="ContentRegion" Grid.Row="2"></ContentControl>
         </Grid>
 
         <Grid Grid.Column="1">
@@ -49,9 +49,10 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal">
                 <Button Content="Add ViewA" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewA}"></Button>
                 <Button Content="Add ViewB" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewB}"></Button>
+                <Button Content="Add SimpleView" Command="{Binding AddCommand}" CommandParameter="{x:Type views:SimpleView}"></Button>
                 <Button Content="Add Composed" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ComposedView}"></Button>
                 <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
                     <Button Content="Insert" Command="{Binding InsertCommand}" CommandParameter="{Binding ElementName=InsertIndexTextBox,Path=Text}"></Button>
@@ -64,7 +65,7 @@
                     <TextBox x:Name="RemoveIndexTextBox" Text="0" VerticalContentAlignment="Center" Width="20"></TextBox>
                 </StackPanel>
                 <Button Content="Clear" Command="{Binding ClearCommand}" Margin="8,0,0,0"></Button>
-            </StackPanel>
+            </WrapPanel>
 
             <ScrollViewer Grid.Row="1">
                 <Grid>
@@ -75,11 +76,11 @@
                     </Grid.RowDefinitions>
 
                     <!-- ItemsControlRegion (1) -->
-                    <ItemsControl nav:RegionManager.ItemsRegion="ItemsRegion"></ItemsControl>
+                    <ItemsControl nav:RegionManager.ItemsRegionName="ItemsRegion"></ItemsControl>
 
-                    <StackPanel x:Name="StackPanelRegion1" nav:RegionManager.ItemsRegion="StackPanelRegion" Grid.Row="1" Margin="12"></StackPanel>
+                    <StackPanel x:Name="StackPanelRegion1" nav:RegionManager.ItemsRegionName="StackPanelRegion" Grid.Row="1" Margin="12"></StackPanel>
 
-                    <TabControl x:Name="TabControlRegion1" nav:RegionManager.ItemsRegion="TabControlRegion" Grid.Row="2" Margin="12">
+                    <TabControl x:Name="TabControlRegion1" nav:RegionManager.ItemsRegionName="TabControlRegion" Grid.Row="2" Margin="12">
                         <TabControl.ItemContainerStyle>
                             <Style TargetType="TabItem">
                                 <Setter Property="Header" Value="{Binding Message,FallbackValue='No message'}" />

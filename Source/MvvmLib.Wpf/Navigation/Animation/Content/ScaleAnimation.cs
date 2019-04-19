@@ -11,11 +11,11 @@ namespace MvvmLib.Navigation
         private readonly TransformDirection defaultTransformDirection = TransformDirection.X;
         protected virtual TransformDirection DefaultTransformDirection => defaultTransformDirection;
 
-        private ScaleTransform scale;
-        public ScaleTransform Scale
+        private ScaleTransform scaleTransform;
+        public ScaleTransform ScaleTransform
         {
-            get { return scale; }
-            protected set { scale = value; }
+            get { return scaleTransform; }
+            protected set { scaleTransform = value; }
         }
 
         protected TransformDirection? transformDirection;
@@ -55,20 +55,20 @@ namespace MvvmLib.Navigation
 
         protected override AnimationTimeline CreateAnimation()
         {
-            if (From < -1 || From > 1) { throw new ArgumentException("Value between 0 and 1 for a scale animation"); }
-            if (To < -1 || To > 1) { throw new ArgumentException("Value between 0 and 1 for a scale animation"); }
+            if (From < -1 || From > 1) { throw new ArgumentException("Value between -1 and 1 for a scale animation"); }
+            if (To < -1 || To > 1) { throw new ArgumentException("Value between -1 and 1 for a scale animation"); }
 
-            Scale = new ScaleTransform();
+            ScaleTransform = new ScaleTransform();
             if (ScaleX.HasValue)
-                Scale.ScaleX = ScaleX.Value;
+                ScaleTransform.ScaleX = ScaleX.Value;
             if (ScaleY.HasValue)
-                Scale.ScaleY = ScaleY.Value;
+                ScaleTransform.ScaleY = ScaleY.Value;
             if (CenterX.HasValue)
-                Scale.CenterX = CenterX.Value;
+                ScaleTransform.CenterX = CenterX.Value;
             if (CenterY.HasValue)
-                Scale.CenterY = CenterY.Value;
+                ScaleTransform.CenterY = CenterY.Value;
 
-            Element.RenderTransform = Scale;
+            Element.RenderTransform = ScaleTransform;
             Element.RenderTransformOrigin = RenderTransformOrigin;
 
             var animation = new DoubleAnimation(From, To, Duration);
@@ -84,23 +84,21 @@ namespace MvvmLib.Navigation
                 ScaleTransform.ScaleXProperty
                 : ScaleTransform.ScaleYProperty;
 
-            Scale.BeginAnimation(dp, Animation);
+            ScaleTransform.BeginAnimation(dp, Animation);
         }
 
         public override void CancelAnimation()
         {
-            if (Element != null)
+            if (ScaleTransform != null)
             {
                 var dp = TransformDirection == TransformDirection.X ?
                    ScaleTransform.ScaleXProperty
                    : ScaleTransform.ScaleYProperty;
 
-                Scale.BeginAnimation(dp, null);
-                AnimationWasCancelled = true;
-                IsAnimating = false;
+                ScaleTransform.BeginAnimation(dp, null);
             }
         }
     }
 
-
 }
+

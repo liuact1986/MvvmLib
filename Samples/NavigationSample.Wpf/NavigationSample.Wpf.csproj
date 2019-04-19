@@ -69,13 +69,21 @@
     <Compile Include="Models\Person.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmLibBootstrapper.cs" />
+    <Compile Include="ViewModels\AnimationQueueViewModel.cs" />
     <Compile Include="ViewModels\AnimationViewModel.cs" />
+    <Compile Include="ViewModels\ItemDetailsViewModel.cs" />
     <Compile Include="ViewModels\MasterDetailViewModel.cs" />
     <Compile Include="ViewModels\PeopleViewModel.cs" />
     <Compile Include="ViewModels\PersonDetailsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\AnimationQueueView.xaml.cs">
+      <DependentUpon>AnimationQueueView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AnimationView.xaml.cs">
       <DependentUpon>AnimationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ItemDetailsView.xaml.cs">
+      <DependentUpon>ItemDetailsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MasterDetail\MasterDetailView.xaml.cs">
       <DependentUpon>MasterDetailView.xaml</DependentUpon>
@@ -138,7 +146,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\AnimationQueueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AnimationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ItemDetailsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

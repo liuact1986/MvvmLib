@@ -37,8 +37,15 @@ namespace MvvmLib.Navigation
             set { onCompleted = value; }
         }
 
-        private Action onPrepare;
-        public Action OnPrepare
+        private Action onCancelled;
+        public Action OnCancelled
+        {
+            get { return onCancelled; }
+            set { onCancelled = value; }
+        }
+
+        private Action<IContentAnimation> onPrepare;
+        public Action<IContentAnimation> OnPrepare
         {
             get { return onPrepare; }
             set { onPrepare = value; }
@@ -86,13 +93,23 @@ namespace MvvmLib.Navigation
             set { duration = value; }
         }
 
-
         public abstract void CancelAnimation();
 
         public void Start(UIElement element, Action onCompleted)
         {
             if (IsAnimating)
+            {
+                animationWasCancelled = true;
+                UnhandleAnimationCompleted();
                 CancelAnimation();
+            }
+            else
+            {
+                //valueBeforeCancelled = null;
+                animationWasCancelled = false;
+            }
+
+            this.isAnimating = true;
 
             this.element = element;
             OnCompleted = onCompleted;
@@ -104,8 +121,8 @@ namespace MvvmLib.Navigation
             // prepare
             Prepare();
             // begin animation
-            this.isAnimating = true;
             BeginAnimation();
+
         }
 
         protected abstract AnimationTimeline CreateAnimation();
@@ -114,7 +131,7 @@ namespace MvvmLib.Navigation
 
         public void Prepare()
         {
-            OnPrepare?.Invoke();
+            OnPrepare?.Invoke(this);
         }
 
         public void HandleAnimationCompleted()
@@ -130,19 +147,9 @@ namespace MvvmLib.Navigation
         protected virtual void OnAnimationCompleted(object sender, EventArgs e)
         {
             UnhandleAnimationCompleted();
-            if (IsAnimating)
-            {
-                OnCompleted?.Invoke();
-                this.isAnimating = false;
-            }
-            else
-            {
-                Debug.WriteLine("Animation was cancelled");
-            }
-            AnimationWasCancelled = false;
+            IsAnimating = false;
+            OnCompleted?.Invoke();
         }
     }
-
-
 
 }

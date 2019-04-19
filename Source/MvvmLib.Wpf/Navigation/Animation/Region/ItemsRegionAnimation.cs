@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace MvvmLib.Navigation
@@ -19,7 +20,113 @@ namespace MvvmLib.Navigation
             set { exitAnimation = value; }
         }
 
-        public void DoOnLeave(object oldContent, Action onLeaveCompleted)
+        public bool IsAnimating
+        {
+            get
+            {
+                var isAnimating = (entranceAnimation != null && entranceAnimation.IsAnimating)
+                    || (exitAnimation != null && exitAnimation.IsAnimating);
+                return isAnimating;
+            }
+        }
+
+        private bool isEntering;
+        public bool IsEntering
+        {
+            get { return isEntering; }
+        }
+
+        private bool isLeaving;
+        public bool IsLeaving
+        {
+            get { return isLeaving; }
+        }
+
+        private readonly object control;
+
+        private readonly IItemsRegionAdapter itemsRegionAdapter;
+
+        private Queue<NavigationQueueItem> onEnterQueue;
+        public Queue<NavigationQueueItem> OnEnterQueue
+        {
+            get { return onEnterQueue; }
+        }
+
+        private Queue<NavigationQueueItem> onLeaveQueue;
+        public Queue<NavigationQueueItem> OnLeaveQueue
+        {
+            get { return onLeaveQueue; }
+        }
+
+        public ItemsRegionAnimation(object control, IItemsRegionAdapter itemsRegionAdapter)
+        {
+            onEnterQueue = new Queue<NavigationQueueItem>();
+            onLeaveQueue = new Queue<NavigationQueueItem>();
+            this.control = control;
+            this.itemsRegionAdapter = itemsRegionAdapter;
+        }
+
+        private void DequeueOnEnterInternal()
+        {
+            if (onEnterQueue.Count > 0)
+            {
+                var navigationQueueItem = onEnterQueue.Dequeue();
+                DoOnEnterInternal(navigationQueueItem.Content, navigationQueueItem.Index, navigationQueueItem.OnCompleted);
+            }
+            else
+            {
+                isEntering = false;
+            }
+        }
+
+        private void DoOnEnterInternal(object newContent, int index, Action onCompleted)
+        {
+            itemsRegionAdapter.OnInsert(control, newContent, index);
+            if (newContent != null && newContent is UIElement element)
+            {
+                //Reset(element);
+                if (EntranceAnimation != null)
+                    EntranceAnimation.Start(element, () =>
+                    {
+                        onCompleted();
+                    });
+                else
+                    onCompleted();
+            }
+            else
+                onCompleted();
+        }
+
+        public void DoOnEnter(object newContent, int index, Action onEnterCompleted)
+        {
+            isEntering = true;
+
+            var action = new Action(() =>
+            {
+                //onEnterCompleted();
+                DequeueOnEnterInternal();
+            });
+
+            if (entranceAnimation != null && entranceAnimation.IsAnimating)
+                onEnterQueue.Enqueue(new NavigationQueueItem(newContent, index, action));
+            else
+                this.DoOnEnterInternal(newContent, index, action);
+        }
+
+        private void DequeueOnLeaveInternal()
+        {
+            if (onLeaveQueue.Count > 0)
+            {
+                var navigationQueueItem = onLeaveQueue.Dequeue();
+                DoOnLeaveInternal(navigationQueueItem.Content, navigationQueueItem.Index, navigationQueueItem.OnCompleted);
+            }
+            else
+            {
+                isLeaving = false;
+            }
+        }
+
+        private void DoOnLeaveInternal(object oldContent, int index, Action onCompleted)
         {
             if (oldContent != null && oldContent is UIElement element)
             {
@@ -27,36 +134,63 @@ namespace MvvmLib.Navigation
                 if (ExitAnimation != null)
                     ExitAnimation.Start(element, () =>
                     {
-                        onLeaveCompleted();
+                        onCompleted();
                     });
                 else
-                    onLeaveCompleted();
+                    onCompleted();
             }
             else
-                onLeaveCompleted();
+                onCompleted();
         }
 
-        public void DoOnEnter(object newContent, Action onEnterCompleted)
+        public void DoOnLeave(object oldContent, int index, Action onEnterCompleted)
         {
-            if (newContent != null && newContent is UIElement element)
+            isLeaving = true;
+
+            var action = new Action(() =>
             {
-                //Reset(element);
-                if (EntranceAnimation != null)
-                    EntranceAnimation.Start(element, () =>
-                    {
-                        onEnterCompleted();
-                    });
-                else
-                    onEnterCompleted();
-            }
+                itemsRegionAdapter.OnRemoveAt(control, index);
+                //onEnterCompleted();
+                DequeueOnLeaveInternal();
+            });
+
+            if (exitAnimation != null && exitAnimation.IsAnimating)
+                onLeaveQueue.Enqueue(new NavigationQueueItem(oldContent, index, action));
             else
-                onEnterCompleted();
+                this.DoOnLeaveInternal(oldContent, index, action);
         }
 
         public void Reset(UIElement element)
         {
             element.Opacity = 1;
             element.RenderTransform = null;
+        }
+    }
+
+    public class NavigationQueueItem
+    {
+        private object content;
+        public object Content
+        {
+            get { return content; }
+            set { content = value; }
+        }
+
+        private Action onCompleted;
+        public Action OnCompleted
+        {
+            get { return onCompleted; }
+            set { onCompleted = value; }
+        }
+
+        private int index;
+        public int Index { get => index; set => index = value; }
+
+        public NavigationQueueItem(object content, int index, Action onCompleted)
+        {
+            Content = content;
+            this.Index = index;
+            OnCompleted = onCompleted;
         }
     }
 

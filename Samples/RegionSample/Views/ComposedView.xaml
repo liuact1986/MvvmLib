@@ -25,16 +25,16 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Border BorderThickness="2" BorderBrush="Black" >
-                <ItemsControl x:Name="RegionLeft1" nav:RegionManager.ItemsRegion="RegionLeft"></ItemsControl>
+                <ItemsControl x:Name="RegionLeft1" nav:RegionManager.ItemsRegionName="RegionLeft"></ItemsControl>
             </Border>
             <Border BorderThickness="2" BorderBrush="White" Grid.Column="1">
-                <ContentControl x:Name="RegionRight1" nav:RegionManager.ContentRegion="RegionRight"></ContentControl>
+                <ContentControl x:Name="RegionRight1" nav:RegionManager.ContentRegionName="RegionRight"></ContentControl>
             </Border>
         </Grid>
 
     </Grid>
 
-        <!--<ItemsControl x:Name="RegionLeft1" nav:RegionManager.ItemsRegion="RegionLeft"></ItemsControl>-->
+        <!--<ItemsControl x:Name="RegionLeft1" nav:RegionManager.ItemsRegionName="RegionLeft"></ItemsControl>-->
   
 
 </UserControl>

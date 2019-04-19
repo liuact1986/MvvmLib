@@ -1,5 +1,6 @@
 ﻿using MvvmLib.Logger;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -11,7 +12,7 @@ namespace MvvmLib.Navigation
     /// </summary>
     public sealed class ItemsRegion : RegionBase
     {
-        private readonly IItemsRegionAnimation emptyRegionAnimation = new ItemsRegionAnimation();
+        private readonly IItemsRegionAnimation emptyRegionAnimation;
 
         private IItemsRegionAdapter itemsRegionAdapter;
         private SelectableResolver selectableResolver;
@@ -45,8 +46,11 @@ namespace MvvmLib.Navigation
         {
             this.History = history;
             this.selectableResolver = new SelectableResolver();
-            this.defaultRegionNavigationAnimation = new ItemsRegionAnimation();
             this.itemsRegionAdapter = RegionAdapterContainer.GetItemsRegionAdapter(control.GetType());
+            this.defaultRegionNavigationAnimation = new ItemsRegionAnimation(Control, itemsRegionAdapter);
+            this.emptyRegionAnimation = new ItemsRegionAnimation(Control, itemsRegionAdapter);
+
+            ((FrameworkElement)control).Unloaded += OnControlUnloaded;
         }
 
         /// <summary>
@@ -57,6 +61,25 @@ namespace MvvmLib.Navigation
         public ItemsRegion(string regionName, object control)
             : this(new ListHistory(), regionName, control)
         { }
+
+        private void ClearRegionAndChildRegions(IEnumerable<NavigationEntry> entries)
+        {
+            foreach (var entry in entries)
+            {
+                // sub child => child => parent
+                if (entry.ChildRegions.Count > 0)
+                    ClearChildRegions(entry);
+            }
+        }
+
+        private void OnControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            ClearRegionAndChildRegions(History.List);
+            if (History.Current != null)
+                ClearChildRegions(History.Current);
+            if(!RegionManager.UnregisterItemsRegion(this))
+                this.Logger.Log($"Failed to unregister the items region \"{RegionName}\", control name:\"{ControlName}\"", Category.Debug, Priority.High);
+        }
 
         /// <summary>
         /// Short hand to configure kickly the default animation.
@@ -96,6 +119,12 @@ namespace MvvmLib.Navigation
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
+            if (regionAnimation.IsLeaving)
+            {
+                this.Logger.Log($"Cannot process insert item for the region\"{RegionName}\", the region actually is removing items", Category.Debug, Priority.Medium);
+                return false;
+            }
+
             bool navigationSuccess = true;
 
             try
@@ -132,32 +161,24 @@ namespace MvvmLib.Navigation
                             var childRegions = FindChildRegions((DependencyObject)s);
                             navigationEntry.ChildRegions = childRegions;
 
-                            this.NotifyLoadedListener(view, context, parameter);
+                            this.NotifyLoadedListeners(view, context, parameter);
                         });
-
-                        // Can Activate
-                        await CheckCanActivateAsync(view, context, parameter);
                     }
 
                     if (context != null)
                         this.NotifyRegionKnowledge(this, context); // ?
 
+                    // Can Activate
+                    await CheckCanActivateAsync(viewOrObject, context, parameter);
+
                     // on navigating to
-                    if (view != null)
-                        OnNavigatingTo(view, context, parameter);
+                    OnNavigatingTo(viewOrObject, context, parameter);
 
                     // insert
-                    if (view != null)
-                    {
-                        itemsRegionAdapter.OnInsert(Control, view, index);
-                        regionAnimation.DoOnEnter(view, () => { });
-                    }
-                    else
-                        itemsRegionAdapter.OnInsert(Control, viewOrObject, index);
+                    regionAnimation.DoOnEnter(viewOrObject, index, () => { });
 
                     // on navigated to
-                    if (view != null)
-                        OnNavigatedTo(view, context, parameter);
+                    OnNavigatedTo(viewOrObject, context, parameter);
 
                     // history
                     this.History.Insert(index, navigationEntry);
@@ -239,6 +260,11 @@ namespace MvvmLib.Navigation
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
+            if (regionAnimation.IsEntering)
+            {
+                this.Logger.Log($"Cannot process remove item for the region\"{RegionName}\", the region actually is adding items", Category.Debug, Priority.Medium);
+                return;
+            }
             try
             {
                 var entry = this.History.List[index];
@@ -251,12 +277,7 @@ namespace MvvmLib.Navigation
                 // on navigating from
                 this.OnNavigatingFrom(entry);
 
-                // remove
-                var view = entry.ViewOrObject as FrameworkElement;
-                if (view != null)
-                    regionAnimation.DoOnLeave(view, () => itemsRegionAdapter.OnRemoveAt(Control, index));
-                else
-                    itemsRegionAdapter.OnInsert(Control, entry.ViewOrObject, index);
+                regionAnimation.DoOnLeave(entry.ViewOrObject, index, () => { });
 
                 // history
                 this.History.RemoveAt(index);
