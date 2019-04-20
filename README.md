@@ -30,7 +30,8 @@ ___
 
 * **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
 * **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
-* **RegionManager**: allows to get a region, then **navigate** _with regions_ 
+* **RegionManager**: allows to regiter a region with attached properties
+* **RegionNavigationService** allows to **navigate** _with regions_ 
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
 * **ILoadedEventListener**: allows to be notified when the view or window is loaded

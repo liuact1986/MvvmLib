@@ -8,7 +8,7 @@ using System.Windows.Media.Animation;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel : ILoadedEventListener
+    public class AnimationViewModel : ILoadedEventListener , ISelectable
     {
         private TranslateAnimation translateEntranceAnimation;
         private TranslateAnimation translateExitAnimation;
@@ -37,7 +37,7 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand GoViewAWithFxVscaleAnimationCommand { get; }
         public ICommand GoViewBWithFxVscaleAnimationCommand { get; }
 
-        public AnimationViewModel(IRegionManager regionManager)
+        public AnimationViewModel(IRegionNavigationService regionNavigationService)
         {
             var opacityEntranceAnimation = new OpacityAnimation { From = 0, To = 1 };
             var opacityExitAnimation = new OpacityAnimation { From = 1, To = 0 };
@@ -75,7 +75,7 @@ namespace NavigationSample.Wpf.ViewModels
             var fxVscaleEntranceAnimation = new FxVScaleEntranceAnimation();
             var fxVscaleExitAnimation = new FxVScaleExitAnimation();
 
-            var region = regionManager.GetContentRegion("AnimationSample");
+            var region = regionNavigationService.GetContentRegion("AnimationSample");
 
             GoViewAWithFadeAnimationCommand = new RelayCommand(async () =>
             {
@@ -178,6 +178,11 @@ namespace NavigationSample.Wpf.ViewModels
             var width = e.NewSize.Width;
             translateEntranceAnimation.From = width;
             translateExitAnimation.To = width;
+        }
+
+        public bool IsTarget(Type viewType, object parameter)
+        {
+            return true;
         }
     }
 

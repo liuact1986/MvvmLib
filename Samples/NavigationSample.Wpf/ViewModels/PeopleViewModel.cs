@@ -25,14 +25,14 @@ namespace NavigationSample.Wpf.ViewModels
             }
         }
 
-        private IRegionManager regionManager;
+        private IRegionNavigationService regionNavigationService;
         private IFakePeopleService fakePeopleService;
 
         public ICommand SelectedPersonChangedCommand { get; }
 
-        public PeopleViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+        public PeopleViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
             this.fakePeopleService = fakePeopleService;
 
             SelectedPersonChangedCommand = new RelayCommand<Person>(OnShowDetails);
@@ -52,7 +52,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private async void OnShowDetails(Person person)
         {
-            await regionManager.GetContentRegion("Detail").NavigateAsync(typeof(PersonDetailsView), person.Id);
+            await regionNavigationService.GetContentRegion("Detail").NavigateAsync(typeof(PersonDetailsView), person.Id);
         }
     }
 }

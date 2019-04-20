@@ -44,28 +44,6 @@ namespace MvvmLib.Wpf.Tests
 
     //}
 
-    public class MyContentAdapter : ContentRegionAdapterBase<MyControl>
-    {
-        public override object GetContent(MyControl control)
-        {
-            return control.Content;
-        }
-
-        public override void OnGoBack(MyControl control, object previousView)
-        {
-            control.Content = previousView;
-        }
-
-        public override void OnGoForward(MyControl control, object nextView)
-        {
-            control.Content = nextView;
-        }
-
-        public override void OnNavigate(MyControl control, object view)
-        {
-            control.Content = view;
-        }
-    }
 
     public class MyControl : ContentControl
     {
@@ -286,15 +264,11 @@ namespace MvvmLib.Wpf.Tests
         [TestClass]
     public class ContentRegionTests
     {
-        [TestInitialize()]
-        public void Initialize()
-        {
-            RegionAdapterContainer.RegisterAdapter(new MyContentAdapter());
-        }
+        RegionsRegistry regionsRegistry = new RegionsRegistry();
 
         public ContentRegion GetService(ContentControl c)
         {
-            RegionManager.RegisterContentRegion("C1", c);
+            regionsRegistry.RegisterContentRegion("C1", c);
             return new ContentRegion(new NavigationHistory(), "C1", c);
         }
 
@@ -753,7 +727,7 @@ namespace MvvmLib.Wpf.Tests
             await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourcePageType);
+            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourceType);
             Assert.AreEqual("p1", ev.Parameter);
             Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);       
         }
@@ -780,7 +754,7 @@ namespace MvvmLib.Wpf.Tests
             await service.NavigateAsync(typeof(SimpleView));
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourcePageType);
+            Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourceType);
             Assert.AreEqual("p1", ev.Parameter);
             Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);
         }

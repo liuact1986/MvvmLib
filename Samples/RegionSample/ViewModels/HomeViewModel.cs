@@ -20,15 +20,15 @@ namespace RegionSample.ViewModels
             set { SetProperty(ref message, value); }
         }
 
-        private IRegionManager regionManager;
+        private IRegionNavigationService navigationService;
 
         private ContentRegion contentRegion;
 
-        public HomeViewModel(IRegionManager regionManager)
+        public HomeViewModel(IRegionNavigationService navigationService)
         {
-            this.regionManager = regionManager;
+            this.navigationService = navigationService;
 
-            contentRegion = regionManager.GetContentRegion("ContentRegion", "ContentRegion1");
+            contentRegion = navigationService.GetContentRegion("ContentRegion", "ContentRegion1");
         }
 
         public async Task<bool> CanActivateAsync(object parameter)

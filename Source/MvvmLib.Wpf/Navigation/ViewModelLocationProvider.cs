@@ -10,24 +10,23 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class ViewModelLocationProvider
     {
-        static Func<Type, Type> viewTypeToViewModelTypeResolver =
-            viewType =>
-            {
-                var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
+        private readonly static Dictionary<Type, Type> viewTypeToViewModelTypeCache = new Dictionary<Type, Type>();
+        private readonly static Dictionary<Type, Type> viewTypeToViewModelTypeCustomRegistrations = new Dictionary<Type, Type>();
 
-                var viewName = viewType.FullName;
-                viewName = viewName.Replace(".Views.", ".ViewModels.");
-                var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
-                var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
+        private static Func<Type, Type> viewTypeToViewModelTypeResolver =
+             viewType =>
+             {
+                 var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
 
-                return Type.GetType(viewModelName);
-            };
+                 var viewName = viewType.FullName;
+                 viewName = viewName.Replace(".Views.", ".ViewModels.");
+                 var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
+                 var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
 
-        static Dictionary<Type, Type> viewTypeToViewModelTypeCache = new Dictionary<Type, Type>();
+                 return Type.GetType(viewModelName);
+             };
 
-        static Dictionary<Type, Type> viewTypeToViewModelTypeCustomRegistrations = new Dictionary<Type, Type>();
-
-        static Func<Type, object> viewModelFactory = (viewModelType) => Activator.CreateInstance(viewModelType);
+        private static Func<Type, object> viewModelFactory = (viewModelType) => Activator.CreateInstance(viewModelType);
 
         /// <summary>
         /// Allows to change the convention used to resolve ViewModels for the views.
@@ -60,18 +59,14 @@ namespace MvvmLib.Navigation
         internal static Type ResolveViewModelType(Type viewType)
         {
             if (viewTypeToViewModelTypeCache.ContainsKey(viewType))
-            {
                 return viewTypeToViewModelTypeCache[viewType];
-            }
             else
             {
                 // custom Registration ? 
                 if (viewTypeToViewModelTypeCustomRegistrations.ContainsKey(viewType))
-                {
                     return viewTypeToViewModelTypeCustomRegistrations[viewType];
-                }
 
-                var viewModelType = viewTypeToViewModelTypeResolver(viewType); 
+                var viewModelType = viewTypeToViewModelTypeResolver(viewType);
                 viewTypeToViewModelTypeCache.Add(viewType, viewModelType);
                 return viewModelType;
             }

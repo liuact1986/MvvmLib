@@ -44,24 +44,10 @@ namespace MvvmLib.IoC
 
         private static readonly object _instanceLock = new object();
 
-        private static Injector _default;
+        private static Injector _default = new Injector();
         public static Injector Default
         {
-            get
-            {
-                if (_default == null)
-                {
-                    lock (_instanceLock)
-                    {
-                        if (_default == null)
-                        {
-                            _default = new Injector();
-                        }
-                    }
-                }
-
-                return _default;
-            }
+            get { return _default; }
         }
 
         public Injector()

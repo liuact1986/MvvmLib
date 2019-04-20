@@ -10,19 +10,19 @@ namespace CompositeCommandSample.ViewModels
     {
         public CompositeCommand SaveAllCommand { get; }
 
-        private IRegionManager regionManager;
+        private IRegionNavigationService regionNavigationService;
 
-        public ShellViewModel(IApplicationCommands applicationCommands, IRegionManager regionManager)
+        public ShellViewModel(IApplicationCommands applicationCommands, IRegionNavigationService regionNavigationService)
         {
             SaveAllCommand = applicationCommands.SaveAllCommand;
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
         }
 
         public async void OnLoaded(FrameworkElement view, object parameter)
         {
-            await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
-            await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");
-            await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabC");
+            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
+            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");
+            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabC");
         }
     }
 

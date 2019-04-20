@@ -13,13 +13,13 @@ namespace RegionSample.ViewModels
         private Type redirectToViewType;
         private object parameter;
 
-        public LoginViewModel(IRegionManager regionManager)
+        public LoginViewModel(IRegionNavigationService navigationService)
         {
             LoginCommand = new RelayCommand(async () =>
             {
                 User.IsLoggedIn = true;
                 // redirect remove current page (if present) from history
-                await regionManager.GetContentRegion("ContentRegion", "ContentRegion1").RedirectAsync(redirectToViewType, parameter);
+                await navigationService.GetContentRegion("ContentRegion", "ContentRegion1").RedirectAsync(redirectToViewType, parameter);
             });
         }
 

@@ -99,7 +99,8 @@
 <ul>
 <li><strong>Regions</strong>: change and animate the content of <strong>ContentRegion</strong> (ContentControl) and <strong>ItemsRegions</strong> (ItemsControl, TabControl, ... and more with Adapters) </li>
 <li><strong>ViewModelLocator</strong>: allows to resolve ViewModel for regions and for window with <strong>ResolveWindowViewModel</strong></li>
-<li><strong>RegionManager</strong>: allows to get a region, then <strong>navigate</strong> <em>with regions</em> </li>
+<li><strong>RegionManager</strong>: allows to regiter a region with attached properties</li>
+<li><strong>RegionNavigationService</strong> allows to <strong>navigate</strong> <em>with regions</em> </li>
 <li><strong>INavigatable</strong>: allows the views and view models to be notified on navigate</li>
 <li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
 <li><strong>ILoadedEventListener</strong>: allows to be notified when the view or window is loaded</li>
@@ -194,34 +195,34 @@ View model name:
 <pre><code class="xml">&lt;ContentControl nav:RegionManager.ContentRegionName=&quot;{x:Static local:RegionNames.ContentControlRegionName}&quot;&gt;&lt;/ContentControl&gt;
 </code></pre>
 
-<h3 id="navigate">Navigate<a class="headerlink" href="#navigate" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<h3 id="regionnavigationservice">RegionNavigationService<a class="headerlink" href="#regionnavigationservice" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <h4 id="with-content-region">With Content Region<a class="headerlink" href="#with-content-region" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h4>
 <p>Inject the region manager (view and / or view model)</p>
 <pre><code class="cs">public class ViewAViewModel
 {
-    IRegionManager regionManager;
+    private IRegionNavigationService regionNavigationService;
 
-    public ViewAViewModel(IRegionManager regionManager)
+    public ViewAViewModel(IRegionNavigationService regionNavigationService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
     }
 }
 </code></pre>
 
 <p>And use it</p>
 <pre><code class="cs">// GetContentRegion returns the last region registered for this region name
-await regionManager.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA));
+await regionNavigationService.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA));
 
 // and the control name to target a control
-await regionManager.GetContentRegion(&quot;MyContentRegion&quot;, &quot;MyContentRegion1&quot;).NavigateAsync(typeof(ViewA));
+await regionNavigationService.GetContentRegion(&quot;MyContentRegion&quot;, &quot;MyContentRegion1&quot;).NavigateAsync(typeof(ViewA));
 </code></pre>
 
 <p>with parameter</p>
-<pre><code class="cs">await regionManager.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA), &quot;my parameter&quot;);
+<pre><code class="cs">await regionNavigationService.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA), &quot;my parameter&quot;);
 </code></pre>
 
 <p>with exit and entrance animations</p>
-<pre><code class="cs">await regionManager.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
+<pre><code class="cs">await regionNavigationService.GetContentRegion(&quot;MyContentRegion&quot;).NavigateAsync(typeof(ViewA), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
 </code></pre>
 
 <p><strong>Content Region</strong></p>
@@ -309,25 +310,25 @@ await regionManager.GetContentRegion(&quot;MyContentRegion&quot;, &quot;MyConten
 </table>
 <h4 id="with-items-region">With Items Region<a class="headerlink" href="#with-items-region" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h4>
 <p>AddAsync</p>
-<pre><code class="cs">await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA));
+<pre><code class="cs">await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA));
 
 // by control name
-await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;,&quot;MyItemsRegion1&quot;).AddAsync(typeof(ViewA));
+await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;,&quot;MyItemsRegion1&quot;).AddAsync(typeof(ViewA));
 
 // with a parameter
- await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA),&quot;my parameter&quot;);
+await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA),&quot;my parameter&quot;);
 
 // with transition
- await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA), EntranceTransitionType.SlideInFromRight);
+await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;).AddAsync(typeof(ViewA), EntranceTransitionType.SlideInFromRight);
 </code></pre>
 
 <p>InsertAsync</p>
 <pre><code class="cs">// example : index 2
-await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).InsertAsync(2, typeof(ViewD));
+await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;).InsertAsync(2, typeof(ViewD));
 </code></pre>
 
 <p>RemoveLastAsync (remove the last item)</p>
-<pre><code class="cs">await regionManager.GetItemsRegion(&quot;MyItemsRegion&quot;).RemoveLastAsync(ExitTransitionType.SlideOutToBottom);
+<pre><code class="cs">await regionNavigationService.GetItemsRegion(&quot;MyItemsRegion&quot;).RemoveLastAsync(ExitTransitionType.SlideOutToBottom);
 </code></pre>
 
 <p>RemoveAtAsync</p>
@@ -360,7 +361,7 @@ var exitScaleAnimation = new ScaleAnimation
     EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
 };
 
-var region = regionManager.GetContentRegion(&quot;ContentRegion&quot;);
+var region = regionNavigationService.GetContentRegion(&quot;ContentRegion&quot;);
  region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
 </code></pre>
 
@@ -483,16 +484,16 @@ public class MyAnimation : TransformAnimationBase
 </blockquote>
 <pre><code class="cs">public class ShellViewModel : ILoadedEventListener
 {
-    IRegionManager regionManager;
+    IRegionNavigationService regionNavigationService;
 
-    public ShellViewModel(IRegionManager regionManager)
+    public ShellViewModel(IRegionNavigationService regionNavigationService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
     }
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegion(&quot;ContentRegion&quot;).NavigateAsync(typeof(HomeView));
+        await regionNavigationService.GetContentRegion(&quot;ContentRegion&quot;).NavigateAsync(typeof(HomeView));
     }
 }
 </code></pre>
@@ -522,13 +523,13 @@ public class MyAnimation : TransformAnimationBase
         set { SetProperty(ref person, value); }
     }
 
-    private IRegionManager regionManager;
+    private IRegionNavigationService regionNavigationService;
 
     private IFakePeopleService fakePeopleService;
 
-    public PersonDetailsViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+    public PersonDetailsViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
         this.fakePeopleService = fakePeopleService;
     }
 

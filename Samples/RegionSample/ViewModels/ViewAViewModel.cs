@@ -35,11 +35,11 @@ namespace RegionSample.ViewModels
         public RelayCommand UpdateMessageCommand =>
             updateMessageCommand ?? (updateMessageCommand = new RelayCommand(ExecuteUpdateMessageCommand));
 
-        IRegionManager regionManager;
+        IRegionNavigationService navigationService;
 
-        public ViewAViewModel(IRegionManager regionManager)
+        public ViewAViewModel(IRegionNavigationService navigationService)
         {
-            this.regionManager = regionManager;
+            this.navigationService = navigationService;
 
             message = "Initial ViewA message";
             count = 0;
@@ -62,7 +62,7 @@ namespace RegionSample.ViewModels
             else
             {
                 // redirect
-                await regionManager.GetContentRegion("ContentRegion","ContentRegion1").NavigateAsync(typeof(LoginView));
+                await navigationService.GetContentRegion("ContentRegion","ContentRegion1").NavigateAsync(typeof(LoginView));
                 return false;
             }
         }

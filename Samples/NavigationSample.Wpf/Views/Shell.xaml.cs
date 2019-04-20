@@ -22,6 +22,7 @@ namespace NavigationSample.Wpf.Views
         public Shell()
         {
             InitializeComponent();
+
         }
     }
 }

@@ -12,28 +12,27 @@ namespace MvvmLib.Navigation
     /// </summary>
     public sealed class ItemsRegion : RegionBase
     {
-        private readonly IItemsRegionAnimation emptyRegionAnimation;
+        private readonly IItemsRegionNavigationAnimation emptyRegionAnimation;
+        private readonly IItemsRegionAdapter itemsRegionAdapter;
+        private readonly SelectableResolver selectableResolver;
+        private readonly IItemsRegionNavigationAnimation regionNavigation;
 
-        private IItemsRegionAdapter itemsRegionAdapter;
-        private SelectableResolver selectableResolver;
-        private readonly IItemsRegionAnimation defaultRegionNavigationAnimation;
-
-        /// <summary>
-        /// The default animation for the region.
-        /// </summary>
-        public IItemsRegionAnimation DefaultRegionNavigationAnimation
-        {
-            get { return defaultRegionNavigationAnimation; }
-        }
+        private readonly IListHistory history;
         /// <summary>
         /// Gets the history.
         /// </summary>
-        public IListHistory History { get; }
+        public IListHistory History
+        {
+            get { return history; }
+        }
 
         /// <summary>
         /// Gets the current history entry.
         /// </summary>
-        public override NavigationEntry CurrentEntry => this.History.Current;
+        public override NavigationEntry CurrentEntry
+        {
+            get { return this.history.Current; }
+        }
 
         /// <summary>
         /// Creates an ItemsRegion.
@@ -41,16 +40,16 @@ namespace MvvmLib.Navigation
         /// <param name="history">The history</param>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ItemsRegion(IListHistory history, string regionName, object control)
+        public ItemsRegion(IListHistory history, string regionName, FrameworkElement control)
             : base(regionName, control)
         {
-            this.History = history;
+            this.history = history;
             this.selectableResolver = new SelectableResolver();
-            this.itemsRegionAdapter = RegionAdapterContainer.GetItemsRegionAdapter(control.GetType());
-            this.defaultRegionNavigationAnimation = new ItemsRegionAnimation(Control, itemsRegionAdapter);
-            this.emptyRegionAnimation = new ItemsRegionAnimation(Control, itemsRegionAdapter);
+            this.itemsRegionAdapter = RegionAdapterContainer.GetRegionAdapter(control.GetType());
+            this.regionNavigation = new ItemsRegionNavigationAnimation(Control, itemsRegionAdapter);
+            this.emptyRegionAnimation = new ItemsRegionNavigationAnimation(Control, itemsRegionAdapter);
 
-            ((FrameworkElement)control).Unloaded += OnControlUnloaded;
+            control.Unloaded += OnControlUnloaded;
         }
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ItemsRegion(string regionName, object control)
+        public ItemsRegion(string regionName, FrameworkElement control)
             : this(new ListHistory(), regionName, control)
         { }
 
@@ -74,10 +73,9 @@ namespace MvvmLib.Navigation
 
         private void OnControlUnloaded(object sender, RoutedEventArgs e)
         {
-            ClearRegionAndChildRegions(History.List);
-            if (History.Current != null)
-                ClearChildRegions(History.Current);
-            if(!RegionManager.UnregisterItemsRegion(this))
+            control.Unloaded -= OnControlUnloaded;
+
+            if (!UnregisterItemsRegion(this))
                 this.Logger.Log($"Failed to unregister the items region \"{RegionName}\", control name:\"{ControlName}\"", Category.Debug, Priority.High);
         }
 
@@ -88,13 +86,13 @@ namespace MvvmLib.Navigation
         /// <param name="exitAnimation">The exite animation</param>
         public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation)
         {
-            defaultRegionNavigationAnimation.EntranceAnimation = entranceAnimation;
-            defaultRegionNavigationAnimation.ExitAnimation = exitAnimation;
+            regionNavigation.EntranceAnimation = entranceAnimation;
+            regionNavigation.ExitAnimation = exitAnimation;
         }
 
         private bool IsValidIndex(int index)
         {
-            return index >= 0 && index <= this.History.List.Count;
+            return index >= 0 && index <= this.history.List.Count;
         }
 
         private object GetOrSetContext(Type sourceType, object ViewOrObject)
@@ -115,11 +113,11 @@ namespace MvvmLib.Navigation
             return context;
         }
 
-        private async Task<bool> ProcessInsertAsync(int index, Type sourceType, object parameter, IItemsRegionAnimation regionAnimation)
+        private async Task<bool> ProcessInsertAsync(int index, Type sourceType, object parameter, IItemsRegionNavigationAnimation regionAnimationToUse)
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
-            if (regionAnimation.IsLeaving)
+            if (regionAnimationToUse.IsLeaving)
             {
                 this.Logger.Log($"Cannot process insert item for the region\"{RegionName}\", the region actually is removing items", Category.Debug, Priority.Medium);
                 return false;
@@ -129,7 +127,7 @@ namespace MvvmLib.Navigation
 
             try
             {
-                var selectedIndex = this.selectableResolver.TrySelect(sourceType, parameter, this.History.ToList());
+                var selectedIndex = this.selectableResolver.TrySelect(sourceType, parameter, this.history.ToList());
                 if (selectedIndex != -1)
                 {
                     if (Control is Selector)
@@ -137,7 +135,7 @@ namespace MvvmLib.Navigation
                 }
                 else
                 {
-                    var currentEntry = this.History.Current;
+                    var currentEntry = this.history.Current;
 
                     if (currentEntry != null)
                         // navigating event
@@ -169,19 +167,19 @@ namespace MvvmLib.Navigation
                         this.NotifyRegionKnowledge(this, context); // ?
 
                     // Can Activate
-                    await CheckCanActivateAsync(viewOrObject, context, parameter);
+                    await CheckCanActivateOrThrowAsync(viewOrObject, context, parameter);
 
                     // on navigating to
                     OnNavigatingTo(viewOrObject, context, parameter);
 
                     // insert
-                    regionAnimation.DoOnEnter(viewOrObject, index, () => { });
+                    regionAnimationToUse.DoOnEnter(viewOrObject, index, () => { });
 
                     // on navigated to
                     OnNavigatedTo(viewOrObject, context, parameter);
 
                     // history
-                    this.History.Insert(index, navigationEntry);
+                    this.history.Insert(index, navigationEntry);
 
                     // navigated event
                     this.RaiseNavigated(sourceType, parameter, RegionNavigationType.Insert);
@@ -202,9 +200,7 @@ namespace MvvmLib.Navigation
             }
 
             if (!navigationSuccess)
-            {
-                RegionManager.RemoveNonLoadedRegions();
-            }
+                RemoveNonLoadedRegions();
 
             return navigationSuccess;
         }
@@ -215,9 +211,10 @@ namespace MvvmLib.Navigation
         /// <param name="index">The index</param>
         /// <param name="sourceType">The view or object type</param>
         /// <param name="parameter">The parameter</param>
-        public async Task InsertAsync(int index, Type sourceType, object parameter)
+        /// <returns>True if inserted</returns>
+        public async Task<bool> InsertAsync(int index, Type sourceType, object parameter)
         {
-            await this.ProcessInsertAsync(index, sourceType, parameter, defaultRegionNavigationAnimation);
+            return await this.ProcessInsertAsync(index, sourceType, parameter, regionNavigation);
         }
 
         /// <summary>
@@ -225,9 +222,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="index">The index</param>
         /// <param name="sourceType">The view or object type</param>
-        public async Task InsertAsync(int index, Type sourceType)
+        /// <returns>True if inserted</returns>
+        public async Task<bool> InsertAsync(int index, Type sourceType)
         {
-            await this.ProcessInsertAsync(index, sourceType, null, defaultRegionNavigationAnimation);
+            return await this.ProcessInsertAsync(index, sourceType, null, regionNavigation);
         }
 
 
@@ -236,51 +234,50 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The view or object type</param>
         /// <param name="parameter">The parameter</param>
-        public async Task AddAsync(Type sourceType, object parameter)
+        /// <returns>True if added</returns>
+        public async Task<bool> AddAsync(Type sourceType, object parameter)
         {
-            await this.ProcessInsertAsync(History.List.Count, sourceType, parameter, defaultRegionNavigationAnimation);
+            return await this.ProcessInsertAsync(history.List.Count, sourceType, parameter, regionNavigation);
         }
 
         /// <summary>
         /// Add a view to the items region.
         /// </summary>
         /// <param name="sourceType">The view or object type</param>
-        /// <returns></returns>
-        public async Task AddAsync(Type sourceType)
+        /// <returns>True if navigation added</returns>
+        public async Task<bool> AddAsync(Type sourceType)
         {
-            await this.ProcessInsertAsync(History.List.Count, sourceType, null, defaultRegionNavigationAnimation);
+            return await this.ProcessInsertAsync(history.List.Count, sourceType, null, regionNavigation);
         }
 
-        /// <summary>
-        /// Remove a view from the items region.
-        /// </summary>
-        /// <param name="index">The index</param>
-        /// <param name="regionAnimation">The region animation</param>
-        public async Task RemoveAtAsync(int index, IItemsRegionAnimation regionAnimation)
+        private async Task<bool> ProcessRemoveAtAsync(int index, IItemsRegionNavigationAnimation regionNavigationToUse)
         {
             if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
 
-            if (regionAnimation.IsEntering)
+            if (regionNavigationToUse.IsEntering)
             {
                 this.Logger.Log($"Cannot process remove item for the region\"{RegionName}\", the region actually is adding items", Category.Debug, Priority.Medium);
-                return;
+                return false;
             }
+
+            var navigationSuccess = true;
+
             try
             {
-                var entry = this.History.List[index];
+                var entry = this.history.List[index];
                 // navigating event
                 this.RaiseNavigating(entry.SourceType, entry.Parameter, RegionNavigationType.Remove);
 
                 // Can Deactivate
-                await CheckCanDeactivateAsync(entry);
+                await CheckCanDeactivateOrThrowAsync(entry);
 
                 // on navigating from
                 this.OnNavigatingFrom(entry);
 
-                regionAnimation.DoOnLeave(entry.ViewOrObject, index, () => { });
+                regionNavigationToUse.DoOnLeave(entry.ViewOrObject, index, () => { });
 
                 // history
-                this.History.RemoveAt(index);
+                this.history.RemoveAt(index);
 
                 // navigated event
                 this.RaiseNavigated(entry.SourceType, entry.Parameter, RegionNavigationType.Remove);
@@ -289,47 +286,59 @@ namespace MvvmLib.Navigation
             {
                 this.Logger.Log(ex.ToString(), Category.Exception, Priority.Low);
                 this.RaiseNavigationNavigationFailed(ex);
+                navigationSuccess = false;
             }
             catch (Exception ex)
             {
                 var navigationFailedException = new NavigationFailedException(NavigationFailedExceptionType.ExceptionThrown, NavigationFailedSourceType.InnerException, ex, this);
                 this.Logger.Log(ex.ToString(), Category.Exception, Priority.High);
                 this.RaiseNavigationNavigationFailed(navigationFailedException);
+                navigationSuccess = false;
             }
+
+            return navigationSuccess;
         }
 
         /// <summary>
         /// Remove a view from the items region.
         /// </summary>
         /// <param name="index">The index</param>
-        public async Task RemoveAtAsync(int index)
+        /// <returns>True if navigation removed</returns>
+        public async Task<bool> RemoveAtAsync(int index)
         {
-            await this.RemoveAtAsync(index, defaultRegionNavigationAnimation);
+            return await this.ProcessRemoveAtAsync(index, regionNavigation);
         }
 
         /// <summary>
         /// Remove the last view from the items region.
         /// </summary>
-        public async Task RemoveLastAsync()
+        /// <returns>True if navigation removed</returns>
+        public async Task<bool> RemoveLastAsync()
         {
-            if (this.History.List.Count > 0)
-                await this.RemoveAtAsync(this.History.List.Count - 1, defaultRegionNavigationAnimation);
+            if (this.history.List.Count > 0)
+                return await this.RemoveAtAsync(this.history.List.Count - 1);
+
+            return false;
         }
 
         /// <summary>
         /// Clear the items region.
         /// </summary>
-        public async void Clear()
+        /// <returns>True if navigation removed</returns>
+        public async Task<bool> Clear()
         {
+            var success = true;
             while (true)
             {
-                if (this.History.List.Count <= 0)
+                if (this.history.List.Count <= 0)
                 {
                     break;
                 }
 
-                await this.RemoveAtAsync(this.History.List.Count - 1, emptyRegionAnimation);
+                if (!await this.ProcessRemoveAtAsync(this.history.List.Count - 1, emptyRegionAnimation))
+                    success = false;
             }
+            return success;
         }
 
         internal void ClearItems()

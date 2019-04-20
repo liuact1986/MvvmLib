@@ -6,16 +6,16 @@ namespace HelloWorld.ViewModels
 {
     public class ShellViewModel : ILoadedEventListener
     {
-        IRegionManager regionManager;
+        private readonly IRegionNavigationService regionNavigationService;
 
-        public ShellViewModel(IRegionManager regionManager)
+        public ShellViewModel(IRegionNavigationService regionNavigationService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
         }
 
         public async void OnLoaded(FrameworkElement view, object parameter)
         {
-            await regionManager.GetContentRegion("MainRegion").NavigateAsync(typeof(HomeView), "Hello World!");
+            await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(typeof(HomeView), "Hello World!");
         }
     }
 }

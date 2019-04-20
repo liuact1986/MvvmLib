@@ -7,23 +7,24 @@ namespace RegionSample.ViewModels
 {
     public class CustomWindowViewModel : BindableBase, ILoadedEventListener
     {
-        IRegionManager regionManager;
+        IRegionNavigationService navigationService;
 
-        public CustomWindowViewModel(IRegionManager regionManager)
+        public CustomWindowViewModel(IRegionNavigationService navigationService)
         {
-            this.regionManager = regionManager;
+            this.navigationService = navigationService;
         }
 
         public async void OnLoaded(FrameworkElement view, object parameter)
         {
-            var regions = regionManager.GetContentRegions("ContentRegion");
-            var region = regions.FirstOrDefault();
-            var customViewContentRegion = regions.LastOrDefault();
+            var regions = navigationService.GetContentRegions("ContentRegion");
+            var region = regions.FirstOrDefault(); // get the first content region with the region name "ContentRegion" of the Shell 
+
+            var customViewContentRegion = regions.LastOrDefault(); // get the content region of the window with the same region name \"ContentRegion\"
+
+            // get current history entry and navigate with the content region of the window to the view with parameter
             var currentEntry = region.History.Current;
             if (currentEntry != null)
-            {
-                await customViewContentRegion.NavigateAsync(currentEntry.SourceType);
-            }
+                await customViewContentRegion.NavigateAsync(currentEntry.SourceType, currentEntry.Parameter);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The back stack.
         /// </summary>
-        BindableList<NavigationEntry> BackStack { get; }
+        BindableHistory<NavigationEntry> BackStack { get; }
 
         /// <summary>
         /// Gets the current entry. 
@@ -20,7 +20,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The forward Stack.
         /// </summary>
-        BindableList<NavigationEntry> ForwardStack { get; }
+        BindableHistory<NavigationEntry> ForwardStack { get; }
 
         /// <summary>
         /// Gets the next entry. 

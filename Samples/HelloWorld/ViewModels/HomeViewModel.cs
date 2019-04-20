@@ -15,9 +15,7 @@ namespace HelloWorld.ViewModels
         public void OnNavigatingTo(object parameter)
         {
             if (parameter != null)
-            {
                 Message = parameter.ToString();
-            }
         }
 
         public void OnNavigatedTo(object parameter)

@@ -3,36 +3,53 @@ using System.Windows.Controls;
 
 namespace MvvmLib.Navigation
 {
+
+    /// <summary>
+    /// The <see cref="TabControl"/> adapter.
+    /// </summary>
     public class TabControlAdapter : ItemsRegionAdapterBase<TabControl>
     {
-        private TabItem CreateTabItem(object view)
+        private TabItem CreateTabItem(object content)
         {
-            return new TabItem
+            var tabItem = new TabItem
             {
-                Content = view,
-                DataContext = ((FrameworkElement)view).DataContext
+                Content = content,
+                DataContext = content != null && content is FrameworkElement element ? element.DataContext : null
             };
+            return tabItem;
         }
-
-        public override void OnInsert(TabControl control, object view, int index)
+        /// <summary>
+        /// Invoked on insert new content.
+        /// </summary>
+        /// <param name="control">The control</param>
+        /// <param name="content">The content</param>
+        /// <param name="index">The index</param>
+        public override void OnInsert(TabControl control, object content, int index)
         {
             if (index >= 0 && index <= control.Items.Count)
             {
-                var tabItem = CreateTabItem(view);
+                var tabItem = CreateTabItem(content);
                 control.Items.Insert(index, tabItem);
                 //tabItem.Focus();
                 control.SelectedIndex = index;
             }
         }
 
+        /// <summary>
+        /// Invoked on remove element.
+        /// </summary>
+        /// <param name="control">The control</param>
+        /// <param name="index">The index</param>
         public override void OnRemoveAt(TabControl control, int index)
         {
             if (index >= 0 && index < control.Items.Count)
-            {
                 control.Items.RemoveAt(index);
-            }
         }
 
+        /// <summary>
+        /// Invoked on clear all elements.
+        /// </summary>
+        /// <param name="control">The control</param>
         public override void OnClear(TabControl control)
         {
             control.Items.Clear();

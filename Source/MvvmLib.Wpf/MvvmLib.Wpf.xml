@@ -4,26 +4,141 @@
         <name>MvvmLib.Wpf</name>
     </assembly>
     <members>
-        <member name="T:MvvmLib.Core.Mvvm.BindableObject`1">
+        <member name="T:MvvmLib.Navigation.IItemsRegionAdapter">
             <summary>
-            Allows to bind a value or object to Value dependency property and be notified on value changed.
-            </summary>
-            <typeparam name="T">The type of the value to observe</typeparam>
-        </member>
-        <member name="E:MvvmLib.Core.Mvvm.BindableObject`1.PropertyChanged">
-            <summary>
-            The property changed to subscribe to be notified on value changed.
+            The items region adapter contract.
             </summary>
         </member>
-        <member name="P:MvvmLib.Core.Mvvm.BindableObject`1.Value">
+        <member name="P:MvvmLib.Navigation.IItemsRegionAdapter.TargetType">
             <summary>
-            The Value.
+            The type of the control used by the region adapter.
             </summary>
         </member>
-        <member name="F:MvvmLib.Core.Mvvm.BindableObject`1.ValueProperty">
+        <member name="M:MvvmLib.Navigation.IItemsRegionAdapter.OnInsert(System.Object,System.Object,System.Int32)">
             <summary>
-            The value property.
+            Invoked on insert new content.
             </summary>
+            <param name="control">The control</param>
+            <param name="content">The content</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.IItemsRegionAdapter.OnRemoveAt(System.Object,System.Int32)">
+            <summary>
+            Invoked on remove element.
+            </summary>
+            <param name="control">The control</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.IItemsRegionAdapter.OnClear(System.Object)">
+            <summary>
+            Invoked on clear all elements.
+            </summary>
+            <param name="control">The control</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.ItemsControlAdapter">
+            <summary>
+            The <see cref="T:System.Windows.Controls.ItemsControl"/> adapter.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsControlAdapter.OnInsert(System.Windows.Controls.ItemsControl,System.Object,System.Int32)">
+            <summary>
+            Invoked on insert new content.
+            </summary>
+            <param name="control">The control</param>
+            <param name="content">The content</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsControlAdapter.OnRemoveAt(System.Windows.Controls.ItemsControl,System.Int32)">
+            <summary>
+            Invoked on remove element.
+            </summary>
+            <param name="control">The control</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsControlAdapter.OnClear(System.Windows.Controls.ItemsControl)">
+            <summary>
+            Invoked on clear all elements.
+            </summary>
+            <param name="control">The control</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.ItemsRegionAdapterBase`1">
+            <summary>
+            The region adapter base class.
+            </summary>
+            <typeparam name="T">The type of the control used by the region adapter</typeparam>
+        </member>
+        <member name="P:MvvmLib.Navigation.ItemsRegionAdapterBase`1.TargetType">
+            <summary>
+            The type of the control used by the region adapter.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnInsert(`0,System.Object,System.Int32)">
+            <summary>
+            Invoked on insert new content.
+            </summary>
+            <param name="control">The control</param>
+            <param name="content">The content</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnRemoveAt(`0,System.Int32)">
+            <summary>
+            Invoked on remove element.
+            </summary>
+            <param name="control">The control</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnClear(`0)">
+            <summary>
+            Invoked on clear all elements.
+            </summary>
+            <param name="control">The control</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnInsert(System.Object,System.Object,System.Int32)">
+            <summary>
+            Invoked on insert new content.
+            </summary>
+            <param name="control">The control</param>
+            <param name="content">The content</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnRemoveAt(System.Object,System.Int32)">
+            <summary>
+            Invoked on remove element.
+            </summary>
+            <param name="control">The control</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.ItemsRegionAdapterBase`1.OnClear(System.Object)">
+            <summary>
+            Invoked on clear all elements.
+            </summary>
+            <param name="control">The control</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.TabControlAdapter">
+            <summary>
+            The <see cref="T:System.Windows.Controls.TabControl"/> adapter.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.TabControlAdapter.OnInsert(System.Windows.Controls.TabControl,System.Object,System.Int32)">
+            <summary>
+            Invoked on insert new content.
+            </summary>
+            <param name="control">The control</param>
+            <param name="content">The content</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.TabControlAdapter.OnRemoveAt(System.Windows.Controls.TabControl,System.Int32)">
+            <summary>
+            Invoked on remove element.
+            </summary>
+            <param name="control">The control</param>
+            <param name="index">The index</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.TabControlAdapter.OnClear(System.Windows.Controls.TabControl)">
+            <summary>
+            Invoked on clear all elements.
+            </summary>
+            <param name="control">The control</param>
         </member>
         <member name="T:MvvmLib.Navigation.BootstrapperBase">
             <summary>
@@ -61,6 +176,7 @@
             <summary>
             Configures the service locator (Microsoft Common Service Locator) if used.
             </summary>
+            <example>ServiceLocator.SetLocatorProvider(() => new MvvmLibServiceLocatorAdapter(injector));</example>
         </member>
         <member name="M:MvvmLib.Navigation.BootstrapperBase.ConfigureContainer">
             <summary>
@@ -103,11 +219,6 @@
             The Content Region class.
             </summary>
         </member>
-        <member name="P:MvvmLib.Navigation.ContentRegion.DefaultRegionAnimation">
-            <summary>
-            The default animation for the region.
-            </summary>
-        </member>
         <member name="P:MvvmLib.Navigation.ContentRegion.History">
             <summary>
             Gets the history.
@@ -138,7 +249,7 @@
             Invoked when can the go forward value changed.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(MvvmLib.Navigation.INavigationHistory,System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(MvvmLib.Navigation.INavigationHistory,System.String,System.Windows.FrameworkElement)">
             <summary>
             Creates an ContentRegion.
             </summary>
@@ -146,7 +257,7 @@
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ContentRegion.#ctor(System.String,System.Windows.FrameworkElement)">
             <summary>
             Creates an ContentRegion.
             </summary>
@@ -171,7 +282,7 @@
             Navigates to view and notify viewmodel.
             </summary>
             <param name="sourceType">The view type</param>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.NavigateAsync(System.Type,System.Object)">
             <summary>
@@ -179,7 +290,7 @@
             </summary>
             <param name="sourceType">The view type</param>
             <param name="parameter">The parameter</param>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type,System.Object)">
             <summary>
@@ -187,32 +298,116 @@
             </summary>
             <param name="sourceType">The type of the view to redirect</param>
             <param name="parameter">The parameter</param>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.RedirectAsync(System.Type)">
             <summary>
             Redirect to the view and remove the previous entry from history.
             </summary>
             <param name="sourceType">The type of the view to redirect</param>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.GoBackAsync">
             <summary>
             Navigates to previous view.
             </summary>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.GoForwardAsync">
             <summary>
             Navigates to next view.
             </summary>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ContentRegion.NavigateToRootAsync">
             <summary>
             Navigates to the root view.
             </summary>
-            <returns></returns>
+            <returns>True if navigation successeeded</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionNavigationEventArgs">
+            <summary>
+            The region navigation event args class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionNavigationEventArgs.SourceType">
+            <summary>
+            The source type.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionNavigationEventArgs.Parameter">
+            <summary>
+            The parameter.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionNavigationEventArgs.RegionNavigationType">
+            <summary>
+            The navigation type.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionNavigationEventArgs.#ctor(System.Type,System.Object,MvvmLib.Navigation.RegionNavigationType)">
+            <summary>
+            Creates the region navigation event args class.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="parameter">The parameter</param>
+            <param name="regionNavigationType">The navigation type</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionNavigationFailedEventArgs">
+            <summary>
+            The region navigation failed event args class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionNavigationFailedEventArgs.Exception">
+            <summary>
+            The exception.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionNavigationFailedEventArgs.#ctor(MvvmLib.Navigation.NavigationFailedException)">
+            <summary>
+            Creates the region navigation failed event args class.
+            </summary>
+            <param name="exception">The exception</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionNavigationType">
+            <summary>
+            The navigation type.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.New">
+            <summary>
+            On navigate.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Back">
+            <summary>
+            On go back.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Forward">
+            <summary>
+            On go forward.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Redirect">
+            <summary>
+            On redirect.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Insert">
+            <summary>
+            On insert.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Remove">
+            <summary>
+            On remove.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionNavigationType.Root">
+            <summary>
+            On go root.
+            </summary>
         </member>
         <member name="T:MvvmLib.Navigation.INavigationHistory">
             <summary>
@@ -462,54 +657,54 @@
             </summary>
             <param name="parameter">The parameter</param>
         </member>
-        <member name="T:MvvmLib.Navigation.IRegionManager">
+        <member name="T:MvvmLib.Navigation.IRegionNavigationService">
             <summary>
-            Allows to get region for navigation with RegionManager instance.
+            Allows to get content and items regions and navigate.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegion(System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetContentRegion(System.String)">
             <summary>
             Gets the first content region for the region name.
             </summary>
             <param name="regionName">The region name</param>
             <returns>The content region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegion(System.String,System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetContentRegions(System.String)">
+            <summary>
+            Gets the content regions.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>A readonly list of content regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetContentRegion(System.String,System.String)">
             <summary>
             Gets the content region for the region name and the control name.
             </summary>
             <param name="regionName">The region name</param>
-            <param name="name">The control name property</param>
+            <param name="controlName">The control name property</param>
             <returns>The content region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegion(System.String,System.String)">
-            <summary>
-            Gets the items region for the region name and the control name.
-            </summary>
-            <param name="regionName">The region name</param>
-            <param name="name">The control name property</param>
-            <returns>The items region</returns>
-        </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegion(System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetItemsRegion(System.String)">
             <summary>
             Get the items region for the region name.
             </summary>
             <param name="regionName">The region name</param>
             <returns>A list of items regions</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetContentRegions(System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetItemsRegion(System.String,System.String)">
             <summary>
-            Get all content region for the region name.
+            Gets the items region for the region name and the control name.
             </summary>
             <param name="regionName">The region name</param>
-            <returns>A list of content regions</returns>
+            <param name="controlName">The control name property</param>
+            <returns>The items region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionManager.GetItemsRegions(System.String)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.GetItemsRegions(System.String)">
             <summary>
-            Gets the items region for the region name.
+            Gets the items regions.
             </summary>
             <param name="regionName">The region name</param>
-            <returns>A list of items regions</returns>
+            <returns>A readonly list of items regions</returns>
         </member>
         <member name="T:MvvmLib.Navigation.ISelectable">
             <summary>
@@ -554,11 +749,6 @@
             The Items Region class.
             </summary>
         </member>
-        <member name="P:MvvmLib.Navigation.ItemsRegion.DefaultRegionNavigationAnimation">
-            <summary>
-            The default animation for the region.
-            </summary>
-        </member>
         <member name="P:MvvmLib.Navigation.ItemsRegion.History">
             <summary>
             Gets the history.
@@ -569,7 +759,7 @@
             Gets the current history entry.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(MvvmLib.Navigation.IListHistory,System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(MvvmLib.Navigation.IListHistory,System.String,System.Windows.FrameworkElement)">
             <summary>
             Creates an ItemsRegion.
             </summary>
@@ -577,7 +767,7 @@
             <param name="regionName">The region name</param>
             <param name="control">The control</param>
         </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.ItemsRegion.#ctor(System.String,System.Windows.FrameworkElement)">
             <summary>
             Creates an ItemsRegion.
             </summary>
@@ -598,6 +788,7 @@
             <param name="index">The index</param>
             <param name="sourceType">The view or object type</param>
             <param name="parameter">The parameter</param>
+            <returns>True if inserted</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.InsertAsync(System.Int32,System.Type)">
             <summary>
@@ -605,6 +796,7 @@
             </summary>
             <param name="index">The index</param>
             <param name="sourceType">The view or object type</param>
+            <returns>True if inserted</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type,System.Object)">
             <summary>
@@ -612,45 +804,67 @@
             </summary>
             <param name="sourceType">The view or object type</param>
             <param name="parameter">The parameter</param>
+            <returns>True if added</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.AddAsync(System.Type)">
             <summary>
             Add a view to the items region.
             </summary>
             <param name="sourceType">The view or object type</param>
-            <returns></returns>
-        </member>
-        <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32,MvvmLib.Navigation.IItemsRegionAnimation)">
-            <summary>
-            Remove a view from the items region.
-            </summary>
-            <param name="index">The index</param>
-            <param name="regionAnimation">The region animation</param>
+            <returns>True if navigation added</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveAtAsync(System.Int32)">
             <summary>
             Remove a view from the items region.
             </summary>
             <param name="index">The index</param>
+            <returns>True if navigation removed</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.RemoveLastAsync">
             <summary>
             Remove the last view from the items region.
             </summary>
+            <returns>True if navigation removed</returns>
         </member>
         <member name="M:MvvmLib.Navigation.ItemsRegion.Clear">
             <summary>
             Clear the items region.
             </summary>
+            <returns>True if navigation removed</returns>
         </member>
         <member name="T:MvvmLib.Navigation.RegionBase">
             <summary>
             The Reghion base class.
             </summary>
         </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.logger">
+            <summary>
+            The region logger.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionBase.Logger">
+            <summary>
+            The logger used by the Region
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.isLoaded">
+            <summary>
+            Checks if region is loaded.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.regionName">
+            <summary>
+            The region name.
+            </summary>
+        </member>
         <member name="P:MvvmLib.Navigation.RegionBase.RegionName">
             <summary>
             The region name.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionBase.control">
+            <summary>
+            The control for this region.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.RegionBase.Control">
@@ -663,24 +877,9 @@
             The name of the control. Can be used to get a region by region name and control name.
             </summary>
         </member>
-        <member name="F:MvvmLib.Navigation.RegionBase.isLoaded">
-            <summary>
-            Checks if region is loaded.
-            </summary>
-        </member>
         <member name="P:MvvmLib.Navigation.RegionBase.CurrentEntry">
             <summary>
             Gets the current entry of history.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Navigation.RegionBase.logger">
-            <summary>
-            The region logger.
-            </summary>
-        </member>
-        <member name="P:MvvmLib.Navigation.RegionBase.Logger">
-            <summary>
-            The logger used by the Region
             </summary>
         </member>
         <member name="F:MvvmLib.Navigation.RegionBase.navigating">
@@ -713,7 +912,7 @@
             Invoked on navigation cancelled or on exception.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.#ctor(System.String,System.Object)">
+        <member name="M:MvvmLib.Navigation.RegionBase.#ctor(System.String,System.Windows.FrameworkElement)">
             <summary>
             Creates the region.
             </summary>
@@ -727,68 +926,398 @@
             <param name="viewOrObjectType">The type of the instance</param>
             <returns>The instance</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateChildRegionsAsync(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateChildRegionsOrThrowAsync(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
             <summary>
             Check Can Deactivate for child regions.
             </summary>
             <param name="childRegions">The child regions</param>
             <returns></returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateAsync(MvvmLib.Navigation.NavigationEntry)">
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanDeactivateOrThrowAsync(MvvmLib.Navigation.NavigationEntry)">
             <summary>
             Check Can Deactivate for child regions and current entry.
             </summary>
             <param name="currentEntry">The current navigation entry.</param>
             <returns></returns>
         </member>
-        <member name="T:MvvmLib.Navigation.RegionManager">
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanActivateOrThrowAsync(System.Object,System.Object,System.Object)">
             <summary>
-            Allows to register content regions and items region with dependency properties, get region for navigation with RegionManager instance.
+            Checks can deactivate for view or object and context that implements <see cref="T:MvvmLib.Navigation.IDeactivatable" /> or throws an exception.
+            </summary>
+            <param name="viewOrObject">The view or object</param>
+            <param name="context">The data context</param>
+            <param name="parameter">the parameter</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanActivateOrThrowAsync(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Checks can activate for view or object and context that implements <see cref="T:MvvmLib.Navigation.IActivatable" /> or throws an exception.
+            </summary>
+            <param name="entry">The navigation entry</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.CheckCanActivateChildRegionsOrThrowAsync(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
+            <summary>
+            Checks can activate for view or object and context that implements <see cref="T:MvvmLib.Navigation.IActivatable" /> or throws an exception.
+            </summary>
+            <param name="childRegions">The child regions</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatingFrom(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Invokes OnNavigatingFrom for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="entry">The navigation entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatingFromChildRegions(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
+            <summary>
+            Invokes OnNavigatingFrom for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="childRegions">The child regions</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatingTo(System.Object,System.Object,System.Object)">
+            <summary>
+            Invokes OnNavigatingTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="viewOrObject"></param>
+            <param name="context"></param>
+            <param name="parameter"></param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatingTo(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Invokes OnNavigatingTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="entry">The navigation entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatingToChildRegions(System.Collections.Generic.IList{MvvmLib.Navigation.RegionBase})">
+            <summary>
+            Invokes OnNavigatingTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="childRegions">The child regions</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatedTo(System.Object,System.Object,System.Object)">
+            <summary>
+            Invokes OnNavigatedTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="viewOrObject">The view or object</param>
+            <param name="context">The data context</param>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatedTo(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Invokes OnNavigatedTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="entry">The navigation entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.OnNavigatedToChildRegions(System.Collections.Generic.List{MvvmLib.Navigation.RegionBase})">
+            <summary>
+            Invokes OnNavigatedTo for view or object and context that implements <see cref="T:MvvmLib.Navigation.INavigatable" />.
+            </summary>
+            <param name="childRegions">The child regions</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.ResolveContextWithViewModelLocator(System.Type)">
+            <summary>
+            Resolves the view model model for the view type.
+            </summary>
+            <param name="viewType">The view type</param>
+            <returns>The view model</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.UnregisterContentRegion(MvvmLib.Navigation.ContentRegion)">
+            <summary>
+            Unregisters the content region.
+            </summary>
+            <param name="region">The content region</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.UnregisterItemsRegion(MvvmLib.Navigation.ItemsRegion)">
+            <summary>
+            Unregisters the items region.
+            </summary>
+            <param name="region">The items region</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.RemoveNonLoadedRegions">
+            <summary>
+            Remove non loaded regions.
             </summary>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String)">
+        <member name="M:MvvmLib.Navigation.RegionBase.FindChildRegions(System.Windows.DependencyObject)">
+            <summary>
+            Find child regions for the region.
+            </summary>
+            <param name="parent">The control of the region</param>
+            <returns>A list of regions</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.ClearChildRegions(MvvmLib.Navigation.NavigationEntry)">
+            <summary>
+            Clear and unergister regions and child regions.
+            </summary>
+            <param name="entry">The navigation entry</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.HandleLoaded(System.Windows.FrameworkElement,System.Action{System.Object,System.Windows.RoutedEventArgs})">
+            <summary>
+            Handle loaded for a view.
+            </summary>
+            <param name="view">The view</param>
+            <param name="onLoaded">The callback</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.NotifyLoadedListeners(System.Windows.FrameworkElement,System.Object,System.Object)">
+            <summary>
+            Notify view models that implement <see cref="T:MvvmLib.Navigation.ILoadedEventListener" />.
+            </summary>
+            <param name="view">The view</param>
+            <param name="context">The data context</param>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.GetGenericRegionKnowledge(System.Type)">
+            <summary>
+            Gets the generic type <see cref="T:MvvmLib.Navigation.IRegionKnowledge`1"/> for the context type.
+            </summary>
+            <param name="contextType">The context type</param>
+            <returns>The generic type or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.NotifyRegionKnowledge(MvvmLib.Navigation.IRegion,System.Object)">
+            <summary>
+            Notify view models that implement <see cref="T:MvvmLib.Navigation.ILoadedEventListener" />.
+            </summary>
+            <param name="region">The region</param>
+            <param name="context">The data context</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.RaiseNavigating(System.Type,System.Object,MvvmLib.Navigation.RegionNavigationType)">
+            <summary>
+            Notifies <see cref="E:MvvmLib.Navigation.RegionBase.Navigating"/> subscribers.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="parameter">The parameter type</param>
+            <param name="regionNavigationType">The navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.RaiseNavigated(System.Type,System.Object,MvvmLib.Navigation.RegionNavigationType)">
+            <summary>
+            Notifies <see cref="E:MvvmLib.Navigation.RegionBase.Navigated"/> subscribers.
+            </summary>
+            <param name="sourceType">The source type</param>
+            <param name="parameter">The parameter type</param>
+            <param name="regionNavigationType">The navigation type</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionBase.RaiseNavigationNavigationFailed(MvvmLib.Navigation.NavigationFailedException)">
+            <summary>
+             Notifies <see cref="E:MvvmLib.Navigation.RegionBase.NavigationFailed"/> subscribers.
+            </summary>
+            <param name="exception">The exception</param>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionManager">
+            <summary>
+            Allows to register content regions and items region with dependency properties.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.SetContentRegionName(System.Windows.DependencyObject,System.String)">
+            <summary>
+            Sets the content region name.
+            </summary>
+            <param name="target">The control</param>
+            <param name="regionName">The region name</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegionName(System.Windows.DependencyObject)">
+            <summary>
+            Gets the content region name.
+            </summary>
+            <param name="target">The control</param>
+            <returns>The region name</returns>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionManager.ContentRegionNameProperty">
+            <summary>
+            The content region name.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.SetItemsRegionName(System.Windows.DependencyObject,System.String)">
+            <summary>
+            Sets the items region name.
+            </summary>
+            <param name="target">The control</param>
+            <param name="regionName">The region name</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegionName(System.Windows.DependencyObject)">
+            <summary>
+            Gets the items region name.
+            </summary>
+            <param name="target">The control</param>
+            <returns>The region name</returns>
+        </member>
+        <member name="F:MvvmLib.Navigation.RegionManager.ItemsRegionNameProperty">
+            <summary>
+            The items region name.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionNavigationService">
+            <summary>
+            Allows to get content and items regions and navigate.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.#ctor">
+            <summary>
+            Creates the regions navigation service.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.#ctor(MvvmLib.Navigation.RegionsRegistry)">
+            <summary>
+            Creates the regions navigation service.
+            </summary>
+            <param name="regionsRegistry">The regions registry used by the navigation service</param>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetContentRegion(System.String)">
             <summary>
             Gets the first content region for the region name.
             </summary>
             <param name="regionName">The region name</param>
             <returns>The content region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegion(System.String,System.String)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetContentRegion(System.String,System.String)">
             <summary>
             Gets the content region for the region name and the control name.
             </summary>
             <param name="regionName">The region name</param>
-            <param name="name">The control name property</param>
+            <param name="controlName">The control name property</param>
             <returns>The content region</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegion(System.String,System.String)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetContentRegions(System.String)">
             <summary>
-            Gets the items region for the region name and the control name.
+            Gets the content regions.
             </summary>
             <param name="regionName">The region name</param>
-            <param name="name">The control name property</param>
-            <returns>The items region</returns>
+            <returns>A readonly list of content regions</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegion(System.String)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetItemsRegion(System.String)">
             <summary>
             Get the items region for the region name.
             </summary>
             <param name="regionName">The region name</param>
             <returns>A list of items regions</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetContentRegions(System.String)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetItemsRegions(System.String)">
             <summary>
-            Get all content region for the region name.
+            Gets the items regions.
             </summary>
             <param name="regionName">The region name</param>
-            <returns>A list of content regions</returns>
+            <returns>A readonly list of items regions</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionManager.GetItemsRegions(System.String)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.GetItemsRegion(System.String,System.String)">
             <summary>
-            Gets the items region for the region name.
+            Gets the items region for the region name and the control name.
             </summary>
             <param name="regionName">The region name</param>
-            <returns>A list of items regions</returns>
+            <param name="controlName">The control name property</param>
+            <returns>The items region</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.RegionsRegistry">
+            <summary>
+            The registry for content and items regions.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionsRegistry.ContentRegions">
+            <summary>
+            The content regions list.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionsRegistry.ItemsRegions">
+            <summary>
+            The items regions list.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Navigation.RegionsRegistry.Instance">
+            <summary>
+            Region registry default instance.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.RegisterContentRegion(System.String,System.Windows.FrameworkElement)">
+            <summary>
+            Registers a content region.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+            <returns>The region created</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.RegisterItemsRegion(System.String,System.Windows.FrameworkElement)">
+            <summary>
+            Registers an items region.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control</param>
+            <returns>The region created</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetContentRegion(System.String)">
+            <summary>
+            Gets the last content region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>The content region or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetContentRegion(System.String,System.String)">
+            <summary>
+            Gets the content region for the region name and the control name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="controlName">The control name property</param>
+            <returns>The content region  found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetContentRegion(System.String,System.Windows.DependencyObject)">
+            <summary>
+            Gets the content region for the region name and child.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control to check</param>
+            <returns>The content region found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetItemsRegion(System.String)">
+            <summary>
+            Gets the last items region for the region name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <returns>The items region found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetItemsRegion(System.String,System.String)">
+            <summary>
+            Gets the items region for the region name and the control name.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="controlName">The control name property</param>
+            <returns>The items region found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.GetItemsRegion(System.String,System.Windows.DependencyObject)">
+            <summary>
+            Gets the items region for the region name and child.
+            </summary>
+            <param name="regionName">The region name</param>
+            <param name="control">The control to check</param>
+            <returns>The content region found or null</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.UnregisterContentRegion(MvvmLib.Navigation.ContentRegion)">
+            <summary>
+            Unregister the content region.
+            </summary>
+            <param name="contentRegion">The content region</param>
+            <returns>True if region removed successfully</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.UnregisterItemsRegion(MvvmLib.Navigation.ItemsRegion)">
+            <summary>
+            Unregister the iems region.
+            </summary>
+            <param name="itemsRegion">The items region</param>
+            <returns>True if region removed successfully</returns>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.RemoveNonLoadedContentRegions">
+            <summary>
+            Remove all content regions not loaded.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.RemoveNonLoadedItemsRegions">
+            <summary>
+            Remove all items regions not loaded.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Navigation.RegionsRegistry.RemoveNonLoadedRegions">
+            <summary>
+            Remove all regions not loaded.
+            </summary>
         </member>
         <member name="T:MvvmLib.Navigation.ViewModelLocationProvider">
             <summary>
@@ -819,11 +1348,6 @@
             Allows to resolve the ViewModel for a view.
             </summary>
         </member>
-        <member name="F:MvvmLib.Navigation.ViewModelLocator.ResolveWindowViewModelProperty">
-            <summary>
-            Allows to resolve ViewModel for a Window.
-            </summary>
-        </member>
         <member name="M:MvvmLib.Navigation.ViewModelLocator.GetResolveWindowViewModel(System.Windows.DependencyObject)">
             <summary>
             Gets The resolve view model value.
@@ -837,6 +1361,11 @@
             </summary>
             <param name="obj"></param>
             <param name="value"></param>
+        </member>
+        <member name="F:MvvmLib.Navigation.ViewModelLocator.ResolveWindowViewModelProperty">
+            <summary>
+            Allows to resolve ViewModel for a Window.
+            </summary>
         </member>
         <member name="T:MvvmLib.Navigation.ViewOrObjectManager">
             <summary>
@@ -913,6 +1442,27 @@
             Allows to change the default view factory (Activator CreateInstance).
             </summary>
             <param name="viewFactory">The new view factory</param>
+        </member>
+        <member name="T:MvvmLib.Core.Mvvm.BindableObject`1">
+            <summary>
+            Allows to bind a value or object to Value dependency property and be notified on value changed.
+            </summary>
+            <typeparam name="T">The type of the value to observe</typeparam>
+        </member>
+        <member name="E:MvvmLib.Core.Mvvm.BindableObject`1.PropertyChanged">
+            <summary>
+            The property changed to subscribe to be notified on value changed.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Core.Mvvm.BindableObject`1.Value">
+            <summary>
+            The Value.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.Core.Mvvm.BindableObject`1.ValueProperty">
+            <summary>
+            The value property.
+            </summary>
         </member>
         <member name="T:MvvmLib.Wpf.Properties.Resources">
             <summary>

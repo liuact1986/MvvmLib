@@ -105,6 +105,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Source\MvvmLib.Core\MvvmLib.Core.csproj">
       <Project>{5462ae63-cbb9-46c2-b800-311fd7c7be72}</Project>
       <Name>MvvmLib.Core</Name>

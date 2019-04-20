@@ -13,36 +13,38 @@ namespace MvvmLib.Navigation
     /// </summary>
     public sealed class ContentRegion : RegionBase
     {
-        private ViewOrObjectManager ViewOrObjectManager;
-        private IContentRegionAnimation defaultRegionNavigationAnimation;
+        private readonly ViewOrObjectManager ViewOrObjectManager;
+        private readonly IContentRegionNavigationAnimation regionNavigation;
 
-        /// <summary>
-        /// The default animation for the region.
-        /// </summary>
-        public IContentRegionAnimation DefaultRegionAnimation
-        {
-            get { return defaultRegionNavigationAnimation; }
-        }
-
+        private readonly INavigationHistory history;
         /// <summary>
         /// Gets the history.
         /// </summary>
-        public INavigationHistory History { get; private set; }
+        public INavigationHistory History
+        {
+            get { return history; }
+        }
 
         /// <summary>
         /// Gets the current history entry.
         /// </summary>
-        public override NavigationEntry CurrentEntry => this.History.Current;
+        public override NavigationEntry CurrentEntry => this.history.Current;
 
         /// <summary>
         /// Chekcs if the content region can go back.
         /// </summary>
-        public bool CanGoBack => this.History.BackStack.Count > 0;
+        public bool CanGoBack
+        {
+            get { return this.history.BackStack.Count > 0; }
+        }
 
         /// <summary>
         /// Chekcs if the content region can go forward.
         /// </summary>
-        public bool CanGoForward => this.History.ForwardStack.Count > 0;
+        public bool CanGoForward
+        {
+            get { return this.history.ForwardStack.Count > 0; }
+        }
 
         private readonly List<EventHandler> canGoBackChanged = new List<EventHandler>();
         /// <summary>
@@ -70,17 +72,17 @@ namespace MvvmLib.Navigation
         /// <param name="history">The history</param>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ContentRegion(INavigationHistory history, string regionName, object control)
+        public ContentRegion(INavigationHistory history, string regionName, FrameworkElement control)
             : base(regionName, control)
         {
             if (!(control is ContentControl)) { throw new NotSupportedException($"Only\"ContentControls\" are supported for ContentRegion. Type of {control.GetType().Name}"); }
 
-            this.History = history;
+            this.history = history;
             this.ViewOrObjectManager = new ViewOrObjectManager();
 
-            ((FrameworkElement)control).Unloaded += OnControlUnloaded;
+            control.Unloaded += OnControlUnloaded;
 
-            this.defaultRegionNavigationAnimation = new ContentRegionAnimation((ContentControl)control);
+            this.regionNavigation = new ContentRegionNavigationAnimation((ContentControl)control);
 
             history.CanGoBackChanged += OnCanGoBackChanged; ;
             history.CanGoForwardChanged += OnCanGoForwardChanged;
@@ -88,14 +90,11 @@ namespace MvvmLib.Navigation
 
         private void OnControlUnloaded(object sender, RoutedEventArgs e)
         {
-            History.CanGoBackChanged -= OnCanGoBackChanged;
-            History.CanGoForwardChanged -= OnCanGoForwardChanged;
+            history.CanGoBackChanged -= OnCanGoBackChanged;
+            history.CanGoForwardChanged -= OnCanGoForwardChanged;
+            control.Unloaded -= OnControlUnloaded;
 
-            ClearRegionAndChildRegions(History.ForwardStack);
-            ClearRegionAndChildRegions(History.BackStack);
-            if (History.Current != null)
-                ClearChildRegions(History.Current);
-            if (!RegionManager.UnregisterContentRegion(this))
+            if (!UnregisterContentRegion(this))
                 this.Logger.Log($"Failed to unregister the content region \"{RegionName}\", control name:\"{ControlName}\"", Category.Exception, Priority.High);
         }
 
@@ -104,7 +103,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="control">The control</param>
-        public ContentRegion(string regionName, object control)
+        public ContentRegion(string regionName, FrameworkElement control)
             : this(new NavigationHistory(), regionName, control)
         { }
 
@@ -116,9 +115,9 @@ namespace MvvmLib.Navigation
         /// <param name="simultaneous">Playing behavior</param>
         public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation, bool simultaneous = false)
         {
-            defaultRegionNavigationAnimation.EntranceAnimation = entranceAnimation;
-            defaultRegionNavigationAnimation.ExitAnimation = exitAnimation;
-            defaultRegionNavigationAnimation.Simultaneous = simultaneous;
+            regionNavigation.EntranceAnimation = entranceAnimation;
+            regionNavigation.ExitAnimation = exitAnimation;
+            regionNavigation.Simultaneous = simultaneous;
         }
 
         private void OnCanGoBackChanged(object sender, EventArgs e)
@@ -195,17 +194,26 @@ namespace MvvmLib.Navigation
             }
         }
 
-        private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter, IContentRegionAnimation regionAnimation)
+        private void ChangeContentWithAnimation(object viewOrObject)
+        {
+            regionNavigation.Start(viewOrObject);
+        }
+
+        private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter)
         {
             if (sourceType == null) { throw new ArgumentNullException(nameof(sourceType)); }
 
-            if (regionAnimation.IsAnimating) return false;
+            if (regionNavigation.IsAnimating)
+            {
+                this.Logger.Log($"Cannot change content while region is performing navigation and animation. Region\"{RegionName}\"", Category.Debug, Priority.Medium);
+                return false;
+            }
 
             bool navigationSuccess = true;
 
             try
             {
-                var currentEntry = this.History.Current;
+                var currentEntry = this.history.Current;
 
                 if (currentEntry != null)
                 {
@@ -213,7 +221,7 @@ namespace MvvmLib.Navigation
                     this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.New);
 
                     // Can Deactivate
-                    await CheckCanDeactivateAsync(currentEntry);
+                    await CheckCanDeactivateOrThrowAsync(currentEntry);
                 }
 
                 // view or object
@@ -224,7 +232,7 @@ namespace MvvmLib.Navigation
                 object viewOrObject = viewOrObjectResult.Instance;
 
                 // Can Activate
-                await CheckCanActivateAsync(viewOrObject, context, parameter);
+                await CheckCanActivateOrThrowAsync(viewOrObject, context, parameter);
 
                 // loaded
                 var view = viewOrObject as FrameworkElement;
@@ -252,16 +260,16 @@ namespace MvvmLib.Navigation
                     OnNavigatingTo(viewOrObject, context, parameter);
 
                 // change content
-                regionAnimation.Start(viewOrObject);
+                ChangeContentWithAnimation(viewOrObject);
 
                 // on navigated to
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New || viewOrObjectResult.ResolutionType == ResolutionType.Singleton)
                     OnNavigatedTo(viewOrObject, context, parameter);
 
                 // clear region and child regions for forward stack
-                ClearRegionAndChildRegions(History.ForwardStack);
+                ClearRegionAndChildRegions(history.ForwardStack);
                 // hsitory
-                History.Navigate(navigationEntry);
+                history.Navigate(navigationEntry);
 
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New)
                     TryAddViewOrObject(sourceType, viewOrObject, context);
@@ -284,7 +292,7 @@ namespace MvvmLib.Navigation
             }
 
             if (!navigationSuccess)
-                RegionManager.RemoveNonLoadedRegions();
+                RemoveNonLoadedRegions();
 
             return navigationSuccess;
         }
@@ -293,10 +301,10 @@ namespace MvvmLib.Navigation
         /// Navigates to view and notify viewmodel.
         /// </summary>
         /// <param name="sourceType">The view type</param>
-        /// <returns></returns>
-        public async Task NavigateAsync(Type sourceType)
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> NavigateAsync(Type sourceType)
         {
-            await this.ProcessNavigateAsync(sourceType, null, defaultRegionNavigationAnimation);
+            return await this.ProcessNavigateAsync(sourceType, null);
         }
 
         /// <summary>
@@ -304,69 +312,75 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The view type</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns></returns>
-        public async Task NavigateAsync(Type sourceType, object parameter)
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> NavigateAsync(Type sourceType, object parameter)
         {
-            await this.ProcessNavigateAsync(sourceType, parameter, defaultRegionNavigationAnimation);
+            return await this.ProcessNavigateAsync(sourceType, parameter);
         }
-
 
         /// <summary>
         /// Redirect to the view and remove the previous entry from history.
         /// </summary>
         /// <param name="sourceType">The type of the view to redirect</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns></returns>
-        public async Task RedirectAsync(Type sourceType, object parameter)
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> RedirectAsync(Type sourceType, object parameter)
         {
-            var currentSourceType = this.History.Current?.SourceType;
+            var currentSourceType = this.history.Current?.SourceType;
 
             // delay 
             await Task.Delay(1);
 
-            if (await this.ProcessNavigateAsync(sourceType, parameter, defaultRegionNavigationAnimation))
+            if (await this.ProcessNavigateAsync(sourceType, parameter))
             {
                 if (currentSourceType != null)
                 {
                     // remove page from history
-                    var entry = this.History.Previous;
+                    var entry = this.history.Previous;
                     if (entry != null && entry.SourceType == currentSourceType)
                     {
                         ClearChildRegions(entry);
-                        this.History.BackStack.Remove(entry);
+                        this.history.BackStack.Remove(entry);
                     }
                 }
+                return true;
             }
+            return false;
         }
 
         /// <summary>
         /// Redirect to the view and remove the previous entry from history.
         /// </summary>
         /// <param name="sourceType">The type of the view to redirect</param>
-        /// <returns></returns>
-        public async Task RedirectAsync(Type sourceType)
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> RedirectAsync(Type sourceType)
         {
-            await RedirectAsync(sourceType, null);
+            return await RedirectAsync(sourceType, null);
         }
 
-        private async Task DoSideNavigationAsync(NavigationEntry toGoEntry, RegionNavigationType regionNavigationType,
-            Action updateHistoryCallback,
-            IContentRegionAnimation regionAnimation)
+        private async Task<bool> DoSideNavigationAsync(NavigationEntry toGoEntry, RegionNavigationType regionNavigationType,
+            Action updateHistoryCallback)
         {
 
-            if (regionAnimation.IsAnimating) return;
+            if (regionNavigation.IsAnimating)
+            {
+                this.Logger.Log($"Cannot change content while region is performing navigation and animation. Region\"{RegionName}\"", Category.Debug, Priority.Medium);
+                return false;
+            }
+
+            var navigationSuccess = true;
 
             try
             {
-                var currentEntry = this.History.Current;
+                var currentEntry = this.history.Current;
                 // navigating event
                 this.RaiseNavigating(currentEntry.SourceType, currentEntry.Parameter, RegionNavigationType.New);
 
                 // Can Deactivate
-                await CheckCanDeactivateAsync(currentEntry);
+                await CheckCanDeactivateOrThrowAsync(currentEntry);
 
                 // Can Activate
-                await CheckCanActivateAsync(toGoEntry);
+                await CheckCanActivateOrThrowAsync(toGoEntry);
 
                 // on navigating from
                 this.OnNavigatingFrom(currentEntry);
@@ -376,7 +390,7 @@ namespace MvvmLib.Navigation
 
                 // change content
                 var viewOrObject = toGoEntry.ViewOrObject;
-                regionAnimation.Start(viewOrObject);
+                ChangeContentWithAnimation(viewOrObject);
 
                 // on navigated to
                 OnNavigatedTo(toGoEntry);
@@ -391,62 +405,64 @@ namespace MvvmLib.Navigation
             {
                 this.Logger.Log(ex.ToString(), Category.Exception, Priority.Low);
                 this.RaiseNavigationNavigationFailed(ex);
+                navigationSuccess = false;
             }
             catch (Exception ex)
             {
                 var navigationFailedException = new NavigationFailedException(NavigationFailedExceptionType.ExceptionThrown, NavigationFailedSourceType.InnerException, ex, this);
                 this.Logger.Log(ex.ToString(), Category.Exception, Priority.High);
                 this.RaiseNavigationNavigationFailed(navigationFailedException);
+                navigationSuccess = false;
             }
+
+            return navigationSuccess;
         }
 
         /// <summary>
         /// Navigates to previous view.
         /// </summary>
-        /// <returns></returns>
-        public async Task GoBackAsync()
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> GoBackAsync()
         {
             if (this.CanGoBack)
             {
-                await this.DoSideNavigationAsync(History.Previous, RegionNavigationType.Back,
-                    () => History.GoBack(),
-                    defaultRegionNavigationAnimation);
+              return  await this.DoSideNavigationAsync(history.Previous, RegionNavigationType.Back,
+                    () => history.GoBack());
             }
+            return false;
         }
-
 
         /// <summary>
         /// Navigates to next view.
         /// </summary>
-        /// <returns></returns>
-        public async Task GoForwardAsync()
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> GoForwardAsync()
         {
             if (this.CanGoForward)
             {
-                await this.DoSideNavigationAsync(History.Next, RegionNavigationType.Forward,
-                   () => History.GoForward(),
-                   defaultRegionNavigationAnimation);
+               return await this.DoSideNavigationAsync(history.Next, RegionNavigationType.Forward,
+                   () => history.GoForward());
             }
+            return false;
         }
-
 
         /// <summary>
         /// Navigates to the root view.
         /// </summary>
-        /// <returns></returns>
-        public async Task NavigateToRootAsync()
+        /// <returns>True if navigation successeeded</returns>
+        public async Task<bool> NavigateToRootAsync()
         {
             if (this.CanGoBack)
             {
-                await this.DoSideNavigationAsync(History.Root, RegionNavigationType.Root,
+               return await this.DoSideNavigationAsync(history.Root, RegionNavigationType.Root,
                   () =>
                   {
-                      ClearRegionAndChildRegions(History.BackStack);
-                      ClearRegionAndChildRegions(History.ForwardStack);
-                      History.NavigateToRoot();
-                  },
-                  defaultRegionNavigationAnimation);
+                      ClearRegionAndChildRegions(history.BackStack);
+                      ClearRegionAndChildRegions(history.ForwardStack);
+                      history.NavigateToRoot();
+                  });
             }
+            return false;
         }
     }
 }

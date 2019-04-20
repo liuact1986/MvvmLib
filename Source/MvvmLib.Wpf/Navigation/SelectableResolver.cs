@@ -16,12 +16,10 @@ namespace MvvmLib.Navigation
                     if (((ISelectable)view.DataContext).IsTarget(viewType, parameter))
                     {
                         if (!view.Focus())
-                        {
                             if (view.Parent is UIElement)
-                            {
                                 ((UIElement)view.Parent).Focus();
-                            }
-                        }
+
+
                         return i;
                     }
                 }

@@ -42,11 +42,11 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Configures the service locator (Microsoft Common Service Locator) if used.
         /// </summary>
+        /// <example>ServiceLocator.SetLocatorProvider(() => new MvvmLibServiceLocatorAdapter(injector));</example>
         protected virtual void ConfigureServiceLocator()
         {
-            // ServiceLocator.SetLocatorProvider(() => new MvvmLibServiceLocatorAdapter(injector));
-        }
 
+        }
 
         /// <summary>
         /// Used to configure the IoC Container.
@@ -112,9 +112,8 @@ namespace MvvmLib.Navigation
             this.logger = CreateLogger();
 
             if (this.logger == null)
-            {
                 throw new InvalidOperationException("The logger cannot be null.");
-            }
+
 
             this.logger.Log("Starting bootstrapper process.", Category.Debug, Priority.Low);
 

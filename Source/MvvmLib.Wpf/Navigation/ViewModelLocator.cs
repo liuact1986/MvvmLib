@@ -8,13 +8,6 @@ namespace MvvmLib.Navigation
     public class ViewModelLocator
     {
         /// <summary>
-        /// Allows to resolve ViewModel for a Window.
-        /// </summary>
-        public static readonly DependencyProperty ResolveWindowViewModelProperty =
-           DependencyProperty.RegisterAttached("ResolveWindowViewModel", typeof(bool), typeof(ViewModelLocator),
-               new PropertyMetadata(false, OnResolveWindowViewModelChanged));
-
-        /// <summary>
         /// Gets The resolve view model value.
         /// </summary>
         /// <param name="obj"></param>
@@ -34,12 +27,17 @@ namespace MvvmLib.Navigation
             obj.SetValue(ResolveWindowViewModelProperty, value);
         }
 
+        /// <summary>
+        /// Allows to resolve ViewModel for a Window.
+        /// </summary>
+        public static readonly DependencyProperty ResolveWindowViewModelProperty =
+           DependencyProperty.RegisterAttached("ResolveWindowViewModel", typeof(bool), typeof(ViewModelLocator),
+               new PropertyMetadata(false, OnResolveWindowViewModelChanged));
+
         private static void OnResolveWindowViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if ((bool)e.NewValue && d.GetType().BaseType == typeof(Window))
-            {
                 ((Window)d).Activated += OnWindowActivated;
-            }
         }
 
         private static void OnWindowActivated(object sender, System.EventArgs e)
@@ -55,12 +53,10 @@ namespace MvvmLib.Navigation
                 window.DataContext = context;
             }
 
-            window.Activated -= OnWindowActivated;
+            if (context != null && context is ILoadedEventListener loadedEventListener)
+                loadedEventListener.OnLoaded(window, null);
 
-            if (context != null && context is ILoadedEventListener p)
-            {
-                p.OnLoaded(window, null);
-            }
+            window.Activated -= OnWindowActivated;
         }
     }
 

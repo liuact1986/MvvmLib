@@ -24,11 +24,11 @@ namespace RegionSample.ViewModels
         public IRelayCommand RemoveAtCommand { get; private set; }
         public IRelayCommand ClearCommand { get; private set; }
 
-        IRegionManager regionManager;
+        IRegionNavigationService navigationService;
 
-        public ShellViewModel(IRegionManager regionManager)
+        public ShellViewModel(IRegionNavigationService navigationService)
         {
-            this.regionManager = regionManager;
+            this.navigationService = navigationService;
 
             var entranceFadeAnimation = new OpacityAnimation { From = 0, To = 1 };
             var exitFadeAnimation = new OpacityAnimation { From = 1, To = 0 };
@@ -51,7 +51,7 @@ namespace RegionSample.ViewModels
             var entranceTranslateAnimation = new TranslateAnimation { From = 800, To = 0 };
             var exitTranslateAnimation = new TranslateAnimation { From = 0, To = 800 };
 
-            var contentRegion = regionManager.GetContentRegion("ContentRegion", "ContentRegion1");
+            var contentRegion = navigationService.GetContentRegion("ContentRegion", "ContentRegion1");
             // animation
             contentRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation, true);
             // handlers
@@ -60,7 +60,7 @@ namespace RegionSample.ViewModels
             contentRegion.Navigated += ShellViewModel_Navigated;
             contentRegion.NavigationFailed += ContentRegion_NavigationFailed;
 
-            var contentRegion2 = regionManager.GetContentRegion("ContentRegion", "ContentRegion2");
+            var contentRegion2 = navigationService.GetContentRegion("ContentRegion", "ContentRegion2");
             // animation
             contentRegion2.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
             // handlers
@@ -68,11 +68,11 @@ namespace RegionSample.ViewModels
             contentRegion2.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
             contentRegion2.Navigated += ShellViewModel_Navigated;
 
-            var itemsRegion = regionManager.GetItemsRegion("ItemsRegion");
+            var itemsRegion = navigationService.GetItemsRegion("ItemsRegion");
             itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation);
 
-            var stackPanelRegion = regionManager.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
-            var tabControlRegion = regionManager.GetItemsRegion("TabControlRegion", "TabControlRegion1");
+            var stackPanelRegion = navigationService.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
+            var tabControlRegion = navigationService.GetItemsRegion("TabControlRegion", "TabControlRegion1");
 
             NavigateToRootCommand = new RelayCommand(async () =>
             {
@@ -113,10 +113,10 @@ namespace RegionSample.ViewModels
                 {
                     await contentRegion.NavigateAsync(typeof(ComposedView));
 
-                    await regionManager.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter");
+                    await navigationService.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter");
 
-                    await regionManager.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
-                    await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
+                    await navigationService.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
+                    await navigationService.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
                 }
                 catch
                 {
@@ -140,9 +140,9 @@ namespace RegionSample.ViewModels
                     if (viewType == typeof(ComposedView))
                     {
                         await itemsRegion.AddAsync(viewType, viewType.Name + " [default] [Items]");
-                        await regionManager.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter [items]");
-                        await regionManager.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
-                        await regionManager.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
+                        await navigationService.GetItemsRegion("RegionLeft").AddAsync(typeof(ViewC), "ViewCParameter [items]");
+                        await navigationService.GetContentRegion("RegionRight").NavigateAsync(typeof(ViewD));
+                        await navigationService.GetContentRegion("SubChildRegion").NavigateAsync(typeof(ViewE));
                     }
                     else
                     {

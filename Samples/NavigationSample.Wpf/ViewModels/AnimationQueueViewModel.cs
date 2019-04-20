@@ -10,17 +10,17 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class AnimationQueueViewModel
     {
-        private readonly IRegionManager regionManager;
+        private readonly IRegionNavigationService regionNavigationService;
         private ItemsRegion itemsRegion;
 
         public ICommand AddItemsCommand { get; set; }
 
         public ICommand RemoveItemsCommand { get; set; }
 
-        public AnimationQueueViewModel(IRegionManager regionManager)
+        public AnimationQueueViewModel(IRegionNavigationService regionNavigationService)
         {
-            this.regionManager = regionManager;
-            this.itemsRegion = regionManager.GetItemsRegion("ItemsRegion");
+            this.regionNavigationService = regionNavigationService;
+            this.itemsRegion = regionNavigationService.GetItemsRegion("ItemsRegion");
             this.itemsRegion.ConfigureAnimation(
                 new TranslateAnimation { From = 120, To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(500)) },
                 new TranslateAnimation

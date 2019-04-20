@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
     public interface IRegion
     {
-        object Control { get; }
+        FrameworkElement Control { get; }
         string ControlName { get; }
         string RegionName { get; }
+        NavigationEntry CurrentEntry { get; }
 
         event EventHandler<RegionNavigationEventArgs> Navigated;
         event EventHandler<RegionNavigationEventArgs> Navigating;

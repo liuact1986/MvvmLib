@@ -2,7 +2,8 @@
 
 * **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
 * **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
-* **RegionManager**: allows to get a region, then **navigate** _with regions_ 
+* **RegionManager**: allows to regiter a region with attached properties
+* **RegionNavigationService** allows to **navigate** _with regions_ 
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
 * **ILoadedEventListener**: allows to be notified when the view or window is loaded
@@ -119,7 +120,7 @@ internal class RegionNames
 <ContentControl nav:RegionManager.ContentRegionName="{x:Static local:RegionNames.ContentControlRegionName}"></ContentControl>
 ```
 
-### Navigate
+### RegionNavigationService
 
 #### With Content Region
 
@@ -128,11 +129,11 @@ Inject the region manager (view and / or view model)
 ```cs
 public class ViewAViewModel
 {
-    IRegionManager regionManager;
+    private IRegionNavigationService regionNavigationService;
 
-    public ViewAViewModel(IRegionManager regionManager)
+    public ViewAViewModel(IRegionNavigationService regionNavigationService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
     }
 }
 ```
@@ -141,22 +142,22 @@ And use it
 
 ```cs
 // GetContentRegion returns the last region registered for this region name
-await regionManager.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA));
+await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA));
 
 // and the control name to target a control
-await regionManager.GetContentRegion("MyContentRegion", "MyContentRegion1").NavigateAsync(typeof(ViewA));
+await regionNavigationService.GetContentRegion("MyContentRegion", "MyContentRegion1").NavigateAsync(typeof(ViewA));
 ```
 
 with parameter
 
 ```cs
-await regionManager.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), "my parameter");
+await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), "my parameter");
 ```
 
 with exit and entrance animations
 
 ```cs
-await regionManager.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
+await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
 ```
 
 **Content Region**
@@ -190,29 +191,29 @@ await regionManager.GetContentRegion("MyContentRegion").NavigateAsync(typeof(Vie
 AddAsync
 
 ```cs
-await regionManager.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA));
+await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA));
 
 // by control name
-await regionManager.GetItemsRegion("MyItemsRegion","MyItemsRegion1").AddAsync(typeof(ViewA));
+await regionNavigationService.GetItemsRegion("MyItemsRegion","MyItemsRegion1").AddAsync(typeof(ViewA));
 
 // with a parameter
- await regionManager.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA),"my parameter");
+await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA),"my parameter");
 
 // with transition
- await regionManager.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA), EntranceTransitionType.SlideInFromRight);
+await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA), EntranceTransitionType.SlideInFromRight);
 ```
 
 InsertAsync
 
 ```cs
 // example : index 2
-await regionManager.GetItemsRegion("MyItemsRegion").InsertAsync(2, typeof(ViewD));
+await regionNavigationService.GetItemsRegion("MyItemsRegion").InsertAsync(2, typeof(ViewD));
 ```
 
 RemoveLastAsync (remove the last item)
 
 ```cs
-await regionManager.GetItemsRegion("MyItemsRegion").RemoveLastAsync(ExitTransitionType.SlideOutToBottom);
+await regionNavigationService.GetItemsRegion("MyItemsRegion").RemoveLastAsync(ExitTransitionType.SlideOutToBottom);
 ```
 
 RemoveAtAsync
@@ -250,7 +251,7 @@ var exitScaleAnimation = new ScaleAnimation
     EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
 };
 
-var region = regionManager.GetContentRegion("ContentRegion");
+var region = regionNavigationService.GetContentRegion("ContentRegion");
  region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
 ```
 
@@ -388,16 +389,16 @@ public class ViewAViewModel : IActivatable, IDeactivatable
 ```cs
 public class ShellViewModel : ILoadedEventListener
 {
-    IRegionManager regionManager;
+    IRegionNavigationService regionNavigationService;
 
-    public ShellViewModel(IRegionManager regionManager)
+    public ShellViewModel(IRegionNavigationService regionNavigationService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
     }
 
     public async void OnLoaded(object parameter)
     {
-        await regionManager.GetContentRegion("ContentRegion").NavigateAsync(typeof(HomeView));
+        await regionNavigationService.GetContentRegion("ContentRegion").NavigateAsync(typeof(HomeView));
     }
 }
 ```
@@ -434,13 +435,13 @@ public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable
         set { SetProperty(ref person, value); }
     }
 
-    private IRegionManager regionManager;
+    private IRegionNavigationService regionNavigationService;
 
     private IFakePeopleService fakePeopleService;
 
-    public PersonDetailsViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+    public PersonDetailsViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
     {
-        this.regionManager = regionManager;
+        this.regionNavigationService = regionNavigationService;
         this.fakePeopleService = fakePeopleService;
     }
 

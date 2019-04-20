@@ -9,6 +9,13 @@ namespace MvvmLib.IoC
 {
     public sealed class ReflectionUtils
     {
+        public static ConstructorInfo GetEmptyConstructor(Type type, bool nonPublic = true)
+        {
+            var flags = GetFlags(nonPublic);
+            var constructor = type.GetConstructor(flags, null, Type.EmptyTypes, null);
+            return constructor;
+        }
+
         public static ConstructorInfo GetDefaultConstructor(Type type, bool nonPublic = true)
         {
             var constructors = GetConstructors(type, nonPublic);

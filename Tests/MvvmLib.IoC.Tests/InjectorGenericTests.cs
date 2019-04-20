@@ -219,6 +219,20 @@ namespace MvvmLib.Tests.IoC
         }
 
         [TestMethod]
+        public void RegisterType_WithEmptyConstructor_Not_Ordered()
+        {
+            var service = GetService();
+
+            service.RegisterType<MultiCtorClassWithEmptyCtorNotTheFirst>();
+
+            Assert.IsTrue(service.IsRegistered<MultiCtorClassWithEmptyCtorNotTheFirst>());
+
+            var r1 = service.GetInstance<MultiCtorClassWithEmptyCtorNotTheFirst>();
+
+            Assert.AreEqual(true, r1.IsEmptyCtorInvoked);
+        }
+
+        [TestMethod]
         public void RegisterType_WithPreferredConstructor()
         {
             var service = GetService();
@@ -825,6 +839,39 @@ namespace MvvmLib.Tests.IoC
         }
 
         public MultiCtorClass(string myString, string myString2)
+        {
+
+        }
+    }
+
+    public class MultiCtorClassWithEmptyCtorNotTheFirst
+    {
+        public string MyString { get; set; }
+        public int MyInt { get; set; }
+        public bool IsEmptyCtorInvoked { get; }
+
+        public MultiCtorClassWithEmptyCtorNotTheFirst(string myString)
+        {
+
+        }
+
+        public MultiCtorClassWithEmptyCtorNotTheFirst(int myInt)
+        {
+
+        }
+
+        public MultiCtorClassWithEmptyCtorNotTheFirst(string myString, int myInt)
+        {
+            MyString = "MyString";
+            MyInt = 10;
+        }
+
+        public MultiCtorClassWithEmptyCtorNotTheFirst()
+        {
+            this.IsEmptyCtorInvoked = true;
+        }
+
+        public MultiCtorClassWithEmptyCtorNotTheFirst(string myString, string myString2)
         {
 
         }

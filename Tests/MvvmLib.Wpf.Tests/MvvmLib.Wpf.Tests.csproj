@@ -60,7 +60,8 @@
     <Compile Include="Navigation\History\ListHistoryTest.cs" />
     <Compile Include="Navigation\History\NavigationHistoryTest.cs" />
     <Compile Include="Navigation\ItemsRegionTests.cs" />
-    <Compile Include="Navigation\RegionManagerTests.cs" />
+    <Compile Include="Navigation\RegionNavigationServiceTests.cs" />
+    <Compile Include="Navigation\RegionsRegistryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

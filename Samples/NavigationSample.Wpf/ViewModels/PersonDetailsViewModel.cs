@@ -22,7 +22,7 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref saveMessage, value); }
         }
 
-        private IRegionManager regionManager;
+        private IRegionNavigationService regionNavigationService;
 
         public ICommand SaveCommand { get; }
 
@@ -30,9 +30,9 @@ namespace NavigationSample.Wpf.ViewModels
 
         private IFakePeopleService fakePeopleService;
 
-        public PersonDetailsViewModel(IRegionManager regionManager, IFakePeopleService fakePeopleService)
+        public PersonDetailsViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
             this.fakePeopleService = fakePeopleService;
 
             SaveCommand = new RelayCommand<object>(OnSave);

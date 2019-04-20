@@ -15,36 +15,9 @@ namespace MvvmLib.Navigation
         private readonly ILogger DefaultLogger = new DebugLogger();
 
         /// <summary>
-        /// The region name.
-        /// </summary>
-        public string RegionName { get; protected set; }
-
-        /// <summary>
-        /// The control for this region.
-        /// </summary>
-        public object Control { get; }
-
-        /// <summary>
-        /// The name of the control. Can be used to get a region by region name and control name.
-        /// </summary>
-        public string ControlName => ((FrameworkElement)Control).Name;
-
-        /// <summary>
-        /// Checks if region is loaded.
-        /// </summary>
-        protected internal bool isLoaded;
-
-        /// <summary>
-        /// Gets the current entry of history.
-        /// </summary>
-        public abstract NavigationEntry CurrentEntry { get; }
-
-
-        /// <summary>
         /// The region logger.
         /// </summary>
         protected ILogger logger;
-
         /// <summary>
         /// The logger used by the Region
         /// </summary>
@@ -53,6 +26,49 @@ namespace MvvmLib.Navigation
             get { return logger ?? DefaultLogger; }
             set { logger = value; }
         }
+
+        /// <summary>
+        /// Checks if region is loaded.
+        /// </summary>
+        protected internal bool isLoaded;
+
+        /// <summary>
+        /// The region name.
+        /// </summary>
+        protected readonly string regionName;
+        /// <summary>
+        /// The region name.
+        /// </summary>
+        public string RegionName
+        {
+            get { return regionName; }
+        }
+
+        /// <summary>
+        /// The control for this region.
+        /// </summary>
+        protected readonly FrameworkElement control;
+        /// <summary>
+        /// The control for this region.
+        /// </summary>
+        public FrameworkElement Control
+        {
+            get { return control; }
+        }
+
+        /// <summary>
+        /// The name of the control. Can be used to get a region by region name and control name.
+        /// </summary>
+        public string ControlName
+        {
+            get { return control.Name; }
+        }
+
+        /// <summary>
+        /// Gets the current entry of history.
+        /// </summary>
+        public abstract NavigationEntry CurrentEntry { get; }
+
 
         /// <summary>
         /// Navigating event handlers list.
@@ -84,6 +100,7 @@ namespace MvvmLib.Navigation
         /// NavigatiionFailed event handlers list.
         /// </summary>
         protected readonly List<EventHandler<RegionNavigationFailedEventArgs>> navigationFailed = new List<EventHandler<RegionNavigationFailedEventArgs>>();
+
         /// <summary>
         /// Invoked on navigation cancelled or on exception.
         /// </summary>
@@ -98,10 +115,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="regionName"></param>
         /// <param name="control"></param>
-        public RegionBase(string regionName, object control)
+        public RegionBase(string regionName, FrameworkElement control)
         {
-            this.RegionName = regionName;
-            this.Control = control;
+            this.regionName = regionName;
+            this.control = control;
         }
 
         /// <summary>
@@ -111,7 +128,7 @@ namespace MvvmLib.Navigation
         /// <returns>The instance</returns>
         protected object CreateViewOrObjectInstance(Type viewOrObjectType)
         {
-            var viewOrObject = ViewResolver.Resolve(viewOrObjectType);
+            var viewOrObject = ViewResolver.CreateInstance(viewOrObjectType);
             return viewOrObject;
         }
 
@@ -123,7 +140,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="childRegions">The child regions</param>
         /// <returns></returns>
-        protected async Task CheckCanDeactivateChildRegionsAsync(IList<RegionBase> childRegions)
+        protected async Task CheckCanDeactivateChildRegionsOrThrowAsync(IList<RegionBase> childRegions)
         {
             // sub child => child => parent
             foreach (var childRegion in childRegions)
@@ -133,10 +150,10 @@ namespace MvvmLib.Navigation
                 {
                     // child 
                     if (currentEntry.ChildRegions.Count > 0)
-                        await childRegion.CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions);
+                        await childRegion.CheckCanDeactivateChildRegionsOrThrowAsync(currentEntry.ChildRegions);
 
                     // current
-                    await childRegion.CheckCanDeactivateAsync(currentEntry);
+                    await childRegion.CheckCanDeactivateOrThrowAsync(currentEntry);
                 }
             }
         }
@@ -146,11 +163,11 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="currentEntry">The current navigation entry.</param>
         /// <returns></returns>
-        protected async Task CheckCanDeactivateAsync(NavigationEntry currentEntry)
+        protected async Task CheckCanDeactivateOrThrowAsync(NavigationEntry currentEntry)
         {
             // sub child => child => parent
             if (currentEntry.ChildRegions.Count > 0)
-                await CheckCanDeactivateChildRegionsAsync(currentEntry.ChildRegions);
+                await CheckCanDeactivateChildRegionsOrThrowAsync(currentEntry.ChildRegions);
 
             var viewOrObject = currentEntry.ViewOrObject;
             if (viewOrObject != null && viewOrObject is IDeactivatable viewOrObjectAsIDeactivatable)
@@ -169,7 +186,15 @@ namespace MvvmLib.Navigation
 
         #region IActivatable management
 
-        protected async Task CheckCanActivateAsync(object viewOrObject, object context, object parameter)
+
+        /// <summary>
+        /// Checks can deactivate for view or object and context that implements <see cref="IDeactivatable" /> or throws an exception.
+        /// </summary>
+        /// <param name="viewOrObject">The view or object</param>
+        /// <param name="context">The data context</param>
+        /// <param name="parameter">the parameter</param>
+        /// <returns></returns>
+        protected async Task CheckCanActivateOrThrowAsync(object viewOrObject, object context, object parameter)
         {
             if (viewOrObject != null && viewOrObject is IActivatable viewOrObjectAsIActivatable)
                 if (!await viewOrObjectAsIActivatable.CanActivateAsync(parameter))
@@ -180,8 +205,16 @@ namespace MvvmLib.Navigation
                     throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, context, this);
         }
 
-        protected async Task CheckCanActivateAsync(NavigationEntry entry)
+        /// <summary>
+        /// Checks can activate for view or object and context that implements <see cref="IActivatable" /> or throws an exception.
+        /// </summary>
+        /// <param name="entry">The navigation entry</param>
+        /// <returns></returns>
+        protected async Task CheckCanActivateOrThrowAsync(NavigationEntry entry)
         {
+            if (entry == null)
+                throw new ArgumentNullException(nameof(entry));
+            
             // parent => child => sub child
             var viewOrObject = entry.ViewOrObject;
             var parameter = entry.Parameter;
@@ -195,11 +228,16 @@ namespace MvvmLib.Navigation
                     throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Context, context, this);
 
             if (entry.ChildRegions.Count > 0)
-                await CheckCanActivateChildRegionsAsync(entry.ChildRegions);
+                await CheckCanActivateChildRegionsOrThrowAsync(entry.ChildRegions);
         }
 
 
-        protected async Task CheckCanActivateChildRegionsAsync(IList<RegionBase> childRegions)
+        /// <summary>
+        /// Checks can activate for view or object and context that implements <see cref="IActivatable" /> or throws an exception.
+        /// </summary>
+        /// <param name="childRegions">The child regions</param>
+        /// <returns></returns>
+        protected async Task CheckCanActivateChildRegionsOrThrowAsync(IList<RegionBase> childRegions)
         {
             // parent => child => sub child
             foreach (var childRegion in childRegions)
@@ -209,12 +247,12 @@ namespace MvvmLib.Navigation
                 {
                     // current child
                     var viewOrObject = entry.ViewOrObject;
-                    await childRegion.CheckCanActivateAsync(viewOrObject, entry.Context, entry.Parameter);
+                    await childRegion.CheckCanActivateOrThrowAsync(viewOrObject, entry.Context, entry.Parameter);
 
 
                     // sub child regions
                     if (entry.ChildRegions.Count > 0)
-                        await childRegion.CheckCanActivateChildRegionsAsync(entry.ChildRegions);
+                        await childRegion.CheckCanActivateChildRegionsOrThrowAsync(entry.ChildRegions);
                 }
             }
         }
@@ -223,6 +261,10 @@ namespace MvvmLib.Navigation
 
         #region INavigatable management
 
+        /// <summary>
+        /// Invokes OnNavigatingFrom for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="entry">The navigation entry</param>
         protected void OnNavigatingFrom(NavigationEntry entry)
         {
             // subs child => child => parent
@@ -238,6 +280,11 @@ namespace MvvmLib.Navigation
                 contextAsINavigatable.OnNavigatingFrom();
         }
 
+
+        /// <summary>
+        /// Invokes OnNavigatingFrom for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="childRegions">The child regions</param>
         protected void OnNavigatingFromChildRegions(IList<RegionBase> childRegions)
         {
             foreach (var childRegion in childRegions)
@@ -255,6 +302,12 @@ namespace MvvmLib.Navigation
             }
         }
 
+        /// <summary>
+        /// Invokes OnNavigatingTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="viewOrObject"></param>
+        /// <param name="context"></param>
+        /// <param name="parameter"></param>
         protected void OnNavigatingTo(object viewOrObject, object context, object parameter)
         {
             if (viewOrObject != null && viewOrObject is INavigatable viewOrObjectAsINavigatable)
@@ -264,6 +317,10 @@ namespace MvvmLib.Navigation
                 contextAsINavigatable.OnNavigatingTo(parameter);
         }
 
+        /// <summary>
+        /// Invokes OnNavigatingTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="entry">The navigation entry</param>
         protected void OnNavigatingTo(NavigationEntry entry)
         {
             //  parent => child => sub child
@@ -281,6 +338,10 @@ namespace MvvmLib.Navigation
                 OnNavigatingToChildRegions(entry.ChildRegions);
         }
 
+        /// <summary>
+        /// Invokes OnNavigatingTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="childRegions">The child regions</param>
         protected void OnNavigatingToChildRegions(IList<RegionBase> childRegions)
         {
             //  parent => child => sub child
@@ -298,6 +359,12 @@ namespace MvvmLib.Navigation
             }
         }
 
+        /// <summary>
+        /// Invokes OnNavigatedTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="viewOrObject">The view or object</param>
+        /// <param name="context">The data context</param>
+        /// <param name="parameter">The parameter</param>
         protected void OnNavigatedTo(object viewOrObject, object context, object parameter)
         {
             if (viewOrObject != null && viewOrObject is INavigatable viewOrObjectAsINavigatable)
@@ -307,6 +374,10 @@ namespace MvvmLib.Navigation
                 contextAsINavigatable.OnNavigatedTo(parameter);
         }
 
+        /// <summary>
+        /// Invokes OnNavigatedTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="entry">The navigation entry</param>
         protected void OnNavigatedTo(NavigationEntry entry)
         {
             //  parent => child => sub child
@@ -323,6 +394,10 @@ namespace MvvmLib.Navigation
                 OnNavigatedToChildRegions(entry.ChildRegions);
         }
 
+        /// <summary>
+        /// Invokes OnNavigatedTo for view or object and context that implements <see cref="INavigatable" />.
+        /// </summary>
+        /// <param name="childRegions">The child regions</param>
         protected void OnNavigatedToChildRegions(List<RegionBase> childRegions)
         {
             foreach (var childRegion in childRegions)
@@ -341,6 +416,11 @@ namespace MvvmLib.Navigation
 
         #endregion INavigatable management
 
+        /// <summary>
+        /// Resolves the view model model for the view type.
+        /// </summary>
+        /// <param name="viewType">The view type</param>
+        /// <returns>The view model</returns>
         protected object ResolveContextWithViewModelLocator(Type viewType)
         {
             var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType); // singleton or new instance
@@ -352,6 +432,39 @@ namespace MvvmLib.Navigation
             return null;
         }
 
+        /// <summary>
+        /// Unregisters the content region.
+        /// </summary>
+        /// <param name="region">The content region</param>
+        /// <returns>True if unregistered</returns>
+        protected bool UnregisterContentRegion(ContentRegion region)
+        {
+            return RegionsRegistry.Instance.UnregisterContentRegion(region);
+        }
+
+        /// <summary>
+        /// Unregisters the items region.
+        /// </summary>
+        /// <param name="region">The items region</param>
+        /// <returns>True if unregistered</returns>
+        protected bool UnregisterItemsRegion(ItemsRegion region)
+        {
+            return RegionsRegistry.Instance.UnregisterItemsRegion(region);
+        }
+
+        /// <summary>
+        /// Remove non loaded regions.
+        /// </summary>
+        protected void RemoveNonLoadedRegions()
+        {
+            RegionsRegistry.Instance.RemoveNonLoadedRegions();
+        }
+
+        /// <summary>
+        /// Find child regions for the region.
+        /// </summary>
+        /// <param name="parent">The control of the region</param>
+        /// <returns>A list of regions</returns>
         protected List<RegionBase> FindChildRegions(DependencyObject parent)
         {
             var childRegions = new List<RegionBase>();
@@ -362,29 +475,29 @@ namespace MvvmLib.Navigation
                 var child = VisualTreeHelper.GetChild(parent, i);
                 if (child.GetValue(RegionManager.ContentRegionNameProperty) != null)
                 {
-                    // find region
                     var regionName = child.GetValue(RegionManager.ContentRegionNameProperty) as string;
-                    var region = RegionManager.FindContentRegion(regionName, child);
+
+                    var region = RegionsRegistry.Instance.GetContentRegion(regionName, child);
                     if (region != null)
-                    {
                         childRegions.Add(region);
-                    }
                 }
                 else if (child.GetValue(RegionManager.ItemsRegionNameProperty) != null)
                 {
                     var regionName = child.GetValue(RegionManager.ItemsRegionNameProperty) as string;
-                    var region = RegionManager.FindItemsRegion(regionName, child);
+
+                    var region = RegionsRegistry.Instance.GetItemsRegion(regionName, child);
                     if (region != null)
-                    {
                         childRegions.Add(region);
-                    }
                 }
                 childRegions.AddRange(FindChildRegions(child));
             }
             return childRegions;
-
         }
 
+        /// <summary>
+        /// Clear and unergister regions and child regions.
+        /// </summary>
+        /// <param name="entry">The navigation entry</param>
         protected void ClearChildRegions(NavigationEntry entry)
         {
             // sub child => child => parent
@@ -400,7 +513,7 @@ namespace MvvmLib.Navigation
                     contentRegion.ClearContent();
                     contentRegion.History.Clear();
 
-                    RegionManager.UnregisterContentRegion(contentRegion);
+                    RegionsRegistry.Instance.UnregisterContentRegion(contentRegion);
                 }
                 else
                 {
@@ -408,12 +521,16 @@ namespace MvvmLib.Navigation
                     itemsRegion.ClearItems();
                     itemsRegion.History.Clear();
 
-                    RegionManager.UnregisterItemsRegion(itemsRegion);
+                    RegionsRegistry.Instance.UnregisterItemsRegion(itemsRegion);
                 }
             }
         }
 
-
+        /// <summary>
+        /// Handle loaded for a view.
+        /// </summary>
+        /// <param name="view">The view</param>
+        /// <param name="onLoaded">The callback</param>
         protected void HandleLoaded(FrameworkElement view, Action<object, RoutedEventArgs> onLoaded)
         {
             // Called only after "control.Content = view"
@@ -427,12 +544,23 @@ namespace MvvmLib.Navigation
             });
         }
 
+        /// <summary>
+        /// Notify view models that implement <see cref="ILoadedEventListener" />.
+        /// </summary>
+        /// <param name="view">The view</param>
+        /// <param name="context">The data context</param>
+        /// <param name="parameter">The parameter</param>
         protected void NotifyLoadedListeners(FrameworkElement view, object context, object parameter)
         {
             if (context != null && context is ILoadedEventListener loadedEventListener)
                 loadedEventListener.OnLoaded(view, parameter);
         }
 
+        /// <summary>
+        /// Gets the generic type <see cref="IRegionKnowledge{T}"/> for the context type.
+        /// </summary>
+        /// <param name="contextType">The context type</param>
+        /// <returns>The generic type or null</returns>
         protected Type GetGenericRegionKnowledge(Type contextType)
         {
             var interfaces = contextType.GetInterfaces();
@@ -448,6 +576,11 @@ namespace MvvmLib.Navigation
             return null;
         }
 
+        /// <summary>
+        /// Notify view models that implement <see cref="ILoadedEventListener" />.
+        /// </summary>
+        /// <param name="region">The region</param>
+        /// <param name="context">The data context</param>
         protected void NotifyRegionKnowledge(IRegion region, object context)
         {
             // IRegionKnowledge
@@ -470,20 +603,36 @@ namespace MvvmLib.Navigation
             }
         }
 
-        protected void RaiseNavigating(Type viewType, object parameter, RegionNavigationType regionNavigationType)
+        /// <summary>
+        /// Notifies <see cref="Navigating"/> subscribers.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter type</param>
+        /// <param name="regionNavigationType">The navigation type</param>
+        protected void RaiseNavigating(Type sourceType, object parameter, RegionNavigationType regionNavigationType)
         {
-            var context = new RegionNavigationEventArgs(viewType, parameter, regionNavigationType);
+            var context = new RegionNavigationEventArgs(sourceType, parameter, regionNavigationType);
             foreach (var handler in this.navigating)
                 handler(this, context);
         }
 
-        protected void RaiseNavigated(Type viewType, object parameter, RegionNavigationType regionNavigationType)
+        /// <summary>
+        /// Notifies <see cref="Navigated"/> subscribers.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter type</param>
+        /// <param name="regionNavigationType">The navigation type</param>
+        protected void RaiseNavigated(Type sourceType, object parameter, RegionNavigationType regionNavigationType)
         {
-            var context = new RegionNavigationEventArgs(viewType, parameter, regionNavigationType);
+            var context = new RegionNavigationEventArgs(sourceType, parameter, regionNavigationType);
             foreach (var handler in this.navigated)
                 handler(this, context);
         }
 
+        /// <summary>
+        ///  Notifies <see cref="NavigationFailed"/> subscribers.
+        /// </summary>
+        /// <param name="exception">The exception</param>
         protected void RaiseNavigationNavigationFailed(NavigationFailedException exception)
         {
             var context = new RegionNavigationFailedEventArgs(exception);

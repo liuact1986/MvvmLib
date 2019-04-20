@@ -21,28 +21,28 @@ namespace AdaptiveSample.Views
     /// </summary>
     public partial class HomeView : UserControl
     {
-        IRegionManager regionManager;
+        IRegionNavigationService regionNavigationService;
 
-        public HomeView(IRegionManager regionManager)
+        public HomeView(IRegionNavigationService regionNavigationService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
 
             InitializeComponent();
         }
 
         private async void OnGoBreakpoint(object sender, RoutedEventArgs e)
         {
-            await regionManager.GetContentRegion("Main").NavigateAsync(typeof(Scenario1));
+            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario1));
         }
 
         private async void OnGoDataContext(object sender, RoutedEventArgs e)
         {
-            await regionManager.GetContentRegion("Main").NavigateAsync(typeof(Scenario2));
+            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario2));
         }
 
         private async void OnGoAsControl(object sender, RoutedEventArgs e)
         {
-            await regionManager.GetContentRegion("Main").NavigateAsync(typeof(Scenario3));
+            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario3));
         }
     }
 }

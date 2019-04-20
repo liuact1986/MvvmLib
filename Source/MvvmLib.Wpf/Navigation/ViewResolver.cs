@@ -8,7 +8,7 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class ViewResolver
     {
-        static Func<Type, object> viewFactory = (viewType) => Activator.CreateInstance(viewType);
+        private static Func<Type, object> viewFactory = (sourceType) => Activator.CreateInstance(sourceType);
 
         /// <summary>
         /// Allows to change the default view factory (Activator CreateInstance).
@@ -19,9 +19,9 @@ namespace MvvmLib.Navigation
             ViewResolver.viewFactory = viewFactory;
         }
 
-        internal static object Resolve(Type viewType)
+        internal static object CreateInstance(Type sourceType)
         {
-            return viewFactory(viewType);
+            return viewFactory(sourceType);
         }
     }
 }

@@ -21,18 +21,18 @@ namespace RegionSample.Views
     /// </summary>
     public partial class ComposedView : UserControl
     {
-        IRegionManager regionManager;
+        IRegionNavigationService navigationService;
 
-        public ComposedView(IRegionManager regionManager)
+        public ComposedView(IRegionNavigationService navigationService)
         {
-            this.regionManager = regionManager;
+            this.navigationService = navigationService;
 
             InitializeComponent();
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await regionManager.GetContentRegion("RegionRight", "RegionRight1").NavigateAsync(typeof(ViewB));
+            await navigationService.GetContentRegion("RegionRight", "RegionRight1").NavigateAsync(typeof(ViewB));
         }
     }
 }

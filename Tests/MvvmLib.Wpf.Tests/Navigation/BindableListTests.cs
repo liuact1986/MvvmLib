@@ -10,7 +10,7 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public void TestRemoveAt()
         {
-            var l = new BindableList<string>();
+            var l = new BindableHistory<string>();
 
             l.Add("a");
             l.Add("b");
@@ -37,7 +37,7 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public void TestRemoveAt_2()
         {
-            var l = new BindableList<string>();
+            var l = new BindableHistory<string>();
 
             l.Add("a");
             l.Add("b");
@@ -64,7 +64,7 @@ namespace MvvmLib.Wpf.Tests
         [TestMethod]
         public void TestClear()
         {
-            var l = new BindableList<string>();
+            var l = new BindableHistory<string>();
 
             l.Add("a");
             l.Add("b");

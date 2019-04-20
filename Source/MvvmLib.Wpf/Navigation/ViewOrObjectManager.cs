@@ -12,15 +12,29 @@ namespace MvvmLib.Navigation
 
     public struct ViewOrObjectInstanceResult
     {
-        public Type SourceType { get; set; }
-        public ResolutionType ResolutionType { get; }
-        public object Instance { get; }
+        private readonly Type sourceType;
+        public Type SourceType
+        {
+            get { return sourceType; }
+        }
+
+        private readonly ResolutionType resolutionType;
+        public ResolutionType ResolutionType
+        {
+            get { return resolutionType; }
+        }
+
+        private readonly object instance;
+        public object Instance
+        {
+            get { return instance; }
+        }
 
         public ViewOrObjectInstanceResult(Type sourceType, object instance, ResolutionType resolutionType)
         {
-            this.SourceType = sourceType;
-            this.Instance = instance;
-            this.ResolutionType = resolutionType;
+            this.sourceType = sourceType;
+            this.instance = instance;
+            this.resolutionType = resolutionType;
         }
     }
 
@@ -35,13 +49,20 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Registered View or objects as Singletons that implement <see cref="IViewLifetimeStrategy"/>.
         /// </summary>
-        public IReadOnlyDictionary<Type, object> Singletons => singletons;
+        public IReadOnlyDictionary<Type, object> Singletons
+        {
+            get { return singletons; }
+        }
 
         private readonly Dictionary<Type, List<KeyValuePair<object, object>>> selectables;
+       
         /// <summary>
         /// Registered View or objects that implement <see cref="ISelectable"/>.
         /// </summary>
-        public IReadOnlyDictionary<Type, List<KeyValuePair<object, object>>> Selectables => selectables;
+        public IReadOnlyDictionary<Type, List<KeyValuePair<object, object>>> Selectables
+        {
+            get { return selectables; }
+        }
 
         /// <summary>
         /// Creates the view or object maanager.
@@ -132,7 +153,7 @@ namespace MvvmLib.Navigation
         /// <returns>The new instance</returns>
         public object CreateInstance(Type sourceType)
         {
-            var viewOrObject = ViewResolver.Resolve(sourceType);
+            var viewOrObject = ViewResolver.CreateInstance(sourceType);
             return viewOrObject;
         }
 

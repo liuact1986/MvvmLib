@@ -17,6 +17,10 @@ namespace MvvmLib.IoC
                 return preferredConstructor;
             }
 
+            var emptyConstructor = ReflectionUtils.GetEmptyConstructor(type, nonPublicConstructors);
+            if (emptyConstructor != null)
+                return emptyConstructor;
+
             var constructor = ReflectionUtils.GetDefaultConstructor(type, nonPublicConstructors);
             return constructor;
         }

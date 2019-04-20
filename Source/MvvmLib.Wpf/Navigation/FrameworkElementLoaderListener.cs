@@ -5,13 +5,17 @@ namespace MvvmLib.Navigation
 {
     public class FrameworkElementLoaderListener : IDisposable
     {
-        public FrameworkElement Element { get; }
+        private readonly FrameworkElement element;
+        public FrameworkElement Element
+        {
+            get { return element; }
+        }
 
-        Action<object, RoutedEventArgs> callback;
+        private Action<object, RoutedEventArgs> callback;
 
         public FrameworkElementLoaderListener(FrameworkElement element)
         {
-            this.Element = element;
+            this.element = element;
         }
 
         private void Element_Loaded(object sender, RoutedEventArgs e)
@@ -22,13 +26,13 @@ namespace MvvmLib.Navigation
         public void Subscribe(Action<object, RoutedEventArgs> callback)
         {
             this.callback = callback;
-            Element.Loaded += Element_Loaded;
+            element.Loaded += Element_Loaded;
         }
 
         public void Unsubscribe()
         {
             callback = null;
-            Element.Loaded -= Element_Loaded;
+            element.Loaded -= Element_Loaded;
         }
 
         public void Dispose()

@@ -7,18 +7,18 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class MasterDetailViewModel : ILoadedEventListener, IRegionKnowledge<ContentRegion>
     {
-        private IRegionManager regionManager;
+        private IRegionNavigationService regionNavigationService;
 
         public ICommand NavigateCommand { get; }
 
-        public MasterDetailViewModel(IRegionManager regionManager)
+        public MasterDetailViewModel(IRegionNavigationService regionNavigationService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
         }
 
         public async void OnLoaded(FrameworkElement view, object parameter)
         {
-            await regionManager.GetContentRegion("Master").NavigateAsync(typeof(PeopleView));
+            await regionNavigationService.GetContentRegion("Master").NavigateAsync(typeof(PeopleView));
         }
 
         public void GetRegion(ContentRegion region)

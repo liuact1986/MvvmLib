@@ -8,35 +8,26 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class ShellViewModel  :ILoadedEventListener
     {
-        private IRegionManager regionManager;
+        private IRegionNavigationService regionNavigationService;
 
         public ICommand NavigateCommand { get; }
 
-        public ShellViewModel(IRegionManager regionManager)
+        public ShellViewModel(IRegionNavigationService regionNavigationService)
         {
-            this.regionManager = regionManager;
+            this.regionNavigationService = regionNavigationService;
 
             NavigateCommand = new RelayCommand<Type>(OnNavigate);
         }
 
         private async void OnNavigate(Type viewType)
         {
-            await regionManager.GetContentRegion("MainRegion").NavigateAsync(viewType);
+            await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(viewType);
         }
 
         public void OnLoaded(FrameworkElement view, object parameter)
         {
-            var region = regionManager.GetContentRegion("MainRegion");
-            region.DefaultRegionAnimation.EntranceAnimation = new OpacityAnimation
-            {
-                From = 0,
-                To = 1
-            };
-            region.DefaultRegionAnimation.ExitAnimation = new OpacityAnimation
-            {
-                From = 1,
-                To = 0
-            };
+            var region = regionNavigationService.GetContentRegion("MainRegion");
+            region.ConfigureAnimation(new OpacityAnimation { From = 0, To = 1 }, new OpacityAnimation { From = 1, To = 0 });
         }
     }
 }

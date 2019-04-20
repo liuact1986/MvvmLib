@@ -26,7 +26,7 @@ namespace RegionSample
 
         protected override void RegisterCustomRegionAdapters()
         {
-            RegionAdapterContainer.RegisterAdapter(new StackPanelRegionAdapter());
+            RegionAdapterContainer.RegisterRegionAdapter(new StackPanelRegionAdapter());
         }
     }
 }
