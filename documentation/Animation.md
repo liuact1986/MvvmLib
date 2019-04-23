@@ -23,49 +23,58 @@ Add the control and bind dependency properties
 Create animations and bind to control
 
 ```cs
-    public class MainWindowViewModel : BindableBase
+public class MainWindowViewModel : BindableBase
+{
+    private IContentAnimation entranceNavAnimation;
+    public IContentAnimation EntranceNavAnimation
     {
-        private IContentAnimation entranceNavAnimation;
-        public IContentAnimation EntranceNavAnimation
-        {
-            get { return entranceNavAnimation; }
-            set { SetProperty(ref entranceNavAnimation, value); }
-        }
+        get { return entranceNavAnimation; }
+        set { SetProperty(ref entranceNavAnimation, value); }
+    }
 
-        private IContentAnimation exitNavAnimation;
-        public IContentAnimation ExitNavAnimation
-        {
-            get { return exitNavAnimation; }
-            set { SetProperty(ref exitNavAnimation, value); }
-        }
+    private IContentAnimation exitNavAnimation;
+    public IContentAnimation ExitNavAnimation
+    {
+        get { return exitNavAnimation; }
+        set { SetProperty(ref exitNavAnimation, value); }
+    }
 
-        private bool navSimultaneous;
-        public bool NavSimultaneous
-        {
-            get { return navSimultaneous; }
-            set { SetProperty(ref navSimultaneous , value); }
-        }
+    private bool navSimultaneous;
+    public bool NavSimultaneous
+    {
+        get { return navSimultaneous; }
+        set { SetProperty(ref navSimultaneous , value); }
+    }
 
-        public MainWindowViewModel(ContentControl control)
-        {
-            var scaleEntranceAnimation = new ScaleAnimation
-            {
-                From = 0,
-                To = 1,
-                RenderTransformOrigin = new Point(0.5, 0.5),
-                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-            };
-            var scaleExitAnimation = new ScaleAnimation
-            {
-                From = 1,
-                To = 0,
-                RenderTransformOrigin = new Point(0.5, 0.5),
-                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-            };
+    public ICommand GoViewACommand { get; }
 
-            EntranceNavAnimation = scaleEntranceAnimation;
-            ExitNavAnimation = scaleExitAnimation;
-        }
+    public MainWindowViewModel(IRegionNavigationService regionNavigationService)
+    {
+        var scaleEntranceAnimation = new ScaleAnimation
+        {
+            From = 0,
+            To = 1,
+            RenderTransformOrigin = new Point(0.5, 0.5),
+            EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+        };
+        var scaleExitAnimation = new ScaleAnimation
+        {
+            From = 1,
+            To = 0,
+            RenderTransformOrigin = new Point(0.5, 0.5),
+            EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+        };
+
+        EntranceNavAnimation = scaleEntranceAnimation;
+        ExitNavAnimation = scaleExitAnimation;
+
+        var contentRegion = regionNavigationService.GetContentRegion("AnimationSample");
+
+        GoViewACommand = new RelayCommand(async () =>
+        {
+            await contentRegion.NavigateAsync(typeof(ViewA));
+        });
+    }
 }
 ```
  Animation classes awailables:
