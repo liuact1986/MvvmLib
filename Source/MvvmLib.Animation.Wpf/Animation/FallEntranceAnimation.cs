@@ -10,13 +10,6 @@ namespace MvvmLib.Animation
         protected override double DefaultTo => 0;
         protected override Duration DefaultDuration => new Duration(TimeSpan.FromMilliseconds(400));
 
-        private AnimationTimeline opacityAnimation;
-        public AnimationTimeline OpacityAnimation
-        {
-            get { return opacityAnimation; }
-            protected set { opacityAnimation = value; }
-        }
-
         protected override AnimationTimeline[] CreateAnimations()
         {
             // => translate Y 150% => 0 + opactiy 0 => 1
@@ -24,7 +17,7 @@ namespace MvvmLib.Animation
             if (EasingFunction != null)
                 translateAnimation.EasingFunction = EasingFunction;
 
-            opacityAnimation = new DoubleAnimation(0, 1, Duration);
+            var opacityAnimation = new DoubleAnimation(0, 1, Duration);
 
             return new AnimationTimeline[] { translateAnimation, opacityAnimation };
         }

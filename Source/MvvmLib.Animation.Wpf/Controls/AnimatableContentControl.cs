@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace MvvmLib.Animation
 {
@@ -68,6 +69,23 @@ namespace MvvmLib.Animation
 
         public static readonly DependencyProperty OnCancelledProperty =
             DependencyProperty.Register("OnCancelled", typeof(Action), typeof(AnimatableContentControl), new PropertyMetadata(null));
+
+        public bool IsCancelled
+        {
+            get { return (bool)GetValue(IsCancelledProperty); }
+            set { SetValue(IsCancelledProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsCancelledProperty =
+            DependencyProperty.Register("IsCancelled", typeof(bool), typeof(AnimatableContentControl), new PropertyMetadata(false, OnIsCancelledChanged));
+
+        private static void OnIsCancelledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var animatableContentControl = (AnimatableContentControl)d;
+            var cancel = (bool)e.NewValue;
+            if (cancel == true)
+                animatableContentControl.CancelAnimations();
+        }
 
         static AnimatableContentControl()
         {
