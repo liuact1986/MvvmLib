@@ -13,11 +13,12 @@ xmlns:nav="http://mvvmlib.com/"
 Add the control and bind dependency properties
 
 ```xml
- <nav:AnimatableContentControl nav:RegionManager.ContentRegionName="AnimationSample" 
-                                      EntranceAnimation="{Binding EntranceNavAnimation}" 
-                                      ExitAnimation="{Binding ExitNavAnimation}"
-                                      Simultaneous="{Binding NavSimultaneous}"
-                                      Grid.Row="1"/>
+<nav:AnimatableContentControl nav:RegionManager.ContentRegionName="AnimationSample" 
+                              EntranceAnimation="{Binding EntranceNavAnimation}" 
+                              ExitAnimation="{Binding ExitNavAnimation}"
+                              Simultaneous="{Binding NavSimultaneous}"
+                              IsCancelled="{Binding IsCancelled}"
+                              Grid.Row="1"/>
 ```
 
 Create animations and bind to control
@@ -46,7 +47,15 @@ public class MainWindowViewModel : BindableBase
         set { SetProperty(ref navSimultaneous , value); }
     }
 
+    private bool isCancelled;
+    public bool IsCancelled
+    {
+        get { return isCancelled; }
+        set { SetProperty(ref isCancelled, value); }
+    }
+
     public ICommand GoViewACommand { get; }
+    public ICommand CancelAnimationsCommand { get; }
 
     public MainWindowViewModel(IRegionNavigationService regionNavigationService)
     {
@@ -74,6 +83,8 @@ public class MainWindowViewModel : BindableBase
         {
             await contentRegion.NavigateAsync(typeof(ViewA));
         });
+
+        CancelAnimationsCommand = new RelayCommand(() => IsCancelled = true);
     }
 }
 ```

@@ -163,8 +163,8 @@ namespace MvvmLib.Animation
         public virtual void CancelAnimations()
         {
             isAnimating = false;
-            onCompleted = null;
-            Storyboard.Stop();
+            if (storyboard != null)
+                Storyboard.Stop();
             OnCancelled?.Invoke();
         }
 

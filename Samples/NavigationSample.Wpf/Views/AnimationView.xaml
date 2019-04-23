@@ -36,12 +36,15 @@
 
             <Button Content="FxVscale ViewA" Command="{Binding GoViewAWithFxVscaleAnimationCommand}"></Button>
             <Button Content="FxVscale ViewB"  Command="{Binding GoViewBWithFxVscaleAnimationCommand}"></Button>
+
+            <Button Content="Cancel animations" FontWeight="Bold"  Command="{Binding CancelAnimationsCommand}"></Button>
         </WrapPanel>
 
         <nav:AnimatableContentControl nav:RegionManager.ContentRegionName="AnimationSample" 
                                       EntranceAnimation="{Binding EntranceNavAnimation}" 
                                       ExitAnimation="{Binding ExitNavAnimation}"
                                       Simultaneous="{Binding NavSimultaneous}"
+                                      IsCancelled="{Binding IsCancelled}"
                                       Grid.Row="1"/>
         
         <!--<ContentControl nav:RegionManager.ContentRegionName="AnimationSample" Grid.Row="1"></ContentControl>-->

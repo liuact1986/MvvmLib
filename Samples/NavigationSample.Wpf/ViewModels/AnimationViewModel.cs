@@ -11,6 +11,14 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class AnimationViewModel : BindableBase, ILoadedEventListener, ISelectable
     {
+
+        private bool isCancelled;
+        public bool IsCancelled
+        {
+            get { return isCancelled; }
+            set { SetProperty(ref isCancelled, value); }
+        }
+
         private IContentAnimation entranceNavAnimation;
         public IContentAnimation EntranceNavAnimation
         {
@@ -61,6 +69,8 @@ namespace NavigationSample.Wpf.ViewModels
 
         private ContentRegion contentRegion;
 
+        public ICommand CancelAnimationsCommand { get; }
+
         public AnimationViewModel(IRegionNavigationService regionNavigationService)
         {
             var opacityEntranceAnimation = new OpacityAnimation { From = 0, To = 1 };
@@ -87,8 +97,8 @@ namespace NavigationSample.Wpf.ViewModels
                 EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
             };
 
-            translateEntranceAnimation = new TranslateAnimation { From = 800, To = 0 };
-            translateExitAnimation = new TranslateAnimation { From = 0, To = 800 };
+            translateEntranceAnimation = new TranslateAnimation { From = 800, To = 0, Duration = new Duration(TimeSpan.FromMilliseconds(10000)) };
+            translateExitAnimation = new TranslateAnimation { From = 0, To = 800, Duration = new Duration(TimeSpan.FromMilliseconds(10000)) };
 
             var skewEntranceAnimation = new SkewAnimation { From = 30, To = 0, TransformDirection = TransformDirection.Y };
             var skewExitAnimation = new SkewAnimation { From = 0, To = 30, TransformDirection = TransformDirection.Y };
@@ -100,6 +110,8 @@ namespace NavigationSample.Wpf.ViewModels
             var fxVscaleExitAnimation = new FxVScaleExitAnimation();
 
             this.contentRegion = regionNavigationService.GetContentRegion("AnimationSample");
+
+            CancelAnimationsCommand = new RelayCommand(() => IsCancelled = true);
 
             GoViewAWithFadeAnimationCommand = new RelayCommand(async () =>
             {
@@ -209,6 +221,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation, bool simultaneous = false)
         {
+            IsCancelled = false;
             EntranceNavAnimation = entranceAnimation;
             ExitNavAnimation = exitAnimation;
             NavSimultaneous = simultaneous;
@@ -231,6 +244,4 @@ namespace NavigationSample.Wpf.ViewModels
             return true;
         }
     }
-
-
 }

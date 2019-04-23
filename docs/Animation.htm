@@ -87,11 +87,12 @@
 <p>Add the namespace to the view</p>
 <pre class="nocode">xmlns:nav=&quot;http://mvvmlib.com/&quot;
 </pre><p>Add the control and bind dependency properties</p>
-<pre><code class="xml"> &lt;nav:AnimatableContentControl nav:RegionManager.ContentRegionName=&quot;AnimationSample&quot; 
-                                      EntranceAnimation=&quot;{Binding EntranceNavAnimation}&quot; 
-                                      ExitAnimation=&quot;{Binding ExitNavAnimation}&quot;
-                                      Simultaneous=&quot;{Binding NavSimultaneous}&quot;
-                                      Grid.Row=&quot;1&quot;/&gt;
+<pre><code class="xml">&lt;nav:AnimatableContentControl nav:RegionManager.ContentRegionName=&quot;AnimationSample&quot; 
+                              EntranceAnimation=&quot;{Binding EntranceNavAnimation}&quot; 
+                              ExitAnimation=&quot;{Binding ExitNavAnimation}&quot;
+                              Simultaneous=&quot;{Binding NavSimultaneous}&quot;
+                              IsCancelled=&quot;{Binding IsCancelled}&quot;
+                              Grid.Row=&quot;1&quot;/&gt;
 </code></pre>
 
 <p>Create animations and bind to control</p>
@@ -118,7 +119,15 @@
         set { SetProperty(ref navSimultaneous , value); }
     }
 
+    private bool isCancelled;
+    public bool IsCancelled
+    {
+        get { return isCancelled; }
+        set { SetProperty(ref isCancelled, value); }
+    }
+
     public ICommand GoViewACommand { get; }
+    public ICommand CancelAnimationsCommand { get; }
 
     public MainWindowViewModel(IRegionNavigationService regionNavigationService)
     {
@@ -146,6 +155,8 @@
         {
             await contentRegion.NavigateAsync(typeof(ViewA));
         });
+
+        CancelAnimationsCommand = new RelayCommand(() =&gt; IsCancelled = true);
     }
 }
 </code></pre>
