@@ -61,15 +61,6 @@ namespace MvvmLib.Navigation
             this.list.Clear();
             currentIndex = -1;
         }
-
-        public List<object> ToList()
-        {
-            var result = new List<object>();
-            foreach (var item in this.List)
-                result.Add(item.ViewOrObject);
-
-            return result;
-        }
     }
 
 }

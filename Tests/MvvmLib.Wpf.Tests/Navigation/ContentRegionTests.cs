@@ -108,7 +108,7 @@ namespace MvvmLib.Wpf.Tests
 
         public void OnNavigatingTo(object parameter)
         {
-            
+
         }
     }
 
@@ -170,7 +170,7 @@ namespace MvvmLib.Wpf.Tests
 
         public void OnNavigatingTo(object parameter)
         {
-        
+
         }
     }
 
@@ -201,7 +201,7 @@ namespace MvvmLib.Wpf.Tests
 
         public void OnNavigatingTo(object parameter)
         {
-         
+
         }
     }
 
@@ -257,11 +257,11 @@ namespace MvvmLib.Wpf.Tests
 
         public void OnNavigatingTo(object parameter)
         {
-       
+
         }
     }
 
-        [TestClass]
+    [TestClass]
     public class ContentRegionTests
     {
         RegionsRegistry regionsRegistry = new RegionsRegistry();
@@ -269,7 +269,7 @@ namespace MvvmLib.Wpf.Tests
         public ContentRegion GetService(ContentControl c)
         {
             regionsRegistry.RegisterContentRegion("C1", c);
-            return new ContentRegion(new NavigationHistory(), "C1", c);
+            return new ContentRegion(new ViewOrObjectManager(), new NavigationHistory(), "C1", c, regionsRegistry);
         }
 
         private const string defaultKey = "default";
@@ -281,7 +281,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             Assert.AreEqual("R1", service.RegionName);
             Assert.AreEqual(c, service.Control);
@@ -303,7 +303,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             ActivatableView.canActivate = true;
 
@@ -323,7 +323,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             ActivatableView.canActivate = false;
 
@@ -341,7 +341,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView));
 
@@ -362,7 +362,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView));
 
@@ -383,7 +383,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(NavigatableView), "p1");
 
@@ -413,7 +413,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(SimpleView));
 
@@ -442,7 +442,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -469,7 +469,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -496,7 +496,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(SimpleView));
 
@@ -522,7 +522,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(SimpleView));
 
@@ -548,7 +548,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(SimpleView));
 
@@ -579,7 +579,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(SimpleView));
 
@@ -610,7 +610,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -640,7 +640,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -671,7 +671,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
@@ -693,7 +693,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             await service.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
@@ -713,7 +713,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             bool isNotified = false;
             RegionNavigationEventArgs ev = null;
@@ -729,7 +729,7 @@ namespace MvvmLib.Wpf.Tests
             Assert.IsTrue(isNotified);
             Assert.AreEqual(typeof(ViewWithViewModelDataContext), ev.SourceType);
             Assert.AreEqual("p1", ev.Parameter);
-            Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);       
+            Assert.AreEqual(RegionNavigationType.New, ev.RegionNavigationType);
         }
 
         [TestMethod]
@@ -739,7 +739,7 @@ namespace MvvmLib.Wpf.Tests
 
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             bool isNotified = false;
             RegionNavigationEventArgs ev = null;
@@ -764,7 +764,7 @@ namespace MvvmLib.Wpf.Tests
         {
             var c = new MyControl();
             c.Name = "c1";
-            var service = new ContentRegion("R1", c);
+            var service = new ContentRegion("R1", c, new RegionsRegistry());
 
             bool isNotified = false;
             RegionNavigationFailedEventArgs ev = null;

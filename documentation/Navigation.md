@@ -186,6 +186,10 @@ await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(
 | Navigated | Invoked after navigation ends |
 | NavigatingFailed | Invoked after navigation was cancelled |
 
+**Animation with content control**
+
+ [See MvvmLib.Animation.Wpf](https://romagny13.github.io/MvvmLib/Animation.htm)
+
 #### With Items Region
 
 AddAsync
@@ -230,107 +234,6 @@ await WpfNavigationService.Default.GetItemsRegion(RegionNames.ItemsControlRegion
 * **RemoveAtAsync**
 * **RemoveLastAsync**
 * **Clear**
-
-### Animation
-
-Define an entrance and an exit animation. Example:
-
-```cs
-var entranceScaleAnimation = new ScaleAnimation
-{
-    From = 0,
-    To = 1,
-    RenderTransformOrigin = new Point(0.5, 0.5),
-    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-};
-var exitScaleAnimation = new ScaleAnimation
-{
-    From = 1,
-    To = 0,
-    RenderTransformOrigin = new Point(0.5, 0.5),
-    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-};
-
-var region = regionNavigationService.GetContentRegion("ContentRegion");
- region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
-```
-
-Playing the entrance and exit animations simultaneously:
-
-```cs
- region.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation, true);
- ```
-
- Animation classes awailables:
-
-* **OpacityAnimation**
-* **TranslateAnimation**
-* **SkewAnimation**
-* **ScaleAnimation**
-* **RotateAnimation**
-* **FxCornerEntranceAnimation** and **FxCornerExitAnimation**
-* **FallEntranceAnimation** and **FallExitAnimation**
-* **FxVscaleEntranceAnimation** and **FxVscaleExitAnimation**
-
-Create a custom animation class:
-
-```cs
-// 1. inherit from ContentAnimationBase or TransformAnimationBase
-public class MyAnimation : TransformAnimationBase
-{
-    // 2. implement the base class
-    public override void CancelAnimation()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    protected override void BeginAnimation()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    protected override AnimationTimeline CreateAnimation()
-    {
-        throw new System.NotImplementedException();
-    }
-}
-```
-
-Example with the OpacityAnimation class:
-
-```cs
-public class OpacityAnimation : ContentAnimationBase
-{
-    protected override double DefaultFrom => 0;
-    protected override double DefaultTo => 1;
-
-    public override void CancelAnimation()
-    {
-        // on animation cancelled
-        if (Element != null)
-        {
-            Element.BeginAnimation(Control.OpacityProperty, null);
-            AnimationWasCancelled = true;
-            IsAnimating = false;
-        }
-    }
-
-    protected override AnimationTimeline CreateAnimation()
-    {
-        // return an animation
-        var animation = new DoubleAnimation(From, To, Duration);
-        if (EasingFunction != null)
-            animation.EasingFunction = EasingFunction;
-        return animation;
-    }
-
-    protected override void BeginAnimation()
-    {
-        // begin the animation
-        Element.BeginAnimation(Control.OpacityProperty, Animation);
-    }
-}
-```
 
 ## INavigatable
 

@@ -1,6 +1,4 @@
 ﻿using System;
-
-
 namespace MvvmLib.Navigation
 {
     /// <summary>

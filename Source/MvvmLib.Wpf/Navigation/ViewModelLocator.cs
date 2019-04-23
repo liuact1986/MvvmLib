@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -36,8 +38,12 @@ namespace MvvmLib.Navigation
 
         private static void OnResolveWindowViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue && d.GetType().BaseType == typeof(Window))
-                ((Window)d).Activated += OnWindowActivated;
+            if (!DesignerProperties.GetIsInDesignMode(d))
+                if ((bool)e.NewValue)
+                    if (d.GetType().BaseType != typeof(Window))
+                        throw new ArgumentException($"\"ResolveWindowViewModel\" is only available for Window");
+                    else
+                        ((Window)d).Activated += OnWindowActivated;
         }
 
         private static void OnWindowActivated(object sender, System.EventArgs e)

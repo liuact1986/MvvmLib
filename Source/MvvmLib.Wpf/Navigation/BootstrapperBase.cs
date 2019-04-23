@@ -10,14 +10,14 @@ namespace MvvmLib.Navigation
     public abstract class BootstrapperBase
     {
         /// <summary>
-        /// The bootstrapper logger.
+        /// The logger.
         /// </summary>
         protected ILogger logger;
 
         /// <summary>
-        /// Creates the bootstrapper logger (DebugLogger by default)
+        /// Creates the logger used by the bootstrapper class.
         /// </summary>
-        /// <returns>The logger to use</returns>
+        /// <returns>The logger</returns>
         protected virtual ILogger CreateLogger()
         {
             return new DebugLogger();
@@ -97,7 +97,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         protected virtual void OnInitialized()
         {
-            if (Application.Current != null 
+            if (Application.Current != null
                 && Application.Current.MainWindow != null)
             {
                 Application.Current.MainWindow.Show();
@@ -110,10 +110,8 @@ namespace MvvmLib.Navigation
         public void Run()
         {
             this.logger = CreateLogger();
-
             if (this.logger == null)
                 throw new InvalidOperationException("The logger cannot be null.");
-
 
             this.logger.Log("Starting bootstrapper process.", Category.Debug, Priority.Low);
 

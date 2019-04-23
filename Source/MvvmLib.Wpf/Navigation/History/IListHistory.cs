@@ -16,6 +16,5 @@ namespace MvvmLib.Navigation
         void Insert(int index, NavigationEntry entry);
         void RemoveAt(int index);
         void Select(int index);
-        List<object> ToList();
     }
 }

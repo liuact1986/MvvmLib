@@ -64,6 +64,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Models\FakePeopleService.cs" />
     <Compile Include="Models\IFakePeopleService.cs" />
     <Compile Include="Models\Person.cs" />
@@ -103,6 +104,15 @@
     <Compile Include="Views\ViewB.xaml.cs">
       <DependentUpon>ViewB.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ViewC.xaml.cs">
+      <DependentUpon>ViewC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WhenAvailableSampleView.xaml.cs">
+      <DependentUpon>WhenAvailableSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WhenAvailableView.xaml.cs">
+      <DependentUpon>WhenAvailableView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -132,6 +142,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Source\MvvmLib.Animation.Wpf\MvvmLib.Animation.Wpf.csproj">
+      <Project>{06b1a12c-5cca-4959-9131-b8999a034d72}</Project>
+      <Name>MvvmLib.Animation.Wpf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Source\MvvmLib.Core\MvvmLib.Core.csproj">
       <Project>{5462ae63-cbb9-46c2-b800-311fd7c7be72}</Project>
       <Name>MvvmLib.Core</Name>
@@ -159,16 +173,16 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MasterDetail\MasterDetailView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MasterDetail\PeopleView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\MasterDetail\PersonDetailsView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Shell.xaml">
       <SubType>Designer</SubType>
@@ -179,6 +193,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ViewB.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ViewC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WhenAvailableSampleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WhenAvailableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

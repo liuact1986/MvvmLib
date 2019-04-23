@@ -1,0 +1,36 @@
+﻿<Window x:Class="ChildRegionsSample.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:nav="http://mvvmlib.com/"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Show Child" Margin="5" Click="OnShowChild"/>
+            <Button Content="Set empty Child" Margin="5" Click="OnSetEmptyChild"/>
+            <Button Content="Chain navigation" Margin="5" Click="OnChainNavigation"/>
+            <Button Content="Go other view" Margin="5" Click="OnGoOther"/>
+            
+            <ComboBox SelectedIndex="0" SelectionChanged="OnSampleModeComboxChanged" Margin="5">
+                <ComboBoxItem>No ViewModel</ComboBoxItem>
+                <ComboBoxItem>Selectable ViewModels</ComboBoxItem>
+                <ComboBoxItem>Singleton ViewModels</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
+        <ContentControl x:Name="Zero" nav:RegionManager.ContentRegionName="Zero" Grid.Row="1" Margin="5"/>
+        <ListView x:Name="ContentRegionsList" Grid.Row="2"/>
+
+        <StatusBar Grid.Row="3">
+            <TextBlock x:Name="StatusText"/>
+        </StatusBar>
+    </Grid>
+</Window>

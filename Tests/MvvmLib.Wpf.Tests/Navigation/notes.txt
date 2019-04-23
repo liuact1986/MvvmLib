@@ -1,0 +1,3 @@
+﻿
+child
+=> create view => discover region (content control) => data context ? resolve view model ... set data context to view model => 

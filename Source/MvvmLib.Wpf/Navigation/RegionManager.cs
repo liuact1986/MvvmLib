@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 
 namespace MvvmLib.Navigation
@@ -9,12 +10,9 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class RegionManager
     {
-
-        private static readonly RegionsRegistry regionsRegistry;
-
-        static RegionManager()
+        private static bool IsInDesignMode(DependencyObject element)
         {
-            regionsRegistry = RegionsRegistry.Instance;
+            return DesignerProperties.GetIsInDesignMode(element);
         }
 
         /// <summary>
@@ -49,21 +47,16 @@ namespace MvvmLib.Navigation
 
         private static void OnSetContentRegionName(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var element = d as FrameworkElement;
-            if (element != null)
+            if (!IsInDesignMode(d))
             {
-                var control = (FrameworkElement)d;
-                var regionName = (string)e.NewValue;
-
-                var region = RegionsRegistry.Instance.RegisterContentRegion(regionName, control);
-
-                var listener = new FrameworkElementLoaderListener(element);
-                listener.Subscribe((s1, e1) =>
+                var element = d as FrameworkElement;
+                if (element != null)
                 {
-                    region.isLoaded = true;
+                    var control = (FrameworkElement)d;
+                    var regionName = (string)e.NewValue;
 
-                    listener.Unsubscribe();
-                });
+                    RegionsRegistry.Instance.RegisterContentRegion(regionName, control);
+                }
             }
         }
 
@@ -99,21 +92,16 @@ namespace MvvmLib.Navigation
 
         private static void OnSetItemsRegionName(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var element = d as FrameworkElement;
-            if (element != null)
+            if (!IsInDesignMode(d))
             {
-                var control = (FrameworkElement)d;
-                var regionName = (string)e.NewValue;
-
-                var region = RegionsRegistry.Instance.RegisterItemsRegion(regionName, control);
-
-                var listener = new FrameworkElementLoaderListener(element);
-                listener.Subscribe((s1, e1) =>
+                var element = d as FrameworkElement;
+                if (element != null)
                 {
-                    region.isLoaded = true;
+                    var control = (FrameworkElement)d;
+                    var regionName = (string)e.NewValue;
 
-                    listener.Unsubscribe();
-                });
+                    RegionsRegistry.Instance.RegisterItemsRegion(regionName, control);
+                }
             }
         }
 

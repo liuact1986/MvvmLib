@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -11,6 +12,19 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class RegionsRegistry
     {
+        private readonly ILogger DefaultLogger = new DebugLogger();
+
+        private ILogger logger;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        public ILogger Logger
+        {
+            get { return logger ?? DefaultLogger; }
+            set { logger = value; }
+        }
+
         private readonly Dictionary<string, List<ContentRegion>> contentRegions = new Dictionary<string, List<ContentRegion>>();
 
         /// <summary>
@@ -24,6 +38,16 @@ namespace MvvmLib.Navigation
         private readonly Dictionary<string, List<ItemsRegion>> itemsRegions = new Dictionary<string, List<ItemsRegion>>();
 
         /// <summary>
+        /// Invoked on region created.
+        /// </summary>
+        public event EventHandler<RegionRegisteredEventArgs> RegionRegistered;
+
+        /// <summary>
+        /// Invoked on region removed.
+        /// </summary>
+        public event EventHandler<RegionUnregisteredEventArgs> RegionUnregistered;
+
+        /// <summary>
         /// The items regions list.
         /// </summary>
         public Dictionary<string, List<ItemsRegion>> ItemsRegions
@@ -31,14 +55,14 @@ namespace MvvmLib.Navigation
             get { return itemsRegions; }
         }
 
-        private static readonly RegionsRegistry _instance = new RegionsRegistry();
+        private static readonly RegionsRegistry instance = new RegionsRegistry();
 
         /// <summary>
-        /// Region registry default instance.
+        /// The default static instance of the regions registry.
         /// </summary>
-        internal static RegionsRegistry Instance
+        public static RegionsRegistry Instance
         {
-            get { return _instance; }
+            get { return instance; }
         }
 
         /// <summary>
@@ -54,11 +78,17 @@ namespace MvvmLib.Navigation
             if (control == null)
                 throw new ArgumentNullException(nameof(control));
 
-            if (!ContentRegions.ContainsKey(regionName))
-                ContentRegions[regionName] = new List<ContentRegion>();
+            if (!contentRegions.ContainsKey(regionName))
+                contentRegions[regionName] = new List<ContentRegion>();
 
-            var region = new ContentRegion(regionName, control);
-            ContentRegions[regionName].Add(region);
+            var region = new ContentRegion(regionName, control, this);
+            contentRegions[regionName].Add(region);
+
+            var eventArgs = new RegionRegisteredEventArgs(regionName, region);
+            RegionRegistered?.Invoke(this, eventArgs);
+
+            Logger.Log($"Content region \"{regionName}\" created", Category.Info, Priority.Low);
+
             return region;
         }
 
@@ -78,8 +108,14 @@ namespace MvvmLib.Navigation
             if (!ItemsRegions.ContainsKey(regionName))
                 ItemsRegions[regionName] = new List<ItemsRegion>();
 
-            var region = new ItemsRegion(regionName, control);
+            var region = new ItemsRegion(regionName, control, this);
             ItemsRegions[regionName].Add(region);
+
+            var eventArgs = new RegionRegisteredEventArgs(regionName, region);
+            RegionRegistered?.Invoke(this, eventArgs);
+
+            Logger.Log($"Items region \"{regionName}\" created", Category.Info, Priority.Low);
+
             return region;
         }
 
@@ -228,6 +264,12 @@ namespace MvvmLib.Navigation
                     contentRegions[regionName].Remove(contentRegion);
                     if (contentRegions[regionName].Count == 0)
                         contentRegions.Remove(regionName);
+
+                    var eventArgs = new RegionUnregisteredEventArgs(regionName);
+                    RegionUnregistered?.Invoke(this, eventArgs);
+
+                    Logger.Log($"Content region \"{regionName}\" unregistered", Category.Info, Priority.Low);
+
                     return true;
                 }
             }
@@ -251,9 +293,13 @@ namespace MvvmLib.Navigation
                 {
                     itemsRegions[regionName].Remove(itemsRegion);
                     if (itemsRegions[regionName].Count == 0)
-                    {
                         itemsRegions.Remove(regionName);
-                    }
+
+                    var eventArgs = new RegionUnregisteredEventArgs(regionName);
+                    RegionUnregistered?.Invoke(this, eventArgs);
+
+                    Logger.Log($"Items region \"{regionName}\" unregistered", Category.Info, Priority.Low);
+
                     return true;
                 }
             }
@@ -276,9 +322,12 @@ namespace MvvmLib.Navigation
 
                     if (regionsToRemove.Count > 0)
                         foreach (var region in regionsToRemove)
+                        {
+                            string regionName = region.RegionName;
                             regions.Remove(region);
+                            Logger.Log($"Content region \"{regionName}\" (not loaded) unregistered", Category.Info, Priority.Low);
+                        }
                 }
-
             }
         }
 
@@ -298,7 +347,11 @@ namespace MvvmLib.Navigation
 
                     if (regionsToRemove.Count > 0)
                         foreach (var region in regionsToRemove)
+                        {
+                            string regionName = region.RegionName;
                             regions.Remove(region);
+                            Logger.Log($"Items region \"{regionName}\" (not loaded) unregistered", Category.Info, Priority.Low);
+                        }
                 }
             }
         }

@@ -30,30 +30,30 @@ namespace RegionSample.ViewModels
         {
             this.navigationService = navigationService;
 
-            var entranceFadeAnimation = new OpacityAnimation { From = 0, To = 1 };
-            var exitFadeAnimation = new OpacityAnimation { From = 1, To = 0 };
+            //var entranceFadeAnimation = new OpacityAnimation { From = 0, To = 1 };
+            //var exitFadeAnimation = new OpacityAnimation { From = 1, To = 0 };
 
-            var entranceScaleAnimation = new ScaleAnimation
-            {
-                From = 0,
-                To = 1,
-                RenderTransformOrigin = new Point(0.5, 0.5),
-                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-            };
-            var exitScaleAnimation = new ScaleAnimation
-            {
-                From = 1,
-                To = 0,
-                RenderTransformOrigin = new Point(0.5, 0.5),
-                EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
-            };
+            //var entranceScaleAnimation = new ScaleAnimation
+            //{
+            //    From = 0,
+            //    To = 1,
+            //    RenderTransformOrigin = new Point(0.5, 0.5),
+            //    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+            //};
+            //var exitScaleAnimation = new ScaleAnimation
+            //{
+            //    From = 1,
+            //    To = 0,
+            //    RenderTransformOrigin = new Point(0.5, 0.5),
+            //    EasingFunction = new ExponentialEase { EasingMode = EasingMode.EaseInOut }
+            //};
 
-            var entranceTranslateAnimation = new TranslateAnimation { From = 800, To = 0 };
-            var exitTranslateAnimation = new TranslateAnimation { From = 0, To = 800 };
+            //var entranceTranslateAnimation = new TranslateAnimation { From = 800, To = 0 };
+            //var exitTranslateAnimation = new TranslateAnimation { From = 0, To = 800 };
 
             var contentRegion = navigationService.GetContentRegion("ContentRegion", "ContentRegion1");
             // animation
-            contentRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation, true);
+            //contentRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation, true);
             // handlers
             contentRegion.CanGoBackChanged += OnContentRegionCanGoBackChanged;
             contentRegion.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
@@ -62,14 +62,14 @@ namespace RegionSample.ViewModels
 
             var contentRegion2 = navigationService.GetContentRegion("ContentRegion", "ContentRegion2");
             // animation
-            contentRegion2.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
+            //contentRegion2.ConfigureAnimation(entranceScaleAnimation, exitScaleAnimation);
             // handlers
             contentRegion2.CanGoBackChanged += OnContentRegionCanGoBackChanged;
             contentRegion2.CanGoForwardChanged += OnContentRegionCanGoForwardChanged;
             contentRegion2.Navigated += ShellViewModel_Navigated;
 
             var itemsRegion = navigationService.GetItemsRegion("ItemsRegion");
-            itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation);
+            //itemsRegion.ConfigureAnimation(entranceTranslateAnimation, exitTranslateAnimation);
 
             var stackPanelRegion = navigationService.GetItemsRegion("StackPanelRegion", "StackPanelRegion1");
             var tabControlRegion = navigationService.GetItemsRegion("TabControlRegion", "TabControlRegion1");

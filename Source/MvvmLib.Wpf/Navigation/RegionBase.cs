@@ -7,6 +7,7 @@ using System.Windows.Media;
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
     /// The Reghion base class.
     /// </summary>
@@ -14,18 +15,25 @@ namespace MvvmLib.Navigation
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
 
+        private ILogger logger;
         /// <summary>
-        /// The region logger.
-        /// </summary>
-        protected ILogger logger;
-        /// <summary>
-        /// The logger used by the Region
+        /// The logger used by the library.
         /// </summary>
         public ILogger Logger
         {
             get { return logger ?? DefaultLogger; }
             set { logger = value; }
         }
+
+        /// <summary>
+        /// The view or object manager.
+        /// </summary>
+        protected readonly ViewOrObjectManager viewOrObjectManager;
+
+        /// <summary>
+        /// The regions registry used by the region.
+        /// </summary>
+        protected readonly RegionsRegistry regionsRegistry;
 
         /// <summary>
         /// Checks if region is loaded.
@@ -69,7 +77,6 @@ namespace MvvmLib.Navigation
         /// </summary>
         public abstract NavigationEntry CurrentEntry { get; }
 
-
         /// <summary>
         /// Navigating event handlers list.
         /// </summary>
@@ -97,7 +104,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// NavigatiionFailed event handlers list.
+        /// NavigationFailed event handlers list.
         /// </summary>
         protected readonly List<EventHandler<RegionNavigationFailedEventArgs>> navigationFailed = new List<EventHandler<RegionNavigationFailedEventArgs>>();
 
@@ -111,14 +118,90 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Invoked on view loaded.
+        /// </summary>
+        public event EventHandler<ViewLoadedEventArgs> ViewLoaded;
+
+        /// <summary>
         /// Creates the region.
         /// </summary>
-        /// <param name="regionName"></param>
-        /// <param name="control"></param>
-        public RegionBase(string regionName, FrameworkElement control)
+        /// <param name="viewOrObjectManager">The view or object manager</param>
+        /// <param name="regionsRegistry">The region registry</param>
+        /// <param name="regionName">The region name</param>
+        /// <param name="control">The control</param>
+        public RegionBase(ViewOrObjectManager viewOrObjectManager, string regionName, FrameworkElement control, RegionsRegistry regionsRegistry)
         {
+            this.viewOrObjectManager = viewOrObjectManager;
+            this.regionsRegistry = regionsRegistry;
             this.regionName = regionName;
             this.control = control;
+
+            this.control.Loaded += OnControlLoaded;
+            this.control.Unloaded += OnControlUnloaded;
+        }
+
+        private void OnControlLoaded(object sender, RoutedEventArgs e)
+        {
+            this.control.Loaded -= OnControlLoaded;
+            this.isLoaded = true;
+        }
+
+        /// <summary>
+        /// Invoked on control unload.
+        /// </summary>
+        /// <param name="sender">The control</param>
+        /// <param name="e">The routed event args</param>
+        protected virtual void OnControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            this.control.Unloaded -= OnControlUnloaded;
+
+            RemoveSelectablesAndSingletonsFromHistory();
+
+            if (!UnregisterRegion(this))
+                Logger.Log($"Failed to unregister the region \"{RegionName}\", control name:\"{ControlName}\"", Category.Exception, Priority.High);
+        }
+
+        /// <summary>
+        /// Removes the selectables and singletons from history.
+        /// </summary>
+        protected abstract void RemoveSelectablesAndSingletonsFromHistory();
+
+        /// <summary>
+        /// Removes the selectables from view or object manager.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        protected void RemoveSelectables(Type sourceType)
+        {
+            viewOrObjectManager.RemoveSelectable(sourceType);
+        }
+
+        /// <summary>
+        /// Removes the selectables from view or object manager.
+        /// </summary>
+        /// <param name="entries">The navigation entries</param>
+        protected void RemoveSelectables(IEnumerable<NavigationEntry> entries)
+        {
+            foreach (var entry in entries)
+                RemoveSelectables(entry.SourceType);
+        }
+
+        /// <summary>
+        /// Removes the singleton from view or object manager.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        protected void RemoveSingleton(Type sourceType)
+        {
+            viewOrObjectManager.RemoveSingleton(sourceType);
+        }
+
+        /// <summary>
+        /// Removes the singletons from view or object manager.
+        /// </summary>
+        /// <param name="entries">The navigation entries</param>
+        protected void RemoveSingletons(IEnumerable<NavigationEntry> entries)
+        {
+            foreach (var entry in entries)
+                RemoveSingleton(entry.SourceType);
         }
 
         /// <summary>
@@ -214,7 +297,7 @@ namespace MvvmLib.Navigation
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
-            
+
             // parent => child => sub child
             var viewOrObject = entry.ViewOrObject;
             var parameter = entry.Parameter;
@@ -433,23 +516,18 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Unregisters the content region.
-        /// </summary>
-        /// <param name="region">The content region</param>
-        /// <returns>True if unregistered</returns>
-        protected bool UnregisterContentRegion(ContentRegion region)
-        {
-            return RegionsRegistry.Instance.UnregisterContentRegion(region);
-        }
-
-        /// <summary>
-        /// Unregisters the items region.
+        /// Unregisters the region.
         /// </summary>
         /// <param name="region">The items region</param>
         /// <returns>True if unregistered</returns>
-        protected bool UnregisterItemsRegion(ItemsRegion region)
+        protected bool UnregisterRegion(IRegion region)
         {
-            return RegionsRegistry.Instance.UnregisterItemsRegion(region);
+            if (region is ContentRegion contentRegion)
+                return regionsRegistry.UnregisterContentRegion(contentRegion);
+            else if (region is ItemsRegion itemsRegion)
+                return regionsRegistry.UnregisterItemsRegion(itemsRegion);
+            else
+                throw new NotSupportedException("Invalid region type");
         }
 
         /// <summary>
@@ -457,7 +535,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         protected void RemoveNonLoadedRegions()
         {
-            RegionsRegistry.Instance.RemoveNonLoadedRegions();
+            regionsRegistry.RemoveNonLoadedRegions();
         }
 
         /// <summary>
@@ -477,7 +555,7 @@ namespace MvvmLib.Navigation
                 {
                     var regionName = child.GetValue(RegionManager.ContentRegionNameProperty) as string;
 
-                    var region = RegionsRegistry.Instance.GetContentRegion(regionName, child);
+                    var region = regionsRegistry.GetContentRegion(regionName, child);
                     if (region != null)
                         childRegions.Add(region);
                 }
@@ -485,7 +563,7 @@ namespace MvvmLib.Navigation
                 {
                     var regionName = child.GetValue(RegionManager.ItemsRegionNameProperty) as string;
 
-                    var region = RegionsRegistry.Instance.GetItemsRegion(regionName, child);
+                    var region = regionsRegistry.GetItemsRegion(regionName, child);
                     if (region != null)
                         childRegions.Add(region);
                 }
@@ -510,18 +588,14 @@ namespace MvvmLib.Navigation
                 if (child is ContentRegion)
                 {
                     var contentRegion = child as ContentRegion;
-                    contentRegion.ClearContent();
+                    contentRegion.ClearContent(); // Unloaded event is raised and region is removed from RegionsRegistry
                     contentRegion.History.Clear();
-
-                    RegionsRegistry.Instance.UnregisterContentRegion(contentRegion);
                 }
                 else
                 {
                     var itemsRegion = child as ItemsRegion;
                     itemsRegion.ClearItems();
                     itemsRegion.History.Clear();
-
-                    RegionsRegistry.Instance.UnregisterItemsRegion(itemsRegion);
                 }
             }
         }
@@ -531,18 +605,24 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="view">The view</param>
         /// <param name="onLoaded">The callback</param>
-        protected void HandleLoaded(FrameworkElement view, Action<object, RoutedEventArgs> onLoaded)
+        protected void HandleViewLoaded(FrameworkElement view, Action<object, RoutedEventArgs> onLoaded)
         {
             // Called only after "control.Content = view"
-            var listener = new FrameworkElementLoaderListener(view);
+            var listener = new LoadedEventListener(view);
             listener.Subscribe((s, e) =>
             {
                 listener.Unsubscribe();
                 listener = null;
 
+                var eventArgs = new ViewLoadedEventArgs(regionName, view, this);
+                ViewLoaded?.Invoke(this, eventArgs);
+
+                Logger.Log($"View \"{view.GetType().FullName}\" loaded, region \"{regionName}\"", Category.Info, Priority.Low);
+
                 onLoaded(s, e);
             });
         }
+
 
         /// <summary>
         /// Notify view models that implement <see cref="ILoadedEventListener" />.

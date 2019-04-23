@@ -1,4 +1,5 @@
-﻿using MvvmLib.Mvvm;
+﻿using MvvmLib.Animation;
+using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Views;
 using System;
@@ -8,8 +9,29 @@ using System.Windows.Media.Animation;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel : ILoadedEventListener , ISelectable
+    public class AnimationViewModel : BindableBase, ILoadedEventListener, ISelectable
     {
+        private IContentAnimation entranceNavAnimation;
+        public IContentAnimation EntranceNavAnimation
+        {
+            get { return entranceNavAnimation; }
+            set { SetProperty(ref entranceNavAnimation, value); }
+        }
+
+        private IContentAnimation exitNavAnimation;
+        public IContentAnimation ExitNavAnimation
+        {
+            get { return exitNavAnimation; }
+            set { SetProperty(ref exitNavAnimation, value); }
+        }
+
+        private bool navSimultaneous;
+        public bool NavSimultaneous
+        {
+            get { return navSimultaneous; }
+            set { SetProperty(ref navSimultaneous, value); }
+        }
+
         private TranslateAnimation translateEntranceAnimation;
         private TranslateAnimation translateExitAnimation;
 
@@ -36,6 +58,8 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ICommand GoViewAWithFxVscaleAnimationCommand { get; }
         public ICommand GoViewBWithFxVscaleAnimationCommand { get; }
+
+        private ContentRegion contentRegion;
 
         public AnimationViewModel(IRegionNavigationService regionNavigationService)
         {
@@ -75,97 +99,119 @@ namespace NavigationSample.Wpf.ViewModels
             var fxVscaleEntranceAnimation = new FxVScaleEntranceAnimation();
             var fxVscaleExitAnimation = new FxVScaleExitAnimation();
 
-            var region = regionNavigationService.GetContentRegion("AnimationSample");
+            this.contentRegion = regionNavigationService.GetContentRegion("AnimationSample");
 
             GoViewAWithFadeAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(opacityEntranceAnimation, opacityExitAnimation);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(opacityEntranceAnimation, opacityExitAnimation);
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
 
             GoViewBWithFadeAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(opacityEntranceAnimation, opacityExitAnimation);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(opacityEntranceAnimation, opacityExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithFxCornerAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fxCornerEntranceAnimation, fxCornerExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(fxCornerEntranceAnimation, fxCornerExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
 
             GoViewBWithFxCornerAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fxCornerEntranceAnimation, fxCornerExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(fxCornerEntranceAnimation, fxCornerExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithRotateAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(rotateEntranceAnimation, rotateExitAnimation);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(rotateEntranceAnimation, rotateExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithRotateAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(rotateEntranceAnimation, rotateExitAnimation);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(rotateEntranceAnimation, rotateExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithScaleAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(scaleEntranceAnimation, scaleExitAnimation);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(scaleEntranceAnimation, scaleExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithScaleAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(scaleEntranceAnimation, scaleExitAnimation);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(scaleEntranceAnimation, scaleExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithTranslateAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(translateEntranceAnimation, translateExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(translateEntranceAnimation, translateExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithTranslateAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(translateEntranceAnimation, translateExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(translateEntranceAnimation, translateExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithSkewAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(skewEntranceAnimation, skewExitAnimation);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(skewEntranceAnimation, skewExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithSkewAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(skewEntranceAnimation, skewExitAnimation);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(skewEntranceAnimation, skewExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithFallAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fallEntranceAnimation, fallExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(fallEntranceAnimation, fallExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithFallAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fallEntranceAnimation, fallExitAnimation, true);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(fallEntranceAnimation, fallExitAnimation, true);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
 
             GoViewAWithFxVscaleAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fxVscaleEntranceAnimation, fxVscaleExitAnimation);
-                await region.NavigateAsync(typeof(ViewA));
+                ConfigureAnimation(fxVscaleEntranceAnimation, fxVscaleExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewA));
             });
             GoViewBWithFxVscaleAnimationCommand = new RelayCommand(async () =>
             {
-                region.ConfigureAnimation(fxVscaleEntranceAnimation, fxVscaleExitAnimation);
-                await region.NavigateAsync(typeof(ViewB));
+                ConfigureAnimation(fxVscaleEntranceAnimation, fxVscaleExitAnimation);
+
+                await contentRegion.NavigateAsync(typeof(ViewB));
             });
+        }
+
+        public void ConfigureAnimation(IContentAnimation entranceAnimation, IContentAnimation exitAnimation, bool simultaneous = false)
+        {
+            EntranceNavAnimation = entranceAnimation;
+            ExitNavAnimation = exitAnimation;
+            NavSimultaneous = simultaneous;
         }
 
         public void OnLoaded(FrameworkElement view, object parameter)
@@ -186,23 +232,5 @@ namespace NavigationSample.Wpf.ViewModels
         }
     }
 
-    // 1. inherit from ContentAnimationBase or TransformAnimationBase
-    public class MyAnimation : TransformAnimationBase
-    {
-        // 2. implements the base class
-        public override void CancelAnimation()
-        {
-            throw new System.NotImplementedException();
-        }
 
-        protected override void BeginAnimation()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override AnimationTimeline CreateAnimation()
-        {
-            throw new System.NotImplementedException();
-        }
-    }
 }

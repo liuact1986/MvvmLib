@@ -11,6 +11,7 @@ ___
 
 [Documentation](https://romagny13.github.io/MvvmLib/)
 
+
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
 * **BindableBase**, **Validatable**, **Editable**, **ValidateAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
@@ -23,7 +24,6 @@ ___
 
 ## MvvmLib.IoC (Dependency Injection) [netstandard 2.0, net 4.5]
   * **Injector**: allows to **register Types, Singletons, Instances, values, auto discover types, etc.**.
-  
 
 
 ## MvvmLib.Wpf (Navigation) [net 4.5]
@@ -64,6 +64,10 @@ ___
 * **BootstrapperBase**: bootstrapper base class
 * **EventToCommandBehavior** and **BehaviorBase**
 
+## MvvmLib.Animation.Wpf [wpf]
+
+* **AnimatableContentControl** and **animations** classes.
+
 ## MvvmLib.Adaptive.Wpf [net 4.5]
 
 * **BreakpointBinder**: allows to **bind controls** and make the page "**responsive**"
@@ -86,6 +90,7 @@ ___
 | [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square)
 | [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg?style=flat-square) |
 | [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
+| [MvvmLib.Animation.Wpf](https://www.nuget.org/packages/MvvmLib.Animation.Wpf/) | No | AnimatableContentControl and animations classes | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Animation.Wpf.svg?style=flat-square) |
 | [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg?style=flat-square) |
 
 ```

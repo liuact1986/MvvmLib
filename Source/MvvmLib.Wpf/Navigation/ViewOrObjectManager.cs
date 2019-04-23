@@ -6,7 +6,7 @@ namespace MvvmLib.Navigation
     public enum ResolutionType
     {
         Singleton,
-        Existing,
+        Selectable,
         New
     }
 
@@ -38,9 +38,8 @@ namespace MvvmLib.Navigation
         }
     }
 
-
     /// <summary>
-    /// Allows to manage view or object instances for regions.
+    /// The container for view or object singletons and selectables.
     /// </summary>
     public class ViewOrObjectManager
     {
@@ -55,7 +54,7 @@ namespace MvvmLib.Navigation
         }
 
         private readonly Dictionary<Type, List<KeyValuePair<object, object>>> selectables;
-       
+
         /// <summary>
         /// Registered View or objects that implement <see cref="ISelectable"/>.
         /// </summary>
@@ -64,8 +63,19 @@ namespace MvvmLib.Navigation
             get { return selectables; }
         }
 
+
+        //private static readonly ViewOrObjectManager instance = new ViewOrObjectManager();
+
+        ///// <summary>
+        ///// The default static instance of the view or object manager.
+        ///// </summary>
+        //public static ViewOrObjectManager Instance
+        //{
+        //    get { return instance; }
+        //}
+
         /// <summary>
-        /// Creates the view or object maanager.
+        /// Creates the view or object manager.
         /// </summary>
         public ViewOrObjectManager()
         {
@@ -158,7 +168,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Gets a singleton, a selectable or an new instance.
+        /// Gets a singleton, a selectable or a new instance.
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
@@ -172,10 +182,23 @@ namespace MvvmLib.Navigation
 
             var selectable = TryGetSelectable(sourceType, parameter);
             if (selectable != null)
-                return new ViewOrObjectInstanceResult(sourceType, selectable, ResolutionType.Existing);
+                return new ViewOrObjectInstanceResult(sourceType, selectable, ResolutionType.Selectable);
 
             var newViewOrObject = CreateInstance(sourceType);
             return new ViewOrObjectInstanceResult(sourceType, newViewOrObject, ResolutionType.New);
+        }
+
+        /// <summary>
+        /// Removes the singleton.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <returns>True if removed</returns>
+        public bool RemoveSingleton(Type sourceType)
+        {
+            if (singletons.ContainsKey(sourceType))
+                return singletons.Remove(sourceType);
+
+            return false;
         }
 
         /// <summary>
@@ -189,6 +212,15 @@ namespace MvvmLib.Navigation
                 return selectables.Remove(sourceType);
 
             return false;
+        }
+
+        /// <summary>
+        /// Clear the singletons and the selectables.
+        /// </summary>
+        public void Clear()
+        {
+            this.selectables.Clear();
+            this.singletons.Clear();
         }
     }
 }

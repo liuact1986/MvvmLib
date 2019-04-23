@@ -17,7 +17,7 @@ namespace MvvmLib.Wpf.Tests
 
             var i = new ItemsControl();
             i.Name = "i1";
-            var service = new ItemsRegion("X1", i);
+            var service = new ItemsRegion("X1", i, new RegionsRegistry());
 
             Assert.AreEqual("X1", service.RegionName);
             Assert.AreEqual(i, service.Control);
@@ -39,7 +39,7 @@ namespace MvvmLib.Wpf.Tests
 
             var i = new ItemsControl();
             i.Name = "i1";
-            var service = new ItemsRegion("X1", i);
+            var service = new ItemsRegion("X1", i, new RegionsRegistry());
 
             await service.AddAsync(typeof(ActivatableView), "p1");
             Assert.AreEqual(true, ActivatableView.isOkOnNavigatedTo);
@@ -61,7 +61,7 @@ namespace MvvmLib.Wpf.Tests
 
             var i = new ItemsControl();
             i.Name = "i1";
-            var service = new ItemsRegion("X1", i);
+            var service = new ItemsRegion("X1", i, new RegionsRegistry());
 
             Assert.AreEqual("X1", service.RegionName);
             Assert.AreEqual(i, service.Control);
@@ -86,7 +86,7 @@ namespace MvvmLib.Wpf.Tests
 
             var i = new ItemsControl();
             i.Name = "i1";
-            var service = new ItemsRegion("X1", i);
+            var service = new ItemsRegion("X1", i, new RegionsRegistry());
 
             await service.AddAsync(typeof(ActivatableView), "p1");
 
