@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MvvmLib.XF - MvvmLib Documentation</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="css/theme_colors.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles/vs.css">
+    <link rel="stylesheet" href="css/font-awesome.4.5.0.min.css">
+</head>
+<body role="document">
+    <div class="grid-for-nav">
+        <nav data-toggle="nav-shift" class="nav-side stickynav">
+            <div class="side-nav-search">
+                <a href="index.htm"><i class="fa fa-home"></i> MvvmLib Documentation</a>
+                <div role="search">
+                    <form id="search-form" class="form" action="Docnet_search.htm" method="get">
+                        <input type="text" name="q" placeholder="Search docs" />
+                    </form>
+                </div>
+            </div>
+            <div class="menu menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+<ul>
+<li class="tocentry"><a href="index.htm">Home</a>
+</li>
+
+<li class="tocentry"><a href="Mvvm.htm">MvvmLib.Core</a>
+</li>
+<li class="tocentry"><a href="DI.htm">MvvmLib.IoC</a>
+</li>
+<li class="tocentry"><a href="Navigation.htm">MvvmLib.Wpf</a>
+</li>
+<li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
+</li>
+<li class="tocentry current"><a class="current" href="Navigation_XF.htm">MvvmLib.XF</a>
+<ul class="currentrelative">
+<li class="tocentry"><a href="#mvvmlib.xf-navigation-xamarin">MvvmLib.XF (Navigation) [Xamarin]</a></li>
+
+<li class="tocentry"><a href="#viewmodellocator">ViewModelLocator</a></li>
+
+<li class="tocentry"><a href="#navigationmanager">NavigationManager</a></li>
+
+<li class="tocentry"><a href="#bootstrapper">Bootstrapper</a></li>
+
+
+
+</ul>
+<li class="tocentry"><a href="Animation.htm">MvvmLib.Animation.Wpf</a>
+</li>
+<li class="tocentry"><a href="Adaptive.htm">MvvmLib.Adaptive.Wpf</a>
+</li>
+<li class="tocentry"><a href="Adaptive_Uwp.htm">MvvmLib.Adaptive.Windows</a>
+</li>
+<li class="tocentry"><a href="LICENSE.htm">LICENSE</a>
+</li>
+</ul>
+				<div class="toc-footer">
+					<span class="text-small">
+						<hr/>
+						<a href="https://github.com/FransBouma/DocNet" target="_blank">Made with <i class="fa fa-github"></i> DocNet</a>
+					</span>
+				</div>	
+			</div>
+            &nbsp;
+        </nav>
+        <section data-toggle="nav-shift" class="nav-content-wrap">
+            <nav class="nav-top" role="navigation" aria-label="top navigation">
+                <i data-toggle="nav-top" class="fa fa-bars"></i>
+                <a href="index.htm">MvvmLib Documentation</a>
+            </nav>
+            <div class="nav-content">
+                <div role="navigation" aria-label="breadcrumbs navigation">
+                    <div class="breadcrumbs">
+<ul><li><a href="index.htm">Home</a></li> / <li><a href="Navigation_XF.htm">MvvmLib.XF</a></li></ul>
+					
+                    </div>
+                    <hr />
+                </div>
+                <div role="main">
+                    <div class="section">
+<h2 id="mvvmlib.xf-navigation-xamarin">MvvmLib.XF (Navigation) [Xamarin]<a class="headerlink" href="#mvvmlib.xf-navigation-xamarin" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<ul>
+<li><strong>NavigationManager</strong>: allows to create and manage <strong>navigation services</strong></li>
+<li><strong>PageNavigationService</strong>: allows to <strong>push</strong>, push modal, pop, pop modal, pop to root, handle system go back, <strong>cancel navigation</strong> and <strong>notify viewmodel</strong></li>
+<li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for views</li>
+<li><strong>INavigatable</strong>: allows the view models to be notified on navigate</li>
+<li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
+<li><strong>INavigationParameterKnowledge</strong>: allows to store navigation parameter in the view model for system go back</li>
+<li><strong>IPageKnowledge</strong>: allows to receive in view model the page</li>
+<li><strong>DialogService</strong>: allows to display alerts and action sheets</li>
+<li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
+<li><strong>EventToCommandBehavior</strong> and <strong>BehaviorBase</strong></li>
+</ul>
+<h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to resolve automatically the ViewModel for the view with <strong>ResolveViewModel</strong> Attached Property.</p>
+</blockquote>
+<p>Default <strong>convention</strong>:</p>
+<ul>
+<li>Views in <code>Views</code> namespace</li>
+<li>View models in <code>ViewModels</code> namespace</li>
+<li>View model name: <em>view name + &quot;ViewModel&quot;</em> (example: MainPageViewModel for MainPage)</li>
+</ul>
+<p>(We can change this convention)</p>
+<p>On <strong>each view</strong> that <strong>requires</strong> to <strong>resolve</strong> the <strong>view model</strong>:</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;ContentPage ...
+             xmlns:nav=&quot;clr-namespace:MvvmLib.Navigation;assembly=MvvmLib.XF&quot;
+             nav:ViewModelLocator.ResolveViewModel=&quot;True&quot;&gt;
+</code></pre>
+
+<h2 id="navigationmanager">NavigationManager<a class="headerlink" href="#navigationmanager" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to register Navigation services.</p>
+</blockquote>
+<p><strong>Static methods</strong>:</p>
+<ul>
+<li><strong>Register</strong>: register a navigation page or a navigation service, with a key if the application require more than one service</li>
+<li><strong>IsRegistered</strong></li>
+<li><strong>Unregister</strong></li>
+</ul>
+<p>Register from code behind for example</p>
+<pre><code class="cs">[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class MyTabbedPage : TabbedPage
+{
+    public MyTabbedPage()
+    {
+        InitializeComponent();
+
+        var navigationService = NavigationManager.Register(tabNav, &quot;tabNav&quot;);
+    }
+}
+</code></pre>
+
+<p><strong>Methods</strong>:</p>
+<p>Use a IoC container to create and inject the service (INavigationmanager) in ViewModels/ views</p>
+<p>Get The Navigation Service:</p>
+<ul>
+<li><strong>GetDefault</strong></li>
+<li><strong>GetNamed</strong> for a navigation page registered with a key </li>
+</ul>
+<p>Navigation Service methods</p>
+<ul>
+<li><strong>PushAsync</strong></li>
+<li><strong>PushModalAsync</strong></li>
+<li><strong>PopAsync</strong></li>
+<li><strong>PopModalAsync</strong></li>
+<li><strong>PopToRootAsync</strong></li>
+</ul>
+<pre><code class="cs">navigationManager.GetDefault().PushAsync(typeof(HomePage));
+
+// with parameter
+navigationManager.GetDefault().PushAsync(typeof(HomePage), &quot;My parameter&quot;);
+
+
+// with named for example a navigation page for a master detail page
+navigationManager.GetNamed(&quot;MasterDetail&quot;).PushAsync(typeof(ItemDetailPage), &quot;My parameter&quot;);
+
+// pop
+navigationManager.GetDefault().PopAsync(typeof(HomePage));
+
+// push modal
+navigationManager.GetDefault().PushModalAsync(typeof(PageA));
+
+// pop modal
+navigationManager.GetDefault().PopModalAsync();
+
+// pop to root
+navigationManager.GetDefault().PopToRootAsync();
+</code></pre>
+
+<p>Example for master detail page</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;MasterDetailPage xmlns=&quot;http://xamarin.com/schemas/2014/forms&quot;
+             xmlns:x=&quot;http://schemas.microsoft.com/winfx/2009/xaml&quot;
+             x:Class=&quot;NavigationSample.Views.MyMasterDetailPage&quot;
+             xmlns:views=&quot;clr-namespace:NavigationSample.Views&quot;
+             Title=&quot;Master Detail Page&quot;
+             MasterBehavior=&quot;Popover&quot;&gt;
+
+  &lt;MasterDetailPage.Master&gt;
+    &lt;views:MenuPage /&gt;
+  &lt;/MasterDetailPage.Master&gt;
+
+  &lt;MasterDetailPage.Detail&gt;
+    &lt;NavigationPage x:Name=&quot;MasterDetail&quot;&gt;
+      &lt;x:Arguments&gt;
+        &lt;views:ItemsPage /&gt;
+      &lt;/x:Arguments&gt;
+    &lt;/NavigationPage&gt;
+  &lt;/MasterDetailPage.Detail&gt;
+
+&lt;/MasterDetailPage&gt;
+</code></pre>
+
+<h1 id="system-go-back-button">System go back button<a class="headerlink" href="#system-go-back-button" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
+<p>The Navigation service handle system back button pressed (check activation and notify viewmodel). Its possible to unhandle system go back.</p>
+<pre><code class="cs">navigationManager.GetDefault().UnhandleSystemPagePopped();
+</code></pre>
+
+<p><strong>INavigationParameterKnowledge</strong> interface allows the navigation service to retrieve parameter after system go back.</p>
+<pre><code class="cs">public class PageAViewModel : INavigationParameterKnowledge
+{
+    public object Parameter { get; set; }
+}
+</code></pre>
+
+<p><strong>IPageKnowledge</strong> allows to get <strong>page</strong> from the view model.</p>
+<h1 id="viewmodel-with-guards">ViewModel with guards<a class="headerlink" href="#viewmodel-with-guards" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
+<pre><code class="cs">public class PageAViewModel : IActivatable, IDeactivatable
+{
+    private IDialogService dialogService;
+
+    public PageAViewModel(IDialogService dialogService)
+    {
+        this.dialogService = dialogService;
+    }
+
+    public async Task&lt;bool&gt; CanActivateAsync(object parameter)
+    {
+        var result = await dialogService.DisplayAlertAsync(&quot;Activate?&quot;, &quot;Activate PageA?&quot;, &quot;Ok&quot;, &quot;Cancel&quot;);
+        return result;
+    }
+
+    public async Task&lt;bool&gt; CanDeactivateAsync()
+    {
+        var result = await dialogService.DisplayAlertAsync(&quot;Deactivate?&quot;, &quot;Deactivate PageA?&quot;, &quot;Ok&quot;, &quot;Cancel&quot;);
+        return result;
+    }
+}
+</code></pre>
+
+<h2 id="bootstrapper">Bootstrapper<a class="headerlink" href="#bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Create a Bootstrapper with MvvmLib Ioc Container. </p>
+<p>We could use any IoC container (Unity, StructureMap, etc.)</p>
+<pre><code class="cs">public abstract class MvvmLibBootstrapper : BootstrapperBase
+{
+    protected IInjector container;
+
+    public MvvmLibBootstrapper(IInjector container)
+    {
+        this.container = container;
+    }
+
+    protected override void RegisterRequiredTypes()
+    {
+        container.RegisterInstance&lt;IInjector&gt;(container);
+        container.RegisterSingleton&lt;IDialogService, DialogService&gt;();
+    }
+
+    protected override void SetViewFactory()
+    {
+        ViewResolver.SetViewFactory((viewType) =&gt; container.GetNewInstance(viewType));
+    }
+
+    protected override void SetViewModelFactory()
+    {
+        ViewModelLocationProvider.SetViewModelFactory((viewModelType) =&gt; container.GetInstance(viewModelType));
+    }
+}
+</code></pre>
+
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        :base(container)
+    { }
+
+    protected override void ConfigureNavigation(Page shell)
+    {
+        var navigationService = NavigationManager.Register((NavigationPage)shell);
+
+        // if check on activation is required
+        // navigationService.PushAsync(typeof(HomePage), &quot;My Home Page message&quot;, true);
+    }
+
+    protected override Page CreateShell()
+    {
+        return new NavigationPage(new HomePage());
+
+        // if check on activation is required
+        // return new NavigationPage();
+    }
+
+    protected override void InitializeShell(Page shell)
+    {
+        App.Current.MainPage = shell;
+    }
+
+    protected override void RegisterTypes()
+    {
+        container.RegisterSingleton&lt;INavigationManager, NavigationManager&gt;();
+    }
+}
+</code></pre>
+
+<p>And use it (App / net standard project)</p>
+<pre><code class="cs">public partial class App : Application
+{
+    public new static App Current =&gt; (App)Application.Current;
+
+    public IInjector Injector { get; } 
+
+    public App()
+    {
+        InitializeComponent();
+
+        Injector = new Injector();
+
+        var bootstrapper = new Bootstrapper(Injector);
+        bootstrapper.Run();
+    }
+
+    protected override void OnStart()
+    {
+        // Handle when your app starts
+    }
+
+    protected override void OnSleep()
+    {
+        // Handle when your app sleeps
+    }
+
+    protected override void OnResume()
+    {
+        // Handle when your app resumes
+    }
+}
+</code></pre>
+
+<h1 id="eventtocommand-behavior">EventToCommand Behavior<a class="headerlink" href="#eventtocommand-behavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
+<blockquote>
+<p>Allows to bind an event to a command.</p>
+</blockquote>
+<p>Sample:</p>
+<pre><code class="xml">&lt;StackLayout&gt;
+    &lt;ListView x:Name=&quot;ItemsListView&quot;
+            ItemsSource=&quot;{Binding Items}&quot;
+            VerticalOptions=&quot;FillAndExpand&quot;
+            HasUnevenRows=&quot;true&quot;
+            IsPullToRefreshEnabled=&quot;true&quot;&gt;
+
+        &lt;ListView.Behaviors&gt;
+            &lt;nav:EventToCommandBehavior EventName=&quot;ItemSelected&quot; Command=&quot;{Binding SelectCommand}&quot; /&gt;
+        &lt;/ListView.Behaviors&gt;
+        
+        &lt;ListView.ItemTemplate&gt;
+            &lt;DataTemplate&gt;
+                &lt;ViewCell&gt;
+                    &lt;StackLayout Padding=&quot;10&quot;&gt;
+                        &lt;Label Text=&quot;{Binding Name}&quot; 
+                            LineBreakMode=&quot;NoWrap&quot; 
+                            Style=&quot;{DynamicResource ListItemTextStyle}&quot; 
+                            FontSize=&quot;16&quot; /&gt;
+                    &lt;/StackLayout&gt;
+                &lt;/ViewCell&gt;
+            &lt;/DataTemplate&gt;
+        &lt;/ListView.ItemTemplate&gt;
+    &lt;/ListView&gt;
+&lt;/StackLayout&gt;
+</code></pre>
+
+<p>ViewModel</p>
+<pre><code class="cs">public class ItemsPageViewModel
+{
+    public ICommand SelectCommand { get; }
+
+    public ItemsPageViewModel(INavigationManager navigationManager)
+    {
+        SelectCommand = new RelayCommand&lt;SelectedItemChangedEventArgs&gt;((t) =&gt;
+        {
+            navigationManager.GetNamed(&quot;MasterDetail&quot;).PushAsync(typeof(ItemDetailPage), parameter: t.SelectedItem);
+        });
+    }
+}
+</code></pre>
+
+
+                    </div>
+                </div>
+                <footer>
+                    <hr />
+                    <div role="contentinfo">
+MvvmLib Documentation. &copy;2019. <a href='https://github.com/romagny13/MvvmLib' target='_blank'>GitHub</a> | <a href='https://www.nuget.org/profiles/romagny13' target='_blank'>NuGet</a>.
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/modernizr-2.8.3.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script src="js/theme.js"></script>
+
+</body>
+</html>
