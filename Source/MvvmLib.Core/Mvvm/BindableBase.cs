@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Base class for models and view models. Allows to notify the view that a property has changed.
+    /// Base class for models and view models. Implements <see cref="INotifyPropertyChanged"/>. Allows to notify that a property has changed.
     /// </summary>
     public class BindableBase : INotifyPropertyChanged
     {
@@ -38,7 +38,7 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Allows to raise to the view that a property value has changed.
+        /// Notifies that a property has changed.
         /// </summary>
         /// <param name="propertyName">The property name</param>
         protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
@@ -48,7 +48,7 @@ namespace MvvmLib.Mvvm
 
 
         /// <summary>
-        /// Allows to raise to the view that a property value has changed.
+        /// Notifies that a property has changed.
         /// </summary>
         /// <typeparam name="T">The property type</typeparam>
         /// <param name="expression">The Linq expression</param>

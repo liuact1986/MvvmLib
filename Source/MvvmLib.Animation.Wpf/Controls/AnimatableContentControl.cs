@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace MvvmLib.Animation
 {
@@ -82,9 +80,12 @@ namespace MvvmLib.Animation
         private static void OnIsCancelledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var animatableContentControl = (AnimatableContentControl)d;
-            var cancel = (bool)e.NewValue;
-            if (cancel == true)
-                animatableContentControl.CancelAnimations();
+            if (animatableContentControl != null)
+            {
+                var cancel = (bool)e.NewValue;
+                if (cancel == true)
+                    animatableContentControl.CancelAnimations();
+            }
         }
 
         static AnimatableContentControl()
@@ -198,7 +199,6 @@ namespace MvvmLib.Animation
                 OnCompleted?.Invoke();
             }
         }
-
 
         public void Run(object newContent)
         {

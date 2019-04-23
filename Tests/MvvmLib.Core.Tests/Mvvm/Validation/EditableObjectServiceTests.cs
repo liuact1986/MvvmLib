@@ -31,9 +31,10 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         }
     }
 
-    public class UserValidatableAndEditable : Validatable
+    public class UserValidatableAndEditable : ValidatableAndEditable
     {
         private string firstName;
+
         [Required(ErrorMessage = "FirstName required")]
         [MinLength(2, ErrorMessage = "FirstName too short")]
         public string FirstName
@@ -49,7 +50,6 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
             get { return lastName; }
             set { this.SetProperty(ref lastName, value); }
         }
-
 
         private int? age;
         public int? Age

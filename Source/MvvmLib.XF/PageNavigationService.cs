@@ -190,9 +190,7 @@ namespace MvvmLib.Navigation
                 await this.guard.CheckCanActivateAsync((IActivatable)page, parameter)
                 : true;
             if (!canActivateView)
-            {
                 return false;
-            }
 
             var canActivateViewModel = context != null && context is IActivatable ?
                 await this.guard.CheckCanActivateAsync((IActivatable)context, parameter)
@@ -203,9 +201,7 @@ namespace MvvmLib.Navigation
         protected void AddOrUpdateActivePage(Type pageType, Page page)
         {
             if (StoreActivePages)
-            {
                 ActivePages[pageType] = page;
-            }
         }
 
         protected virtual Page CreatePage(Type pageType)
@@ -217,9 +213,7 @@ namespace MvvmLib.Navigation
         protected virtual Page GetOrCreatePage(Type pageType)
         {
             if (this.ActivePages.TryGetValue(pageType, out Page page))
-            {
                 return page;
-            }
             else
             {
                 page = CreatePage(pageType);
@@ -231,52 +225,40 @@ namespace MvvmLib.Navigation
         protected virtual void DoOnNavigatingFrom(object page, object context)
         {
             if (page is INavigatable)
-            {
                 ((INavigatable)page).OnNavigatingFrom();
-            }
+
             if (context != null && context is INavigatable)
-            {
                 ((INavigatable)context).OnNavigatingFrom();
-            }
         }
 
         protected virtual void DoOnNavigatingTo(object page, object context, object parameter)
         {
             if (page is INavigatable)
-            {
                 ((INavigatable)page).OnNavigatingTo(parameter);
-            }
+
             if (context != null && context is INavigatable)
-            {
                 ((INavigatable)context).OnNavigatingTo(parameter);
-            }
         }
 
         protected virtual void DoOnNavigatedTo(object page, object context, object parameter)
         {
             if (page is INavigatable)
-            {
                 ((INavigatable)page).OnNavigatedTo(parameter);
-            }
+            
             if (context != null && context is INavigatable)
-            {
                 ((INavigatable)context).OnNavigatedTo(parameter);
-            }
         }
 
         protected virtual object GetOrSetContext(Type pageType, Page page)
         {
             if (page.BindingContext != null)
-            {
                 return page.BindingContext;
-            }
             else
             {
                 var context = ViewModelLocationProvider.ResolveViewModelType(pageType); // singleton or new instance
                 if (context != null)
-                {
                     page.BindingContext = context;
-                }
+                
                 return context;
             }
         }
@@ -292,9 +274,8 @@ namespace MvvmLib.Navigation
         {
             var currentPage = modal ? CurrentModalPage : CurrentPage;
             if (currentPage != null)
-            {
                 this.RaiseNavigating(currentPage, PageNavigationType.Push);
-            }
+            
             // deactivate?
             if (currentPage == null || await this.CheckCanDeactivateAsync(currentPage, currentPage.BindingContext))
             {
@@ -305,13 +286,11 @@ namespace MvvmLib.Navigation
                 if (context != null)
                 {
                     if (context is INavigationParameterKnowledge)
-                    {
                         ((INavigationParameterKnowledge)context).Parameter = parameter;
-                    }
+                    
                     if (context is IPageKnowledge)
-                    {
                         ((IPageKnowledge)context).GetPage(page);
-                    }
+                    
                 }
 
                 // activate?
@@ -319,21 +298,16 @@ namespace MvvmLib.Navigation
                 {
                     // on navigating from
                     if (currentPage != null)
-                    {
                         this.DoOnNavigatingFrom(currentPage, currentPage.BindingContext);
-                    }
+                    
 
                     // on navigating to
                     this.DoOnNavigatingTo(page, context, parameter);
 
                     if (modal)
-                    {
                         await this.navigationStrategy.PushModalAsync(page, animated);
-                    }
                     else
-                    {
                         await this.navigationStrategy.PushAsync(page, animated);
-                    }
 
                     // on navigated to
                     this.DoOnNavigatedTo(page, context, parameter);
@@ -447,17 +421,13 @@ namespace MvvmLib.Navigation
 
                         // on navigating to
                         if (previousPage != null)
-                        {
                             this.DoOnNavigatingTo(previousPage, previousPage.BindingContext, parameter);
-                        }
 
                         await this.navigationStrategy.PopModalAsync(animated);
 
                         // on navigated to
                         if (previousPage != null)
-                        {
                             this.DoOnNavigatedTo(previousPage, previousPage.BindingContext, parameter);
-                        }
 
                         this.RaiseNavigated(previousPage, parameter, PageNavigationType.PopModal);
                     }
@@ -574,27 +544,21 @@ namespace MvvmLib.Navigation
         {
             var context = new PageNavigatingEventArgs(page, navigationType);
             foreach (var handler in this.navigating)
-            {
                 handler(this, context);
-            }
         }
 
         protected void RaiseNavigated(Page page, object parameter, PageNavigationType navigationType)
         {
             var context = new PageNavigatedEventArgs(page, parameter, navigationType);
             foreach (var handler in this.navigated)
-            {
                 handler(this, context);
-            }
         }
 
         protected void RaiseNavigationCancelled(object source, object parameter = null)
         {
             var context = new PageNavigationFailedEventArgs(source, parameter);
             foreach (var handler in this.navigationFailed)
-            {
                 handler(this, context);
-            }
         }
     }
 }

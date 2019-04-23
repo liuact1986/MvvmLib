@@ -26,7 +26,7 @@ namespace MvvmLib.Mvvm
         /// <param name="canExecuteCommand">The function to check if command have to be executed</param>
         public RelayCommand(Action<TParameter> executeCommand, Func<TParameter, bool> canExecuteCommand)
         {
-            this.executeCommand = executeCommand;
+            this.executeCommand = executeCommand ?? throw new ArgumentNullException(nameof(executeCommand));
             this.canExecuteCommand = canExecuteCommand;
         }
 
@@ -35,7 +35,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         /// <param name="executeCommand">The action to execute</param>
         public RelayCommand(Action<TParameter> executeCommand)
-            : this(executeCommand, null)
+            : this(executeCommand, (p) => true)
         { }
 
         /// <summary>
@@ -45,12 +45,8 @@ namespace MvvmLib.Mvvm
         /// <returns>True if command have to be executed</returns>
         public override bool CanExecute(object parameter)
         {
-            if (canExecuteCommand != null)
-            {
-                var canExecute = canExecuteCommand.Invoke((TParameter)parameter);
-                return canExecute;
-            }
-            return true;
+            var canExecute = canExecuteCommand.Invoke((TParameter)parameter);
+            return canExecute;
         }
 
         /// <summary>

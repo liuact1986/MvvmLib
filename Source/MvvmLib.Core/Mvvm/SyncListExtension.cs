@@ -3,44 +3,52 @@ using System.Linq;
 
 namespace MvvmLib.Mvvm
 {
+
+    /// <summary>
+    /// Updates the values only if required.
+    /// </summary>
     public static class SyncListExtension
     {
-        public static void Sync<T>(this IList<T> oldCollection, IList<T> newItems) where T : ISyncItem<T>
+
+        /// <summary>
+        /// Synchronize the current to other value(s).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="oldValues">The old values</param>
+        /// <param name="newValues">The new values</param>
+        public static void Sync<T>(this IList<T> oldValues, IList<T> newValues) where T : ISyncItem<T>
         {
-            if (oldCollection != null && newItems != null)
+            if (oldValues == null)
+                throw new System.ArgumentNullException(nameof(oldValues));
+            if (newValues == null)
+                throw new System.ArgumentNullException(nameof(newValues));
+
+            if (oldValues != null && newValues != null)
             {
                 // updated items
-                var oldCommonItems = oldCollection.Intersect(newItems).ToList();
-                foreach (var oldItem in oldCommonItems)
+                var oldCommonValues = oldValues.Intersect(newValues).ToList();
+                foreach (var oldItem in oldCommonValues)
                 {
-                    var newItem = newItems.First(ci => ci.Equals(oldItem));
+                    var newItem = newValues.First(ci => ci.Equals(oldItem));
                     if (oldItem.NeedSync(newItem))
-                    {
                         // update old item
                         oldItem.Sync(newItem);
-                    }
                 }
 
                 // deleted items
-                var itemsToRemove = oldCollection.Except(newItems).ToList();
+                var itemsToRemove = oldValues.Except(newValues).ToList();
                 foreach (var item in itemsToRemove)
-                {
-                    oldCollection.Remove(item);
-                }
+                    oldValues.Remove(item);
 
                 // added items
-                var itemsToAdd = newItems.Except(oldCollection).ToList();
+                var itemsToAdd = newValues.Except(oldValues).ToList();
                 foreach (var item in itemsToAdd)
                 {
-                    var index = newItems.IndexOf(item);
-                    if (IsOutOfRange(oldCollection, index))
-                    {
-                        oldCollection.Add(item);
-                    }
+                    var index = newValues.IndexOf(item);
+                    if (IsOutOfRange(oldValues, index))
+                        oldValues.Add(item);
                     else
-                    {
-                        oldCollection.Insert(index, item);
-                    }
+                        oldValues.Insert(index, item);
                 }
             }
         }

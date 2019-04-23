@@ -11,7 +11,11 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public abstract class RelayCommandBase : IRelayCommand
     {
-        private readonly Dictionary<string, INotifyPropertyChangedObserver> observedProperties = new Dictionary<string, INotifyPropertyChangedObserver>();
+        /// <summary>
+        /// The observed properties.
+        /// </summary>
+        protected readonly Dictionary<string, INotifyPropertyChangedObserver> observedProperties 
+            = new Dictionary<string, INotifyPropertyChangedObserver>();
 
         /// <summary>
         /// Can execute changed event.
@@ -47,6 +51,9 @@ namespace MvvmLib.Mvvm
         /// <returns>The command</returns>
         protected internal void ObservePropertyInternal<T>(Expression<Func<T>> propertyExpression)
         {
+            if (propertyExpression == null)
+                throw new ArgumentNullException(nameof(propertyExpression));
+
             var memberExpression = propertyExpression.Body as MemberExpression;
             if (memberExpression != null)
             {
@@ -56,7 +63,8 @@ namespace MvvmLib.Mvvm
                     return;
 
                 var constantExpression = memberExpression.Expression as ConstantExpression;
-                if (constantExpression == null) { throw new NotSupportedException("Only constant expression is supported for the owner type"); }
+                if (constantExpression == null)
+                    throw new NotSupportedException("Only constant expression is supported for the owner type"); 
 
                 var owner = constantExpression.Value;
                 if (owner is INotifyPropertyChanged ownerAsINotifyPropertyChanged)

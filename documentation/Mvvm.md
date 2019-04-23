@@ -1,6 +1,6 @@
 # Mvvm
 
-* **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**
@@ -122,6 +122,10 @@ user.CancelEdit();
 
 ## Validatable
 
+> Allows to validate.
+
+## ValidatableAndEditable
+
 > Validation + Edition
 
 Allows to **validate** the model with **Data Annotations** and **custom validations**. Allows to cancel and **restore** **old values**. 
@@ -150,7 +154,7 @@ Allows to **validate** the model with **Data Annotations** and **custom validati
 The model requires to use SetProperty
 
 ```cs
-public class User : Validatable
+public class User : ValidatableAndEditable
 {
     private string firstName;
 

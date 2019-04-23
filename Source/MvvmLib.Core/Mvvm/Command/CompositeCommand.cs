@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace MvvmLib.Mvvm
-{ 
+{
 
     /// <summary>
     /// The composite can executes multiple commands.
@@ -11,21 +11,28 @@ namespace MvvmLib.Mvvm
     public class CompositeCommand : ICommand
     {
         /// <summary>
-        /// Can execute changed event.
+        /// The list of the commands to execute.
         /// </summary>
-        public event EventHandler CanExecuteChanged;
-
+        protected readonly IList<ICommand> commands;
         /// <summary>
         /// The list of the commands to execute.
         /// </summary>
-        protected IList<ICommand> commands;
+        public IList<ICommand> Commands
+        {
+            get { return commands; }
+        }
+
+        /// <summary>
+        /// Can execute changed event.
+        /// </summary>
+        public event EventHandler CanExecuteChanged;
 
         /// <summary>
         /// Creates a composite command and add commands.
         /// </summary>
         public CompositeCommand()
         {
-            commands = new List<ICommand>();
+            this.commands = new List<ICommand>();
         }
 
         /// <summary>
@@ -34,8 +41,10 @@ namespace MvvmLib.Mvvm
         /// <param name="command">The command</param>
         public virtual void Add(ICommand command)
         {
-            if (command == null) { throw new ArgumentNullException(nameof(command)); }
-            if (commands.Contains(command)) { throw new ArgumentException("Command already registered"); }
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
+            if (commands.Contains(command))
+                throw new ArgumentException("Command already registered");
 
             commands.Add(command);
             command.CanExecuteChanged += OnCommandCanExecuteChanged;
@@ -78,9 +87,7 @@ namespace MvvmLib.Mvvm
             foreach (var command in commands)
             {
                 if (!command.CanExecute(parameter))
-                {
                     return false;
-                }
             }
 
             return true;
@@ -93,11 +100,8 @@ namespace MvvmLib.Mvvm
         public virtual void Execute(object parameter)
         {
             foreach (var command in commands)
-            {
                 command.Execute(parameter);
-            }
         }
 
     }
-
 }

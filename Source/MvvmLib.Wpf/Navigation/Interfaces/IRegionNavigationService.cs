@@ -84,7 +84,7 @@ namespace MvvmLib.Navigation
         bool IsItemsRegionDiscovered(string regionName, string controlName);
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>
@@ -92,10 +92,10 @@ namespace MvvmLib.Navigation
         /// <param name="parameter">The parameter</param>
         /// <param name="onCompleted">The callback</param>
         /// <returns>True if executed immediately</returns>
-        Task<bool> NavigateWhenAvailable(string regionName, Type sourceType, string controlName, object parameter, Action onCompleted = null);
+        Task<bool> NavigateWhenAvailableAsync(string regionName, Type sourceType, string controlName, object parameter, Action onCompleted = null);
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="controlName">The control name</param>
@@ -105,7 +105,7 @@ namespace MvvmLib.Navigation
         Task<bool> NavigateWhenAvailable(string regionName, string controlName, Type sourceType, Action onCompleted = null);
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>
@@ -115,7 +115,7 @@ namespace MvvmLib.Navigation
         Task<bool> NavigateWhenAvailable(string regionName, Type sourceType, object parameter, Action onCompleted = null);
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>

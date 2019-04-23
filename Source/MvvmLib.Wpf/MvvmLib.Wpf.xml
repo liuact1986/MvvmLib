@@ -774,9 +774,9 @@
             <param name="controlName">The control name</param>
             <returns>True if discovered</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.IRegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.String,System.Object,System.Action)">
+        <member name="M:MvvmLib.Navigation.IRegionNavigationService.NavigateWhenAvailableAsync(System.String,System.Type,System.String,System.Object,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
@@ -787,7 +787,7 @@
         </member>
         <member name="M:MvvmLib.Navigation.IRegionNavigationService.NavigateWhenAvailable(System.String,System.String,System.Type,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="controlName">The control name</param>
@@ -797,7 +797,7 @@
         </member>
         <member name="M:MvvmLib.Navigation.IRegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.Object,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
@@ -807,7 +807,7 @@
         </member>
         <member name="M:MvvmLib.Navigation.IRegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
@@ -1398,9 +1398,9 @@
             <param name="controlName">The control name</param>
             <returns>True if discovered</returns>
         </member>
-        <member name="M:MvvmLib.Navigation.RegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.String,System.Object,System.Action)">
+        <member name="M:MvvmLib.Navigation.RegionNavigationService.NavigateWhenAvailableAsync(System.String,System.Type,System.String,System.Object,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
@@ -1411,7 +1411,7 @@
         </member>
         <member name="M:MvvmLib.Navigation.RegionNavigationService.NavigateWhenAvailable(System.String,System.String,System.Type,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="controlName">The control name</param>
@@ -1421,7 +1421,7 @@
         </member>
         <member name="M:MvvmLib.Navigation.RegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.Object,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
@@ -1431,12 +1431,17 @@
         </member>
         <member name="M:MvvmLib.Navigation.RegionNavigationService.NavigateWhenAvailable(System.String,System.Type,System.Action)">
             <summary>
-            Executes immediatly if the region is discovered or wait and execute the navigation later.
+            Executes immediately if the region is discovered or wait and execute the navigation later.
             </summary>
             <param name="regionName">The region name</param>
             <param name="sourceType">The source type</param>
             <param name="onCompleted">The callback</param>
             <returns>True if executed immediately</returns>
+        </member>
+        <member name="T:MvvmLib.Navigation.PendingContentNavigation">
+            <summary>
+            Pending navigation.
+            </summary>
         </member>
         <member name="P:MvvmLib.Navigation.PendingContentNavigation.RegionName">
             <summary>

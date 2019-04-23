@@ -5,6 +5,9 @@ using System.Threading;
 
 namespace MvvmLib.Message
 {
+    /// <summary>
+    /// Event with event args or parameter.
+    /// </summary>
     public class ParameterizedEvent<TPayload> : IEvent
     {
         /// <summary>
@@ -13,12 +16,20 @@ namespace MvvmLib.Message
         private readonly List<Subscriber<TPayload>> subscribers = new List<Subscriber<TPayload>>();
 
         private SynchronizationContext synchronizationContext;
+        /// <summary>
+        /// The synchronization context.
+        /// </summary>
         public SynchronizationContext SynchronizationContext
         {
             get { return synchronizationContext; }
             set { synchronizationContext = value; }
         }
 
+        /// <summary>
+        /// Checks if a subscriber is registered for the action.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>True if registered</returns>
         public bool Contains(Action<TPayload> action)
         {
             if (action == null) { throw new ArgumentNullException(nameof(action)); }
@@ -30,6 +41,11 @@ namespace MvvmLib.Message
             }
         }
 
+        /// <summary>
+        /// Checks if a subscriber is registered for the action.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>True if registered</returns>
         public SubscriberOptions<TPayload> Subscribe(Action<TPayload> action)
         {
             if (action == null) { throw new ArgumentNullException(nameof(action)); }
@@ -48,6 +64,10 @@ namespace MvvmLib.Message
             return options;
         }
 
+        /// <summary>
+        /// Allows to subscribe to the event.
+        /// </summary>
+        /// <returns>The subscription options</returns>
         public bool Unsubscribe(SubscriptionToken token)
         {
             if (token == null) { throw new ArgumentNullException(nameof(token)); }
@@ -64,6 +84,10 @@ namespace MvvmLib.Message
             return false;
         }
 
+        /// <summary>
+        /// Notifies all subscribers.
+        /// </summary>
+        /// <param name="payload">The payload</param>
         public void Publish(TPayload payload)
         {
             lock (subscribers)

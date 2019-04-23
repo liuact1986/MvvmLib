@@ -205,7 +205,7 @@ namespace MvvmLib.Navigation
 
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>
@@ -213,7 +213,7 @@ namespace MvvmLib.Navigation
         /// <param name="parameter">The parameter</param>
         /// <param name="onCompleted">The callback</param>
         /// <returns>True if executed immediately</returns>
-        public async Task<bool> NavigateWhenAvailable(string regionName, Type sourceType, string controlName, object parameter, Action onCompleted = null)
+        public async Task<bool> NavigateWhenAvailableAsync(string regionName, Type sourceType, string controlName, object parameter, Action onCompleted = null)
         {
             var region = regionsRegistry.GetContentRegion(regionName);
             if (region != null)
@@ -227,8 +227,10 @@ namespace MvvmLib.Navigation
                 var pendingNavigation = new PendingContentNavigation(regionName, controlName, sourceType, parameter, onCompleted);
                 if (!pendingContentNavigations.ContainsKey(regionName))
                 {
-                    pendingContentNavigations[regionName] = new List<PendingContentNavigation>();
-                    pendingContentNavigations[regionName].Add(pendingNavigation);
+                    pendingContentNavigations[regionName] = new List<PendingContentNavigation>
+                    {
+                        pendingNavigation
+                    };
                 }
                 else
                 {
@@ -241,7 +243,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="controlName">The control name</param>
@@ -250,11 +252,11 @@ namespace MvvmLib.Navigation
         /// <returns>True if executed immediately</returns>
         public async Task<bool> NavigateWhenAvailable(string regionName, string controlName, Type sourceType, Action onCompleted = null)
         {
-           return await this.NavigateWhenAvailable(regionName, sourceType, controlName, null, onCompleted);
+           return await this.NavigateWhenAvailableAsync(regionName, sourceType, controlName, null, onCompleted);
         }
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>
@@ -263,11 +265,11 @@ namespace MvvmLib.Navigation
         /// <returns>True if executed immediately</returns>
         public async Task<bool> NavigateWhenAvailable(string regionName, Type sourceType, object parameter, Action onCompleted = null)
         {
-          return  await this.NavigateWhenAvailable(regionName, sourceType, null, parameter, onCompleted);
+          return  await this.NavigateWhenAvailableAsync(regionName, sourceType, null, parameter, onCompleted);
         }
 
         /// <summary>
-        /// Executes immediatly if the region is discovered or wait and execute the navigation later.
+        /// Executes immediately if the region is discovered or wait and execute the navigation later.
         /// </summary>
         /// <param name="regionName">The region name</param>
         /// <param name="sourceType">The source type</param>
@@ -275,10 +277,14 @@ namespace MvvmLib.Navigation
         /// <returns>True if executed immediately</returns>
         public async Task<bool> NavigateWhenAvailable(string regionName, Type sourceType, Action onCompleted = null)
         {
-           return await this.NavigateWhenAvailable(regionName, sourceType, null, null, onCompleted);
+           return await this.NavigateWhenAvailableAsync(regionName, sourceType, null, null, onCompleted);
         }
     }
 
+
+    /// <summary>
+    /// Pending navigation.
+    /// </summary>
     public class PendingContentNavigation
     {
 

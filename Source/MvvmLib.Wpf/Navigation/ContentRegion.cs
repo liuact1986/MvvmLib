@@ -78,7 +78,8 @@ namespace MvvmLib.Navigation
         public ContentRegion(ViewOrObjectManager viewOrObjectManager, INavigationHistory history, string regionName, FrameworkElement control, RegionsRegistry regionsRegistry)
             : base(viewOrObjectManager, regionName, control, regionsRegistry)
         {
-            if (!(control is ContentControl)) { throw new NotSupportedException($"Only\"ContentControls\" are supported for ContentRegion. Type of {control.GetType().Name}"); }
+            if (!(control is ContentControl))
+                throw new NotSupportedException($"Only \"ContentControls\" are supported for ContentRegion. Type of {control.GetType().Name}"); 
 
             this.history = history;
 
@@ -187,7 +188,8 @@ namespace MvvmLib.Navigation
 
         private async Task<bool> ProcessNavigateAsync(Type sourceType, object parameter)
         {
-            if (sourceType == null) { throw new ArgumentNullException(nameof(sourceType)); }
+            if (sourceType == null)
+                throw new ArgumentNullException(nameof(sourceType)); 
 
             bool navigationSuccess = true;
 
@@ -214,7 +216,7 @@ namespace MvvmLib.Navigation
                 // Can Activate
                 await CheckCanActivateOrThrowAsync(viewOrObject, context, parameter);
 
-                // loaded and unloaded
+                // loaded
                 var view = viewOrObject as FrameworkElement;
                 var navigationEntry = new NavigationEntry(sourceType, viewOrObject, parameter, context);
                 if (viewOrObjectResult.ResolutionType == ResolutionType.New && view != null)
@@ -339,7 +341,7 @@ namespace MvvmLib.Navigation
             return await RedirectAsync(sourceType, null);
         }
 
-        private async Task<bool> DoSideNavigationAsync(NavigationEntry toGoEntry, RegionNavigationType regionNavigationType, Action updateHistoryCallback)
+        private async Task<bool> DoSideNavigationAsync(NavigationEntry entryToGo, RegionNavigationType regionNavigationType, Action updateHistoryCallback)
         {
             var navigationSuccess = true;
 
@@ -353,26 +355,26 @@ namespace MvvmLib.Navigation
                 await CheckCanDeactivateOrThrowAsync(currentEntry);
 
                 // Can Activate
-                await CheckCanActivateOrThrowAsync(toGoEntry);
+                await CheckCanActivateOrThrowAsync(entryToGo);
 
                 // on navigating from
                 this.OnNavigatingFrom(currentEntry);
 
                 // on navigating
-                OnNavigatingTo(toGoEntry);
+                OnNavigatingTo(entryToGo);
 
                 // change content
-                var viewOrObject = toGoEntry.ViewOrObject;
+                var viewOrObject = entryToGo.ViewOrObject;
                 ChangeContent(viewOrObject);
 
                 // on navigated to
-                OnNavigatedTo(toGoEntry);
+                OnNavigatedTo(entryToGo);
 
                 // history
                 updateHistoryCallback();
 
                 // navigated event
-                this.RaiseNavigated(toGoEntry.SourceType, toGoEntry.Parameter, regionNavigationType);
+                this.RaiseNavigated(entryToGo.SourceType, entryToGo.Parameter, regionNavigationType);
             }
             catch (NavigationFailedException ex)
             {

@@ -17,10 +17,6 @@ namespace EventAggregatorSample.ViewModels
         {
             var ea = Singleton<EventAggregator>.Instance;
             ea.GetEvent<DataSavedEvent>().Subscribe(OnDataSaved);
-            ea.GetEvent<DataSavedEvent>().Subscribe(args => { /* do something with args.Message */ });
-
-
-          
         }
 
         private void OnDataSaved(DataSavedEventArgs args)

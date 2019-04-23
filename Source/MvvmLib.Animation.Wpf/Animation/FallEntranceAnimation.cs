@@ -12,7 +12,7 @@ namespace MvvmLib.Animation
 
         protected override AnimationTimeline[] CreateAnimations()
         {
-            // => translate Y 150% => 0 + opactiy 0 => 1
+            // => translate Y 150% => 0 + opacity 0 => 1
             var translateAnimation = new DoubleAnimation(From, To, Duration);
             if (EasingFunction != null)
                 translateAnimation.EasingFunction = EasingFunction;

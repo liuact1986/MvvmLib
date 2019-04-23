@@ -12,7 +12,7 @@ namespace MvvmLib.Animation
         private readonly double defaultTo = 0;
         protected virtual double DefaultTo { get { return defaultTo; } }
         private readonly Duration defaultDuration = new Duration(TimeSpan.FromMilliseconds(300));
-        protected virtual Duration DefaultDuration => defaultDuration;
+        protected virtual Duration DefaultDuration {get {return defaultDuration;}}
 
         protected UIElement element;
         public UIElement Element
@@ -35,7 +35,7 @@ namespace MvvmLib.Animation
             set { to = value; }
         }
 
-        private IEasingFunction easingFunction;
+        protected IEasingFunction easingFunction;
         public IEasingFunction EasingFunction
         {
             get { return easingFunction; }

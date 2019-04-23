@@ -14,7 +14,7 @@ ___
 
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
-* **BindableBase**, **Validatable**, **Editable**, **ValidateAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **Sync** _extensions for list and collections_. Allows to **sync data**

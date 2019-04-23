@@ -6,7 +6,7 @@ namespace MvvmLib.Animation
     public class TranslateAnimation : TransformAnimationBase
     {
         private readonly TransformDirection defaultTransformDirection = TransformDirection.X;
-        protected virtual TransformDirection DefaultTransformDirection => defaultTransformDirection;
+        protected virtual TransformDirection DefaultTransformDirection {get {return  defaultTransformDirection;}}
 
         protected TransformDirection? transformDirection;
         public TransformDirection TransformDirection

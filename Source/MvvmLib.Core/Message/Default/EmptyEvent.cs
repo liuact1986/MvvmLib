@@ -5,17 +5,29 @@ using System.Threading;
 
 namespace MvvmLib.Message
 {
+    /// <summary>
+    /// Event with no event args or parameter.
+    /// </summary>
     public class EmptyEvent : IEvent
     {
         private readonly List<Subscriber> subscribers = new List<Subscriber>();
 
         private SynchronizationContext synchronizationContext;
+
+        /// <summary>
+        /// The synchronization context.
+        /// </summary>
         public SynchronizationContext SynchronizationContext
         {
             get { return synchronizationContext; }
             set { synchronizationContext = value; }
         }
 
+        /// <summary>
+        /// Checks if a subscriber is registered for the action.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>True if registered</returns>
         public bool Contains(Action action)
         {
             if (action == null) { throw new ArgumentNullException(nameof(action)); }
@@ -27,6 +39,11 @@ namespace MvvmLib.Message
             }
         }
 
+        /// <summary>
+        /// Allows to subscribe to the event.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>The subscription options</returns>
         public SubscriberOptions Subscribe(Action action)
         {
             if (action == null) { throw new ArgumentNullException(nameof(action)); }
@@ -45,6 +62,11 @@ namespace MvvmLib.Message
             return options;
         }
 
+        /// <summary>
+        /// Allows to unsubscribe with the subscription token.
+        /// </summary>
+        /// <param name="token">The subscription token</param>
+        /// <returns>True if unsubscribed</returns>
         public bool Unsubscribe(SubscriptionToken token)
         {
             if (token == null) { throw new ArgumentNullException(nameof(token)); }
@@ -58,6 +80,9 @@ namespace MvvmLib.Message
             return false;
         }
 
+        /// <summary>
+        /// Notifies all subscribers.
+        /// </summary>
         public void Publish()
         {
             lock (subscribers)

@@ -123,7 +123,7 @@ namespace MvvmLib.Navigation
         {
             var selectable = viewOrObjectManager.TryGetSelectable(sourceType, parameter);
             if (selectable is FrameworkElement view)
-                if (!view.Focus() && view.Parent is UIElement parentElement)
+                if (view.Parent is UIElement parentElement)
                 {
                     parentElement.Focus();
                     return true;
@@ -148,7 +148,8 @@ namespace MvvmLib.Navigation
 
         private async Task<bool> ProcessInsertAsync(int index, Type sourceType, object parameter)
         {
-            if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
+            if (!IsValidIndex(index))
+                throw new IndexOutOfRangeException(); 
 
             bool navigationSuccess = true;
 
@@ -282,7 +283,8 @@ namespace MvvmLib.Navigation
 
         private async Task<bool> ProcessRemoveAtAsync(int index)
         {
-            if (!IsValidIndex(index)) { throw new IndexOutOfRangeException(); }
+            if (!IsValidIndex(index))
+                throw new IndexOutOfRangeException(); 
 
             var navigationSuccess = true;
 

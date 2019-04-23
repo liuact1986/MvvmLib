@@ -65,18 +65,18 @@ namespace MvvmLib.Mvvm
         /// <summary>
         /// The filter to use.
         /// </summary>
-        public Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool> Filter { get; }
-
+        protected Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool> filter;
+       
         /// <summary>
         /// Creates the filterable notify property changed observer class.
         /// </summary>
         /// <param name="owner">The owner class</param>
         /// <param name="filter">The filter</param>
-        public FilterableNotifyPropertyChangedObserver(INotifyPropertyChanged owner, 
+        public FilterableNotifyPropertyChangedObserver(INotifyPropertyChanged owner,
             Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool> filter)
             : base(owner)
         {
-            Filter = filter;
+            this.filter = filter;
         }
 
         /// <summary>
@@ -86,17 +86,13 @@ namespace MvvmLib.Mvvm
         /// <param name="e">The PropertyChangedEventArgs</param>
         protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (Filter != null)
+            if (filter != null)
             {
-                if (Filter(base.owner, e))
-                {
+                if (filter(base.owner, e))
                     base.OnPropertyChanged(sender, e);
-                }
             }
             else
-            {
                 base.OnPropertyChanged(sender, e);
-            }
         }
     }
 
