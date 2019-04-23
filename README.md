@@ -66,7 +66,7 @@ ___
 
 ## MvvmLib.Animation.Wpf [wpf]
 
-* **AnimatableContentControl** and **animations** classes.
+* **AnimatableContentControl** and **animation** classes.
 
 ## MvvmLib.Adaptive.Wpf [net 4.5]
 
@@ -90,7 +90,7 @@ ___
 | [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square)
 | [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg?style=flat-square) |
 | [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
-| [MvvmLib.Animation.Wpf](https://www.nuget.org/packages/MvvmLib.Animation.Wpf/) | No | AnimatableContentControl and animations classes | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Animation.Wpf.svg?style=flat-square) |
+| [MvvmLib.Animation.Wpf](https://www.nuget.org/packages/MvvmLib.Animation.Wpf/) | No | AnimatableContentControl and animation classes | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Animation.Wpf.svg?style=flat-square) |
 | [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg?style=flat-square) |
 
 ```

@@ -1,6 +1,6 @@
 ## MvvmLib.Animation.Wpf [wpf]
 
-* **AnimatableContentControl** and **animations** classes.
+* **AnimatableContentControl** and **animation** classes.
 
 ## AnimatableContentControl
 
