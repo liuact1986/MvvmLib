@@ -4,58 +4,121 @@ using System.Reflection;
 
 namespace MvvmLib.IoC
 {
-    public class TypeInformationManager
+    /// <summary>
+    /// Allwos to manage <see cref="TypeInformation"/> and <see cref="PropertyWithDependencyAttribute"/>.
+    /// </summary>
+    public sealed class TypeInformationManager
     {
-        protected Dictionary<Type, TypeInformation> typesCache
-           = new Dictionary<Type, TypeInformation>();
-
-        public ConstructorInfo ResolveConstructor(Type type, bool nonPublicConstructors)
+        private readonly Dictionary<Type, TypeInformation> typeCache;
+        /// <summary>
+        /// The type cache.
+        /// </summary>
+        public Dictionary<Type, TypeInformation> TypeCache
         {
-            var preferredConstructor = ReflectionUtils.GetConstructor(type, typeof(PreferredConstructorAttribute), nonPublicConstructors);
-            if (preferredConstructor != null)
-            {
-                return preferredConstructor;
-            }
+            get { return typeCache; }
+        }
 
+        private readonly Dictionary<Type, List<PropertyWithDependencyAttribute>> propertiesWithDependencyAttributeCache;
+        /// <summary>
+        /// the properties cache.
+        /// </summary>
+        public Dictionary<Type, List<PropertyWithDependencyAttribute>> PropertiesWithDependencyAttributeCache
+        {
+            get { return propertiesWithDependencyAttributeCache; }
+        }
+
+        /// <summary>
+        /// Creates the type information manager class.
+        /// </summary>
+        public TypeInformationManager()
+        {
+            this.typeCache = new Dictionary<Type, TypeInformation>();
+            this.propertiesWithDependencyAttributeCache = new Dictionary<Type, List<PropertyWithDependencyAttribute>>();
+        }
+
+        /// <summary>
+        /// Gets the constructor (with <see cref="PreferredConstructorAttribute"/> or empty or first constructor) for the type. 
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="nonPublicConstructors">Allow to find non public constructors</param>
+        /// <returns>The constructor info</returns>
+        public ConstructorInfo GetConstructor(Type type, bool nonPublicConstructors)
+        {
+            var constructors = ReflectionUtils.GetConstructors(type, nonPublicConstructors);
+
+            // preferred ctor
+            var preferredConstructor = ReflectionUtils.GetConstructorWithAttribute(constructors, typeof(PreferredConstructorAttribute));
+            if (preferredConstructor != null)
+                return preferredConstructor;
+
+            // empty ctor 
             var emptyConstructor = ReflectionUtils.GetEmptyConstructor(type, nonPublicConstructors);
             if (emptyConstructor != null)
                 return emptyConstructor;
 
-            var constructor = ReflectionUtils.GetDefaultConstructor(type, nonPublicConstructors);
-            return constructor;
+            // first ctor
+            if (constructors.Length > 0)
+                return constructors[0];
+            else
+                return null;
         }
 
+        /// <summary>
+        /// Gets the type information.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="nonPublicConstructors">Allow to find non public constructors</param>
+        /// <returns>The type information</returns>
         public TypeInformation GetTypeInformation(Type type, bool nonPublicConstructors)
         {
-            if (typesCache.ContainsKey(type))
-            {
-                return typesCache[type];
-            }
+            if (this.typeCache.TryGetValue(type, out TypeInformation typeInformation))
+                return typeInformation;
             else
             {
-                var constructor = ResolveConstructor(type, nonPublicConstructors);
-                if (constructor == null) { throw new ResolutionFailedException("No constructor found for \"" + type.Name + "\""); }
+                var constructor = GetConstructor(type, nonPublicConstructors);
+                if (constructor == null)
+                    throw new ResolutionFailedException($"Unable to resolve a constructor for type \"{type.Name}\" with non public \"{nonPublicConstructors}\"");
 
                 var parameters = constructor.GetParameters();
-                var typeInfo = new TypeInformation(constructor, parameters);
-                typesCache[type] = typeInfo;
-                return typeInfo;
+
+                typeInformation = new TypeInformation(constructor, parameters);
+                typeCache[type] = typeInformation;
+                return typeInformation;
             }
         }
 
-        public bool ContainsKey(Type type)
+        /// <summary>
+        /// Get the properties with the name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="nonPublicProperties">Allows to get non public properties</param>
+        /// <returns>The list of properties</returns>
+        public List<PropertyWithDependencyAttribute> GetPropertiesWithDependencyAttribute(Type type, bool nonPublicProperties)
         {
-            return this.typesCache.ContainsKey(type);
-        }
+            if (this.propertiesWithDependencyAttributeCache.TryGetValue(type, out List<PropertyWithDependencyAttribute> propertiesWithDependencyAttribute))
+                return propertiesWithDependencyAttribute;
+            else
+            {
+                propertiesWithDependencyAttribute = new List<PropertyWithDependencyAttribute>();
 
-        public void Remove(Type type)
-        {
-            this.typesCache.Remove(type);
-        }
+                var properties = ReflectionUtils.GetProperties(type, nonPublicProperties);
+                foreach (var property in properties)
+                {
+                    if (property.CanRead && property.CanWrite)
+                    {
+                        var attribute = property.GetCustomAttribute(typeof(DependencyAttribute)) as DependencyAttribute;
+                        if (attribute != null)
+                        {
+                            // var name = attribute.Name != null ? attribute.Name : property.Name;
+                            var propertyWithDependencyAttribute = new PropertyWithDependencyAttribute(property, attribute.Name);
+                            propertiesWithDependencyAttribute.Add(propertyWithDependencyAttribute);
+                        }
+                    }
+                }
 
-        public void Clear()
-        {
-            this.typesCache.Clear();
+                this.propertiesWithDependencyAttributeCache[type] = propertiesWithDependencyAttribute;
+                return propertiesWithDependencyAttribute;
+            }
         }
     }
 }

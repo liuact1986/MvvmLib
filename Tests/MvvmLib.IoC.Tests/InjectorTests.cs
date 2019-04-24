@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
 using MvvmLib.IoC.Tests;
@@ -33,7 +34,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterFactory(typeof(Item), () => new Item());
-            service.RegisterFactory(typeof(Item), () => new Item(),"k2");
+            service.RegisterFactory(typeof(Item), "k2", () => new Item());
 
             Assert.IsTrue(service.IsRegistered(typeof(Item)));
             Assert.IsTrue(service.IsRegistered(typeof(Item), "k2"));
@@ -62,7 +63,7 @@ namespace MvvmLib.Tests.IoC
                 error = ex.Message;
             }
             Assert.IsTrue(fail);
-            Assert.AreEqual("The type \"Item\" with the name \"__default__\" is already registered", error);
+            Assert.AreEqual("A type \"Item\" is already registered", error);
         }
 
         [TestMethod]
@@ -75,8 +76,8 @@ namespace MvvmLib.Tests.IoC
 
             try
             {
-                service.RegisterFactory(typeof(Item), () => new Item(),"k1");
-                service.RegisterFactory(typeof(Item), () => new Item(),"k1");
+                service.RegisterFactory(typeof(Item), "k1", () => new Item());
+                service.RegisterFactory(typeof(Item), "k1", () => new Item());
             }
             catch (Exception ex)
             {
@@ -84,7 +85,7 @@ namespace MvvmLib.Tests.IoC
                 error = ex.Message;
             }
             Assert.IsTrue(fail);
-            Assert.AreEqual("The type \"Item\" with the name \"k1\" is already registered", error);
+            Assert.AreEqual("A type \"Item\" with the name \"k1\" is already registered", error);
         }
 
         // Register Instance
@@ -98,7 +99,7 @@ namespace MvvmLib.Tests.IoC
             var item2 = new Item() { myString = "My value 2" };
 
             service.RegisterInstance(typeof(Item), item);
-            service.RegisterInstance(typeof(Item), item2,"k2");
+            service.RegisterInstance(typeof(Item), "k2", item2);
 
             Assert.IsTrue(service.IsRegistered(typeof(Item)));
             Assert.IsTrue(service.IsRegistered(typeof(Item), "k2"));
@@ -114,6 +115,8 @@ namespace MvvmLib.Tests.IoC
         public void RegisterInstance_WithSameDefaultKey_Throw()
         {
             var service = GetService();
+
+            var injector = new Injector();
 
             bool fail = false;
             string error = "";
@@ -132,7 +135,7 @@ namespace MvvmLib.Tests.IoC
                 error = ex.Message;
             }
             Assert.IsTrue(fail);
-            Assert.AreEqual("An instance of type \"Item\" with the name \"__default__\" is already registered", error);
+            Assert.AreEqual("A type \"Item\" is already registered", error);
         }
 
         [TestMethod]
@@ -148,8 +151,8 @@ namespace MvvmLib.Tests.IoC
                 var item = new Item() { myString = "My value" };
                 var item2 = new Item() { myString = "My value 2" };
 
-                service.RegisterInstance(typeof(Item), item,"k2");
-                service.RegisterInstance(typeof(Item), item2,"k2");
+                service.RegisterInstance(typeof(Item), "k2", item);
+                service.RegisterInstance(typeof(Item), "k2", item);
             }
             catch (Exception ex)
             {
@@ -157,7 +160,7 @@ namespace MvvmLib.Tests.IoC
                 error = ex.Message;
             }
             Assert.IsTrue(fail);
-            Assert.AreEqual("An instance of type \"Item\" with the name \"k2\" is already registered", error);
+            Assert.AreEqual("A type \"Item\" with the name \"k2\" is already registered", error);
         }
 
         // register type
@@ -168,7 +171,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterType(typeof(Item));
-            service.RegisterType(typeof(Item),"k2");
+            service.RegisterType(typeof(Item), "k2");
 
             Assert.IsTrue(service.IsRegistered(typeof(Item)));
             Assert.IsTrue(service.IsRegistered(typeof(Item), "k2"));
@@ -252,7 +255,7 @@ namespace MvvmLib.Tests.IoC
                 error = ex.Message;
             }
             Assert.IsTrue(fail);
-            Assert.AreEqual("No constructor found for \"ClassWithPrivateCtor\"", error);
+            Assert.AreEqual("Unable to resolve a constructor for type \"ClassWithPrivateCtor\" with non public \"False\"", error);
         }
 
         [TestMethod]
@@ -275,7 +278,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterType(typeof(Item));
-            service.RegisterInstance(typeof(Item), new Item { myString = "Last" },"k2");
+            service.RegisterInstance(typeof(Item), "k2", new Item { myString = "Last" });
             service.RegisterType(typeof(ItemWithParameter));
 
             var r1 = service.GetInstance(typeof(ItemWithParameter)) as ItemWithParameter;
@@ -288,17 +291,18 @@ namespace MvvmLib.Tests.IoC
         {
             var injector = GetService();
 
-            injector.RegisterType(typeof(ItemWithString)).WithValueContainer(new ValueContainer().RegisterValue("myString", "my value"));
+            injector.RegisterType(typeof(ItemWithString)).WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
 
 
             injector
                 .RegisterInstance(typeof(Item), new Item { myString = "my value" });
             injector.RegisterType(typeof(ItemWithParameters)).WithValueContainer(
-           new ValueContainer()
-                  .RegisterValue("myArray", new string[] { "a", "b" })
-                  .RegisterValue("myString", "my string value")
-                  .RegisterValue("myInt", 10)
-                  .RegisterValue("myBool", true));
+                new Dictionary<string, object> {
+                   {  "myArray", new string[] { "a", "b" } },
+                   { "myString", "my string value" },
+                   { "myInt", 10 },
+                   { "myBool", true }
+               });
 
 
             var r1 = injector.GetInstance(typeof(ItemWithString)) as ItemWithString;
@@ -321,7 +325,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterType(typeof(IItem), typeof(Item));
-            service.RegisterType(typeof(IItem), typeof(Item),"k2");
+            service.RegisterType(typeof(IItem), "k2", typeof(Item));
 
             Assert.IsTrue(service.IsRegistered(typeof(IItem)));
             Assert.IsTrue(service.IsRegistered(typeof(IItem), "k2"));
@@ -356,7 +360,7 @@ namespace MvvmLib.Tests.IoC
             }
 
             Assert.IsTrue(fail);
-            Assert.AreEqual("An instance of type \"Item\" with the name \"__default__\" is already registered", error);
+            Assert.AreEqual("A type \"Item\" is already registered", error);
         }
 
         [TestMethod]
@@ -365,7 +369,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterType(typeof(IItem), typeof(Item));
-            service.RegisterInstance(typeof(IItem), new Item { myString = "My value" },"k2");
+            service.RegisterInstance(typeof(IItem), "k2", new Item { myString = "My value" });
 
             var r1 = service.GetAllInstances(typeof(IItem)) as List<object>;
 
@@ -378,7 +382,7 @@ namespace MvvmLib.Tests.IoC
             var service = GetService();
 
             service.RegisterType(typeof(Item));
-            service.RegisterInstance(typeof(Item), new Item { myString = "My value" },"k2");
+            service.RegisterInstance(typeof(Item), "k2", new Item { myString = "My value" });
 
             var r1 = service.GetAllInstances<Item>();
 
@@ -456,7 +460,7 @@ namespace MvvmLib.Tests.IoC
             }
 
             Assert.IsTrue(fail);
-            Assert.AreEqual("No type \"ItemWithParameter\" with the name \"__default__\" registered", error);
+            Assert.AreEqual("Type \"ItemWithParameter\" not registered", error);
         }
 
         [TestMethod]
@@ -558,7 +562,7 @@ namespace MvvmLib.Tests.IoC
             }
 
             Assert.IsTrue(fail);
-            Assert.AreEqual("Cannot get a new instance for the registration type \"Instance\"", error);
+            Assert.AreEqual("Cannot get a new instance for the registration type \"InstanceRegistration\"", error);
         }
 
         // unregister
@@ -566,30 +570,42 @@ namespace MvvmLib.Tests.IoC
         [TestMethod]
         public void UnregisterType()
         {
-            var injector = GetService();
+            var t = new TypeInformationManager();
+            var o = new ObjectCreationManager();
+            var c = new SingletonCache();
+
+            var injector = Activator.CreateInstance(typeof(Injector),
+                      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c }, null)
+                      as Injector;
+
             injector.RegisterSingleton<Item>();
 
             Assert.IsTrue(injector.IsRegistered<Item>());
 
             var instance = injector.GetInstance<Item>();
 
-            Assert.IsTrue(injector.IsCached(typeof(Item)));
+            Assert.IsTrue(c.Cache.ContainsKey(typeof(Item)));
 
             Assert.IsTrue(injector.Unregister<Item>());
 
             Assert.IsFalse(injector.IsRegistered<Item>());
-            Assert.IsFalse(injector.IsCached(typeof(Item)));
+            Assert.IsFalse(c.Cache.ContainsKey(typeof(Item)));
         }
 
         [TestMethod]
         public void UnregisterInstance()
         {
-            var injector = GetService();
+            var t = new TypeInformationManager();
+            var o = new ObjectCreationManager();
+            var c = new SingletonCache();
+            var injector = Activator.CreateInstance(typeof(Injector),
+              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c }, null)
+              as Injector;
 
             var item2 = new Item { myString = "with k1" };
 
             injector.RegisterType(typeof(Item));
-            injector.RegisterInstance(typeof(Item), item2,"k1");
+            injector.RegisterInstance(typeof(Item), "k1", item2);
 
             Assert.IsTrue(injector.IsRegistered<Item>());
             Assert.IsTrue(injector.IsRegistered<Item>("k1"));
@@ -613,7 +629,7 @@ namespace MvvmLib.Tests.IoC
 
             injector
                 .RegisterInstance(typeof(Item), item1);
-            injector.RegisterInstance(typeof(Item), item2,"k1");
+            injector.RegisterInstance(typeof(Item), "k1", item2);
 
             Assert.IsTrue(injector.IsRegistered<Item>());
             Assert.IsTrue(injector.IsRegistered<Item>("k1"));
@@ -624,24 +640,24 @@ namespace MvvmLib.Tests.IoC
             Assert.IsFalse(injector.IsRegistered<Item>("k1"));
         }
 
-        [TestMethod]
-        public void Clear()
-        {
-            var injector = GetService();
-            var item2 = new Item { myString = "with k1" };
+        //[TestMethod]
+        //public void Clear()
+        //{
+        //    var injector = GetService();
+        //    var item2 = new Item { myString = "with k1" };
 
-            injector.RegisterSingleton<Item>();
-            injector.RegisterInstance(typeof(Item), item2,"k1");
+        //    injector.RegisterSingleton<Item>();
+        //    injector.RegisterInstance(typeof(Item), item2, "k1");
 
-            injector.GetInstance<Item>();
+        //    injector.GetInstance<Item>();
 
-            Assert.IsTrue(injector.IsCached(typeof(Item)));
+        //    Assert.IsTrue(injector.IsCached(typeof(Item)));
 
-            injector.Clear();
+        //    injector.Clear();
 
-            Assert.IsFalse(injector.IsRegistered<Item>());
-            Assert.IsFalse(injector.IsRegistered<Item>("k1"));
-            Assert.IsFalse(injector.IsCached(typeof(Item)));
-        }
+        //    Assert.IsFalse(injector.IsRegistered<Item>());
+        //    Assert.IsFalse(injector.IsRegistered<Item>("k1"));
+        //    Assert.IsFalse(injector.IsCached(typeof(Item)));
+        //}
     }
 }

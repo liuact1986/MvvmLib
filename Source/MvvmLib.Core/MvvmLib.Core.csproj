@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.2</Version>
+    <Version>0.1.4</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>C:\Users\romag\Documents\Visual Studio 2017\Projects\V1\MvvmLib\Source\MvvmLib.Core\MvvmLib.Core.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\MvvmLib\Source\MvvmLib.Core\MvvmLib.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

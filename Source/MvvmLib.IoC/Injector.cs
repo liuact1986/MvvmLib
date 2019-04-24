@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,252 +8,444 @@ using System.Reflection;
 
 namespace MvvmLib.IoC
 {
+    /// <summary>
+    /// Allows to register or discover types, factories, instances then create instances and inject dependencies.
+    /// </summary>
     public class Injector : IInjector
     {
-        private IObjectCreationManager objectCreationManager;
-        private AutoDiscover autoDiscover;
-        private TypeInformationManager typeInformationManager;
-        private InstancesCache instancesCache;
+        private const string DefaultName = "___Default___";
+        private readonly ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>> registrations;
+        private readonly TypeInformationManager typeInformationManager;
+        private readonly ObjectCreationManager objectCreationManager;
+        private readonly SingletonCache singletonCache;
 
-        private Dictionary<Type, Dictionary<string, ContainerRegistration>> registrations
-            = new Dictionary<Type, Dictionary<string, ContainerRegistration>>();
-
-        public bool AutoDiscovery { get; set; }
-
-        public bool NonPublicConstructors { get; set; }
-
-        public bool NonPublicProperties { get; set; }
-
-        public DelegateFactoryType DelegateFactoryType
+        private bool autoDiscovery;
+        /// <summary>
+        /// Allows to discover non registered types.
+        /// </summary>
+        public bool AutoDiscovery
         {
-            get => this.objectCreationManager.DelegateFactoryType;
-            set => this.objectCreationManager.DelegateFactoryType = value;
+            get { return autoDiscovery; }
+            set { autoDiscovery = value; }
         }
 
-        private readonly List<EventHandler<InjectorRegistrationEventArgs>> registered;
-        public event EventHandler<InjectorRegistrationEventArgs> Registered
+        private bool nonPublicConstructors;
+        /// <summary>
+        /// Allows to include non public constructors.
+        /// </summary>
+        public bool NonPublicConstructors
+        {
+            get { return nonPublicConstructors; }
+            set { nonPublicConstructors = value; }
+        }
+
+        private bool nonPublicProperties;
+        /// <summary>
+        /// Allows to include non public properties.
+        /// </summary>
+        public bool NonPublicProperties
+        {
+            get { return nonPublicProperties; }
+            set { nonPublicProperties = value; }
+        }
+
+        /// <summary>
+        /// The delegate factory type, Linq Expressions used by default.
+        /// </summary>
+        public DelegateFactoryType DelegateFactoryType
+        {
+            get { return this.objectCreationManager.DelegateFactoryType; }
+            set { this.objectCreationManager.DelegateFactoryType = value; }
+        }
+
+        private readonly List<EventHandler<RegistrationEventArgs>> registered;
+        /// <summary>
+        /// Invoked on registration.
+        /// </summary>
+        public event EventHandler<RegistrationEventArgs> Registered
         {
             add { if (!registered.Contains(value)) registered.Add(value); }
             remove { if (registered.Contains(value)) registered.Remove(value); }
         }
 
-        private readonly List<EventHandler<InjectorResolveEventArgs>> resolved;
-        public event EventHandler<InjectorResolveEventArgs> Resolved
+        private readonly List<EventHandler<ResolutionEventArgs>> resolved;
+        /// <summary>
+        /// Invoked on instance resolution.
+        /// </summary>
+        public event EventHandler<ResolutionEventArgs> Resolved
         {
             add { if (!resolved.Contains(value)) resolved.Add(value); }
             remove { if (resolved.Contains(value)) resolved.Remove(value); }
         }
 
-        private static readonly object _instanceLock = new object();
-
-        private static Injector _default = new Injector();
-        public static Injector Default
+        /// <summary>
+        /// Creates the injector class.
+        /// </summary>
+        /// <param name="typeInformationManager">The type information manager</param>
+        /// <param name="objectCreationManager">The object creation manager</param>
+        /// <param name="singletonCache">The cache for singletons</param>
+        internal Injector(TypeInformationManager typeInformationManager, ObjectCreationManager objectCreationManager, SingletonCache singletonCache)
         {
-            get { return _default; }
+            registrations = new ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>>();
+            registered = new List<EventHandler<RegistrationEventArgs>>();
+            resolved = new List<EventHandler<ResolutionEventArgs>>();
+
+            this.typeInformationManager = typeInformationManager;
+            this.objectCreationManager = objectCreationManager;
+            this.singletonCache = singletonCache;
+
+            this.autoDiscovery = true;
         }
 
+        /// <summary>
+        /// Creates the injector class.
+        /// </summary>
         public Injector()
-          : this(new ObjectCreationManager())
+            : this(new TypeInformationManager(), new ObjectCreationManager(), new SingletonCache())
         { }
 
-        public Injector(IObjectCreationManager objectCreationManager)
+        private bool IsValueContainerType(Type type)
         {
-            this.registered = new List<EventHandler<InjectorRegistrationEventArgs>>();
-            this.resolved = new List<EventHandler<InjectorResolveEventArgs>>();
-
-            this.AutoDiscovery = true;
-            this.NonPublicConstructors = true;
-            this.NonPublicProperties = true;
-
-            this.objectCreationManager = objectCreationManager;
-            this.autoDiscover = new AutoDiscover(this);
-            this.typeInformationManager = new TypeInformationManager();
-            this.instancesCache = new InstancesCache();
+            return type == typeof(string)
+                || type.IsValueType
+                || type.IsArray
+                || typeof(IEnumerable).IsAssignableFrom(type)
+                || type == typeof(Uri)
+                || Nullable.GetUnderlyingType(type) != null;
         }
 
-        #region Register
+        #region Registration
 
-        private void AddOrUpdateRegistration(Type type, ContainerRegistration registration, string name)
+        /// <summary>
+        /// Checks if ther is a registration for the type with the name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <returns>true if found</returns>
+        public bool IsRegistered(Type type, string name)
+        {
+            return this.registrations.ContainsKey(type) && this.registrations[type].ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Checks if ther is a registration for the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>true if found</returns>
+        public bool IsRegistered(Type type)
+        {
+            return this.IsRegistered(type, DefaultName);
+        }
+
+        private void AddRegistration(Type type, string name, ContainerRegistration registration)
         {
             if (!this.registrations.ContainsKey(type))
-            {
                 this.registrations[type] = new Dictionary<string, ContainerRegistration>();
-            }
 
             this.registrations[type][name] = registration;
         }
 
-        public bool IsRegistered(Type type, string name)
+        private void CheckRegistered(Type type, string name)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
-            if (name == null) { throw new ArgumentNullException(nameof(name)); }
-
-            return this.registrations.ContainsKey(type)
-               && this.registrations[type].ContainsKey(name);
+            if (IsRegistered(type, name))
+            {
+                if (name == DefaultName)
+                    throw new InvalidOperationException($"A type \"{type.Name}\" is already registered");
+                else
+                    throw new InvalidOperationException($"A type \"{type.Name}\" with the name \"{name}\" is already registered");
+            }
         }
 
-        public bool IsRegistered(Type type)
+        private void CheckNotRegistered(Type type, string name)
         {
-            return this.IsRegistered(type, MvvmLibConstants.DefaultName);
+            if (!IsRegistered(type, name))
+            {
+                if (name == DefaultName)
+                    throw new InvalidOperationException($"Type \"{type.Name}\" not registered");
+                else
+                    throw new InvalidOperationException($"Type \"{type.Name}\" with the name \"{name}\" not registered");
+            }
         }
 
-        public TypeRegistrationOptions RegisterType(Type typeFrom, Type typeTo, string name)
+        private TypeRegistrationOptions ProcessRegisterType(Type typeFrom, string name, Type typeTo)
         {
-            if (typeFrom == null) { throw new ArgumentNullException(nameof(typeFrom)); }
-            if (typeTo == null) { throw new ArgumentNullException(nameof(typeTo)); }
-            if (!typeFrom.GetTypeInfo().IsAssignableFrom(typeTo.GetTypeInfo())) { throw new RegistrationFailedException(typeFrom.Name + " is not assignable from " + typeTo.Name); }
-            if (this.IsRegistered(typeFrom, name)) { throw new RegistrationFailedException("The type \"" + typeFrom.Name + "\" with the name \"" + name + "\" is already registered"); }
+            this.CheckRegistered(typeFrom, name);
 
-            var registration = new TypeRegistration(typeFrom, typeTo, name);
-            var options = new TypeRegistrationOptions(this, registration);
+            var registration = new TypeRegistration(typeFrom, name, typeTo);
+            var clearCacheForType = new Action<Type, string>((t, n) => this.singletonCache.Remove(t, n));
+            var registrationOptions = new TypeRegistrationOptions(registration, clearCacheForType);
 
-            this.AddOrUpdateRegistration(typeFrom, registration, name);
+            this.AddRegistration(typeFrom, name, registration);
+
             this.RaiseRegistered(registration);
 
-            return options;
+            return registrationOptions;
         }
 
+        /// <summary>
+        /// registers a type.
+        /// </summary>
+        /// <param name="typeFrom">The type from</param>
+        /// <param name="name">The name / key</param>
+        /// <param name="typeTo">The implementation type</param>
+        /// <returns>The registration options</returns>
+        public TypeRegistrationOptions RegisterType(Type typeFrom, string name, Type typeTo)
+        {
+            if (typeFrom == null)
+                throw new ArgumentNullException(nameof(typeFrom));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (typeTo == null)
+                throw new ArgumentNullException(nameof(typeTo));
+
+            return this.ProcessRegisterType(typeFrom, name, typeTo);
+        }
+
+        /// <summary>
+        /// registers a type.
+        /// </summary>
+        /// <param name="typeFrom">The type from</param>
+        /// <param name="typeTo">The implementation type</param>
+        /// <returns>The registration options</returns>
         public TypeRegistrationOptions RegisterType(Type typeFrom, Type typeTo)
         {
-            return this.RegisterType(typeFrom, typeTo, MvvmLibConstants.DefaultName);
+            if (typeFrom == null)
+                throw new ArgumentNullException(nameof(typeFrom));
+            if (typeTo == null)
+                throw new ArgumentNullException(nameof(typeTo));
+
+            return this.ProcessRegisterType(typeFrom, DefaultName, typeTo);
         }
 
-        public TypeRegistrationOptions RegisterType(Type type, string name)
-        {
-            return this.RegisterType(type, type, name);
-        }
-
+        /// <summary>
+        /// registers a type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>The registration options</returns>
         public TypeRegistrationOptions RegisterType(Type type)
         {
-            return this.RegisterType(type, type, MvvmLibConstants.DefaultName);
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            return this.ProcessRegisterType(type, DefaultName, type);
         }
 
-        public InstanceRegistrationOptions RegisterInstance(Type type, object instance, string name)
+        /// <summary>
+        /// registers a type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <returns>The registration options</returns>
+        public TypeRegistrationOptions RegisterType(Type type, string name)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
-            if (this.IsRegistered(type, name)) { throw new RegistrationFailedException("An instance of type \"" + type.Name + "\" with the name \"" + name + "\" is already registered"); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
 
-            var registration = new InstanceRegistration(type, instance, name);
-            var options = new InstanceRegistrationOptions(this, registration);
+            return this.ProcessRegisterType(type, name, type);
+        }
 
-            this.AddOrUpdateRegistration(type, registration, name);
+        private InstanceRegistrationOptions ProcessRegisterInstance(Type type, string name, object instance)
+        {
+            this.CheckRegistered(type, name);
+
+            var registration = new InstanceRegistration(type, name, instance);
+            var registrationOptions = new InstanceRegistrationOptions(registration);
+
+            this.AddRegistration(type, name, registration);
+
             this.RaiseRegistered(registration);
 
-            return options;
+            return registrationOptions;
         }
 
+        /// <summary>
+        /// Registers the instance.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <param name="instance">The instance</param>
+        /// <returns>The registration options</returns>
+        public InstanceRegistrationOptions RegisterInstance(Type type, string name, object instance)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            return this.ProcessRegisterInstance(type, name, instance);
+        }
+
+        /// <summary>
+        /// Registers the instance.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="instance">The instance</param>
+        /// <returns>The registration options</returns>
         public InstanceRegistrationOptions RegisterInstance(Type type, object instance)
         {
-            return this.RegisterInstance(type, instance, MvvmLibConstants.DefaultName);
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            return this.ProcessRegisterInstance(type, DefaultName, instance);
         }
 
-        public FactoryRegistrationOptions RegisterFactory(Type type, Func<object> factory, string name)
+        private FactoryRegistrationOptions ProcessRegisterFactory(Type type, string name, Func<object> factory)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
-            if (factory == null) { throw new ArgumentNullException(nameof(factory)); }
-            if (this.IsRegistered(type, name)) { throw new RegistrationFailedException("The type \"" + type.Name + "\" with the name \"" + name + "\" is already registered"); }
+            this.CheckRegistered(type, name);
 
-            var registration = new FactoryRegistration(type, factory, name);
-            var options = new FactoryRegistrationOptions(this, registration);
+            var registration = new FactoryRegistration(type, name, factory);
+            var registrationOptions = new FactoryRegistrationOptions(registration);
 
-            this.AddOrUpdateRegistration(type, registration, name);
+            this.AddRegistration(type, name, registration);
+
             this.RaiseRegistered(registration);
 
-            return options;
+            return registrationOptions;
         }
 
+        /// <summary>
+        /// Registers a factory.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <param name="factory">The factory function</param>
+        /// <returns>The registration options</returns>
+        public FactoryRegistrationOptions RegisterFactory(Type type, string name, Func<object> factory)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
+            return this.ProcessRegisterFactory(type, name, factory);
+        }
+
+        /// <summary>
+        /// Registers a factory.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="factory">The factory function</param>
+        /// <returns>The registration options</returns>
         public FactoryRegistrationOptions RegisterFactory(Type type, Func<object> factory)
         {
-            return this.RegisterFactory(type, factory, MvvmLibConstants.DefaultName);
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
+            return this.ProcessRegisterFactory(type, DefaultName, factory);
         }
 
-        internal void RemoveFromCache(Type type, string name)
-        {
-            this.instancesCache.Remove(type, name);
-        }
-
+        /// <summary>
+        /// Unregisters all registrations for the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>True if unregistered</returns>
         public bool UnregisterAll(Type type)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-            if (this.IsRegistered(type))
+            if (this.registrations.TryGetValue(type, out Dictionary<string, ContainerRegistration> containerRegistrations))
             {
-                this.registrations.Remove(type);
-
-                if (this.instancesCache.IsTypeCached(type))
+                if (this.registrations.TryRemove(type, out containerRegistrations))
                 {
-                    this.instancesCache.Remove(type);
+                    if (this.singletonCache.Cache.ContainsKey(type))
+                        this.singletonCache.Cache.Remove(type);
+
+                    if (this.typeInformationManager.TypeCache.ContainsKey(type))
+                        this.typeInformationManager.TypeCache.Remove(type);
+
+                    return true;
                 }
-                return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Unregisters the registration for the type with the name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <returns>True if unregistered</returns>
         public bool Unregister(Type type, string name)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
             if (this.IsRegistered(type, name))
             {
                 this.registrations[type].Remove(name);
 
-                if (this.instancesCache.IsCached(type, name))
-                {
-                    this.instancesCache.Remove(type, name);
-                }
-                if (this.typeInformationManager.ContainsKey(type))
-                {
-                    this.typeInformationManager.Remove(type);
-                }
+                if (this.singletonCache.IsCached(type, name))
+                    this.singletonCache.Remove(type, name);
+
+                if (this.typeInformationManager.TypeCache.ContainsKey(type))
+                    this.typeInformationManager.TypeCache.Remove(type);
+
                 return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Unregisters the registration for the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>True if unregistered</returns>
         public bool Unregister(Type type)
         {
-            return this.Unregister(type, MvvmLibConstants.DefaultName);
+            return this.Unregister(type, DefaultName);
         }
 
         private void RaiseRegistered(ContainerRegistration registration)
         {
-            var context = new InjectorRegistrationEventArgs(registration);
+            var context = new RegistrationEventArgs(registration);
             foreach (var handler in this.registered)
-            {
                 handler(this, context);
+        }
+
+        #endregion // Registration
+
+        #region Resolution
+
+        private void TryRegisterTypeIfNotRegistered(Type type, string name)
+        {
+            if (!IsRegistered(type, name) && autoDiscovery)
+            {
+                if (type.IsInterface)
+                    throw new ResolutionFailedException($"Cannot resolve the unregistered type for \"{type.Name}\"");
+
+                if (IsValueContainerType(type))
+                    throw new ResolutionFailedException($"Invalid registration type \"{type.Name}\"");
+
+                RegisterType(type, name);
             }
         }
 
-        #endregion // Register
-
-
-        #region Resolve
-
-        public bool IsCached(Type type, string name)
+        private bool IsSingletonCached(Type type, string name)
         {
-            return this.instancesCache.IsCached(type, name);
+            return this.singletonCache.IsCached(type, name);
         }
 
-        public bool IsCached(Type type)
+        private object GetSingletonFromCache(Type type, string name)
         {
-            return this.IsCached(type, MvvmLibConstants.DefaultName);
+            return this.singletonCache.Cache[type][name];
         }
 
-        public object GetFromCache(Type type, string name)
-        {
-            return this.instancesCache.GetFromCache(type, name);
-        }
-
-        public object GetFromCache(Type type)
-        {
-            return this.GetFromCache(type, MvvmLibConstants.DefaultName);
-        }
-
-        private object GetFunc(Type type)
+        private object GetFunction(Type type)
         {
             var returnType = type.GetGenericArguments()[0];
 
-            var method = ReflectionUtils.GetStaticMethod(typeof(IInjectorResolverExtensions), "GetInstance", new Type[] { typeof(IInjectorResolver) });
+            var method = typeof(IInjectorResolverExtensions).GetMethod("GetInstance", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(IInjectorResolver) }, null);
             method = method.MakeGenericMethod(returnType);
 
             var expressionCall = Expression.Call(null, method, Expression.Constant(this));
@@ -262,17 +456,17 @@ namespace MvvmLib.IoC
         private object ResolveParameterValue(TypeRegistration registration, ParameterInfo parameter)
         {
             var parameterType = parameter.ParameterType;
-            if (ReflectionUtils.IsFunc(parameterType))
-            {
-                return GetFunc(parameterType);
-            }
+            var parameterName = parameter.Name;
+
+            // Func<object> ?
+            if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Func<>))
+                return GetFunction(parameterType);
 
             // value ?
-            if (registration.HasValue(parameter.Name)) // myString
-            {
-                return registration.GetValue(parameter.Name); // "My Value"
-            }
-            // registered type / instance ?
+            if (registration.ValueContainer.ContainsKey(parameterName)) // myString
+                return registration.ValueContainer[parameterName]; // "My Value"
+
+            // registered type or instance or factory ?
             if (this.registrations.ContainsKey(parameterType))
             {
                 // return last
@@ -282,42 +476,36 @@ namespace MvvmLib.IoC
             else
             {
                 // not registered
-
-                if (this.AutoDiscovery)
+                if (autoDiscovery)
                 {
-                    if (!ValueContainer.IsTypeSupported(parameterType))
+                    if (IsValueContainerType(parameterType))
+                    {
+                        object value = null;
+                        if (parameterType.IsValueType)
+                            // get default value with factory ??
+                            value = Activator.CreateInstance(parameterType);
+
+                        registration.ValueContainer[parameterName] = value;
+                        return value;
+                    }
+                    else
                     {
                         this.RegisterType(parameterType);
                         var registrationEntry = this.registrations[parameterType].Last();
                         return this.DoGetInstance(registrationEntry.Value, parameterType, registrationEntry.Key);
                     }
-                    else
-                    {
-                        object value = null;
-                        if (parameterType.IsValueType)
-                        {
-                            // get default value with factory ??
-                            value = Activator.CreateInstance(parameterType);
-                        }
-                        registration.ValueContainer.RegisterValue(parameter.Name, value);
-                        return value;
-                    }
                 }
                 else
-                {
                     throw new ResolutionFailedException("Cannot resolve unregistered parameter \"" + parameterType.Name + "\"");
-                }
             }
-
         }
 
         private object[] ResolveParameterValues(TypeRegistration registration, ParameterInfo[] parameters)
         {
             var parameterValues = new object[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
-            {
                 parameterValues[i] = this.ResolveParameterValue(registration, parameters[i]);
-            }
+
             return parameterValues;
         }
 
@@ -326,20 +514,22 @@ namespace MvvmLib.IoC
             var type = registration.TypeTo;
 
             // get constructor and parameters
-            var typeInfo = this.typeInformationManager.GetTypeInformation(type, NonPublicConstructors);
-            if (typeInfo.Parameters.Length > 0)
+            var typeInformation = this.typeInformationManager.GetTypeInformation(type, NonPublicConstructors);
+            if (typeInformation.Parameters.Length > 0)
             {
                 // values to injected
-                var parameterValues = this.ResolveParameterValues(registration, typeInfo.Parameters);
-                var instance = this.objectCreationManager.CreateInstance(type, typeInfo.Constructor, parameterValues);
-                this.instancesCache.TryAddToCache(registration, instance);
+                var parameterValues = this.ResolveParameterValues(registration, typeInformation.Parameters);
+                var instance = this.objectCreationManager.CreateInstanceWithParameterizedConstructor(type, typeInformation.Constructor, parameterValues);
+                this.singletonCache.TryAddToCache(registration, instance);
+                //this.NotifyOnResolvedForRegistration(registration); ?
                 this.RaiseResolved(registration, instance);
                 return instance;
             }
             else
             {
-                var instance = this.objectCreationManager.CreateInstance(type, typeInfo.Constructor);
-                this.instancesCache.TryAddToCache(registration, instance);
+                var instance = this.objectCreationManager.CreateInstanceWithEmptyConstructor(type, typeInformation.Constructor);
+                this.singletonCache.TryAddToCache(registration, instance);
+                this.NotifyOnResolvedForRegistration(registration, instance);
                 this.RaiseResolved(registration, instance);
                 return instance;
             }
@@ -347,173 +537,231 @@ namespace MvvmLib.IoC
 
         private object DoGetInstance(ContainerRegistration registration, Type type, string name)
         {
-            switch (registration.ContainerRegistrationType)
+            if (registration is TypeRegistration typeRegistration)
             {
-                case ContainerRegistrationType.Type:
-                    if (this.IsCached(type, name))
-                    {
-                        var instanceCached = this.GetFromCache(type, name);
-                        this.RaiseResolved(registration, instanceCached);
-                        return instanceCached;
-                    }
-                    else
-                    {
-                        var typeRegistration = registration as TypeRegistration;
-                        return DoGetNewInstance(typeRegistration);
-                    }
-                case ContainerRegistrationType.Instance:
-                    var instanceRegistration = registration as InstanceRegistration;
-                    this.RaiseResolved(registration, instanceRegistration.Instance);
-                    return instanceRegistration.Instance;
-                case ContainerRegistrationType.Factory:
-                    var factoryRegistration = registration as FactoryRegistration;
-                    var result = factoryRegistration.Factory.Invoke();
-                    this.RaiseResolved(registration, result);
-                    return result;
-                default:
-                    throw new ResolutionFailedException("Unexpected ContainerRegistrationType");
+                if (this.IsSingletonCached(type, name))
+                {
+                    var instanceCached = this.GetSingletonFromCache(type, name);
+                    this.RaiseResolved(registration, instanceCached);
+                    return instanceCached;
+                }
+                else
+                {
+                    var instance = DoGetNewInstance(typeRegistration);
+                    return instance;
+                }
             }
+            else if (registration is InstanceRegistration instanceRegistration)
+            {
+                var instance = instanceRegistration.Instance;
+                this.NotifyOnResolvedForRegistration(registration, instance);
+                this.RaiseResolved(instanceRegistration, instance);
+                return instance;
+            }
+            else if (registration is FactoryRegistration factoryRegistration)
+            {
+                var instance = factoryRegistration.Factory();
+                this.NotifyOnResolvedForRegistration(registration, instance);
+                this.RaiseResolved(factoryRegistration, instance);
+                return instance;
+            }
+
+            throw new ResolutionFailedException("Unexpected ContainerRegistrationType");
         }
 
-        public object GetInstance(Type type, string name)
-        {
-            this.autoDiscover.CheckRegistered(type, name);
-
-            var registration = registrations[type][name];
-            return DoGetInstance(registration, type, name);
-        }
-
-        public object GetInstance(Type type)
-        {
-            return this.GetInstance(type, MvvmLibConstants.DefaultName);
-        }
-
+        /// <summary>
+        /// Gets a new instance for the type and name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name : key</param>
+        /// <returns>The instance</returns>
         public object GetNewInstance(Type type, string name)
         {
-            this.autoDiscover.CheckRegistered(type, name);
+            this.TryRegisterTypeIfNotRegistered(type, name);
+
+            this.CheckNotRegistered(type, name);
 
             var registration = registrations[type][name];
-            if (registration.ContainerRegistrationType == ContainerRegistrationType.Type)
+            if (registration is TypeRegistration typeRegistration)
             {
-                var typeRegistration = registration as TypeRegistration;
-                return DoGetNewInstance(typeRegistration);
+                var instance = DoGetNewInstance(typeRegistration);
+                return instance;
             }
             else
-            {
-                throw new ResolutionFailedException("Cannot get a new instance for the registration type \"" + registration.ContainerRegistrationType.ToString() + "\"");
-            }
+                throw new ResolutionFailedException($"Cannot get a new instance for the registration type \"{registration.GetType().Name}\"");
         }
 
+        /// <summary>
+        /// Gets a new instance for the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>The instance</returns>
         public object GetNewInstance(Type type)
         {
-            return this.GetNewInstance(type, MvvmLibConstants.DefaultName);
+            return this.GetNewInstance(type, DefaultName);
+        }
+
+        /// <summary>
+        /// Gets the instance for the type and name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name : key</param>
+        /// <returns>The instance</returns>
+        public object GetInstance(Type type, string name)
+        {
+            this.TryRegisterTypeIfNotRegistered(type, name);
+
+            this.CheckNotRegistered(type, name);
+
+            var registration = registrations[type][name];
+            var instance = this.DoGetInstance(registration, type, name);
+            return instance;
+        }
+
+        /// <summary>
+        /// Gets the instance for the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>The instance</returns>
+        public object GetInstance(Type type)
+        {
+            return this.GetInstance(type, DefaultName);
+        }
+
+        /// <summary>
+        /// Gets all instances of the type.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>The list of instances</returns>
+        public List<object> GetAllInstances(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (this.registrations.ContainsKey(type))
+            {
+                var instances = new List<object>();
+
+                var registrationsOfType = this.registrations[type].Values;
+                foreach (var registration in registrationsOfType)
+                {
+                    var instance = DoGetInstance(registration, type, registration.Name);
+                    instances.Add(instance);
+                }
+                return instances;
+            }
+            return null;
         }
 
         private object DoBuildUp(Type type, string name, object instance)
         {
             var registration = registrations[type][name];
 
-            var properties = ReflectionUtils.GetProperties(type, NonPublicProperties);
-            foreach (var property in properties)
+            var propertyWithDependencyAttributes = this.typeInformationManager.GetPropertiesWithDependencyAttribute(type, nonPublicProperties);
+            foreach (var propertyWithDepencyAttribute in propertyWithDependencyAttributes)
             {
-                if (property.CanRead && property.CanWrite)
+                var property = propertyWithDepencyAttribute.Property;
+                if (IsValueContainerType(property.PropertyType))
                 {
-                    var attribute = property.GetCustomAttribute(typeof(DependencyAttribute)) as DependencyAttribute;
-                    if (attribute != null)
+                    // value contianer type
+                    var propertyWithDepencyAttributeName = propertyWithDepencyAttribute.Name ?? property.Name;
+                    var typeRegistration = registration as TypeRegistration;
+
+                    if (typeRegistration != null && typeRegistration.ValueContainer.ContainsKey(propertyWithDepencyAttributeName)) // myString
                     {
-                        if (ValueContainer.IsTypeSupported(property.PropertyType))
-                        {
-                            // value
-                            var nameOrPropertyName = attribute.Name != null ? attribute.Name : property.Name;
-                            var typeRegistration = registration as TypeRegistration;
-                            if (typeRegistration != null && typeRegistration.HasValue(nameOrPropertyName)) // myString
-                            {
-                                var value = typeRegistration.GetValue(nameOrPropertyName); // "My Value"
-                                property.SetValue(instance, value);
-                            }
-                        }
-                        else
-                        {
-                            // Type, Factory, Instance
-                            var value = attribute.Name != null ?
-                                this.GetInstance(property.PropertyType, attribute.Name)
-                                : this.GetInstance(property.PropertyType);
-                            property.SetValue(instance, value);
-                        }
+                        var value = typeRegistration.ValueContainer[propertyWithDepencyAttributeName]; // "My Value"
+                        property.SetValue(instance, value);
                     }
+                }
+                else
+                {
+                    // Type, instance, factory
+                    var propertyWithDepencyAttributeName = propertyWithDepencyAttribute.Name ?? DefaultName;
+                    var value = this.GetInstance(property.PropertyType, propertyWithDepencyAttributeName);
+                    property.SetValue(instance, value);
                 }
             }
 
             return instance;
         }
 
-        public object BuildUp(object instance)
+        /// <summary>
+        /// Fills the properties of the instance with the name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <param name="instance">The instance</param>
+        /// <returns>The instance filled</returns>
+        public object BuildUp(Type type, string name, object instance)
         {
-            if (instance == null) { throw new ArgumentNullException(nameof(instance)); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
 
-            var type = instance.GetType();
-            var name = MvvmLibConstants.DefaultName;
-            this.autoDiscover.CheckRegistered(type, name);
-
-            return this.DoBuildUp(instance.GetType(), name, instance);
+            return this.DoBuildUp(type, name, instance);
         }
 
+        /// <summary>
+        /// Fills the properties of the instance.
+        /// </summary>
+        /// <param name="instance">The instance</param>
+        /// <returns>The instance filled</returns>
+        public object BuildUp(object instance)
+        {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            var type = instance.GetType();
+            var name = DefaultName;
+
+            this.TryRegisterTypeIfNotRegistered(type, name);
+
+            return this.DoBuildUp(type, name, instance);
+        }
+
+        /// <summary>
+        /// Fills the properties of an instance with the name / key.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="name">The name / key</param>
+        /// <returns>The instance filled</returns>
         public object BuildUp(Type type, string name)
         {
-            if (type == null) { throw new ArgumentNullException(nameof(type)); }
-            if (name == null) { throw new ArgumentNullException(nameof(name)); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
 
             var instance = this.GetInstance(type, name);
             return this.DoBuildUp(type, name, instance);
         }
 
+        /// <summary>
+        /// Fills the properties of an instance.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>The instance filled</returns>
         public object BuildUp(Type type)
         {
-            return this.BuildUp(type, MvvmLibConstants.DefaultName);
+            return this.BuildUp(type, DefaultName);
         }
 
-        public List<object> GetAllInstances(Type type)
+        private void NotifyOnResolvedForRegistration(ContainerRegistration registration, object instance)
         {
-            if (this.registrations.ContainsKey(type))
-            {
-                var result = new List<object>();
-
-                var registrationsOfType = this.registrations[type].Values;
-                foreach (var registration in registrationsOfType)
-                {
-                    var instance = DoGetInstance(registration, type, registration.Name);
-                    result.Add(instance);
-                }
-
-                return result;
-            }
-            return null;
-        }
-
-        public void ClearCache()
-        {
-            this.instancesCache.Clear();
-            this.typeInformationManager.Clear();
-        }
-
-        public void Clear()
-        {
-            this.registrations.Clear();
-            this.ClearCache();
+            registration.OnResolved?.Invoke(registration, instance);
         }
 
         private void RaiseResolved(ContainerRegistration registration, object instance)
         {
-            registration.OnResolved?.Invoke(registration, instance);
-
-            var context = new InjectorResolveEventArgs(registration, instance);
+            var context = new ResolutionEventArgs(registration, instance);
             foreach (var handler in this.resolved)
-            {
                 handler(this, context);
-            }
         }
 
-        #endregion // Resolve
-    }
+        #endregion // Resolution
 
+    }
 }

@@ -37,8 +37,6 @@
 <ul class="currentrelative">
 <li class="tocentry"><a href="#registering">Registering</a></li>
 
-<li class="tocentry"><a href="#registering-quickly-by-assembly-reflection">Registering quickly by Assembly Reflection</a></li>
-
 <li class="tocentry"><a href="#getinstance">GetInstance</a></li>
 
 <li class="tocentry"><a href="#autodiscovery">AutoDiscovery</a></li>
@@ -123,7 +121,7 @@ injector.RegisterType&lt;IMyService, MyService&gt;();
 injector.RegisterType&lt;Item&gt;(&quot;my key&quot;);
 
 // with value container ...
-injector.RegisterType&lt;Item&gt;().WithValueContainer(new ValueContainer().RegisterValue(&quot;myString&quot;, &quot;My value&quot;));
+injector.RegisterType&lt;Item&gt;().WithValueContainer(new Dictionary&lt;string, object&gt; { { &quot;myString&quot;, &quot;my value&quot; } });
 </code></pre>
 
 <p>Singleton</p>
@@ -135,13 +133,13 @@ injector.RegisterSingleton&lt;Item&gt;(&quot;my key&quot;);
 <p>Instance</p>
 <pre><code class="cs">injector.RegisterInstance&lt;Item&gt;(new Item());
 // with key
-injector.RegisterInstance&lt;Item&gt;(new Item(), &quot;my key&quot;);
+injector.RegisterInstance&lt;Item&gt;(&quot;my key&quot;, new Item());
 </code></pre>
 
 <p>Factory</p>
 <pre><code class="cs">injector.RegisterFactory&lt;Item&gt;(() =&gt; new Item());
 // with key
-injector.RegisterFactory&lt;Item&gt;(() =&gt; new Item(), &quot;my key&quot;);
+injector.RegisterFactory&lt;Item&gt;(&quot;my key&quot;, () =&gt; new Item());
 </code></pre>
 
 <p>Func</p>
@@ -182,7 +180,7 @@ public class Item
 </code></pre>
 
 <pre><code class="cs">injector.RegisterInstance&lt;MySubItem&gt;(new SubItem());
-injector.RegisterType&lt;Item&gt;().WithValueContainer(new ValueContainer().RegisterValue(&quot;MyString&quot;, &quot;My value&quot;));
+injector.RegisterType&lt;Item&gt;().WithValueContainer(new Dictionary&lt;string, object&gt; { { &quot;myString&quot;, &quot;my value&quot; } });
 
 var instance = injector.BuildUp&lt;Item&gt;();
 </code></pre>
@@ -213,13 +211,6 @@ var instance = injector.BuildUp&lt;Item&gt;();
 });
 
 var result = injector.GetInstance&lt;CircularPropertyItem&gt;();
-</code></pre>
-
-<h2 id="registering-quickly-by-assembly-reflection">Registering quickly by Assembly Reflection<a class="headerlink" href="#registering-quickly-by-assembly-reflection" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Example</p>
-<pre><code class="cs">injector.RegisterAssemblyServices(); // WpfLib services
-injector.RegisterAssemblyServices(Assembly.GetExecutingAssembly()); // app services
-injector.RegisterAssemblyTypes(Assembly.GetExecutingAssembly(), (t) =&gt; t.Name.EndsWith(&quot;ViewModel&quot;), false); // view models
 </code></pre>
 
 <h2 id="getinstance">GetInstance<a class="headerlink" href="#getinstance" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -283,15 +274,9 @@ injector.NonPublicProperties = false;
 <li>Registered</li>
 <li>Resolved</li>
 </ul>
-<pre><code class="cs"> injector.Registered += (s, e) =&gt;
-            {
-                
-            };
+<pre><code class="cs">injector.Registered += (s, e) =&gt; { };
 
-injector.Resolved += (s, e) =&gt;
-            {
-                
-            };
+injector.Resolved += (s, e) =&gt; {  };
 </code></pre>
 
 

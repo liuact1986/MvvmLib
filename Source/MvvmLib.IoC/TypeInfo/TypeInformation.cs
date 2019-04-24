@@ -2,16 +2,38 @@
 
 namespace MvvmLib.IoC
 {
+    /// <summary>
+    /// Type information class.
+    /// </summary>
     public class TypeInformation
     {
-        public ConstructorInfo Constructor { get; }
+        private readonly ConstructorInfo constructor;
+        /// <summary>
+        /// The constructor.
+        /// </summary>
+        public ConstructorInfo Constructor
+        {
+            get { return constructor; }
+        }
 
-        public ParameterInfo[] Parameters { get; }
+        private readonly ParameterInfo[] parameters;
+        /// <summary>
+        /// The parameters.
+        /// </summary>
+        public ParameterInfo[] Parameters
+        {
+            get { return parameters; }
+        }
 
+        /// <summary>
+        /// Creates the type information class.
+        /// </summary>
+        /// <param name="constructor">The constructor</param>
+        /// <param name="parameters">The parameters</param>
         public TypeInformation(ConstructorInfo constructor, ParameterInfo[] parameters)
         {
-            Constructor = constructor;
-            Parameters = parameters;
+            this.constructor = constructor;
+            this.parameters = parameters;
         }
     }
 }

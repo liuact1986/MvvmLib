@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
 using MvvmLib.IoC.Tests;
 
 namespace MvvmLib.Tests.IoC.ObjectCreation
 {
+
     [TestClass]
     public class ExpressionDelegateFactoryTests
     {
@@ -13,13 +16,19 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
             return new ExpressionDelegateFactory();
         }
 
+        private ConstructorInfo GetFirstConstructor(Type type)
+        {
+            var constructors = type.GetConstructors();
+            return constructors.FirstOrDefault();
+        }
+
         [TestMethod]
         public void CreateConstructor()
         {
             var service = this.GetService();
 
-            var c2 = service.CreateConstructor<Item>(typeof(Item), ReflectionUtils.GetDefaultConstructor(typeof(Item)));
-            var c3 = service.CreateConstructor<ViewA>(typeof(ViewA), ReflectionUtils.GetDefaultConstructor(typeof(ViewA)));
+            var c2 = service.CreateConstructor<Item>(typeof(Item), GetFirstConstructor(typeof(Item)));
+            var c3 = service.CreateConstructor<ViewA>(typeof(ViewA), GetFirstConstructor(typeof(ViewA)));
 
             var r2 = c2();
             var r3 = c3();
@@ -33,8 +42,8 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         {
             var service = this.GetService();
 
-            var c2 = service.CreateConstructor<object>(typeof(Item), ReflectionUtils.GetDefaultConstructor(typeof(Item)));
-            var c3 = service.CreateConstructor<object>(typeof(ViewA), ReflectionUtils.GetDefaultConstructor(typeof(ViewA)));
+            var c2 = service.CreateConstructor<object>(typeof(Item), GetFirstConstructor(typeof(Item)));
+            var c3 = service.CreateConstructor<object>(typeof(ViewA), GetFirstConstructor(typeof(ViewA)));
 
             var r2 = c2();
             var r3 = c3();
@@ -48,16 +57,18 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         {
             var service = this.GetService();
 
-            //var c1 = service.CreateParameterizedConstructor<string>(typeof(string), ReflectionUtils.GetDefaultConstructor(typeof(Item)));
-            var c2 = service.CreateParameterizedConstructor<ItemWithString>(typeof(ItemWithString), ReflectionUtils.GetDefaultConstructor(typeof(ItemWithString)));
-            var c3 = service.CreateParameterizedConstructor<ViewAWithInjection>(typeof(ViewAWithInjection), ReflectionUtils.GetDefaultConstructor(typeof(ViewAWithInjection)));
+            var c1 = service.CreateParameterizedConstructor<ItemWithInt>(typeof(ItemWithInt), GetFirstConstructor(typeof(ItemWithInt)));
+            var c2 = service.CreateParameterizedConstructor<ItemWithString>(typeof(ItemWithString), 
+                GetFirstConstructor(typeof(ItemWithString)));
+            var c3 = service.CreateParameterizedConstructor<ViewAWithInjection>(typeof(ViewAWithInjection), 
+                GetFirstConstructor(typeof(ViewAWithInjection)));
 
-            //var r1 = c1(new object[] { "p1" });
+            var r1 = c1(new object[] { 10 });
             var r2 = c2(new object[] { "p1" });
             var r3 = c3(new object[] { "p1" });
 
-            //Assert.AreEqual(typeof(string), r1.GetType());
-            //Assert.AreEqual("p1", r1);
+            Assert.AreEqual(typeof(ItemWithInt), r1.GetType());
+            Assert.AreEqual(10, r1.MyInt);
 
             Assert.AreEqual(typeof(ItemWithString), r2.GetType());
             Assert.AreEqual("p1", r2.myString);
@@ -66,14 +77,27 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
             Assert.AreEqual("p1", r3.MyString);
         }
 
+        //[TestMethod]
+        //public void CreateParameterizedConstructor_No_Value_Inject_Defaults()
+        //{
+        //    var service = this.GetService();
+
+        //    var c1 = service.CreateParameterizedConstructor<ItemWithInt>(typeof(ItemWithInt), GetFirstConstructor(typeof(ItemWithInt)));
+
+        //    var r1 = c1(new object[] { });
+
+        //    Assert.AreEqual(typeof(ItemWithInt), r1.GetType());
+        //    Assert.AreEqual(0, r1.MyInt);
+        //}
+
         [TestMethod]
         public void CreateParameterizedConstructor_WithObject()
         {
             var service = this.GetService();
 
-            //var c1 = service.CreateParameterizedConstructor<object>(typeof(string), ReflectionUtils.GetDefaultConstructor(typeof(Item)));
-            var c2 = service.CreateParameterizedConstructor<object>(typeof(ItemWithString), ReflectionUtils.GetDefaultConstructor(typeof(ItemWithString)));
-            var c3 = service.CreateParameterizedConstructor<object>(typeof(ViewAWithInjection), ReflectionUtils.GetDefaultConstructor(typeof(ViewAWithInjection)));
+            //var c1 = service.CreateParameterizedConstructor<object>(typeof(string), GetFirstConstructor(typeof(Item)));
+            var c2 = service.CreateParameterizedConstructor<object>(typeof(ItemWithString), GetFirstConstructor(typeof(ItemWithString)));
+            var c3 = service.CreateParameterizedConstructor<object>(typeof(ViewAWithInjection), GetFirstConstructor(typeof(ViewAWithInjection)));
 
             //var r1 = c1(new object[] { "p1" });
             var r2 = c2(new object[] { "p1" });

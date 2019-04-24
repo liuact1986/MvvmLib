@@ -39,7 +39,7 @@ injector.RegisterType<IMyService, MyService>();
 injector.RegisterType<Item>("my key");
 
 // with value container ...
-injector.RegisterType<Item>().WithValueContainer(new ValueContainer().RegisterValue("myString", "My value"));
+injector.RegisterType<Item>().WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
 ```
 
 Singleton
@@ -55,7 +55,7 @@ Instance
 ```cs
 injector.RegisterInstance<Item>(new Item());
 // with key
-injector.RegisterInstance<Item>(new Item(), "my key");
+injector.RegisterInstance<Item>("my key", new Item());
 ```
 
 Factory
@@ -63,7 +63,7 @@ Factory
 ```cs
 injector.RegisterFactory<Item>(() => new Item());
 // with key
-injector.RegisterFactory<Item>(() => new Item(), "my key");
+injector.RegisterFactory<Item>("my key", () => new Item());
 ```
 
 Func
@@ -111,7 +111,7 @@ public class Item
 
 ```cs
 injector.RegisterInstance<MySubItem>(new SubItem());
-injector.RegisterType<Item>().WithValueContainer(new ValueContainer().RegisterValue("MyString", "My value"));
+injector.RegisterType<Item>().WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
 
 var instance = injector.BuildUp<Item>();
 ```
@@ -149,16 +149,6 @@ injector.RegisterType<CircularPropertyItem>().OnResolved((registration, instance
 });
 
 var result = injector.GetInstance<CircularPropertyItem>();
-```
-
-## Registering quickly by Assembly Reflection
-
-Example
-
-```cs
-injector.RegisterAssemblyServices(); // WpfLib services
-injector.RegisterAssemblyServices(Assembly.GetExecutingAssembly()); // app services
-injector.RegisterAssemblyTypes(Assembly.GetExecutingAssembly(), (t) => t.Name.EndsWith("ViewModel"), false); // view models
 ```
 
 ## GetInstance
@@ -244,13 +234,7 @@ injector.DelegateFactoryType = DelegateFactoryType.Reflection;
 * Resolved
 
 ```cs
- injector.Registered += (s, e) =>
-            {
-                
-            };
+injector.Registered += (s, e) => { };
 
-injector.Resolved += (s, e) =>
-            {
-                
-            };
+injector.Resolved += (s, e) => {  };
 ```

@@ -4,5 +4,1222 @@
         <name>MvvmLib.IoC</name>
     </assembly>
     <members>
+        <member name="T:MvvmLib.IoC.DependencyAttribute">
+            <summary>
+            Allows to register a property as dependency for BuildUp.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.DependencyAttribute.Name">
+            <summary>
+            The name/ key used for the registration.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.PreferredConstructorAttribute">
+            <summary>
+            Allows to select the preferred constructor for a type. 
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.RegistrationEventArgs">
+            <summary>
+            The registration event args class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.RegistrationEventArgs.Registration">
+            <summary>
+            The registration.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.RegistrationEventArgs.#ctor(MvvmLib.IoC.ContainerRegistration)">
+            <summary>
+            Creates the registration event args class.
+            </summary>
+            <param name="registration">The registration</param>
+        </member>
+        <member name="T:MvvmLib.IoC.ResolutionEventArgs">
+            <summary>
+            The resolution event args class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ResolutionEventArgs.Registration">
+            <summary>
+            The registration.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ResolutionEventArgs.Instance">
+            <summary>
+            The instance.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ResolutionEventArgs.#ctor(MvvmLib.IoC.ContainerRegistration,System.Object)">
+            <summary>
+            Creates the resolution event args class
+            </summary>
+            <param name="registration">The registration</param>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="T:MvvmLib.IoC.IInjectorRegistryExtensions">
+            <summary>
+            Injector registration extension methods.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterFactory``1(MvvmLib.IoC.IInjectorRegistry,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterFactory``1(MvvmLib.IoC.IInjectorRegistry,System.String,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterInstance``1(MvvmLib.IoC.IInjectorRegistry,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterInstance``1(MvvmLib.IoC.IInjectorRegistry,System.String,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterType``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Registers a type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterType``1(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Registers a type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterType``2(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Registers a type.
+            </summary>
+            <typeparam name="TFrom">the type from</typeparam>
+            <typeparam name="TTo">The implementation type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterType``2(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Registers a type.
+            </summary>
+            <typeparam name="TFrom">the type from</typeparam>
+            <typeparam name="TTo">The implementation type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Registers a type as singleton.
+            </summary>
+            <typeparam name="T">the type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``1(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Registers a type as singleton.
+            </summary>
+            <typeparam name="T">the type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``2(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Registers a type as singleton.
+            </summary>
+            <typeparam name="TFrom">the type from</typeparam>
+            <typeparam name="TTo">The implementation type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``2(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Registers a type as singleton.
+            </summary>
+            <typeparam name="TFrom">the type from</typeparam>
+            <typeparam name="TTo">The implementation type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.IsRegistered``1(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Checks if the type with the name / key is registered.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>True if registered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.IsRegistered``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Checks if the type is registered.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>True if registered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.UnregisterAll``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Unregisters all registrations for the type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.Unregister``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Unregisters the registration for the type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.Unregister``1(MvvmLib.IoC.IInjectorRegistry,System.String)">
+            <summary>
+            Unregisters the registration for the type with the name / key.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name / key</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.IInjectorResolverExtensions">
+            <summary>
+            Injector resolution extension methods.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.BuildUp``1(MvvmLib.IoC.IInjectorResolver,``0)">
+            <summary>
+            Fills the properties of the instance.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.BuildUp``1(MvvmLib.IoC.IInjectorResolver,System.String,``0)">
+            <summary>
+            Fills the properties of the instance.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name :key</param>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.BuildUp``1(MvvmLib.IoC.IInjectorResolver)">
+            <summary>
+            Fills the properties of the instance.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.GetInstance``1(MvvmLib.IoC.IInjectorResolver,System.String)">
+            <summary>
+            Gets the instance for the type and name / key.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.GetInstance``1(MvvmLib.IoC.IInjectorResolver)">
+            <summary>
+            Gets the instance for the type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.GetNewInstance``1(MvvmLib.IoC.IInjectorResolver,System.String)">
+            <summary>
+            Gets a new instance for the type and name / key.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.GetNewInstance``1(MvvmLib.IoC.IInjectorResolver)">
+            <summary>
+            Gets a new instance for the type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolverExtensions.GetAllInstances``1(MvvmLib.IoC.IInjectorResolver)">
+            <summary>
+            Gets all instances of the type.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The list of instances</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.IInjector">
+            <summary>
+            Allows to register or discover types, factories, instances then create instances and inject dependencies.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.IInjectorRegistry">
+            <summary>
+            Allows to register types, factories, instances.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.IoC.IInjectorRegistry.Registered">
+            <summary>
+            Invoked on registration.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.IsRegistered(System.Type,System.String)">
+            <summary>
+            Checks if ther is a registration for the type with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>true if found</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.IsRegistered(System.Type)">
+            <summary>
+            Checks if ther is a registration for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>true if found</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterType(System.Type,System.String,System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <param name="name">The name / key</param>
+            <param name="typeTo">The implementation type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterType(System.Type,System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <param name="typeTo">The implementation type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterType(System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterType(System.Type,System.String)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterInstance(System.Type,System.String,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterInstance(System.Type,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <param name="type">The type</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterFactory(System.Type,System.String,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.RegisterFactory(System.Type,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <param name="type">The type</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.UnregisterAll(System.Type)">
+            <summary>
+            Unregisters all registrations for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.Unregister(System.Type,System.String)">
+            <summary>
+            Unregisters the registration for the type with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistry.Unregister(System.Type)">
+            <summary>
+            Unregisters the registration for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.IInjectorResolver">
+            <summary>
+            Allows to discover types, create instances and inject dependencies.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IInjectorResolver.AutoDiscovery">
+            <summary>
+            Allows to discover non registered types.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IInjectorResolver.NonPublicConstructors">
+            <summary>
+            Allows to include non public constructors.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IInjectorResolver.NonPublicProperties">
+            <summary>
+            Allows to include non public properties.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IInjectorResolver.DelegateFactoryType">
+            <summary>
+            The delegate factory type, Linq Expressions used by default.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.IoC.IInjectorResolver.Resolved">
+            <summary>
+            Invoked on instance resolution.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.GetNewInstance(System.Type,System.String)">
+            <summary>
+            Gets a new instance for the type and name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.GetNewInstance(System.Type)">
+            <summary>
+            Gets a new instance for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.GetInstance(System.Type,System.String)">
+            <summary>
+            Gets the instance for the type and name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.GetInstance(System.Type)">
+            <summary>
+            Gets the instance for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.GetAllInstances(System.Type)">
+            <summary>
+            Gets all instances of the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The list of instances</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.BuildUp(System.Type,System.String,System.Object)">
+            <summary>
+            Fills the properties of the instance with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.BuildUp(System.Object)">
+            <summary>
+            Fills the properties of the instance.
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.BuildUp(System.Type,System.String)">
+            <summary>
+            Fills the properties of an instance with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorResolver.BuildUp(System.Type)">
+            <summary>
+            Fills the properties of an instance.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.Injector">
+            <summary>
+            Allows to register or discover types, factories, instances then create instances and inject dependencies.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.Injector.AutoDiscovery">
+            <summary>
+            Allows to discover non registered types.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.Injector.NonPublicConstructors">
+            <summary>
+            Allows to include non public constructors.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.Injector.NonPublicProperties">
+            <summary>
+            Allows to include non public properties.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.Injector.DelegateFactoryType">
+            <summary>
+            The delegate factory type, Linq Expressions used by default.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.IoC.Injector.Registered">
+            <summary>
+            Invoked on registration.
+            </summary>
+        </member>
+        <member name="E:MvvmLib.IoC.Injector.Resolved">
+            <summary>
+            Invoked on instance resolution.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.#ctor(MvvmLib.IoC.TypeInformationManager,MvvmLib.IoC.ObjectCreationManager,MvvmLib.IoC.SingletonCache)">
+            <summary>
+            Creates the injector class.
+            </summary>
+            <param name="typeInformationManager">The type information manager</param>
+            <param name="objectCreationManager">The object creation manager</param>
+            <param name="singletonCache">The cache for singletons</param>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.#ctor">
+            <summary>
+            Creates the injector class.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.IsRegistered(System.Type,System.String)">
+            <summary>
+            Checks if ther is a registration for the type with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>true if found</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.IsRegistered(System.Type)">
+            <summary>
+            Checks if ther is a registration for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>true if found</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterType(System.Type,System.String,System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <param name="name">The name / key</param>
+            <param name="typeTo">The implementation type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterType(System.Type,System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <param name="typeTo">The implementation type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterType(System.Type)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterType(System.Type,System.String)">
+            <summary>
+            registers a type.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterInstance(System.Type,System.String,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterInstance(System.Type,System.Object)">
+            <summary>
+            Registers the instance.
+            </summary>
+            <param name="type">The type</param>
+            <param name="instance">The instance</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterFactory(System.Type,System.String,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.RegisterFactory(System.Type,System.Func{System.Object})">
+            <summary>
+            Registers a factory.
+            </summary>
+            <param name="type">The type</param>
+            <param name="factory">The factory function</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.UnregisterAll(System.Type)">
+            <summary>
+            Unregisters all registrations for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.Unregister(System.Type,System.String)">
+            <summary>
+            Unregisters the registration for the type with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.Unregister(System.Type)">
+            <summary>
+            Unregisters the registration for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>True if unregistered</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.GetNewInstance(System.Type,System.String)">
+            <summary>
+            Gets a new instance for the type and name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.GetNewInstance(System.Type)">
+            <summary>
+            Gets a new instance for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.GetInstance(System.Type,System.String)">
+            <summary>
+            Gets the instance for the type and name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name : key</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.GetInstance(System.Type)">
+            <summary>
+            Gets the instance for the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.GetAllInstances(System.Type)">
+            <summary>
+            Gets all instances of the type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The list of instances</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.BuildUp(System.Type,System.String,System.Object)">
+            <summary>
+            Fills the properties of the instance with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.BuildUp(System.Object)">
+            <summary>
+            Fills the properties of the instance.
+            </summary>
+            <param name="instance">The instance</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.BuildUp(System.Type,System.String)">
+            <summary>
+            Fills the properties of an instance with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.Injector.BuildUp(System.Type)">
+            <summary>
+            Fills the properties of an instance.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The instance filled</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.DelegateFactoryType">
+            <summary>
+            The delegate factory type.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.IoC.DelegateFactoryType.Reflection">
+            <summary>
+            With reflection
+            </summary>
+        </member>
+        <member name="F:MvvmLib.IoC.DelegateFactoryType.Expression">
+            <summary>
+            With Linq Expressions
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.ExpressionDelegateFactory">
+            <summary>
+            Allows to gets instance factories with Linq Expressions (more efficient performance).
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ExpressionDelegateFactory.CreateConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for an empty constructor.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.ExpressionDelegateFactory.CreateParameterizedConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for a constructor with parameters.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.IDelegateFactory">
+            <summary>
+            Allows to gets instance factories.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IDelegateFactory.CreateConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for an empty constructor.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IDelegateFactory.CreateParameterizedConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for a constructor with parameters.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.IObjectCreationManager">
+            <summary>
+            Allows to manage instance creation with caches.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IObjectCreationManager.FactoryCache">
+            <summary>
+            The factory cache.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IObjectCreationManager.ParameterizedFactoryCache">
+            <summary>
+            The parameterized factory cache.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IObjectCreationManager.DelegateFactory">
+            <summary>
+            The delegate factory.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.IObjectCreationManager.DelegateFactoryType">
+            <summary>
+            The delegate factory type.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IObjectCreationManager.ClearCachesAndResetFactory">
+            <summary>
+            Clears the caches and resets the delegate factory.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.IObjectCreationManager.CreateInstanceWithEmptyConstructor(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates an instance with an empty constructor.
+            </summary>
+            <param name="type">The type</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The instance created</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IObjectCreationManager.CreateInstanceWithParameterizedConstructor(System.Type,System.Reflection.ConstructorInfo,System.Object[])">
+            <summary>
+            Creates an instance with a parameterized constructor.
+            </summary>
+            <param name="type">The type</param>
+            <param name="constructor">The constructor info</param>
+            <param name="parameters">The parameters to inject</param>
+            <returns>The instance created</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IObjectCreationManager.ClearCaches">
+            <summary>
+            Clears the cache.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.ObjectCreationManager">
+            <summary>
+            Allows to manage instance creation with caches.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ObjectCreationManager.FactoryCache">
+            <summary>
+            The factory cache.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ObjectCreationManager.ParameterizedFactoryCache">
+            <summary>
+            The parameterized factory cache.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ObjectCreationManager.DelegateFactory">
+            <summary>
+            The delegate factory.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ObjectCreationManager.DelegateFactoryType">
+            <summary>
+            The delegate factory type.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ObjectCreationManager.#ctor">
+            <summary>
+            Creates the object creation manager class.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ObjectCreationManager.ClearCachesAndResetFactory">
+            <summary>
+            Clears the caches and resets the delegate factory.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ObjectCreationManager.CreateInstanceWithEmptyConstructor(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates an instance with an empty constructor.
+            </summary>
+            <param name="type">The type</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The instance created</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.ObjectCreationManager.CreateInstanceWithParameterizedConstructor(System.Type,System.Reflection.ConstructorInfo,System.Object[])">
+            <summary>
+            Creates an instance with a parameterized constructor.
+            </summary>
+            <param name="type">The type</param>
+            <param name="constructor">The constructor info</param>
+            <param name="parameters">The parameters to inject</param>
+            <returns>The instance created</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.ObjectCreationManager.ClearCaches">
+            <summary>
+            Clears the cache.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.ReflectionDelegateFactory">
+            <summary>
+            Allows to gets instance factories with <see cref="N:System.Reflection"/>.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ReflectionDelegateFactory.CreateConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for an empty constructor.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.ReflectionDelegateFactory.CreateParameterizedConstructor``1(System.Type,System.Reflection.ConstructorInfo)">
+            <summary>
+            Creates a factory for a constructor with parameters.
+            </summary>
+            <typeparam name="T">The type of instance</typeparam>
+            <param name="type">The type of instance</param>
+            <param name="constructor">The constructor info</param>
+            <returns>The factory</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.FactoryRegistrationOptions">
+            <summary>
+            The options for factory registration.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.FactoryRegistrationOptions.OnResolved(System.Action{MvvmLib.IoC.ContainerRegistration,System.Object})">
+            <summary>
+            Sets the resolved action for the registration.
+            </summary>
+            <param name="action">The action</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.InstanceRegistrationOptions">
+            <summary>
+            The options for instance registration.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.InstanceRegistrationOptions.OnResolved(System.Action{MvvmLib.IoC.ContainerRegistration,System.Object})">
+            <summary>
+            Sets the resolved action for the registration.
+            </summary>
+            <param name="action">The action</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.TypeRegistrationOptions">
+            <summary>
+            The options for type registration.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptions.AsSingleton">
+            <summary>
+            Allows to get always the same instance for the registration.
+            </summary>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptions.AsMultiInstances">
+            <summary>
+            Allows to get always a new instance for the registration.
+            </summary>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptions.WithValueContainer(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Value container for injected value types or collections.
+            </summary>
+            <param name="valueContainer">The value container dictionary</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptions.OnResolved(System.Action{MvvmLib.IoC.ContainerRegistration,System.Object})">
+            <summary>
+            Sets the resolved action for the registration.
+            </summary>
+            <param name="action">The action</param>
+            <returns>The registration options</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.ContainerRegistration">
+            <summary>
+            Container egistration base class.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.IoC.ContainerRegistration.name">
+            <summary>
+            The name / key.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ContainerRegistration.Name">
+            <summary>
+            The name / key.
+            </summary>
+        </member>
+        <member name="F:MvvmLib.IoC.ContainerRegistration.onResolved">
+            <summary>
+            Invoked on resolution.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.ContainerRegistration.OnResolved">
+            <summary>
+            Invoked on resolution.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.IoC.FactoryRegistration">
+            <summary>
+            The factory class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.FactoryRegistration.Type">
+            <summary>
+            The type.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.FactoryRegistration.Factory">
+            <summary>
+            The factory.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.FactoryRegistration.#ctor(System.Type,System.String,System.Func{System.Object})">
+            <summary>
+            Creates the factory registration class.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="factory">The factory</param>
+        </member>
+        <member name="T:MvvmLib.IoC.InstanceRegistration">
+            <summary>
+            The instance registration class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.InstanceRegistration.Type">
+            <summary>
+            The type.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.InstanceRegistration.Instance">
+            <summary>
+            The instance.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.InstanceRegistration.#ctor(System.Type,System.String,System.Object)">
+            <summary>
+            Creates the instance registration class.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <param name="instance">The instance</param>
+        </member>
+        <member name="T:MvvmLib.IoC.TypeRegistration">
+            <summary>
+            The type registration class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeRegistration.TypeFrom">
+            <summary>
+            The type from.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeRegistration.TypeTo">
+            <summary>
+            The implementation type.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeRegistration.IsSingleton">
+            <summary>
+            Allows to get always the same instance.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeRegistration.ValueContainer">
+            <summary>
+            The container for injected value types or collections.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistration.#ctor(System.Type,System.String,System.Type)">
+            <summary>
+            Creates the type registration class.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <param name="name">the name / key</param>
+            <param name="typeTo">The implementation type</param>
+        </member>
+        <member name="T:MvvmLib.IoC.SingletonCache">
+            <summary>
+            Cache for instances.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.SingletonCache.Cache">
+            <summary>
+            The cache for instances.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.SingletonCache.#ctor">
+            <summary>
+            Creates the sngleton cache class.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.SingletonCache.TryAddToCache(MvvmLib.IoC.TypeRegistration,System.Object)">
+            <summary>
+            Adds a registration as singleton to the cache.
+            </summary>
+            <param name="registration">The registration</param>
+            <param name="instance">The instance</param>
+            <returns></returns>
+        </member>
+        <member name="M:MvvmLib.IoC.SingletonCache.IsCached(System.Type,System.String)">
+            <summary>
+            Checks if the cache contains the type with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+            <returns>True if cached</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.SingletonCache.Remove(System.Type,System.String)">
+            <summary>
+            removes the instance with the key from the cache.
+            </summary>
+            <param name="type">The type</param>
+            <param name="name">The name / key</param>
+        </member>
+        <member name="T:MvvmLib.IoC.PropertyWithDependencyAttribute">
+            <summary>
+            Property with <see cref="T:MvvmLib.IoC.DependencyAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.PropertyWithDependencyAttribute.Property">
+            <summary>
+            The property.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.PropertyWithDependencyAttribute.Name">
+            <summary>
+            The name / key.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.PropertyWithDependencyAttribute.#ctor(System.Reflection.PropertyInfo,System.String)">
+            <summary>
+            Creates the property with dependency class.
+            </summary>
+            <param name="property">The property</param>
+            <param name="name">The name / key</param>
+        </member>
+        <member name="T:MvvmLib.IoC.TypeInformation">
+            <summary>
+            Type information class.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeInformation.Constructor">
+            <summary>
+            The constructor.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeInformation.Parameters">
+            <summary>
+            The parameters.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeInformation.#ctor(System.Reflection.ConstructorInfo,System.Reflection.ParameterInfo[])">
+            <summary>
+            Creates the type information class.
+            </summary>
+            <param name="constructor">The constructor</param>
+            <param name="parameters">The parameters</param>
+        </member>
+        <member name="T:MvvmLib.IoC.TypeInformationManager">
+            <summary>
+            Allwos to manage <see cref="T:MvvmLib.IoC.TypeInformation"/> and <see cref="T:MvvmLib.IoC.PropertyWithDependencyAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeInformationManager.TypeCache">
+            <summary>
+            The type cache.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeInformationManager.PropertiesWithDependencyAttributeCache">
+            <summary>
+            the properties cache.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeInformationManager.#ctor">
+            <summary>
+            Creates the type information manager class.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeInformationManager.GetConstructor(System.Type,System.Boolean)">
+            <summary>
+            Gets the constructor (with <see cref="T:MvvmLib.IoC.PreferredConstructorAttribute"/> or empty or first constructor) for the type. 
+            </summary>
+            <param name="type">The type</param>
+            <param name="nonPublicConstructors">Allow to find non public constructors</param>
+            <returns>The constructor info</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeInformationManager.GetTypeInformation(System.Type,System.Boolean)">
+            <summary>
+            Gets the type information.
+            </summary>
+            <param name="type">The type</param>
+            <param name="nonPublicConstructors">Allow to find non public constructors</param>
+            <returns>The type information</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeInformationManager.GetPropertiesWithDependencyAttribute(System.Type,System.Boolean)">
+            <summary>
+            Get the properties with the name / key.
+            </summary>
+            <param name="type">The type</param>
+            <param name="nonPublicProperties">Allows to get non public properties</param>
+            <returns>The list of properties</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.ExpressionUtils">
+            <summary>
+            Linq Expressions utils.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.IoC.ExpressionUtils.GetDefaultValue(System.Type)">
+            <summary>
+            Gets default value for value type.
+            </summary>
+            <param name="type">The type</param>
+            <returns>The default value</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.ExpressionUtils.EnsureCastExpression(System.Linq.Expressions.Expression,System.Type)">
+            <summary>
+            Ensure the cast for boxing/ unboxing.
+            </summary>
+            <param name="expression">The expression</param>
+            <param name="targetType">The target type</param>
+            <returns>The expression or converted  expression</returns>
+        </member>
     </members>
 </doc>

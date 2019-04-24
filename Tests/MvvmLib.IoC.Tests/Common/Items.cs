@@ -80,4 +80,77 @@ namespace MvvmLib.IoC.Tests
             this.myBool = myBool;
         }
     }
+
+
+    public class ItemWithInt
+    {
+        public int MyInt { get; }
+
+        public ItemWithInt(int myInt)
+        {
+            MyInt = myInt;
+        }
+    }
+
+
+    public class ItemWithPrivateCtor
+    {
+        internal ItemWithPrivateCtor()
+        {
+
+        }
+    }
+
+    public class ItemWithMultiCtor
+    {
+        public bool EmptyCtor { get; set; }
+
+        public ItemWithMultiCtor(string i)
+        {
+
+        }
+
+        public ItemWithMultiCtor(int i)
+        {
+
+        }
+
+        public ItemWithMultiCtor()
+        {
+            EmptyCtor = true;
+        }
+    }
+
+    public class ItemWithPreferredCtor
+    {
+        public bool EmptyCtor { get; set; }
+
+        public ItemWithPreferredCtor(string i)
+        {
+
+        }
+
+        [PreferredConstructor]
+        public ItemWithPreferredCtor(int i)
+        {
+
+        }
+
+        public ItemWithPreferredCtor()
+        {
+            EmptyCtor = true;
+        }
+    }
+
+    public class ItemWithDependency
+    {
+        [Dependency]
+        public string MyString { get; set; }
+
+        [Dependency(Name = "k1")]
+        public Item MyItem { get; set; }
+
+        public int MyInt { get; set; }
+    }
+
 }
