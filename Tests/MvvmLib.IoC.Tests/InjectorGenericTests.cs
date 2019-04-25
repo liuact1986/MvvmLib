@@ -750,6 +750,50 @@ namespace MvvmLib.Tests.IoC
         //    Assert.IsNotNull(instance.Item.Item);
         //}
 
+
+        [TestMethod]
+        public void RegisterType_With_Interfaces()
+        {
+            var service = GetService();
+
+            service.RegisterTypeWithInterfaces<LookupDataService>();
+
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType1>());
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType2>());
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType2>());
+            Assert.AreEqual(false, service.IsRegistered<IDisposable>());
+
+            var i1 = service.GetInstance<ILookupDataServiceType1>();
+            var i2 = service.GetInstance<ILookupDataServiceType1>();
+            var i3 = service.GetInstance<ILookupDataServiceType1>();
+
+            Assert.AreEqual(typeof(LookupDataService), i1.GetType());
+            Assert.AreEqual(typeof(LookupDataService), i2.GetType());
+            Assert.AreEqual(typeof(LookupDataService), i3.GetType());
+        }
+    }
+
+    public interface ILookupDataServiceType1
+    {
+
+    }
+
+    public interface ILookupDataServiceType2
+    {
+
+    }
+
+    public interface ILookupDataServiceType3
+    {
+
+    }
+
+    public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
+    {
+        public void Dispose()
+        {
+            
+        }
     }
 
     public class ItemBuildUpWithInterface

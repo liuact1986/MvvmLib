@@ -136,6 +136,13 @@
             <param name="name">The name / key</param>
             <returns>The registration options</returns>
         </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterTypeWithInterfaces``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Shortcut to register the type for all implemented interfaces.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+        </member>
         <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``1(MvvmLib.IoC.IInjectorRegistry)">
             <summary>
             Registers a type as singleton.
@@ -973,7 +980,7 @@
         </member>
         <member name="T:MvvmLib.IoC.ContainerRegistration">
             <summary>
-            Container egistration base class.
+            Container registration base class.
             </summary>
         </member>
         <member name="F:MvvmLib.IoC.ContainerRegistration.name">

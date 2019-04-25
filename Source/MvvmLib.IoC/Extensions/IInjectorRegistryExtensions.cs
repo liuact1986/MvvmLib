@@ -108,6 +108,22 @@ namespace MvvmLib.IoC
         }
 
         /// <summary>
+        /// Shortcut to register the type for all implemented interfaces.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="container">The injector</param>
+        public static void RegisterTypeWithInterfaces<T>(this IInjectorRegistry container)
+        {
+            var type = typeof(T);
+            var interfaces = type.GetInterfaces();
+            foreach (var @interface in interfaces)
+            {
+                if (!container.IsRegistered(@interface) && @interface != typeof(IDisposable))
+                    container.RegisterType(@interface, type);
+            }
+        }
+
+        /// <summary>
         /// Registers a type as singleton.
         /// </summary>
         /// <typeparam name="T">the type</typeparam>

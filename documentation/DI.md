@@ -87,6 +87,34 @@ injector.RegisterType<WithFunc>();
 var instance = service.GetInstance<WithFunc>(); 
 ```
 
+Registering Type with interfaces
+
+```cs
+public interface ILookupDataServiceType1{ }
+
+public interface ILookupDataServiceType2 { }
+
+public interface ILookupDataServiceType3 { }
+
+public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
+{
+    public void Dispose() { }
+}
+```
+
+```cs
+injector.RegisterTypeWithInterfaces<LookupDataService>();
+```
+
+Avoid to do:
+
+```cs
+injector.RegisterTypeWithInterfaces<ILookupDataServiceType1, LookupDataService>();
+injector.RegisterTypeWithInterfaces<ILookupDataServiceType2, LookupDataService>();
+injector.RegisterTypeWithInterfaces<ILookupDataServiceType3, LookupDataService>();
+```
+
+
 ### Property Injection
 
 With Dependency attribute

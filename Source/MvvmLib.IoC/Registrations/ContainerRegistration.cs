@@ -3,7 +3,7 @@
 namespace MvvmLib.IoC
 {
     /// <summary>
-    /// Container egistration base class.
+    /// Container registration base class.
     /// </summary>
     public class ContainerRegistration
     {

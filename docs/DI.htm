@@ -160,6 +160,28 @@ injector.RegisterType&lt;WithFunc&gt;();
 var instance = service.GetInstance&lt;WithFunc&gt;(); 
 </code></pre>
 
+<p>Registering Type with interfaces</p>
+<pre><code class="cs">public interface ILookupDataServiceType1{ }
+
+public interface ILookupDataServiceType2 { }
+
+public interface ILookupDataServiceType3 { }
+
+public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
+{
+    public void Dispose() { }
+}
+</code></pre>
+
+<pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;LookupDataService&gt;();
+</code></pre>
+
+<p>Avoid to do:</p>
+<pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType1, LookupDataService&gt;();
+injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType2, LookupDataService&gt;();
+injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType3, LookupDataService&gt;();
+</code></pre>
+
 <h3 id="property-injection">Property Injection<a class="headerlink" href="#property-injection" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>With Dependency attribute</p>
 <pre><code class="cs">public class SubItem
