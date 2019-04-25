@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -495,7 +494,7 @@ namespace MvvmLib.IoC
                     }
                 }
                 else
-                    throw new ResolutionFailedException($"Cannot resolve unregistered parameter \"{parameterType.Name}\"");
+                    throw new ResolutionFailedException($"Cannot resolve unregistered parameter \"{parameterName}\"");
             }
         }
 

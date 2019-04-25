@@ -65,5 +65,27 @@ namespace MvvmLib.IoC.Tests.Options
             }
             Assert.IsTrue(failed);
         }
+
+
+        [TestMethod]
+        public void CopyTo_Array()
+        {
+            var v = new ValueContainer { { "k1", "v1" }, { "k2", "v2" }, { "k3", "v3" } };
+
+            var array = new KeyValuePair<string, object>[4];
+            array[0] = new KeyValuePair<string, object>("a1", "av1");
+
+            v.CopyTo(array, 1);
+
+            Assert.AreEqual(4, array.Length);
+            Assert.AreEqual("a1", array[0].Key);
+            Assert.AreEqual("av1", array[0].Value);
+            Assert.AreEqual("k1", array[1].Key);
+            Assert.AreEqual("v1", array[1].Value);
+            Assert.AreEqual("k2", array[2].Key);
+            Assert.AreEqual("v2", array[2].Value);
+            Assert.AreEqual("k3", array[3].Key);
+            Assert.AreEqual("v3", array[3].Value);
+        }
     }
 }

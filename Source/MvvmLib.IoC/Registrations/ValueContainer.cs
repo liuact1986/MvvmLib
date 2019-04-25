@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MvvmLib.IoC
 {
@@ -9,7 +10,7 @@ namespace MvvmLib.IoC
     /// </summary>
     public class ValueContainer : IDictionary<string, object>
     {
-        private readonly Dictionary<string, object> keyValues = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> keyValues;
 
         /// <summary>
         /// Get or set the value. The value is checked.
@@ -21,6 +22,9 @@ namespace MvvmLib.IoC
             get { return keyValues[key]; }
             set
             {
+                if (this.keyValues.ContainsKey(key))
+                    throw new ArgumentException($"A key \"{key}\" is already used");
+
                 CheckValue(value);
                 keyValues[key] = value;
             }
@@ -30,17 +34,23 @@ namespace MvvmLib.IoC
         /// Creates the value container.
         /// </summary>
         public ValueContainer()
-        { }
+        {
+            this.keyValues = new Dictionary<string, object>();
+        }
 
         /// <summary>
         /// Creates the value container.
         /// </summary>
         /// <param name="keyValues">The values injected at creation</param>
-        public ValueContainer(Dictionary<string, object> keyValues)
+        public ValueContainer(IEnumerable<KeyValuePair<string, object>> keyValues)
         {
-            CheckValues(keyValues);
+            if (keyValues == null)
+                throw new ArgumentNullException(nameof(keyValues));
 
-            this.keyValues = keyValues;
+            this.keyValues = new Dictionary<string, object>();
+
+            foreach (var keyValue in keyValues)
+                this.Add(keyValue);
         }
 
         /// <summary>
@@ -62,12 +72,18 @@ namespace MvvmLib.IoC
         /// <summary>
         /// Gets the count of values.
         /// </summary>
-        public int Count => keyValues.Count;
+        public int Count
+        {
+            get { return keyValues.Count; }
+        }
 
         /// <summary>
         /// Checks if the dictionary is read only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
 
         /// <summary>
         /// Checks if the type is Value Type, Nullable, Array, enumerable or Uri.
@@ -88,20 +104,10 @@ namespace MvvmLib.IoC
         /// Checks the value.
         /// </summary>
         /// <param name="value">The value</param>
-        public static void CheckValue(object value)
+        private void CheckValue(object value)
         {
             if (value != null && !IsValueContainerType(value.GetType()))
                 throw new ArgumentException("Invalid type for value container. Value Types, Nullables, Array, enumerables and Uri allowed");
-        }
-
-        /// <summary>
-        /// Checks the type of each value and throw a <see cref="ArgumentException"/> if invalid.
-        /// </summary>
-        /// <param name="valueContainer"></param>
-        public static void CheckValues(Dictionary<string, object> valueContainer)
-        {
-            foreach (var value in valueContainer.Values)
-                CheckValue(value);
         }
 
         /// <summary>
@@ -166,7 +172,11 @@ namespace MvvmLib.IoC
         /// <param name="arrayIndex">The index</param>
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < keyValues.Count; i++)
+            {
+                var keyValue = keyValues.ElementAt(i);
+                array[arrayIndex++] = new KeyValuePair<string, object>(keyValue.Key, keyValue.Value);
+            }
         }
 
         /// <summary>

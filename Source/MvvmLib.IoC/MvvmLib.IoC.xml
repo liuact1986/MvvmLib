@@ -1092,7 +1092,7 @@
             Creates the value container.
             </summary>
         </member>
-        <member name="M:MvvmLib.IoC.ValueContainer.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object})">
+        <member name="M:MvvmLib.IoC.ValueContainer.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
             <summary>
             Creates the value container.
             </summary>
@@ -1130,12 +1130,6 @@
             Checks the value.
             </summary>
             <param name="value">The value</param>
-        </member>
-        <member name="M:MvvmLib.IoC.ValueContainer.CheckValues(System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary>
-            Checks the type of each value and throw a <see cref="T:System.ArgumentException"/> if invalid.
-            </summary>
-            <param name="valueContainer"></param>
         </member>
         <member name="M:MvvmLib.IoC.ValueContainer.Add(System.String,System.Object)">
             <summary>
