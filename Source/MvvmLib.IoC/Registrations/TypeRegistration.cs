@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace MvvmLib.IoC
 {
+
     /// <summary>
     /// The type registration class.
     /// </summary>
@@ -36,11 +36,11 @@ namespace MvvmLib.IoC
             internal set { isSingleton = value; }
         }
 
-        private Dictionary<string, object> valueContainer;
+        private ValueContainer valueContainer;
         /// <summary>
         /// The container for injected value types or collections.
         /// </summary>
-        public Dictionary<string, object> ValueContainer
+        public ValueContainer ValueContainer
         {
             get { return valueContainer; }
             internal set { valueContainer = value; }
@@ -57,7 +57,8 @@ namespace MvvmLib.IoC
             this.typeFrom = typeFrom;
             this.name = name;
             this.typeTo = typeTo;
-            this.ValueContainer = new Dictionary<string, object>();
+            this.ValueContainer = new ValueContainer();
         }
+
     }
 }

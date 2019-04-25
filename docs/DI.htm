@@ -120,8 +120,8 @@ injector.RegisterType&lt;IMyService, MyService&gt;();
 // with key
 injector.RegisterType&lt;Item&gt;(&quot;my key&quot;);
 
-// with value container ...
-injector.RegisterType&lt;Item&gt;().WithValueContainer(new Dictionary&lt;string, object&gt; { { &quot;myString&quot;, &quot;my value&quot; } });
+// with value container (for value types, nullables, Uri, enumerables)...
+injector.RegisterType&lt;Item&gt;().WithValueContainer(new ValueContainer { { &quot;myString&quot;, &quot;my value&quot; } });
 </code></pre>
 
 <p>Singleton</p>
@@ -180,7 +180,7 @@ public class Item
 </code></pre>
 
 <pre><code class="cs">injector.RegisterInstance&lt;MySubItem&gt;(new SubItem());
-injector.RegisterType&lt;Item&gt;().WithValueContainer(new Dictionary&lt;string, object&gt; { { &quot;myString&quot;, &quot;my value&quot; } });
+injector.RegisterType&lt;Item&gt;().WithValueContainer(new ValueContainer { { &quot;myString&quot;, &quot;my value&quot; } });
 
 var instance = injector.BuildUp&lt;Item&gt;();
 </code></pre>

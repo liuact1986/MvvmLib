@@ -38,8 +38,8 @@ injector.RegisterType<IMyService, MyService>();
 // with key
 injector.RegisterType<Item>("my key");
 
-// with value container ...
-injector.RegisterType<Item>().WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
+// with value container (for value types, nullables, Uri, enumerables)...
+injector.RegisterType<Item>().WithValueContainer(new ValueContainer { { "myString", "my value" } });
 ```
 
 Singleton
@@ -111,7 +111,7 @@ public class Item
 
 ```cs
 injector.RegisterInstance<MySubItem>(new SubItem());
-injector.RegisterType<Item>().WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
+injector.RegisterType<Item>().WithValueContainer(new ValueContainer { { "myString", "my value" } });
 
 var instance = injector.BuildUp<Item>();
 ```

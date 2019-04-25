@@ -13,7 +13,7 @@ namespace MvvmLib.IoC
         event EventHandler<RegistrationEventArgs> Registered;
 
         /// <summary>
-        /// Checks if ther is a registration for the type with the name / key.
+        /// Checks if there is a registration for the type with the name / key.
         /// </summary>
         /// <param name="type">The type</param>
         /// <param name="name">The name / key</param>
@@ -21,7 +21,7 @@ namespace MvvmLib.IoC
          bool IsRegistered(Type type, string name);
 
         /// <summary>
-        /// Checks if ther is a registration for the type.
+        /// Checks if there is a registration for the type.
         /// </summary>
         /// <param name="type">The type</param>
         /// <returns>true if found</returns>

@@ -104,20 +104,12 @@ namespace MvvmLib.IoC
             : this(new TypeInformationManager(), new ObjectCreationManager(), new SingletonCache())
         { }
 
-        private bool IsValueContainerType(Type type)
-        {
-            return type == typeof(string)
-                || type.IsValueType
-                || type.IsArray
-                || typeof(IEnumerable).IsAssignableFrom(type)
-                || type == typeof(Uri)
-                || Nullable.GetUnderlyingType(type) != null;
-        }
+
 
         #region Registration
 
         /// <summary>
-        /// Checks if ther is a registration for the type with the name / key.
+        /// Checks if there is a registration for the type with the name / key.
         /// </summary>
         /// <param name="type">The type</param>
         /// <param name="name">The name / key</param>
@@ -128,7 +120,7 @@ namespace MvvmLib.IoC
         }
 
         /// <summary>
-        /// Checks if ther is a registration for the type.
+        /// Checks if there is a registration for the type.
         /// </summary>
         /// <param name="type">The type</param>
         /// <returns>true if found</returns>
@@ -380,6 +372,8 @@ namespace MvvmLib.IoC
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
 
             if (this.IsRegistered(type, name))
             {
@@ -416,6 +410,11 @@ namespace MvvmLib.IoC
         #endregion // Registration
 
         #region Resolution
+
+        private bool IsValueContainerType(Type type)
+        {
+            return ValueContainer.IsValueContainerType(type);
+        }
 
         private void TryRegisterTypeIfNotRegistered(Type type, string name)
         {
@@ -496,7 +495,7 @@ namespace MvvmLib.IoC
                     }
                 }
                 else
-                    throw new ResolutionFailedException("Cannot resolve unregistered parameter \"" + parameterType.Name + "\"");
+                    throw new ResolutionFailedException($"Cannot resolve unregistered parameter \"{parameterType.Name}\"");
             }
         }
 
@@ -521,7 +520,7 @@ namespace MvvmLib.IoC
                 var parameterValues = this.ResolveParameterValues(registration, typeInformation.Parameters);
                 var instance = this.objectCreationManager.CreateInstanceWithParameterizedConstructor(type, typeInformation.Constructor, parameterValues);
                 this.singletonCache.TryAddToCache(registration, instance);
-                //this.NotifyOnResolvedForRegistration(registration); ?
+                this.NotifyOnResolvedForRegistration(registration, instance);
                 this.RaiseResolved(registration, instance);
                 return instance;
             }
@@ -541,9 +540,9 @@ namespace MvvmLib.IoC
             {
                 if (this.IsSingletonCached(type, name))
                 {
-                    var instanceCached = this.GetSingletonFromCache(type, name);
-                    this.RaiseResolved(registration, instanceCached);
-                    return instanceCached;
+                    var instance = this.GetSingletonFromCache(type, name);
+                    this.RaiseResolved(registration, instance);
+                    return instance;
                 }
                 else
                 {

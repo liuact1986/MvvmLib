@@ -43,7 +43,7 @@ namespace MvvmLib.IoC
         /// </summary>
         /// <param name="valueContainer">The value container dictionary</param>
         /// <returns>The registration options</returns>
-        public TypeRegistrationOptions WithValueContainer(Dictionary<string, object> valueContainer)
+        public TypeRegistrationOptions WithValueContainer(ValueContainer valueContainer)
         {
             registration.ValueContainer = valueContainer;
             return this;

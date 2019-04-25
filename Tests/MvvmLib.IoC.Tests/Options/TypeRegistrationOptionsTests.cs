@@ -5,6 +5,7 @@ using System.Reflection;
 
 namespace MvvmLib.IoC.Tests.Options
 {
+
     [TestClass]
     public class TypeRegistrationOptionsTests
     {
@@ -60,10 +61,35 @@ namespace MvvmLib.IoC.Tests.Options
 
             Assert.AreEqual(0, registration.ValueContainer.Count);
 
-            var c = new Dictionary<string, object> { { "k1", "v1" } };
+            var c = new ValueContainer { { "k1", "v1" } };
             service.WithValueContainer(c);
 
             Assert.AreEqual(c, registration.ValueContainer);
         }
+
+        [TestMethod]
+        public void Set_The_Value_Container_Failed_With_Invalid_Values()
+        {
+            var registration = new TypeRegistration(typeof(Item), "item", typeof(Item));
+
+            var clearCacheForType = new Action<Type, string>((p, t) => { });
+
+            var service = Activator.CreateInstance(typeof(TypeRegistrationOptions),
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { registration, clearCacheForType }, null) as TypeRegistrationOptions;
+
+            bool failed = false;
+            try
+            {
+                var c = new ValueContainer { { "k1", new Item() } };
+                service.WithValueContainer(c);
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+            Assert.IsTrue(failed);
+        }
+
+
     }
 }

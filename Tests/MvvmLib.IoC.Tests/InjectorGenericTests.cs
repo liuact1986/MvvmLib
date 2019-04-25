@@ -352,13 +352,13 @@ namespace MvvmLib.Tests.IoC
         {
             var injector = GetService();
 
-            injector.RegisterType<ItemWithString>().WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
+            injector.RegisterType<ItemWithString>().WithValueContainer(new ValueContainer { { "myString", "my value" } });
 
 
             injector
                 .RegisterInstance<Item>(new Item { myString = "my value" });
             injector.RegisterType<ItemWithParameters>().WithValueContainer(
-               new Dictionary<string, object> {
+               new ValueContainer {
                    {  "myArray", new string[] { "a", "b" } },
                    { "myString", "my string value" },
                    { "myInt", 10 },
@@ -702,7 +702,7 @@ namespace MvvmLib.Tests.IoC
 
             service.RegisterType<Item>();
             service.RegisterType<ItemBuildUpWithValue>()
-                .WithValueContainer(new Dictionary<string, object> { { "MyString", "My string property injected" } });
+                .WithValueContainer(new ValueContainer { { "MyString", "My string property injected" } });
 
             var r = service.BuildUp<ItemBuildUpWithValue>();
 

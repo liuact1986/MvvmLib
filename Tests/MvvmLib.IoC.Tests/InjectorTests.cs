@@ -291,13 +291,13 @@ namespace MvvmLib.Tests.IoC
         {
             var injector = GetService();
 
-            injector.RegisterType(typeof(ItemWithString)).WithValueContainer(new Dictionary<string, object> { { "myString", "my value" } });
+            injector.RegisterType(typeof(ItemWithString)).WithValueContainer(new ValueContainer { { "myString", "my value" } });
 
 
             injector
                 .RegisterInstance(typeof(Item), new Item { myString = "my value" });
             injector.RegisterType(typeof(ItemWithParameters)).WithValueContainer(
-                new Dictionary<string, object> {
+                new ValueContainer {
                    {  "myArray", new string[] { "a", "b" } },
                    { "myString", "my string value" },
                    { "myInt", 10 },
