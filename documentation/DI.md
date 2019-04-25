@@ -90,16 +90,14 @@ var instance = service.GetInstance<WithFunc>();
 Registering Type with interfaces
 
 ```cs
-public interface ILookupDataServiceType1{ }
+public interface ILookupDataServiceType1 { }
 
 public interface ILookupDataServiceType2 { }
 
 public interface ILookupDataServiceType3 { }
 
-public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
-{
-    public void Dispose() { }
-}
+public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3 
+{ }
 ```
 
 ```cs

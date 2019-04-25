@@ -40,13 +40,13 @@ namespace MvvmLib.Navigation
         {
             if (!DesignerProperties.GetIsInDesignMode(d))
                 if ((bool)e.NewValue)
-                    if (d.GetType().BaseType != typeof(Window))
-                        throw new ArgumentException($"\"ResolveWindowViewModel\" is only available for Window");
+                    if (d is Window window)
+                        window.Activated += OnWindowActivated;
                     else
-                        ((Window)d).Activated += OnWindowActivated;
+                        throw new ArgumentException($"\"ResolveWindowViewModel\" is only available for Window");
         }
 
-        private static void OnWindowActivated(object sender, System.EventArgs e)
+        private static void OnWindowActivated(object sender, EventArgs e)
         {
             var window = sender as Window;
 
