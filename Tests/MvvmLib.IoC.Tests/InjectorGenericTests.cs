@@ -515,7 +515,7 @@ namespace MvvmLib.Tests.IoC
             }
 
             Assert.IsTrue(fail);
-            Assert.AreEqual("Cannot resolve unregistered parameter \"Item\"", error);
+            Assert.AreEqual("Unable to resolve unregistered parameter \"Item\"", error);
         }
 
 
@@ -756,43 +756,117 @@ namespace MvvmLib.Tests.IoC
         {
             var service = GetService();
 
-            service.RegisterTypeWithInterfaces<LookupDataService>();
+            var container = service.RegisterTypeWithInterfaces<LookupDataService>();
+
+            var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
+            registrationOptions2.AsSingleton();
 
             Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType1>());
             Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType2>());
-            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType2>());
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType3>());
             Assert.AreEqual(false, service.IsRegistered<IDisposable>());
 
             var i1 = service.GetInstance<ILookupDataServiceType1>();
-            var i2 = service.GetInstance<ILookupDataServiceType1>();
-            var i3 = service.GetInstance<ILookupDataServiceType1>();
+            var i2 = service.GetInstance<ILookupDataServiceType2>();
+            var i3 = service.GetInstance<ILookupDataServiceType3>();
 
             Assert.AreEqual(typeof(LookupDataService), i1.GetType());
             Assert.AreEqual(typeof(LookupDataService), i2.GetType());
             Assert.AreEqual(typeof(LookupDataService), i3.GetType());
+
+            Assert.AreEqual("default 1", i1.Message1);
+            Assert.AreEqual("default 2", i2.Message2);
+            Assert.AreEqual("default 3", i3.Message3);
+
+            i1.Message1 = "My message 1";
+            i2.Message2 = "My message 2";
+            i3.Message3 = "My message 3";
+
+            var i1b = service.GetInstance<ILookupDataServiceType1>();
+            var i2b = service.GetInstance<ILookupDataServiceType2>();
+            var i3b = service.GetInstance<ILookupDataServiceType3>();
+
+            Assert.AreEqual("default 1", i1b.Message1);
+            Assert.AreEqual("My message 2", i2b.Message2);
+            Assert.AreEqual("default 3", i3b.Message3);
         }
+
+        [TestMethod]
+        public void RegisterSingleton_With_Interfaces()
+        {
+            var service = GetService();
+
+            var container = service.RegisterSingletonWithInterfaces<LookupDataService>();
+
+            var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
+            registrationOptions2.AsMultiInstances();
+
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType1>());
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType2>());
+            Assert.AreEqual(true, service.IsRegistered<ILookupDataServiceType3>());
+            Assert.AreEqual(false, service.IsRegistered<IDisposable>());
+
+            var i1 = service.GetInstance<ILookupDataServiceType1>();
+            var i2 = service.GetInstance<ILookupDataServiceType2>();
+            var i3 = service.GetInstance<ILookupDataServiceType3>();
+
+            Assert.AreEqual(typeof(LookupDataService), i1.GetType());
+            Assert.AreEqual(typeof(LookupDataService), i2.GetType());
+            Assert.AreEqual(typeof(LookupDataService), i3.GetType());
+
+            Assert.AreEqual("default 1", i1.Message1);
+            Assert.AreEqual("default 2", i2.Message2);
+            Assert.AreEqual("default 3", i3.Message3);
+
+            i1.Message1 = "My message 1";
+            i2.Message2 = "My message 2";
+            i3.Message3 = "My message 3";
+
+            var i1b = service.GetInstance<ILookupDataServiceType1>();
+            var i2b = service.GetInstance<ILookupDataServiceType2>();
+            var i3b = service.GetInstance<ILookupDataServiceType3>();
+
+            Assert.AreEqual("My message 1", i1b.Message1);
+            Assert.AreEqual("default 2", i2b.Message2);
+            Assert.AreEqual("My message 3", i3b.Message3);
+
+            // same instance
+            Assert.AreEqual(i1b, i3b);
+        }
+
     }
 
     public interface ILookupDataServiceType1
     {
-
+        string Message1 { get; set; }
     }
 
     public interface ILookupDataServiceType2
     {
-
+        string Message2 { get; set; }
     }
 
     public interface ILookupDataServiceType3
     {
-
+        string Message3 { get; set; }
     }
 
     public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
     {
+        public string Message1 { get; set; }
+        public string Message2 { get; set; }
+        public string Message3 { get; set; } 
+
+        public LookupDataService()
+        {
+            Message1  = "default 1";
+            Message2 = "default 2";
+            Message3 = "default 3";
+        }
+
         public void Dispose()
         {
-            
+
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MvvmLib.IoC
 {
@@ -106,21 +107,52 @@ namespace MvvmLib.IoC
         {
             return container.RegisterType(typeof(TFrom), name, typeof(TTo));
         }
-
         /// <summary>
         /// Shortcut to register the type for all implemented interfaces.
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <param name="container">The injector</param>
-        public static void RegisterTypeWithInterfaces<T>(this IInjectorRegistry container)
+        /// <returns>The container of registration options</returns>
+        public static TypeRegistrationOptionsContainer RegisterTypeWithInterfaces<T>(this IInjectorRegistry container)
         {
             var type = typeof(T);
             var interfaces = type.GetInterfaces();
+            var options = new List<TypeRegistrationOptions>();
             foreach (var @interface in interfaces)
             {
                 if (!container.IsRegistered(@interface) && @interface != typeof(IDisposable))
-                    container.RegisterType(@interface, type);
+                {
+                    var registrationOptions = container.RegisterType(@interface, type);
+                    options.Add(registrationOptions);
+                }
             }
+
+            var registrationsOptionsContainer = new TypeRegistrationOptionsContainer(options);
+            return registrationsOptionsContainer;
+        }
+
+        /// <summary>
+        /// Shortcut to register the type as singleton for all implemented interfaces.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="container">The injector</param>
+        /// <returns>The container of registration options</returns>
+        public static TypeRegistrationOptionsContainer RegisterSingletonWithInterfaces<T>(this IInjectorRegistry container)
+        {
+            var type = typeof(T);
+            var interfaces = type.GetInterfaces();
+            var options = new List<TypeRegistrationOptions>();
+            foreach (var @interface in interfaces)
+            {
+                if (!container.IsRegistered(@interface) && @interface != typeof(IDisposable))
+                {
+                    var registrationOptions = container.RegisterType(@interface, type).AsSingleton();
+                    options.Add(registrationOptions);
+                }
+            }
+
+            var registrationsOptionsContainer = new TypeRegistrationOptionsContainer(options);
+            return registrationsOptionsContainer;
         }
 
         /// <summary>

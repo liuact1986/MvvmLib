@@ -37,6 +37,8 @@
 <ul class="currentrelative">
 <li class="tocentry"><a href="#registering">Registering</a></li>
 
+<li class="tocentry"><a href="#registering-type-with-interfaces">Registering Type with interfaces</a></li>
+
 <li class="tocentry"><a href="#getinstance">GetInstance</a></li>
 
 <li class="tocentry"><a href="#autodiscovery">AutoDiscovery</a></li>
@@ -160,26 +162,41 @@ injector.RegisterType&lt;WithFunc&gt;();
 var instance = service.GetInstance&lt;WithFunc&gt;(); 
 </code></pre>
 
-<p>Registering Type with interfaces</p>
-<pre><code class="cs">public interface ILookupDataServiceType1{ }
+<h2 id="registering-type-with-interfaces">Registering Type with interfaces<a class="headerlink" href="#registering-type-with-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="cs">public interface ILookupDataServiceType1 { }
 
 public interface ILookupDataServiceType2 { }
 
 public interface ILookupDataServiceType3 { }
 
-public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3, IDisposable
-{
-    public void Dispose() { }
-}
+public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType2, ILookupDataServiceType3 
+{ }
 </code></pre>
 
 <pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;LookupDataService&gt;();
+</code></pre>
+
+<p>Set a registration as singleton</p>
+<pre><code class="cs">var registrationOptionsContainer = injector.RegisterTypeWithInterfaces&lt;LookupDataService&gt;();
+var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
+registrationOptions2.AsSingleton();
 </code></pre>
 
 <p>Avoid to do:</p>
 <pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType1, LookupDataService&gt;();
 injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType2, LookupDataService&gt;();
 injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType3, LookupDataService&gt;();
+</code></pre>
+
+<p><em>As Singleton</em></p>
+<p>Allows to get the same instance for all &quot;services&quot;.</p>
+<pre><code class="cs">injector.RegisterSingletonWithInterfaces&lt;LookupDataService&gt;();
+</code></pre>
+
+<p>Set a registration as multi instances</p>
+<pre><code class="cs">var registrationOptionsContainer = injector.RegisterSingletonWithInterfaces&lt;LookupDataService&gt;();
+var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
+registrationOptions2.AsMultiInstances();
 </code></pre>
 
 <h3 id="property-injection">Property Injection<a class="headerlink" href="#property-injection" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>

@@ -537,9 +537,10 @@ namespace MvvmLib.IoC
         {
             if (registration is TypeRegistration typeRegistration)
             {
-                if (this.IsSingletonCached(type, name))
+                var implementedType = typeRegistration.TypeTo;
+                if (typeRegistration.IsSingleton && this.IsSingletonCached(implementedType, name))
                 {
-                    var instance = this.GetSingletonFromCache(type, name);
+                    var instance = this.GetSingletonFromCache(implementedType, name);
                     this.RaiseResolved(registration, instance);
                     return instance;
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MvvmLib.IoC
 {
@@ -7,7 +8,7 @@ namespace MvvmLib.IoC
     /// </summary>
     public sealed class TypeRegistrationOptions
     {
-        private readonly TypeRegistration registration;
+        internal readonly TypeRegistration registration;
         private readonly Action<Type, string> clearCacheForType;
 
         internal TypeRegistrationOptions(TypeRegistration registration, Action<Type, string> clearCacheForType)
@@ -33,7 +34,7 @@ namespace MvvmLib.IoC
         public TypeRegistrationOptions AsMultiInstances()
         {
             registration.IsSingleton = false;
-            clearCacheForType(registration.TypeFrom, registration.Name);
+            clearCacheForType(registration.TypeTo, registration.Name);
             return this;
         }
 

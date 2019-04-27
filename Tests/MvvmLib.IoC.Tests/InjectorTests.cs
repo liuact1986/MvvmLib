@@ -487,7 +487,7 @@ namespace MvvmLib.Tests.IoC
             }
 
             Assert.IsTrue(fail);
-            Assert.AreEqual("Cannot resolve unregistered parameter \"Item\"", error);
+            Assert.AreEqual("Unable to resolve unregistered parameter \"Item\"", error);
         }
 
 

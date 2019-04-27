@@ -142,6 +142,15 @@
             </summary>
             <typeparam name="T">The type</typeparam>
             <param name="container">The injector</param>
+            <returns>The container of registration options</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingletonWithInterfaces``1(MvvmLib.IoC.IInjectorRegistry)">
+            <summary>
+            Shortcut to register the type as singleton for all implemented interfaces.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="container">The injector</param>
+            <returns>The container of registration options</returns>
         </member>
         <member name="M:MvvmLib.IoC.IInjectorRegistryExtensions.RegisterSingleton``1(MvvmLib.IoC.IInjectorRegistry)">
             <summary>
@@ -977,6 +986,37 @@
             </summary>
             <param name="action">The action</param>
             <returns>The registration options</returns>
+        </member>
+        <member name="T:MvvmLib.IoC.TypeRegistrationOptionsContainer">
+            <summary>
+            Container for type registration options list.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.IoC.TypeRegistrationOptionsContainer.Item(System.Type)">
+            <summary>
+            Gets the registration options by the type from.
+            </summary>
+            <param name="typeFrom">The type from</param>
+            <returns>The type registration options found or null</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptionsContainer.AsSingleton">
+            <summary>
+            Allows to get always the same instance for the registrations.
+            </summary>
+            <returns>The registration options container</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptionsContainer.AsMultiInstances">
+            <summary>
+            Allows to get always a new instance for the registrations.
+            </summary>
+            <returns>The registration options container</returns>
+        </member>
+        <member name="M:MvvmLib.IoC.TypeRegistrationOptionsContainer.OnResolved(System.Action{MvvmLib.IoC.ContainerRegistration,System.Object})">
+            <summary>
+            Sets the resolved action for the registrations.
+            </summary>
+            <param name="action">The action</param>
+            <returns>The registration options container</returns>
         </member>
         <member name="T:MvvmLib.IoC.ContainerRegistration">
             <summary>
