@@ -87,7 +87,7 @@ injector.RegisterType<WithFunc>();
 var instance = service.GetInstance<WithFunc>(); 
 ```
 
-## Registering Type with interfaces
+### Registering Type with interfaces
 
 ```cs
 public interface ILookupDataServiceType1 { }
@@ -104,14 +104,6 @@ public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType
 injector.RegisterTypeWithInterfaces<LookupDataService>();
 ```
 
-Set a registration as singleton
-
-```cs
-var registrationOptionsContainer = injector.RegisterTypeWithInterfaces<LookupDataService>();
-var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
-registrationOptions2.AsSingleton();
-```
-
 Avoid to do:
 
 ```cs
@@ -120,7 +112,15 @@ injector.RegisterTypeWithInterfaces<ILookupDataServiceType2, LookupDataService>(
 injector.RegisterTypeWithInterfaces<ILookupDataServiceType3, LookupDataService>();
 ```
 
-_As Singleton_
+Set a registration as singleton
+
+```cs
+var registrationOptionsContainer = injector.RegisterTypeWithInterfaces<LookupDataService>();
+var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
+registrationOptions2.AsSingleton();
+```
+
+### Registering Singleton with interfaces
 
 Allows to get the same instance for all "services".
 
@@ -135,8 +135,6 @@ var registrationOptionsContainer = injector.RegisterSingletonWithInterfaces<Look
 var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
 registrationOptions2.AsMultiInstances();
 ```
-
-
 
 ### Property Injection
 
