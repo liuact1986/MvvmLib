@@ -9,7 +9,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
-* **Sync** _extensions for list and collections_. Allows to **sync data**
+* **SyncUtils** Allows to **sync lists and collections** 
 * **Singleton**
 * **EventAggregator** : allows to **subscribe**, **publish** and filter messages
 
