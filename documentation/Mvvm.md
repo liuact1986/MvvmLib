@@ -27,7 +27,7 @@ public class UserViewModel : BindableBase
 }
 ```
 
-RaisePropertyChanged
+OnPropertyChanged
 
 ```cs
 public class UserViewModel : BindableBase
