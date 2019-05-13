@@ -760,8 +760,6 @@ public class Item : BindableBase, ISyncItem<Item>
 
 Example:
 
-Call **Sync** \(extension method for lists and collections\)
-
 ```cs
  var oldItems = new List<Item> {
                 new Item { Id="1", Title = "Title 1" },
