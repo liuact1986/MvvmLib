@@ -39,7 +39,7 @@ public class UserViewModel : BindableBase
         set
         {
             SetProperty(ref firstName, value);
-            RaisePropertyChanged("FullName");
+            OnPropertyChanged("FullName");
         }
     }
 
@@ -50,7 +50,7 @@ public class UserViewModel : BindableBase
         set
         {
             SetProperty(ref lastName, value);
-            RaisePropertyChanged("FullName");
+            OnPropertyChanged("FullName");
         }
     }
 
@@ -74,7 +74,7 @@ public class User : BindableBase
         set
         {
             firstName = value;
-            RaisePropertyChanged(() => FirstName);
+            OnPropertyChanged(() => FirstName);
         }
     }
 }
@@ -147,7 +147,7 @@ Allows to **validate** the model with **Data Annotations** and **custom validati
 | --- | --- |
 |  ValidateProperty | Validate one property  |
 |  ValidateAll | Validate all properties |
-|  Reset | Reset the errors |
+|  Reset | Reset the errors and is submitted |
 |  BeginEdit | Store model values |
 |  CancelEdit | Restore model values and errors |
 
@@ -190,10 +190,10 @@ if (user.HasErrors)
 
 }
 
-// reset errors the errors
+// reset the errors and is submitted
 user.Reset();
 
-// reset the errors and the model
+// reset the errors, is submitted and the model
 user.CancelEdit();
 
 // etc.
@@ -711,51 +711,51 @@ Model have to implement **ISyncItem** interface:
 * **Sync** : **update values** **with **the "**other**" instance** values**
 
 ```cs
-  public class Item : Observable, ISyncItem<Item>
+public class Item : BindableBase, ISyncItem<Item>
+{
+    public string Id { get; set; }
+
+    private string _title;
+    public string Title
     {
-        public string Id { get; set; }
-
-        private string _title;
-        public string Title
-        {
-            get { return _title; }
-            set { this.Set(ref _title, value); }
-        }
-        // other properties ...
-
-        public bool NeedSync(Item other)
-        {
-            return Id == other.Id && (this.Title != other.Title); // Test each property
-        }
-
-        public void Sync(Item other)
-        {
-            Title = other.Title;
-            // etc.
-        }
-
-        public bool Equals(Item other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (ReferenceEquals(null, other)) return false;
-
-            return this.Id == other.Id;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Item);
-        }
-
-        public override int GetHashCode()
-        {
-            if (string.IsNullOrEmpty(this.Id))
-            {
-                return 0;
-            }
-            return this.Id.GetHashCode();
-        }
+        get { return _title; }
+        set { this.SetProperty(ref _title, value); }
     }
+
+    // other properties ...
+
+    public bool NeedSync(Item other)
+    {
+        return Id == other.Id && (this.Title != other.Title); // Testing for each property
+    }
+
+    public void Sync(Item other)
+    {
+        Title = other.Title;
+        // etc.
+    }
+
+    public bool Equals(Item other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other)) return false;
+
+        return this.Id == other.Id;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as Item);
+    }
+
+    public override int GetHashCode()
+    {
+        if (string.IsNullOrEmpty(this.Id))
+            return 0;
+            
+        return this.Id.GetHashCode();
+    }
+}
 ```
 
 Example:
@@ -775,7 +775,7 @@ var newItems = new List<Item>{
                 new Item{ Id="4", Title = "Title 4"}
             };
 
-oldItems.Sync(newItems);
+SyncUtils.Sync(oldItems, newItems);
 // item 1 removed
 // item 2 updated
 // item 3 not updated

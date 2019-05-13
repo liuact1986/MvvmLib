@@ -135,7 +135,7 @@
         set
         {
             SetProperty(ref firstName, value);
-            RaisePropertyChanged(&quot;FullName&quot;);
+            OnPropertyChanged(&quot;FullName&quot;);
         }
     }
 
@@ -146,7 +146,7 @@
         set
         {
             SetProperty(ref lastName, value);
-            RaisePropertyChanged(&quot;FullName&quot;);
+            OnPropertyChanged(&quot;FullName&quot;);
         }
     }
 
@@ -168,7 +168,7 @@
         set
         {
             firstName = value;
-            RaisePropertyChanged(() =&gt; FirstName);
+            OnPropertyChanged(() =&gt; FirstName);
         }
     }
 }
@@ -289,7 +289,7 @@ user.CancelEdit();
 </tr>
 <tr>
 	<td>Reset</td>
-	<td>Reset the errors</td>
+	<td>Reset the errors and is submitted</td>
 </tr>
 <tr>
 	<td>BeginEdit</td>
@@ -337,10 +337,10 @@ if (user.HasErrors)
 
 }
 
-// reset errors the errors
+// reset the errors and is submitted
 user.Reset();
 
-// reset the errors and the model
+// reset the errors, is submitted and the model
 user.CancelEdit();
 
 // etc.
@@ -804,51 +804,51 @@ public class ApplicationCommands : IApplicationCommands
 <li><strong>NeedSync</strong>: check if the &quot;<strong>other<strong>&quot; instance is the same (&quot;</strong>deep equal</strong>&quot;)</li>
 <li><strong>Sync</strong> : <strong>update values</strong> <strong>with <strong>the &quot;</strong>other<strong>&quot; instance</strong> values</strong></li>
 </ul>
-<pre><code class="cs">  public class Item : Observable, ISyncItem&lt;Item&gt;
+<pre><code class="cs">public class Item : BindableBase, ISyncItem&lt;Item&gt;
+{
+    public string Id { get; set; }
+
+    private string _title;
+    public string Title
     {
-        public string Id { get; set; }
-
-        private string _title;
-        public string Title
-        {
-            get { return _title; }
-            set { this.Set(ref _title, value); }
-        }
-        // other properties ...
-
-        public bool NeedSync(Item other)
-        {
-            return Id == other.Id &amp;&amp; (this.Title != other.Title); // Test each property
-        }
-
-        public void Sync(Item other)
-        {
-            Title = other.Title;
-            // etc.
-        }
-
-        public bool Equals(Item other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (ReferenceEquals(null, other)) return false;
-
-            return this.Id == other.Id;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Item);
-        }
-
-        public override int GetHashCode()
-        {
-            if (string.IsNullOrEmpty(this.Id))
-            {
-                return 0;
-            }
-            return this.Id.GetHashCode();
-        }
+        get { return _title; }
+        set { this.SetProperty(ref _title, value); }
     }
+
+    // other properties ...
+
+    public bool NeedSync(Item other)
+    {
+        return Id == other.Id &amp;&amp; (this.Title != other.Title); // Testing for each property
+    }
+
+    public void Sync(Item other)
+    {
+        Title = other.Title;
+        // etc.
+    }
+
+    public bool Equals(Item other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other)) return false;
+
+        return this.Id == other.Id;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as Item);
+    }
+
+    public override int GetHashCode()
+    {
+        if (string.IsNullOrEmpty(this.Id))
+            return 0;
+            
+        return this.Id.GetHashCode();
+    }
+}
 </code></pre>
 
 <p>Example:</p>
@@ -865,7 +865,7 @@ var newItems = new List&lt;Item&gt;{
                 new Item{ Id=&quot;4&quot;, Title = &quot;Title 4&quot;}
             };
 
-oldItems.Sync(newItems);
+SyncUtils.Sync(oldItems, newItems);
 // item 1 removed
 // item 2 updated
 // item 3 not updated
