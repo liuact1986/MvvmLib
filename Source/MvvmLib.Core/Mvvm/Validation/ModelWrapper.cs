@@ -1,25 +1,23 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Base class for wrapping a model. Allows to validate and edit properties.
+    /// Base class for wrapping model. Allows to validate and edit properties.
     /// </summary>
     /// <typeparam name="TModel">The model</typeparam>
-    public class ModelWrapper<TModel> : Validatable, IEditableObject
+    public class ModelWrapper<TModel> : ValidatableAndEditable
     {
+        private readonly TModel model;
         /// <summary>
-        /// The model.
+        /// The model wrapped.
         /// </summary>
-        public TModel Model { get; set; }
-
-        /// <summary>
-        /// The editable object service.
-        /// </summary>
-        protected IEditableObjectService editableObjectService;
+        public TModel Model
+        {
+            get { return model; }
+        }
 
         /// <summary>
         /// Creates the model wrapper class.
@@ -34,8 +32,7 @@ namespace MvvmLib.Mvvm
             if (editableObjectService == null)
                 throw new ArgumentNullException(nameof(editableObjectService));
 
-            Model = model;
-            this.editableObjectService = editableObjectService;
+            this.model = model;
         }
 
 
@@ -57,7 +54,7 @@ namespace MvvmLib.Mvvm
             var properties = this.GetProperties();
             if (properties.TryGetValue(propertyName, out PropertyInfo property))
                 return property;
-            
+
             return null;
         }
 
@@ -88,43 +85,13 @@ namespace MvvmLib.Mvvm
             if (property == null) { throw new ArgumentException($"Property \"{propertyName}\" not found in {this.Model.GetType().Name}"); }
 
             property.SetValue(Model, value);
-            RaisePropertyChanged(propertyName);
-            RaisePropertyChanged(string.Empty);
+            OnPropertyChanged(propertyName);
+            OnPropertyChanged(string.Empty);
 
             if (CanValidateOnPropertyChanged)
                 this.ValidateProperty(propertyName, value);
         }
 
-        #region Editable 
-
-        /// <summary>
-        /// Clones the values fo the model.
-        /// </summary>
-        public void BeginEdit()
-        {
-            this.editableObjectService.Store(Model);
-        }
-
-        /// <summary>
-        /// Reset the values of the model and clear errors.
-        /// </summary>
-        public void CancelEdit()
-        {
-            this.editableObjectService.Restore(Model);
-            this.Reset();
-            this.EndEdit();
-        }
-
-        /// <summary>
-        /// Clear the cloned values and notify changes.
-        /// </summary>
-        public void EndEdit()
-        {
-            this.editableObjectService.Clear();
-            this.RaisePropertyChanged(string.Empty);
-        }
-
-        #endregion // Editable
     }
 
 }

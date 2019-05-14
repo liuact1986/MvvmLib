@@ -35,7 +35,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void BeginEdit()
         {
-            this.editableService.Store(this);
+            this.editableService.Store(this.source);
         }
 
         /// <summary>
@@ -43,19 +43,17 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void CancelEdit()
         {
-            this.editableService.Restore(this);
+            this.editableService.Restore(this.source, this.propertiesToIgnore);
             this.Reset();
-            this.EndEdit();
+            this.OnPropertyChanged(string.Empty);
         }
 
         /// <summary>
-        /// Clear the cloned values and notify changes.
+        /// Sets the clone to null value.
         /// </summary>
         public void EndEdit()
         {
-            this.editableService.Clear();
-            this.RaisePropertyChanged(string.Empty);
+            this.editableService.Reset();
         }
-
     }
 }

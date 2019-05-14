@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace MvvmLib.Navigation
 {
-    public class BindableHistoryItemEventArgs : EventArgs
+    public class NavigationEntryBaseEventArgs : EventArgs
     {
-        private readonly object item;
-        public object Item
+        private readonly NavigationEntry entry;
+        public NavigationEntry Entry
         {
-            get { return item; }
+            get { return entry; }
         }
 
         private readonly int? index;
@@ -18,140 +18,98 @@ namespace MvvmLib.Navigation
             get { return index; }
         }
 
-        public BindableHistoryItemEventArgs(object item, int? index)
+        public NavigationEntryBaseEventArgs(NavigationEntry entry, int? index)
         {
-            this.item = item;
+            this.entry = entry;
             this.index = index;
         }
     }
 
-    public sealed class BindableHistory<T> : IList<T>
+    public class NavigationEntryAddedEventArgs : NavigationEntryBaseEventArgs
     {
-        private List<T> items = new List<T>();
-
-        public event EventHandler<BindableHistoryItemEventArgs> ItemAdded;
-        public event EventHandler<BindableHistoryItemEventArgs> ItemRemoved;
-        public event EventHandler<BindableHistoryItemEventArgs> ItemUpdated;
-
-        public T this[int index]
+        public NavigationEntryAddedEventArgs(NavigationEntry entry, int? index) : base(entry, index)
         {
-            get
-            {
-                if (index < 0 || index > items.Count - 1)
-                    throw new IndexOutOfRangeException();
-
-                return items[index];
-            }
-            set
-            {
-                if (isReadOnly)
-                    throw new InvalidOperationException("List is readonly");
-                if (index < 0 || index > items.Count - 1)
-                    throw new IndexOutOfRangeException();
-
-                items[index] = value;
-                this.ItemUpdated?.Invoke(this, new BindableHistoryItemEventArgs(items[index], index));
-            }
-        }
-
-        public int Count => items.Count;
-
-        private bool isReadOnly;
-        public bool IsReadOnly => isReadOnly;
-
-        public BindableHistory(bool isReadyOnly)
-        {
-            this.isReadOnly = isReadOnly;
-        }
-
-        public BindableHistory()
-            : this(false)
-        { }
-
-        public void Add(T item)
-        {
-            if (isReadOnly)
-                throw new InvalidOperationException("List is readonly");
-
-            this.Insert(items.Count, item);
-        }
-
-        public void Clear()
-        {
-            if (isReadOnly)
-                throw new InvalidOperationException("List is readonly");
-
-            if (items.Count > 0)
-            {
-                int count = items.Count;
-                for (int i = count - 1; i >= 0; i--)
-                {
-                    this.RemoveAt(i);
-                }
-            }
-        }
-
-        public bool Contains(T item)
-        {
-            return items.Contains(item);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            items.CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
-
-        public int IndexOf(T item)
-        {
-            return items.IndexOf(item);
-        }
-
-        public void Insert(int index, T item)
-        {
-            if (isReadOnly)
-                throw new InvalidOperationException("List is readonly");
-            if (index < 0 || index > items.Count)
-                throw new IndexOutOfRangeException();
-
-            items.Insert(index, item);
-            this.ItemAdded?.Invoke(this, new BindableHistoryItemEventArgs(item, index));
-
-        }
-
-        public bool Remove(T item)
-        {
-            if (isReadOnly)
-                throw new InvalidOperationException("List is readonly");
-
-            if (items.Remove(item))
-            {
-                var index = items.IndexOf(item);
-                this.ItemRemoved?.Invoke(this, new BindableHistoryItemEventArgs(item, index));
-                return true;
-            }
-
-            return false;
-        }
-
-        public void RemoveAt(int index)
-        {
-            if (isReadOnly)
-                throw new InvalidOperationException("List is readonly");
-            if (index < 0 || index > items.Count - 1)
-                throw new IndexOutOfRangeException();
-
-            items.RemoveAt(index);
-            this.ItemRemoved?.Invoke(this, new BindableHistoryItemEventArgs(null, index));
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return items.GetEnumerator();
         }
     }
+
+    public class NavigationEntryRemovedEventArgs : NavigationEntryBaseEventArgs
+    {
+        public NavigationEntryRemovedEventArgs(NavigationEntry entry, int? index) : base(entry, index)
+        {
+        }
+    }
+
+    public class NavigationEntryUpdatedEventArgs : NavigationEntryBaseEventArgs
+    {
+        private NavigationEntry originalEntry;
+        public NavigationEntry OriginalEntry
+        {
+            get { return originalEntry; }
+        }
+
+        public NavigationEntryUpdatedEventArgs(NavigationEntry originaleEntry, NavigationEntry entry, int? index) : base(entry, index)
+        {
+            this.originalEntry = originalEntry;
+        }
+    }
+
+    public interface INotifyHistoryChanged
+    {
+        event EventHandler<NavigationEntryAddedEventArgs> EntryAdded;
+        event EventHandler<NavigationEntryRemovedEventArgs> EntryRemoved;
+        event EventHandler<NavigationEntryUpdatedEventArgs> EntryUpdated;
+    }
+
+    public class BindableHistory : Collection<NavigationEntry>, INotifyHistoryChanged, INotifyPropertyChanged
+    {
+        private const string CountString = "Count";
+        private const string IndexerName = "Item[]";
+
+        public event EventHandler<NavigationEntryAddedEventArgs> EntryAdded;
+        public event EventHandler<NavigationEntryRemovedEventArgs> EntryRemoved;
+        public event EventHandler<NavigationEntryUpdatedEventArgs> EntryUpdated;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected override void InsertItem(int index, NavigationEntry item)
+        {
+            base.InsertItem(index, item);
+
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerName);
+            this.EntryAdded?.Invoke(this, new NavigationEntryAddedEventArgs(item, index));
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            var entry = base.Items[index];
+
+            base.RemoveItem(index);
+
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerName);
+            this.EntryRemoved?.Invoke(this, new NavigationEntryRemovedEventArgs(entry, index));
+        }
+
+        protected override void SetItem(int index, NavigationEntry item)
+        {
+            var originalEntry = base.Items[index];
+            base.SetItem(index, item);
+
+            OnPropertyChanged(IndexerName);
+            this.EntryUpdated?.Invoke(this, new NavigationEntryUpdatedEventArgs(originalEntry, item, index));
+        }
+
+        protected override void ClearItems()
+        {
+            int count = Items.Count;
+            for (int i = count - 1; i >= 0; i--)
+                this.RemoveAt(i);
+        }
+    }
+
 }

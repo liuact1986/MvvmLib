@@ -8,21 +8,20 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class NavigationHistory : INavigationHistory
     {
-        private readonly BindableHistory<NavigationEntry> backStack;
-
+        private readonly BindableHistory backStack;
         /// <summary>
         /// The back stack.
         /// </summary>
-        public BindableHistory<NavigationEntry> BackStack
+        public BindableHistory BackStack
         {
             get { return backStack; }
         }
 
-        private readonly BindableHistory<NavigationEntry> forwardStack;
+        private readonly BindableHistory forwardStack;
         /// <summary>
         /// The forward Stack.
         /// </summary>
-        public BindableHistory<NavigationEntry> ForwardStack
+        public BindableHistory ForwardStack
         {
             get { return forwardStack; }
         }
@@ -34,32 +33,32 @@ namespace MvvmLib.Navigation
         {
             get
             {
-                if (this.BackStack.Count > 0)
-                    return this.BackStack[0];
+                if (this.backStack.Count > 0)
+                    return this.backStack[0];
                 else
                     return this.Current;
             }
         }
 
         /// <summary>
-        /// Get the previous entry.
+        /// Gets the previous entry.
         /// </summary>
         public NavigationEntry Previous
         {
-            get { return this.BackStack.Count > 0 ? this.BackStack.ElementAt(this.BackStack.Count - 1) : null; }
+            get { return this.backStack.Count > 0 ? this.backStack.ElementAt(this.backStack.Count - 1) : null; }
         }
 
         /// <summary>
-        /// Get the next entry.
+        /// Gets the next entry.
         /// </summary>
         public NavigationEntry Next
         {
-            get { return this.ForwardStack.Count > 0 ? this.ForwardStack.ElementAt(this.ForwardStack.Count - 1) : null; }
+            get { return this.forwardStack.Count > 0 ? this.forwardStack.ElementAt(this.forwardStack.Count - 1) : null; }
         }
 
         private NavigationEntry current;
         /// <summary>
-        /// Get the current entry.
+        /// Gets the current entry.
         /// </summary>
         public NavigationEntry Current
         {
@@ -81,10 +80,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         public NavigationHistory()
         {
-            this.backStack = new BindableHistory<NavigationEntry>();
+            this.backStack = new BindableHistory();
             this.HandleGoBackChanged();
 
-            this.forwardStack = new BindableHistory<NavigationEntry>();
+            this.forwardStack = new BindableHistory();
             this.HandleGoForwardChanged();
         }
 
@@ -93,8 +92,8 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void HandleGoBackChanged()
         {
-            this.BackStack.ItemAdded += OnBackStackItemAdded;
-            this.BackStack.ItemRemoved += OnBackStackItemRemoved;
+            this.backStack.EntryAdded += OnBackStackEntryAdded;
+            this.backStack.EntryRemoved += OnBackStackEntryRemoved;
         }
 
         /// <summary>
@@ -102,8 +101,8 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void UnhandleGoBackChanged()
         {
-            this.BackStack.ItemAdded -= OnBackStackItemAdded;
-            this.BackStack.ItemRemoved -= OnBackStackItemRemoved;
+            this.backStack.EntryAdded -= OnBackStackEntryAdded;
+            this.backStack.EntryRemoved -= OnBackStackEntryRemoved;
         }
 
         /// <summary>
@@ -111,8 +110,8 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void HandleGoForwardChanged()
         {
-            this.ForwardStack.ItemAdded += OnForwardStackItemAdded;
-            this.ForwardStack.ItemRemoved += OnForwardStackItemRemoved;
+            this.forwardStack.EntryAdded += OnForwardStackEntryAdded;
+            this.forwardStack.EntryRemoved += OnForwardStackEntryRemoved;
         }
 
         /// <summary>
@@ -120,31 +119,31 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void UnhandleGoForwardChanged()
         {
-            this.ForwardStack.ItemAdded -= OnForwardStackItemAdded;
-            this.ForwardStack.ItemRemoved -= OnForwardStackItemRemoved;
+            this.forwardStack.EntryAdded -= OnForwardStackEntryAdded;
+            this.forwardStack.EntryRemoved -= OnForwardStackEntryRemoved;
         }
 
-        private void OnBackStackItemAdded(object sender, EventArgs e)
+        private void OnBackStackEntryAdded(object sender, EventArgs e)
         {
-            if (BackStack.Count == 1)
+            if (this.backStack.Count == 1)
                 this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnBackStackItemRemoved(object sender, EventArgs e)
+        private void OnBackStackEntryRemoved(object sender, EventArgs e)
         {
-            if (BackStack.Count == 0)
+            if (this.backStack.Count == 0)
                 this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnForwardStackItemAdded(object sender, EventArgs e)
+        private void OnForwardStackEntryAdded(object sender, EventArgs e)
         {
-            if (ForwardStack.Count == 1)
+            if (this.forwardStack.Count == 1)
                 this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnForwardStackItemRemoved(object sender, EventArgs e)
+        private void OnForwardStackEntryRemoved(object sender, EventArgs e)
         {
-            if (ForwardStack.Count == 0)
+            if (this.forwardStack.Count == 0)
                 this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -186,11 +185,11 @@ namespace MvvmLib.Navigation
         public NavigationEntry GoBack()
         {
             // get last backstack entry
-            var newCurrent = this.BackStack.LastOrDefault();
+            var newCurrent = this.backStack.LastOrDefault();
             if (newCurrent == null)
                 throw new InvalidOperationException("Cannot go back. Back Stack is empty");
 
-            this.backStack.RemoveAt(this.BackStack.Count - 1); // reMoves last
+            this.backStack.RemoveAt(this.backStack.Count - 1); // remove last
 
             this.forwardStack.Add(this.Current);
 
@@ -205,11 +204,11 @@ namespace MvvmLib.Navigation
         public NavigationEntry GoForward()
         {
             // get last forwardstack entry
-            var newCurrent = this.ForwardStack.LastOrDefault();
+            var newCurrent = this.forwardStack.LastOrDefault();
             if (newCurrent == null)
                 throw new InvalidOperationException("Cannot go forward. Forward Stack is empty");
 
-            this.forwardStack.RemoveAt(this.ForwardStack.Count - 1); // reMoves last
+            this.forwardStack.RemoveAt(this.forwardStack.Count - 1); // remove last
 
             // push current to back stack
             if (this.current == null)
@@ -223,7 +222,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// The clear the history.
+        /// Clears the history.
         /// </summary>
         public void Clear()
         {
@@ -232,4 +231,5 @@ namespace MvvmLib.Navigation
             this.current = null;
         }
     }
+
 }

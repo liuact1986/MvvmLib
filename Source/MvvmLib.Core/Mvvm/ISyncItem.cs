@@ -2,7 +2,7 @@
 {
 
     /// <summary>
-    /// Updates the values only if required.
+    /// Updates the values only when synchronization is needed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface ISyncItem<T>
@@ -14,10 +14,10 @@
         void Sync(T other);
 
         /// <summary>
-        /// Checks if the update is required.
+        /// Checks if updating is required.
         /// </summary>
         /// <param name="other">The other value</param>
-        /// <returns>Tru if required</returns>
+        /// <returns>True if required</returns>
         bool NeedSync(T other);
     }
 }

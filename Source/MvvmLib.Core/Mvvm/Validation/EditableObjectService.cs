@@ -1,52 +1,91 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace MvvmLib.Mvvm
 {
-    public class EditableObjectService : IEditableObjectService, INotifyPropertyChanged
+    /// <summary>
+    /// Allows to clone and restore objects.
+    /// </summary>
+    public class EditableObjectService : IEditableObjectService
     {
-        private object clonedValue;
-        private Type clonedType;
+        private object clonedSource;
+        private readonly Cloner cloner;
 
-        public Cloner Cloner { get;  }
-
+        /// <summary>
+        /// Creates the editable object service.
+        /// </summary>
         public EditableObjectService()
         {
-            this.Cloner = new Cloner();
+            this.cloner = new Cloner();
         }
 
-        public void Store(object value)
+        /// <summary>
+        /// Clones and stores the cloned value.
+        /// </summary>
+        /// <param name="source">The value to store</param>
+        public void Store(object source)
         {
-            if(value == null) { throw new Exception("Value cannot be null"); }
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
-            this.clonedType = value.GetType();
-            this.clonedValue = Cloner.DeepClone(clonedType, value);
+            this.clonedSource = cloner.DeepClone(source.GetType(), source);
         }
 
-        public void Restore(object target)
+        private void DoRestore(object target, IEnumerable<PropertyInfo> properties)
         {
-            var properties = this.clonedType.GetProperties();
             foreach (var property in properties)
             {
                 if (property.CanRead && property.CanWrite)
                 {
-                    var propertyValue = property.GetValue(this.clonedValue);
+                    var propertyValue = property.GetValue(this.clonedSource);
                     property.SetValue(target, propertyValue);
-                    RaisePropertyChanged(property.Name);
                 }
             }
         }
 
-        public void Clear()
+        /// <summary>
+        /// Restore the target with the cloned source.
+        /// </summary>
+        /// <param name="target">The target to restore</param>
+        public void Restore(object target)
         {
-            this.clonedValue = null;
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            if (clonedSource == null)
+                throw new ArgumentException("Clone is null. Unable to restore after clear invoked. Invoke Store again");
+            if (!clonedSource.GetType().IsAssignableFrom(target.GetType()))
+                throw new InvalidOperationException("Source is not assignable from target");
+
+            var properties = clonedSource.GetType().GetProperties();
+            DoRestore(target, properties);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void RaisePropertyChanged(string propertyName)
+        /// <summary>
+        /// Restore the target with the cloned source.
+        /// </summary>
+        /// <param name="target">The target to restore</param>
+        /// <param name="propertiesToIgnore">The properties to ignore</param>
+        public void Restore(object target, IList<string> propertiesToIgnore)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            if (clonedSource == null)
+                throw new ArgumentException("Clone is null. Unable to restore after clear invoked. Invoke Store again");
+            if (!clonedSource.GetType().IsAssignableFrom(target.GetType()))
+                throw new InvalidOperationException("Source is not assignable from target");
+
+            var properties = clonedSource.GetType().GetProperties().Where(p => !propertiesToIgnore.Contains(p.Name));
+            DoRestore(target, properties);
+        }
+
+        /// <summary>
+        /// Sets the clone to null value.
+        /// </summary>
+        public void Reset()
+        {
+            this.clonedSource = null;
         }
 
     }

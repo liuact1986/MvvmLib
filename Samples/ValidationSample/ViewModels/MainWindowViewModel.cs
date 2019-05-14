@@ -45,13 +45,13 @@ namespace ValidationSample.ViewModels
             this.User.ValidateAll();
 
             // for sample (view notification for Base class properties)
-            this.RaisePropertyChanged("User");
+            this.OnPropertyChanged("User");
         }
 
         private void OnReset()
         {
             this.user.CancelEdit();
-            this.RaisePropertyChanged("User");
+            this.OnPropertyChanged("User");
         }
     }
 }

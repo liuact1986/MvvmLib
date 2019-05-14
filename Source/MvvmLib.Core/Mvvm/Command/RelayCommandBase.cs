@@ -72,7 +72,7 @@ namespace MvvmLib.Mvvm
                     var filter = new Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool>((s, e) => e.PropertyName == propertyName);
 
                     var propertyChangedObserver = new FilterableNotifyPropertyChangedObserver(ownerAsINotifyPropertyChanged, filter);
-                    propertyChangedObserver.SubscribeToPropertyChanged((e) => RaiseCanExecuteChanged());
+                    propertyChangedObserver.SubscribeToPropertyChanged(e => RaiseCanExecuteChanged());
 
                     observedProperties[propertyName] = propertyChangedObserver;
                 }

@@ -1,3 +1,488 @@
 ﻿
 child
 => create view => discover region (content control) => data context ? resolve view model ... set data context to view model => 
+
+
+
+
+    //public class BindableHistory : Collection<NavigationEntry>, INotifyCollectionChanged, INotifyPropertyChanged
+    //{
+    //    private const string CountString = "Count";
+    //    private const string IndexerName = "Item[]";
+
+    //    public event NotifyCollectionChangedEventHandler CollectionChanged;
+    //    public event PropertyChangedEventHandler PropertyChanged;
+
+    //    private void OnPropertyChanged(string propertyName)
+    //    {
+    //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    //    }
+
+    //    protected override void InsertItem(int index, NavigationEntry item)
+    //    {
+    //        base.InsertItem(index, item);
+
+    //        OnPropertyChanged(CountString);
+    //        OnPropertyChanged(IndexerName);
+    //        OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
+    //    }
+
+    //    protected override void RemoveItem(int index)
+    //    {
+    //        var item = base.Items[index];
+
+    //        base.RemoveItem(index);
+
+    //        OnPropertyChanged(CountString);
+    //        OnPropertyChanged(IndexerName);
+    //        OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
+    //    }
+
+    //    protected override void SetItem(int index, NavigationEntry item)
+    //    {
+    //        var oldItem = base.Items[index];
+    //        base.SetItem(index, item);
+
+    //        OnPropertyChanged(IndexerName);
+    //        OnCollectionChanged(NotifyCollectionChangedAction.Replace, oldItem, item, index);
+    //    }
+
+    //    protected override void ClearItems()
+    //    {
+    //        if (Items.Count > 0)
+    //        {
+    //            base.ClearItems();
+
+    //            OnPropertyChanged(CountString);
+    //            OnPropertyChanged(IndexerName);
+    //            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+    //        }
+    //    }
+
+    //    private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+    //    {
+    //        this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
+    //    }
+
+    //    private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
+    //    {
+    //        OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
+    //    }
+
+    //    private void OnCollectionChanged(NotifyCollectionChangedAction action, object oldItem, object newItem, int index)
+    //    {
+    //        OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
+    //    }
+    //}
+
+
+    //public class BindableHistory : IList<NavigationEntry>, IReadOnlyList<NavigationEntry>, INotifyHistoryChanged, INotifyPropertyChanged
+    //{
+    //    private const string CountString = "Count";
+    //    private const string IndexerName = "Item[]";
+
+    //    public event EventHandler<NavigationEntryAddedEventArgs> EntryAdded;
+    //    public event EventHandler<NavigationEntryRemovedEventArgs> EntryRemoved;
+    //    public event EventHandler<NavigationEntryUpdatedEventArgs> EntryUpdated;
+    //    public event PropertyChangedEventHandler PropertyChanged;
+
+    //    private IList<NavigationEntry> entries;
+    //    protected IList<NavigationEntry> Entries
+    //    {
+    //        get { return entries; }
+    //    }
+
+    //    public NavigationEntry this[int index]
+    //    {
+    //        get
+    //        {
+    //            if (index < 0 || index > entries.Count - 1)
+    //                throw new IndexOutOfRangeException();
+
+    //            return entries[index];
+    //        }
+    //        set
+    //        {
+    //            if (entries.IsReadOnly)
+    //                throw new NotSupportedException("List is readonly");
+    //            if (index < 0 || index > entries.Count - 1)
+    //                throw new IndexOutOfRangeException();
+
+    //            SetItem(index, value);
+    //        }
+    //    }
+
+    //    public int Count
+    //    {
+    //        get { return entries.Count; }
+    //    }
+
+    //    public bool IsReadOnly
+    //    {
+    //        get { return entries.IsReadOnly; }
+    //    }
+
+    //    public BindableHistory()
+    //    {
+    //        entries = new List<NavigationEntry>();
+    //    }
+
+    //    private void OnPropertyChanged(string propertyName)
+    //    {
+    //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    //    }
+
+    //    protected virtual void InsertItem(int index, NavigationEntry entry)
+    //    {
+    //        entries.Insert(index, entry);
+
+    //        OnPropertyChanged(CountString);
+    //        OnPropertyChanged(IndexerName);
+    //        this.EntryAdded?.Invoke(this, new NavigationEntryAddedEventArgs(entry, index));
+    //    }
+
+    //    protected virtual void SetItem(int index, NavigationEntry entry)
+    //    {
+    //        var originalEntry = entries[index];
+    //        entries[index] = entry;
+
+    //        OnPropertyChanged(IndexerName);
+    //        this.EntryUpdated?.Invoke(this, new NavigationEntryUpdatedEventArgs(originalEntry, entry, index));
+    //    }
+
+    //    protected virtual void RemoveItem(int index)
+    //    {
+    //        var entry = entries[index];
+
+    //        entries.RemoveAt(index);
+
+    //        OnPropertyChanged(CountString);
+    //        OnPropertyChanged(IndexerName);
+    //        this.EntryRemoved?.Invoke(this, new NavigationEntryRemovedEventArgs(entry, index));
+    //    }
+
+    //    public void Add(NavigationEntry entry)
+    //    {
+    //        if (entries.IsReadOnly)
+    //            throw new NotSupportedException("List is readonly");
+
+    //        this.Insert(entries.Count, entry);
+    //    }
+
+    //    public void Clear()
+    //    {
+    //        if (entries.IsReadOnly)
+    //            throw new NotSupportedException("List is readonly");
+
+    //        if (entries.Count > 0)
+    //        {
+    //            int count = entries.Count;
+    //            for (int i = count - 1; i >= 0; i--)
+    //                this.RemoveAt(i);
+    //        }
+    //    }
+
+    //    public bool Contains(NavigationEntry entry)
+    //    {
+    //        return entries.Contains(entry);
+    //    }
+
+    //    public void CopyTo(NavigationEntry[] array, int arrayIndex)
+    //    {
+    //        entries.CopyTo(array, arrayIndex);
+    //    }
+
+    //    public IEnumerator<NavigationEntry> GetEnumerator()
+    //    {
+    //        return entries.GetEnumerator();
+    //    }
+
+    //    public int IndexOf(NavigationEntry entry)
+    //    {
+    //        return entries.IndexOf(entry);
+    //    }
+
+    //    public void Insert(int index, NavigationEntry entry)
+    //    {
+    //        if (entries.IsReadOnly)
+    //            throw new NotSupportedException("List is readonly");
+    //        if (index < 0 || index > entries.Count)
+    //            throw new IndexOutOfRangeException();
+
+    //        InsertItem(index, entry);
+    //    }
+
+    //    public bool Remove(NavigationEntry entry)
+    //    {
+    //        if (entries.IsReadOnly)
+    //            throw new NotSupportedException("List is readonly");
+
+    //        var index = entries.IndexOf(entry);
+    //        if (index < 0)
+    //            return false;
+    //        else
+    //        {
+    //            RemoveItem(index);
+    //            return true;
+    //        }
+    //    }
+
+    //    public void RemoveAt(int index)
+    //    {
+    //        if (entries.IsReadOnly)
+    //            throw new NotSupportedException("List is readonly");
+    //        if (index < 0 || index > entries.Count - 1)
+    //            throw new IndexOutOfRangeException();
+
+    //        RemoveItem(index);
+    //    }
+
+    //    IEnumerator IEnumerable.GetEnumerator()
+    //    {
+    //        return entries.GetEnumerator();
+    //    }
+    //}
+
+
+
+
+
+
+
+
+
+
+	
+    ///// <summary>
+    ///// History for content regions.
+    ///// </summary>
+    //public class NavigationHistory : INavigationHistory
+    //{
+    //    private readonly BindableHistory backStack;
+    //    /// <summary>
+    //    /// The back stack.
+    //    /// </summary>
+    //    public BindableHistory BackStack
+    //    {
+    //        get { return backStack; }
+    //    }
+
+    //    private readonly BindableHistory forwardStack;
+    //    /// <summary>
+    //    /// The forward Stack.
+    //    /// </summary>
+    //    public BindableHistory ForwardStack
+    //    {
+    //        get { return forwardStack; }
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the root entry. 
+    //    /// </summary>
+    //    public NavigationEntry Root
+    //    {
+    //        get
+    //        {
+    //            if (this.backStack.Count > 0)
+    //                return this.backStack[0];
+    //            else
+    //                return this.Current;
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the previous entry.
+    //    /// </summary>
+    //    public NavigationEntry Previous
+    //    {
+    //        get { return this.backStack.Count > 0 ? this.backStack.ElementAt(this.backStack.Count - 1) : null; }
+    //    }
+
+    //    /// <summary>
+    //    /// Gets the next entry.
+    //    /// </summary>
+    //    public NavigationEntry Next
+    //    {
+    //        get { return this.forwardStack.Count > 0 ? this.forwardStack.ElementAt(this.forwardStack.Count - 1) : null; }
+    //    }
+
+    //    private NavigationEntry current;
+    //    /// <summary>
+    //    /// Gets the current entry.
+    //    /// </summary>
+    //    public NavigationEntry Current
+    //    {
+    //        get { return current; }
+    //    }
+
+    //    /// <summary>
+    //    /// Invoked when the can go back value changed.
+    //    /// </summary>
+    //    public event EventHandler CanGoBackChanged;
+
+    //    /// <summary>
+    //    /// Invoked when can the go forward value changed.
+    //    /// </summary>
+    //    public event EventHandler CanGoForwardChanged;
+
+    //    /// <summary>
+    //    /// Creates the history.
+    //    /// </summary>
+    //    public NavigationHistory()
+    //    {
+    //        this.backStack = new BindableHistory();
+    //        this.HandleGoBackChanged();
+
+    //        this.forwardStack = new BindableHistory();
+    //        this.HandleGoForwardChanged();
+    //    }
+
+    //    private void OnBackStackCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    //    {
+    //        switch (e.Action)
+    //        {
+    //            case NotifyCollectionChangedAction.Add:
+    //                if (this.backStack.Count == 1)
+    //                    this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
+    //                break;
+    //            case NotifyCollectionChangedAction.Remove:
+    //            case NotifyCollectionChangedAction.Reset:
+    //                if (this.backStack.Count == 0)
+    //                    this.CanGoBackChanged?.Invoke(this, EventArgs.Empty);
+    //                break;
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// Handles go back changed.
+    //    /// </summary>
+    //    public void HandleGoBackChanged()
+    //    {
+    //        this.backStack.CollectionChanged += OnBackStackCollectionChanged; ;
+    //    }
+
+    //    /// <summary>
+    //    /// Unhandles go back changed.
+    //    /// </summary>
+    //    public void UnhandleGoBackChanged()
+    //    {
+    //        this.backStack.CollectionChanged -= OnBackStackCollectionChanged;
+    //    }
+
+    //    private void OnForwardStackCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    //    {
+    //        switch (e.Action)
+    //        {
+    //            case NotifyCollectionChangedAction.Add:
+    //                if (this.forwardStack.Count == 1)
+    //                    this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
+    //                break;
+    //            case NotifyCollectionChangedAction.Remove:
+    //            case NotifyCollectionChangedAction.Reset:
+    //                if (this.forwardStack.Count == 0)
+    //                    this.CanGoForwardChanged?.Invoke(this, EventArgs.Empty);
+    //                break;
+    //        }
+    //    }
+
+    //    /// <summary>
+    //    /// Handles go forward changed.
+    //    /// </summary>
+    //    public void HandleGoForwardChanged()
+    //    {
+    //        this.forwardStack.CollectionChanged += OnForwardStackCollectionChanged;
+    //    }
+
+    //    /// <summary>
+    //    /// Unhandles go forward changed.
+    //    /// </summary>
+    //    public void UnhandleGoForwardChanged()
+    //    {
+    //        this.forwardStack.CollectionChanged -= OnForwardStackCollectionChanged;
+    //    }
+
+    //    /// <summary>
+    //    /// Moves to the the entry.
+    //    /// </summary>
+    //    /// <param name="navigationEntry">The new entry</param>
+    //    public void Navigate(NavigationEntry navigationEntry)
+    //    {
+    //        // navigate => always new entry
+    //        // push current if exists to backstack
+    //        // clear forward stack
+    //        if (this.current != null)
+    //            this.backStack.Add(this.Current);
+
+    //        this.current = navigationEntry;
+
+    //        this.forwardStack.Clear();
+    //    }
+
+    //    /// <summary>
+    //    /// Moves to root entry.
+    //    /// </summary>
+    //    public void NavigateToRoot()
+    //    {
+    //        // set current to root entry
+    //        // clear back stack
+    //        // clear forward stack
+
+    //        this.current = this.Root;
+    //        this.backStack.Clear();
+    //        this.forwardStack.Clear();
+    //    }
+
+    //    /// <summary>
+    //    /// Moves back the history.
+    //    /// </summary>
+    //    /// <returns>The previous entry</returns>
+    //    public NavigationEntry GoBack()
+    //    {
+    //        // get last backstack entry
+    //        var newCurrent = this.backStack.LastOrDefault();
+    //        if (newCurrent == null)
+    //            throw new InvalidOperationException("Cannot go back. Back Stack is empty");
+
+    //        this.backStack.RemoveAt(this.backStack.Count - 1); // remove last
+
+    //        this.forwardStack.Add(this.Current);
+
+    //        this.current = newCurrent;
+    //        return newCurrent;
+    //    }
+
+    //    /// <summary>
+    //    /// Moves forward the history.
+    //    /// </summary>
+    //    /// <returns>The next entry</returns>
+    //    public NavigationEntry GoForward()
+    //    {
+    //        // get last forwardstack entry
+    //        var newCurrent = this.forwardStack.LastOrDefault();
+    //        if (newCurrent == null)
+    //            throw new InvalidOperationException("Cannot go forward. Forward Stack is empty");
+
+    //        this.forwardStack.RemoveAt(this.forwardStack.Count - 1); // remove last
+
+    //        // push current to back stack
+    //        if (this.current == null)
+    //            throw new InvalidOperationException("The current entry cannot be null");
+
+    //        this.backStack.Add(this.Current);
+
+    //        // set new current
+    //        this.current = newCurrent;
+    //        return newCurrent;
+    //    }
+
+    //    /// <summary>
+    //    /// The clear the history.
+    //    /// </summary>
+    //    public void Clear()
+    //    {
+    //        this.forwardStack.Clear();
+    //        this.backStack.Clear();
+    //        this.current = null;
+    //    }
+    //}
+

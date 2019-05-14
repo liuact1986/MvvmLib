@@ -1,12 +1,35 @@
-﻿namespace MvvmLib.Mvvm
+﻿using System.Collections.Generic;
+
+namespace MvvmLib.Mvvm
 {
+    /// <summary>
+    /// Allows to clone and restore objects.
+    /// </summary>
     public interface IEditableObjectService
     {
-        Cloner Cloner { get; }
+        /// <summary>
+        /// Clones and stores the cloned value.
+        /// </summary>
+        /// <param name="source">The value to store</param>
+         void Store(object source);
 
-        void Clear();
+        /// <summary>
+        /// Restore the target with the cloned source.
+        /// </summary>
+        /// <param name="target">The target to restore</param>
         void Restore(object target);
-        void Store(object value);
+
+        /// <summary>
+        /// Restore the target with the cloned source.
+        /// </summary>
+        /// <param name="target">The target to restore</param>
+        /// <param name="propertiesToIgnore">The properties to ignore</param>
+        void Restore(object target, IList<string> propertiesToIgnore);
+
+        /// <summary>
+        /// Sets the clone to null value.
+        /// </summary>
+        void Reset();
     }
 
 }

@@ -562,17 +562,17 @@
         </member>
         <member name="P:MvvmLib.Navigation.NavigationHistory.Previous">
             <summary>
-            Get the previous entry.
+            Gets the previous entry.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.NavigationHistory.Next">
             <summary>
-            Get the next entry.
+            Gets the next entry.
             </summary>
         </member>
         <member name="P:MvvmLib.Navigation.NavigationHistory.Current">
             <summary>
-            Get the current entry.
+            Gets the current entry.
             </summary>
         </member>
         <member name="E:MvvmLib.Navigation.NavigationHistory.CanGoBackChanged">

@@ -16,7 +16,7 @@ namespace MvvmLib.Mvvm
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Sets the value of the property.
+        /// Sets the value of the property and raise <see cref="INotifyPropertyChanged.PropertyChanged"/> event if value is not equal to the storage value.
         /// </summary>
         /// <typeparam name="T">The type of the property</typeparam>
         /// <param name="storage">The field</param>
@@ -26,13 +26,11 @@ namespace MvvmLib.Mvvm
         protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             if (Equals(storage, value))
-            {
                 return false;
-            }
             else
             {
                 storage = value;
-                RaisePropertyChanged(propertyName);
+                OnPropertyChanged(propertyName);
                 return true;
             }
         }
@@ -41,24 +39,23 @@ namespace MvvmLib.Mvvm
         /// Notifies that a property has changed.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
 
         /// <summary>
         /// Notifies that a property has changed.
         /// </summary>
         /// <typeparam name="T">The property type</typeparam>
         /// <param name="expression">The Linq expression</param>
-        protected virtual void RaisePropertyChanged<T>(Expression<Func<T>> expression)
+        protected virtual void OnPropertyChanged<T>(Expression<Func<T>> expression)
         {
             var memberExpression = expression.Body as MemberExpression;
             if (memberExpression != null)
             {
                 string propertyName = memberExpression.Member.Name;
-                RaisePropertyChanged(propertyName);
+                OnPropertyChanged(propertyName);
             }
         }
     }

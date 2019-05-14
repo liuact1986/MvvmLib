@@ -18,7 +18,6 @@ namespace MvvmLib.Mvvm
         /// </summary>
         protected Func<TParameter, bool> canExecuteCommand;
 
-
         /// <summary>
         /// Creates a Relay command.
         /// </summary>

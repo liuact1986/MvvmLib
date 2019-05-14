@@ -3,7 +3,7 @@
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Implements <see cref="IEditableObject" />. Allows cancel edition of an object.
+    /// Implements <see cref="IEditableObject" />. Allows to cancel changes to an object.
     /// </summary>
     public class Editable : BindableBase, IEditableObject
     {
@@ -42,7 +42,7 @@ namespace MvvmLib.Mvvm
         public void CancelEdit()
         {
             this.editableService.Restore(this);
-            this.EndEdit();
+            this.OnPropertyChanged(string.Empty);
         }
 
         /// <summary>
@@ -50,8 +50,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void EndEdit()
         {
-            this.editableService.Clear();
-            this.RaisePropertyChanged(string.Empty);
+            this.editableService.Reset();
         }
     }
 }

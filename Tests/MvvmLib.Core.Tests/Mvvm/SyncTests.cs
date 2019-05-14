@@ -43,39 +43,29 @@ namespace MvvmLib.Core.Tests.Mvvm
         public override int GetHashCode()
         {
             if (string.IsNullOrEmpty(this.Id))
-            {
                 return 0;
-            }
+            
             return this.Id.GetHashCode();
         }
     }
-
 
     public class ItemService
     {
         public bool Has(List<Item> items, string id)
         {
             foreach (var item in items)
-            {
                 if (item.Id == id)
-                {
                     return true;
-                }
 
-            }
             return false;
         }
 
         public Item Get(List<Item> items, string id)
         {
             foreach (var item in items)
-            {
                 if (item.Id == id)
-                {
                     return item;
-                }
 
-            }
             return null;
         }
     }
@@ -89,9 +79,9 @@ namespace MvvmLib.Core.Tests.Mvvm
         public void TestSync()
         {
             var oldItems = new List<Item> {
-                new Item { Id="1", Title = "Title 1" },
-                new Item { Id="2", Title = "Title 2" },
-                new Item { Id="3", Title = "Title 3" }
+                new Item { Id = "1", Title = "Title 1" },
+                new Item { Id = "2", Title = "Title 2" },
+                new Item { Id = "3", Title = "Title 3" }
             };
 
             // item id 1 removed
@@ -99,13 +89,12 @@ namespace MvvmLib.Core.Tests.Mvvm
             // item 3 not updated
             // item 4 added
             var newItems = new List<Item>{
-                new Item{ Id="2", Title = "Title 2!!!!!!"},
-                new Item{ Id="3", Title = "Title 3"},
-                new Item{ Id="4", Title = "Title 4"}
+                new Item{ Id = "2", Title = "Title 2!!!!!!"},
+                new Item{ Id = "3", Title = "Title 3"},
+                new Item{ Id = "4", Title = "Title 4"}
             };
 
-            oldItems.Sync(newItems);
-
+            SyncUtils.Sync(oldItems, newItems);
 
             var service = new ItemService();
             Assert.IsFalse(service.Has(oldItems, "1"));

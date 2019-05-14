@@ -3,54 +3,6 @@ using System.Collections.Generic;
 
 namespace MvvmLib.IoC
 {
-    ///// <summary>
-    ///// Singleton cache item.
-    ///// </summary>
-    //public class SingletonCacheItem
-    //{
-    //    private readonly string name;
-    //    /// <summary>
-    //    /// The name / key
-    //    /// </summary>
-    //    public string Name
-    //    {
-    //        get { return name; }
-    //    }
-
-    //    private readonly Type typeTo;
-    //    /// <summary>
-    //    /// The implementation type.
-    //    /// </summary>
-    //    public Type TypeTo
-    //    {
-    //        get { return typeTo; }
-    //    }
-
-    //    private object instance;
-
-    //    /// <summary>
-    //    /// The instance cached.
-    //    /// </summary>
-    //    public object Instance
-    //    {
-    //        get { return instance; }
-    //    }
-
-    //    /// <summary>
-    //    /// Creates the  Singleton cache item.
-    //    /// </summary>
-    //    /// <param name="name">The name / key</param>
-    //    /// <param name="typeTo">The implementation type</param>
-    //    /// <param name="instance">The instance</param>
-    //    public SingletonCacheItem(string name, Type typeTo, object instance)
-    //    {
-    //        this.name = name ?? throw new ArgumentNullException(nameof(name));
-    //        this.typeTo = typeTo ?? throw new ArgumentNullException(nameof(typeTo));
-    //        this.instance = instance ?? throw new ArgumentNullException(nameof(instance));
-    //    }
-    //}
-
-
     /// <summary>
     /// Cache for instances.
     /// </summary>

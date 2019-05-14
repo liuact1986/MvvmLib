@@ -4,19 +4,56 @@ using System.Collections.Generic;
 
 namespace MvvmLib.Mvvm
 {
-
+    /// <summary>
+    /// Allows to clone values or objects.
+    /// </summary>
     public class Cloner
     {
-        public bool NonPublicConstructors { get; set; }
+        private bool nonPublicConstructors;
+        /// <summary>
+        /// Allows to include non public constructors.
+        /// </summary>
+        public bool NonPublicConstructors
+        {
+            get { return nonPublicConstructors; }
+            set { nonPublicConstructors = value; }
+        }
 
-        public bool NonPublicProperties { get; set; }
+        private bool nonPublicProperties;
+        /// <summary>
+        /// Allows to include non public properties.
+        /// </summary>
+        public bool NonPublicProperties
+        {
+            get { return nonPublicProperties; }
+            set { nonPublicProperties = value; }
+        }
 
-        public bool NonPublicFields { get; set; }
+        private bool nonPublicFields;
+        /// <summary>
+        /// Allows to include non public fields.
+        /// </summary>
+        public bool NonPublicFields
+        {
+            get { return nonPublicFields; }
+            set { nonPublicFields = value; }
+        }
 
-        public bool IncludeFields { get; set; }
+        private bool includeFields;
+        /// <summary>
+        /// Allows to include fields.
+        /// </summary>
+        public bool IncludeFields
+        {
+            get { return includeFields; }
+            set { includeFields = value; }
+        }
 
         private CircularReferenceManager circularReferenceManager;
 
+        /// <summary>
+        /// Creates the cloner.
+        /// </summary>
         public Cloner()
         {
             NonPublicConstructors = true;
@@ -186,14 +223,31 @@ namespace MvvmLib.Mvvm
             throw new Exception("Cannot clone \"" + type.Name + "\"");
         }
 
+        /// <summary>
+        /// Clones the value.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <param name="value">The value</param>
+        /// <returns>The clone</returns>
         public object DeepClone(Type type, object value)
         {
-            if (value == null) { throw new Exception("Value cannot be null"); }
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+            if (value.GetType() != type)
+                throw new ArgumentException($"Value is not of type {type.Name}");
 
             ClearCircularReferences();
             return this.DoDeepClone(type, value);
         }
 
+        /// <summary>
+        /// Clones the value.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="value">The value</param>
+        /// <returns>The clone</returns>
         public T DeepClone<T>(T value)
         {
             return (T)DeepClone(typeof(T), value);

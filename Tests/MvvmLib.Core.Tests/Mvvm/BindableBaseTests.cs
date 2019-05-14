@@ -26,8 +26,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             set
             {
                 this._lastName = value;
-                this.RaisePropertyChanged(); // raise current property
-                this.RaisePropertyChanged("FullName"); // raise other property
+                this.OnPropertyChanged(); // raise current property
+                this.OnPropertyChanged("FullName"); // raise other property
             }
         }
 
@@ -38,7 +38,7 @@ namespace MvvmLib.Core.Tests.Mvvm
             set
             {
                 email = value;
-                RaisePropertyChanged(() => Email); // expression
+                OnPropertyChanged(() => Email); // expression
             }
         }
 

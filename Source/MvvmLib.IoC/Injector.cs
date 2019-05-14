@@ -494,7 +494,12 @@ namespace MvvmLib.IoC
                     }
                 }
                 else
-                    throw new ResolutionFailedException($"Cannot resolve unregistered parameter \"{parameterName}\"");
+                {
+                    if (IsValueContainerType(parameterType))
+                        throw new ResolutionFailedException($"Unable to resolve unregistered parameter \"{parameterName}\"");
+                    else
+                        throw new ResolutionFailedException($"Unable to resolve unregistered parameter \"{parameterType.Name}\"");
+                }
             }
         }
 
@@ -519,16 +524,16 @@ namespace MvvmLib.IoC
                 var parameterValues = this.ResolveParameterValues(registration, typeInformation.Parameters);
                 var instance = this.objectCreationManager.CreateInstanceWithParameterizedConstructor(type, typeInformation.Constructor, parameterValues);
                 this.singletonCache.TryAddToCache(registration, instance);
-                this.NotifyOnResolvedForRegistration(registration, instance);
-                this.RaiseResolved(registration, instance);
+                this.OnResolvedForRegistration(registration, instance);
+                this.OnResolved(registration, instance);
                 return instance;
             }
             else
             {
                 var instance = this.objectCreationManager.CreateInstanceWithEmptyConstructor(type, typeInformation.Constructor);
                 this.singletonCache.TryAddToCache(registration, instance);
-                this.NotifyOnResolvedForRegistration(registration, instance);
-                this.RaiseResolved(registration, instance);
+                this.OnResolvedForRegistration(registration, instance);
+                this.OnResolved(registration, instance);
                 return instance;
             }
         }
@@ -541,7 +546,7 @@ namespace MvvmLib.IoC
                 if (typeRegistration.IsSingleton && this.IsSingletonCached(implementedType, name))
                 {
                     var instance = this.GetSingletonFromCache(implementedType, name);
-                    this.RaiseResolved(registration, instance);
+                    this.OnResolved(registration, instance);
                     return instance;
                 }
                 else
@@ -553,15 +558,15 @@ namespace MvvmLib.IoC
             else if (registration is InstanceRegistration instanceRegistration)
             {
                 var instance = instanceRegistration.Instance;
-                this.NotifyOnResolvedForRegistration(registration, instance);
-                this.RaiseResolved(instanceRegistration, instance);
+                this.OnResolvedForRegistration(registration, instance);
+                this.OnResolved(instanceRegistration, instance);
                 return instance;
             }
             else if (registration is FactoryRegistration factoryRegistration)
             {
                 var instance = factoryRegistration.Factory();
-                this.NotifyOnResolvedForRegistration(registration, instance);
-                this.RaiseResolved(factoryRegistration, instance);
+                this.OnResolvedForRegistration(registration, instance);
+                this.OnResolved(factoryRegistration, instance);
                 return instance;
             }
 
@@ -748,12 +753,12 @@ namespace MvvmLib.IoC
             return this.BuildUp(type, DefaultName);
         }
 
-        private void NotifyOnResolvedForRegistration(ContainerRegistration registration, object instance)
+        private void OnResolvedForRegistration(ContainerRegistration registration, object instance)
         {
             registration.OnResolved?.Invoke(registration, instance);
         }
 
-        private void RaiseResolved(ContainerRegistration registration, object instance)
+        private void OnResolved(ContainerRegistration registration, object instance)
         {
             var context = new ResolutionEventArgs(registration, instance);
             foreach (var handler in this.resolved)

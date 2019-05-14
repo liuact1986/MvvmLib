@@ -254,7 +254,7 @@
         </member>
         <member name="M:MvvmLib.Mvvm.BindableBase.SetProperty``1(``0@,``0,System.String)">
             <summary>
-            Sets the value of the property.
+            Sets the value of the property and raise <see cref="E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged"/> event if value is not equal to the storage value.
             </summary>
             <typeparam name="T">The type of the property</typeparam>
             <param name="storage">The field</param>
@@ -262,13 +262,13 @@
             <param name="propertyName">The property name</param>
             <returns>True if the value has changed</returns>
         </member>
-        <member name="M:MvvmLib.Mvvm.BindableBase.RaisePropertyChanged(System.String)">
+        <member name="M:MvvmLib.Mvvm.BindableBase.OnPropertyChanged(System.String)">
             <summary>
             Notifies that a property has changed.
             </summary>
             <param name="propertyName">The property name</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.BindableBase.RaisePropertyChanged``1(System.Linq.Expressions.Expression{System.Func{``0}})">
+        <member name="M:MvvmLib.Mvvm.BindableBase.OnPropertyChanged``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
             Notifies that a property has changed.
             </summary>
@@ -555,7 +555,7 @@
         </member>
         <member name="T:MvvmLib.Mvvm.ISyncItem`1">
             <summary>
-            Updates the values only if required.
+            Updates the values only when synchronization is needed.
             </summary>
             <typeparam name="T"></typeparam>
         </member>
@@ -567,10 +567,10 @@
         </member>
         <member name="M:MvvmLib.Mvvm.ISyncItem`1.NeedSync(`0)">
             <summary>
-            Checks if the update is required.
+            Checks if updating is required.
             </summary>
             <param name="other">The other value</param>
-            <returns>Tru if required</returns>
+            <returns>True if required</returns>
         </member>
         <member name="T:MvvmLib.Mvvm.Singleton`1">
             <summary>
@@ -583,18 +583,42 @@
             The singleton instance.
             </summary>
         </member>
-        <member name="T:MvvmLib.Mvvm.SyncListExtension">
+        <member name="T:MvvmLib.Mvvm.SyncUtils">
             <summary>
-            Updates the values only if required.
+            Allows to synchronize lists.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.SyncListExtension.Sync``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{``0})">
+        <member name="M:MvvmLib.Mvvm.SyncUtils.Sync``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{``0})">
             <summary>
-            Synchronize the current to other value(s).
+            Synchronize old items with new items.
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="oldValues">The old values</param>
-            <param name="newValues">The new values</param>
+            <typeparam name="T">The type</typeparam>
+            <param name="oldItems">The old items</param>
+            <param name="newItems">The new items</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.SyncUtils.InsertAddedItems``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{``0})">
+            <summary>
+            Inserts added items to old items.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="oldItems">The old items</param>
+            <param name="newItems">The new items</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.SyncUtils.RemoveDeletedItems``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{``0})">
+            <summary>
+            Removes deleted items from old items.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="oldItems">The old items</param>
+            <param name="newItems">The new items</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.SyncUtils.UpdateItems``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{``0})">
+            <summary>
+            Updates old items.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="oldItems">The old items</param>
+            <param name="newItems">The new items</param>
         </member>
         <member name="T:MvvmLib.Mvvm.CircularReferenceManager">
             <summary>
@@ -632,9 +656,55 @@
             Clears the registered instances.
             </summary>
         </member>
+        <member name="T:MvvmLib.Mvvm.Cloner">
+            <summary>
+            Allows to clone values or objects.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Mvvm.Cloner.NonPublicConstructors">
+            <summary>
+            Allows to include non public constructors.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Mvvm.Cloner.NonPublicProperties">
+            <summary>
+            Allows to include non public properties.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Mvvm.Cloner.NonPublicFields">
+            <summary>
+            Allows to include non public fields.
+            </summary>
+        </member>
+        <member name="P:MvvmLib.Mvvm.Cloner.IncludeFields">
+            <summary>
+            Allows to include fields.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Cloner.#ctor">
+            <summary>
+            Creates the cloner.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Cloner.DeepClone(System.Type,System.Object)">
+            <summary>
+            Clones the value.
+            </summary>
+            <param name="type">The type</param>
+            <param name="value">The value</param>
+            <returns>The clone</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Cloner.DeepClone``1(``0)">
+            <summary>
+            Clones the value.
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="value">The value</param>
+            <returns>The clone</returns>
+        </member>
         <member name="T:MvvmLib.Mvvm.Editable">
             <summary>
-            Implements <see cref="T:System.ComponentModel.IEditableObject" />. Allows cancel edition of an object.
+            Implements <see cref="T:System.ComponentModel.IEditableObject" />. Allows to cancel changes to an object.
             </summary>
         </member>
         <member name="F:MvvmLib.Mvvm.Editable.editableService">
@@ -668,20 +738,78 @@
             Clear the cloned values and notify changes.
             </summary>
         </member>
+        <member name="T:MvvmLib.Mvvm.EditableObjectService">
+            <summary>
+            Allows to clone and restore objects.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.EditableObjectService.#ctor">
+            <summary>
+            Creates the editable object service.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.EditableObjectService.Store(System.Object)">
+            <summary>
+            Clones and stores the cloned value.
+            </summary>
+            <param name="source">The value to store</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.EditableObjectService.Restore(System.Object)">
+            <summary>
+            Restore the target with the cloned source.
+            </summary>
+            <param name="target">The target to restore</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.EditableObjectService.Restore(System.Object,System.Collections.Generic.IList{System.String})">
+            <summary>
+            Restore the target with the cloned source.
+            </summary>
+            <param name="target">The target to restore</param>
+            <param name="propertiesToIgnore">The properties to ignore</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.EditableObjectService.Reset">
+            <summary>
+            Sets the clone to null value.
+            </summary>
+        </member>
+        <member name="T:MvvmLib.Mvvm.IEditableObjectService">
+            <summary>
+            Allows to clone and restore objects.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.IEditableObjectService.Store(System.Object)">
+            <summary>
+            Clones and stores the cloned value.
+            </summary>
+            <param name="source">The value to store</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.IEditableObjectService.Restore(System.Object)">
+            <summary>
+            Restore the target with the cloned source.
+            </summary>
+            <param name="target">The target to restore</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.IEditableObjectService.Restore(System.Object,System.Collections.Generic.IList{System.String})">
+            <summary>
+            Restore the target with the cloned source.
+            </summary>
+            <param name="target">The target to restore</param>
+            <param name="propertiesToIgnore">The properties to ignore</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.IEditableObjectService.Reset">
+            <summary>
+            Sets the clone to null value.
+            </summary>
+        </member>
         <member name="T:MvvmLib.Mvvm.ModelWrapper`1">
             <summary>
-            Base class for wrapping a model. Allows to validate and edit properties.
+            Base class for wrapping model. Allows to validate and edit properties.
             </summary>
             <typeparam name="TModel">The model</typeparam>
         </member>
         <member name="P:MvvmLib.Mvvm.ModelWrapper`1.Model">
             <summary>
-            The model.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Mvvm.ModelWrapper`1.editableObjectService">
-            <summary>
-            The editable object service.
+            The model wrapped.
             </summary>
         </member>
         <member name="M:MvvmLib.Mvvm.ModelWrapper`1.#ctor(`0,MvvmLib.Mvvm.IEditableObjectService)">
@@ -720,21 +848,6 @@
             <param name="value">The new value</param>
             <param name="propertyName">The property name</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.ModelWrapper`1.BeginEdit">
-            <summary>
-            Clones the values fo the model.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Mvvm.ModelWrapper`1.CancelEdit">
-            <summary>
-            Reset the values of the model and clear errors.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Mvvm.ModelWrapper`1.EndEdit">
-            <summary>
-            Clear the cloned values and notify changes.
-            </summary>
-        </member>
         <member name="T:MvvmLib.Mvvm.ValidationHandling">
             <summary>
             The validation type.
@@ -765,21 +878,26 @@
             Returns the list of errors or an empty list for the property.
             </summary>
             <param name="propertyName">The property name</param>
-            <returns>The list of errors or an empty list for the property.</returns>
+            <returns>The list of errors or an empty list for the property</returns>
         </member>
         <member name="P:MvvmLib.Mvvm.BindableErrorContainer.Count">
             <summary>
             The count of errors by property name.
             </summary>
         </member>
-        <member name="M:MvvmLib.Mvvm.BindableErrorContainer.ContainErrors(System.String)">
+        <member name="M:MvvmLib.Mvvm.BindableErrorContainer.#ctor">
+            <summary>
+            Creates the bindable error container.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.BindableErrorContainer.ContainsErrors(System.String)">
             <summary>
             Checks if the property has errors.
             </summary>
             <param name="propertyName">The property name</param>
             <returns>True if the property has errors</returns>
         </member>
-        <member name="M:MvvmLib.Mvvm.BindableErrorContainer.ContainError(System.String,System.String)">
+        <member name="M:MvvmLib.Mvvm.BindableErrorContainer.ContainsError(System.String,System.String)">
             <summary>
             Checks if the property has already the error.
             </summary>
@@ -827,6 +945,11 @@
             The error container.
             </summary>
         </member>
+        <member name="P:MvvmLib.Mvvm.Validatable.HasErrors">
+            <summary>
+            True if the source has errors.
+            </summary>
+        </member>
         <member name="F:MvvmLib.Mvvm.Validatable.propertiesToIgnore">
             <summary>
             The list of properties to ignore.
@@ -844,12 +967,12 @@
         </member>
         <member name="F:MvvmLib.Mvvm.Validatable.useDataAnnotations">
             <summary>
-            Allows to use or not  <see cref="N:System.ComponentModel.DataAnnotations"/> for validation, true by default.
+            Allows to use or not <see cref="N:System.ComponentModel.DataAnnotations"/> for validation, true by default.
             </summary>
         </member>
         <member name="P:MvvmLib.Mvvm.Validatable.UseDataAnnotations">
             <summary>
-            Allows to use or not  <see cref="N:System.ComponentModel.DataAnnotations"/> for validation, true by default.
+            Allows to use or not <see cref="N:System.ComponentModel.DataAnnotations"/> for validation, true by default.
             </summary>
         </member>
         <member name="F:MvvmLib.Mvvm.Validatable.useCustomValidations">
@@ -877,22 +1000,10 @@
             Checks if can validate when a property has changed.
             </summary>
         </member>
-        <member name="P:MvvmLib.Mvvm.Validatable.HasErrors">
-            <summary>
-            True if the source has errors.
-            </summary>
-        </member>
         <member name="E:MvvmLib.Mvvm.Validatable.ErrorsChanged">
             <summary>
             Invoked when errors changed.
             </summary>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.GetErrors(System.String)">
-            <summary>
-            Gets the errors for a property name.
-            </summary>
-            <param name="propertyName">The property name</param>
-            <returns>The errors or null</returns>
         </member>
         <member name="M:MvvmLib.Mvvm.Validatable.#ctor(System.Object)">
             <summary>
@@ -900,7 +1011,7 @@
             </summary>
             <param name="model">The model / source for validation ("this" if null)</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ContainPropertyToIgnore(System.String)">
+        <member name="M:MvvmLib.Mvvm.Validatable.ContainsPropertyToIgnore(System.String)">
             <summary>
             Checks if the property is to ignore.
             </summary>
@@ -919,46 +1030,20 @@
             </summary>
             <param name="propertyName">The property name</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ContainErrors(System.String)">
-            <summary>
-            Checks if there is errors for the property.
-            </summary>
-            <param name="propertyName">The property name</param>
-            <returns>True if the property has errors</returns>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ContainError(System.String,System.String)">
-            <summary>
-            Checks if the property has already the error.
-            </summary>
-            <param name="propertyName">The property name</param>
-            <param name="error">The error</param>
-            <returns>True if the property has already the error</returns>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.AddError(System.String,System.String)">
-            <summary>
-            Adds an error for the property
-            </summary>
-            <param name="propertyName">The property name</param>
-            <param name="error">The error</param>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ClearErrors(System.String)">
-            <summary>
-            Clears the erros for the property.
-            </summary>
-            <param name="propertyName">The property name</param>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ClearErrors">
-            <summary>
-            Clears the errors for all properties.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.RaiseErrorsChanged(System.String)">
+        <member name="M:MvvmLib.Mvvm.Validatable.OnErrorsChanged(System.String)">
             <summary>
             Raises the <see cref="E:System.ComponentModel.INotifyDataErrorInfo.ErrorsChanged"/> event.
             </summary>
             <param name="propertyName">The property name</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ValidateDataAnnotations(System.String,System.Object)">
+        <member name="M:MvvmLib.Mvvm.Validatable.GetErrors(System.String)">
+            <summary>
+            Gets the errors for a property name.
+            </summary>
+            <param name="propertyName">The property name</param>
+            <returns>The errors or null</returns>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Validatable.ValidateByDataAnnotations(System.String,System.Object)">
             <summary>
             Validate with <see cref="N:System.ComponentModel.DataAnnotations"/>.
             </summary>
@@ -972,11 +1057,35 @@
             <param name="propertyName">The property name</param>
             <returns>The list of errors or null</returns>
         </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.ValidateCustomErrors(System.String)">
+        <member name="M:MvvmLib.Mvvm.Validatable.ValidateByCustomValidations(System.String)">
             <summary>
             Validates with custom validations.
             </summary>
             <param name="propertyName">The property name</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Validatable.ClearErrors(System.String)">
+            <summary>
+            Clears the erros for the property.
+            </summary>
+            <param name="propertyName">The property name</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Validatable.ClearErrors">
+            <summary>
+            Clears the errors for all properties.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Validatable.AddError(System.String,System.String)">
+            <summary>
+            Adds an error for the property
+            </summary>
+            <param name="propertyName">The property name</param>
+            <param name="error">The error</param>
+        </member>
+        <member name="M:MvvmLib.Mvvm.Validatable.GetProperties">
+            <summary>
+            Gets the properties.
+            </summary>
+            <returns>A dictionary with property name and property info</returns>
         </member>
         <member name="M:MvvmLib.Mvvm.Validatable.ValidateProperty(System.String,System.Object)">
             <summary>
@@ -985,12 +1094,6 @@
             <param name="propertyName">The property name</param>
             <param name="value">The value to check</param>
         </member>
-        <member name="M:MvvmLib.Mvvm.Validatable.GetProperties">
-            <summary>
-            Gets the properties.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:MvvmLib.Mvvm.Validatable.ValidateAll">
             <summary>
             Validates all properties and sets <see cref="P:MvvmLib.Mvvm.Validatable.IsSubmitted"/> to true.
@@ -998,7 +1101,7 @@
         </member>
         <member name="M:MvvmLib.Mvvm.Validatable.Reset">
             <summary>
-            Resets all errors and options.
+            Clear errors and reste is submitted.
             </summary>
         </member>
         <member name="M:MvvmLib.Mvvm.Validatable.SetProperty``1(``0@,``0,System.String)">
@@ -1041,7 +1144,7 @@
         </member>
         <member name="M:MvvmLib.Mvvm.ValidatableAndEditable.EndEdit">
             <summary>
-            Clear the cloned values and notify changes.
+            Sets the clone to null value.
             </summary>
         </member>
     </members>

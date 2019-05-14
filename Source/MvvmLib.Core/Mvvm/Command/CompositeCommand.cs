@@ -13,11 +13,11 @@ namespace MvvmLib.Mvvm
         /// <summary>
         /// The list of the commands to execute.
         /// </summary>
-        protected readonly IList<ICommand> commands;
+        protected readonly List<ICommand> commands;
         /// <summary>
         /// The list of the commands to execute.
         /// </summary>
-        public IList<ICommand> Commands
+        public IReadOnlyList<ICommand> Commands
         {
             get { return commands; }
         }

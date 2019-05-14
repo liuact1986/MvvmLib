@@ -32,31 +32,47 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public class BindableErrorContainer
     {
-        private List<string> emptyList = new List<string>();
-        private Dictionary<string, List<string>> errorsByPropertyName = new Dictionary<string, List<string>>();
+        private static readonly List<string> emptyErrorList = new List<string>();
+        private readonly Dictionary<string, List<string>> errorsByPropertyName;
 
         /// <summary>
         /// Returns the list of errors or an empty list for the property.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        /// <returns>The list of errors or an empty list for the property.</returns>
-        public List<string> this[string propertyName]
+        /// <returns>The list of errors or an empty list for the property</returns>
+        public IReadOnlyList<string> this[string propertyName]
         {
-            get => this.errorsByPropertyName.ContainsKey(propertyName) ?
-                this.errorsByPropertyName[propertyName] : emptyList;
+            get
+            {
+                if (errorsByPropertyName.TryGetValue(propertyName, out List<string> errorsForPropertyName))
+                    return errorsForPropertyName;
+
+                return emptyErrorList;
+            }
         }
 
         /// <summary>
         /// The count of errors by property name.
         /// </summary>
-        public int Count => this.errorsByPropertyName.Count;
+        public int Count
+        {
+            get { return this.errorsByPropertyName.Count; }
+        }
+
+        /// <summary>
+        /// Creates the bindable error container.
+        /// </summary>
+        public BindableErrorContainer()
+        {
+            errorsByPropertyName = new Dictionary<string, List<string>>();
+        }
 
         /// <summary>
         /// Checks if the property has errors.
         /// </summary>
         /// <param name="propertyName">The property name</param>
         /// <returns>True if the property has errors</returns>
-        public bool ContainErrors(string propertyName)
+        public bool ContainsErrors(string propertyName)
         {
             return errorsByPropertyName.ContainsKey(propertyName);
         }
@@ -67,9 +83,9 @@ namespace MvvmLib.Mvvm
         /// <param name="propertyName">The property name</param>
         /// <param name="error">The error</param>
         /// <returns>True if the property has already the error</returns>
-        public bool ContainError(string propertyName, string error)
+        public bool ContainsError(string propertyName, string error)
         {
-            return ContainErrors(propertyName) && errorsByPropertyName[propertyName].Contains(error);
+            return ContainsErrors(propertyName) && errorsByPropertyName[propertyName].Contains(error);
         }
 
         /// <summary>
@@ -78,16 +94,15 @@ namespace MvvmLib.Mvvm
         /// <param name="propertyName">The property name</param>
         /// <param name="error">The error</param>
         /// <returns>True if the error is added</returns>
-        public bool AddError(string propertyName, string error)
+        internal bool AddError(string propertyName, string error)
         {
-            if (!ContainErrors(propertyName))
+            var hasErrorsForProperty = errorsByPropertyName.ContainsKey(propertyName);
+            if (!hasErrorsForProperty)
+                errorsByPropertyName[propertyName] = new List<string>();
+
+            if (!hasErrorsForProperty || !errorsByPropertyName[propertyName].Contains(error))
             {
-                this.errorsByPropertyName[propertyName] = new List<string> { error };
-                return true;
-            }
-            else if (!ContainError(propertyName, error))
-            {
-                this.errorsByPropertyName[propertyName].Add(error);
+                errorsByPropertyName[propertyName].Add(error);
                 return true;
             }
             return false;
@@ -98,17 +113,16 @@ namespace MvvmLib.Mvvm
         /// </summary>
         /// <param name="propertyName">The property name</param>
         /// <returns>True the property has errors</returns>
-        public bool ClearErrors(string propertyName)
+        internal bool ClearErrors(string propertyName)
         {
-            if (ContainErrors(propertyName))
+            if (errorsByPropertyName.ContainsKey(propertyName))
             {
-                errorsByPropertyName.Remove(propertyName);
-                return true;
+                var removed = errorsByPropertyName.Remove(propertyName);
+                return removed;
             }
             return false;
         }
     }
-
 
     /// <summary>
     /// Implements <see cref="INotifyDataErrorInfo"/>. Allows to validate properties with <see cref="System.ComponentModel.DataAnnotations"/> or cutom validations.
@@ -139,6 +153,14 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
+        /// True if the source has errors.
+        /// </summary>
+        public bool HasErrors
+        {
+            get { return this.errors.Count > 0; }
+        }
+
+        /// <summary>
         /// The list of properties to ignore.
         /// </summary>
         protected List<string> propertiesToIgnore = new List<string>
@@ -156,7 +178,7 @@ namespace MvvmLib.Mvvm
         /// <summary>
         /// The validation type, <see cref="ValidationHandling.OnPropertyChange"/> by default.
         /// </summary>
-        protected ValidationHandling validationType = ValidationHandling.OnPropertyChange;
+        protected ValidationHandling validationType;
         /// <summary>
         /// The validation type, <see cref="ValidationHandling.OnPropertyChange"/> by default.
         /// </summary>
@@ -175,11 +197,11 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Allows to use or not  <see cref="System.ComponentModel.DataAnnotations"/> for validation, true by default.
+        /// Allows to use or not <see cref="System.ComponentModel.DataAnnotations"/> for validation, true by default.
         /// </summary>
-        protected bool useDataAnnotations = true;
+        protected bool useDataAnnotations;
         /// <summary>
-        /// Allows to use or not  <see cref="System.ComponentModel.DataAnnotations"/> for validation, true by default.
+        /// Allows to use or not <see cref="System.ComponentModel.DataAnnotations"/> for validation, true by default.
         /// </summary>
         public bool UseDataAnnotations
         {
@@ -198,7 +220,7 @@ namespace MvvmLib.Mvvm
         /// <summary>
         /// Allows to use custom validation, true by default.
         /// </summary>
-        protected bool useCustomValidations = true;
+        protected bool useCustomValidations;
         /// <summary>
         /// Allows to use custom validation, true by default.
         /// </summary>
@@ -242,37 +264,10 @@ namespace MvvmLib.Mvvm
             }
         }
 
-        // IDataErrorInfo
-
-
-        /// <summary>
-        /// True if the source has errors.
-        /// </summary>
-        public bool HasErrors
-        {
-            get { return this.errors.Count > 0; }
-        }
-
-
         /// <summary>
         /// Invoked when errors changed.
         /// </summary>
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-
-        /// <summary>
-        /// Gets the errors for a property name.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <returns>The errors or null</returns>
-        public IEnumerable GetErrors(string propertyName)
-        {
-            if (this.Errors.ContainErrors(propertyName))
-                return Errors[propertyName];
-            else
-                return null;
-        }
-
-        // end IDataErrorInfo
 
         /// <summary>
         /// Creates the validatable class.
@@ -281,6 +276,9 @@ namespace MvvmLib.Mvvm
         public Validatable(object model = null)
         {
             this.errors = new BindableErrorContainer();
+            this.validationType = ValidationHandling.OnPropertyChange;
+            this.useDataAnnotations = true;
+            this.useCustomValidations = true;
             this.source = model ?? (this);
         }
 
@@ -289,7 +287,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         /// <param name="propertyName">The property name</param>
         /// <returns>True if ignored</returns>
-        public bool ContainPropertyToIgnore(string propertyName)
+        public bool ContainsPropertyToIgnore(string propertyName)
         {
             return this.propertiesToIgnore.Contains(propertyName);
         }
@@ -300,7 +298,7 @@ namespace MvvmLib.Mvvm
         /// <param name="propertyName">The property name</param>
         public void AddPropertyToIgnore(string propertyName)
         {
-            if (!ContainPropertyToIgnore(propertyName))
+            if (!ContainsPropertyToIgnore(propertyName))
                 this.propertiesToIgnore.Add(propertyName);
         }
 
@@ -310,87 +308,45 @@ namespace MvvmLib.Mvvm
         /// <param name="propertyName">The property name</param>
         public void RemovePropertyToIgnore(string propertyName)
         {
-            if (ContainPropertyToIgnore(propertyName))
+            if (ContainsPropertyToIgnore(propertyName))
                 this.propertiesToIgnore.Remove(propertyName);
-        }
-
-        /// <summary>
-        /// Checks if there is errors for the property.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <returns>True if the property has errors</returns>
-        public bool ContainErrors(string propertyName)
-        {
-            return Errors.ContainErrors(propertyName);
-        }
-
-        /// <summary>
-        /// Checks if the property has already the error.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <param name="error">The error</param>
-        /// <returns>True if the property has already the error</returns>
-        public bool ContainError(string propertyName, string error)
-        {
-            return this.Errors.ContainError(propertyName, error);
-        }
-
-        /// <summary>
-        /// Adds an error for the property
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <param name="error">The error</param>
-        public void AddError(string propertyName, string error)
-        {
-            if (this.Errors.AddError(propertyName, error))
-                this.RaiseErrorsChanged(propertyName);
-        }
-
-        /// <summary>
-        /// Clears the erros for the property.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        public void ClearErrors(string propertyName)
-        {
-            if (this.Errors.ClearErrors(propertyName))
-                this.RaiseErrorsChanged(propertyName);
-        }
-
-        /// <summary>
-        /// Clears the errors for all properties.
-        /// </summary>
-        public void ClearErrors()
-        {
-            var properties = GetProperties();
-            foreach (var property in properties)
-                this.ClearErrors(property.Key);
         }
 
         /// <summary>
         /// Raises the <see cref="INotifyDataErrorInfo.ErrorsChanged"/> event.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        protected virtual void RaiseErrorsChanged(string propertyName)
+        protected void OnErrorsChanged(string propertyName)
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-            base.RaisePropertyChanged(nameof(HasErrors));
-            base.RaisePropertyChanged(nameof(Errors));
         }
 
+        /// <summary>
+        /// Gets the errors for a property name.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        /// <returns>The errors or null</returns>
+        public virtual IEnumerable GetErrors(string propertyName)
+        {
+            if (this.Errors.ContainsErrors(propertyName))
+                return Errors[propertyName];
+            else
+                return null;
+        }
 
         /// <summary>
         /// Validate with <see cref="System.ComponentModel.DataAnnotations"/>.
         /// </summary>
         /// <param name="propertyName">The property name</param>
         /// <param name="value">The value to check</param>
-        protected void ValidateDataAnnotations(string propertyName, object value)
+        protected virtual void ValidateByDataAnnotations(string propertyName, object value)
         {
-            var results = new List<ValidationResult>();
+            var validationResults = new List<ValidationResult>();
             var context = new ValidationContext(source) { MemberName = propertyName };
 
-            if (!Validator.TryValidateProperty(value, context, results))
+            if (!Validator.TryValidateProperty(value, context, validationResults))
             {
-                foreach (var result in results)
+                foreach (var result in validationResults)
                     AddError(propertyName, result.ErrorMessage);
             }
             else
@@ -411,7 +367,7 @@ namespace MvvmLib.Mvvm
         /// Validates with custom validations.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        protected void ValidateCustomErrors(string propertyName)
+        protected virtual void ValidateByCustomValidations(string propertyName)
         {
             var errors = DoCustomValidations(propertyName);
             if (errors != null)
@@ -420,25 +376,48 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Validates a propeprty.
+        /// Clears the erros for the property.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        /// <param name="value">The value to check</param>
-        public void ValidateProperty(string propertyName, object value)
+        public virtual void ClearErrors(string propertyName)
         {
-            ClearErrors(propertyName);
+            if (errors.ClearErrors(propertyName))
+            {
+                OnPropertyChanged(nameof(HasErrors));
+                OnPropertyChanged(nameof(Errors));
+                OnErrorsChanged(propertyName);
+            }
+        }
 
-            if (UseDataAnnotations)
-                ValidateDataAnnotations(propertyName, value);
+        /// <summary>
+        /// Clears the errors for all properties.
+        /// </summary>
+        public virtual void ClearErrors()
+        {
+            var properties = GetProperties();
+            foreach (var property in properties)
+                this.ClearErrors(property.Key);
+        }
 
-            if (UseCustomValidations)
-                ValidateCustomErrors(propertyName);
+        /// <summary>
+        /// Adds an error for the property
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        /// <param name="error">The error</param>
+        public virtual void AddError(string propertyName, string error)
+        {
+            if (this.Errors.AddError(propertyName, error))
+            {
+                OnPropertyChanged(nameof(HasErrors));
+                OnPropertyChanged(nameof(Errors));
+                OnErrorsChanged(propertyName);
+            }
         }
 
         /// <summary>
         /// Gets the properties.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A dictionary with property name and property info</returns>
         protected Dictionary<string, PropertyInfo> GetProperties()
         {
             if (this.propertyCache != null)
@@ -459,6 +438,22 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
+        /// Validates a propeprty.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        /// <param name="value">The value to check</param>
+        public void ValidateProperty(string propertyName, object value)
+        {
+            ClearErrors(propertyName);
+
+            if (UseDataAnnotations)
+                ValidateByDataAnnotations(propertyName, value);
+
+            if (UseCustomValidations)
+                ValidateByCustomValidations(propertyName);
+        }
+
+        /// <summary>
         /// Validates all properties and sets <see cref="IsSubmitted"/> to true.
         /// </summary>
         public void ValidateAll()
@@ -473,14 +468,11 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Resets all errors and options.
+        /// Clear errors and reste is submitted.
         /// </summary>
         public void Reset()
         {
             this.ClearErrors();
-            this.validationType = ValidationHandling.OnPropertyChange;
-            this.useCustomValidations = true;
-            this.useDataAnnotations = true;
             this.isSubmitted = false;
         }
 
@@ -500,6 +492,6 @@ namespace MvvmLib.Mvvm
 
             return result;
         }
-
     }
+
 }
