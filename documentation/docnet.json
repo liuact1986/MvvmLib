@@ -11,7 +11,6 @@
         "MvvmLib.Wpf": "Navigation.md",
         "MvvmLib.Windows":"Navigation_Uwp.md",
         "MvvmLib.XF":"Navigation_XF.md",
-        "MvvmLib.Animation.Wpf": "Animation.md",
         "MvvmLib.Adaptive.Wpf":"Adaptive.md",
         "MvvmLib.Adaptive.Windows":"Adaptive_Uwp.md",
         "LICENSE": "LICENSE.md"
