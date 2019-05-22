@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Text="View B"  FontSize="40" FontWeight="Bold" Foreground="White"></TextBlock>
+        <TextBlock Text="{Binding Message}"   FontSize="40" FontWeight="Bold" Foreground="White"></TextBlock>
     </StackPanel>
 </UserControl>

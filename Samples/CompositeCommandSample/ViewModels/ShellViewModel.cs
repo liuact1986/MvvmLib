@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace CompositeCommandSample.ViewModels
 {
-    public class ShellViewModel : ILoadedEventListener
+    public class ShellViewModel : IIsLoaded
     {
         public CompositeCommand SaveAllCommand { get; }
 
@@ -18,7 +18,7 @@ namespace CompositeCommandSample.ViewModels
             this.regionNavigationService = regionNavigationService;
         }
 
-        public async void OnLoaded(FrameworkElement view, object parameter)
+        public async void OnLoaded(object parameter)
         {
             await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
             await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");

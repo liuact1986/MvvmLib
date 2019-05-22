@@ -6,11 +6,13 @@
 * **RegionNavigationService** allows to **navigate** _with regions_ 
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
-* **ILoadedEventListener**: allows to be notified when the view or window is loaded
+* **IIsLoaded**: allows to be notified when the view or window is loaded
 * **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
 * **ISelectable**: allows to select a view 
+* **IsSelected**: allows to be notifed from view model on selection changed for ItemsRegion with Selector (ListBox, TabControl, etc.)
 * **BootstrapperBase**: bootstrapper base class
 * **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
+* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate on content change / insertion, etc.
 
 ## ViewModelLocator
 
@@ -231,9 +233,8 @@ await WpfNavigationService.Default.GetItemsRegion(RegionNames.ItemsControlRegion
 
 * **AddAsync**
 * **InsertAsync**
-* **RemoveAtAsync**
-* **RemoveLastAsync**
-* **Clear**
+* **RemoveAtAsync**, **Remove**, **Clear**
+* **FindIndex**, **FindControlIndex**, **FindContextIndex**
 
 ## INavigatable
 
@@ -264,12 +265,12 @@ public class ViewAViewModel : INavigatable
 }
 ```
 
-## IActivatable and IDeactivatable Navigation Guards
+## ICanActivate and ICanDeactivate Navigation Guards
 
 Allow to cancel navigation (View and/or View model)
 
 ```cs
-public class ViewAViewModel : IActivatable, IDeactivatable
+public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
     public Task<bool> CanActivateAsync(object parameter)
     {
@@ -285,12 +286,12 @@ public class ViewAViewModel : IActivatable, IDeactivatable
 }
 ```
 
-## ILoadedEventListener
+## IIsLoaded
 
 > Allows to be notifed from ViewModel when view is loaded.
 
 ```cs
-public class ShellViewModel : ILoadedEventListener
+public class ShellViewModel : IIsLoaded
 {
     IRegionNavigationService regionNavigationService;
 
@@ -378,17 +379,33 @@ public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable
 }
 ```
 
-## IViewLifetimeStrategy
+## IIsSelected
 
-> Allows to get always the same instance of a view (Singleton) for a region.
-
+> Allow to be notifed from ViewModel on selection changed event (SelectedItems) for ItemsRegion with a Selector control (ListBox, TabControl, etc.)
 
 ```cs
-public class PersonDetailsViewModel : IViewLifetimeStrategy
+public class ViewCViewModel : BindableBase, IIsSelected
 {
-    public StrategyType Strategy => StrategyType.Singleton;
+    private string message;
+    public string Message
+    {
+        get { return message; }
+        set { SetProperty(ref message, value); }
+    }
 
-    // etc.
+    private bool isSelected;
+    public bool IsSelected
+    {
+        get { return isSelected; }
+        set
+        {
+            SetProperty(ref isSelected, value);
+            if (isSelected)
+                Message = "ACTIVE";
+            else
+                Message = "NOT Active";
+        }
+    }
 }
 ```
 
@@ -470,41 +487,39 @@ public partial class App : Application
 ```
 
 
-## Create a region Adapter
+## Create a custom  items region Adapter
 
-* ItemsRegionAdapter for controls with a collection of items or children (ItemsControl, ListView, TabControl,... StackPanel)
+Implement IItemsRegionAdapter.
 
 Example for a StackPanel
 
 ```cs
-using System.Windows;
-using System.Windows.Controls;
-using WpfLib.Navigation;
-
-namespace RegionSample.Adapters
+public class StackPanelRegionAdapter : IItemsRegionAdapter
 {
-    public class StackPanelRegionAdapter : ItemsRegionAdapterBase<StackPanel>
+    private StackPanel control;
+    public DependencyObject Control
     {
-        public override void OnClear(StackPanel control)
+        get { return control; }
+        set
         {
-            control.Children.Clear();
+            if (value is StackPanel stackPanel)
+                control = stackPanel;
+            else
+                throw new InvalidOperationException("Invalid control type");
         }
+    }
 
-        public override void OnInsert(StackPanel control, object view, int index)
-        {
-            if (index >= 0 && index <= control.Children.Count)
-            {
-                control.Children.Insert(index, (UIElement)view);
-            }
-        }
+    public void Adapt(ItemsRegion region)
+    {
+        if (region == null)
+            throw new ArgumentNullException(nameof(region));
 
-        public override void OnRemoveAt(StackPanel control, int index)
-        {
-            if (index >= 0 && index < control.Children.Count)
-            {
-                control.Children.RemoveAt(index);
-            }
-        }
+        region.History.Entries.CollectionChanged += OnEntriesCollectionChanged;
+    }
+
+    private void OnEntriesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+       // update the stackpanel children ...
     }
 }
 ```
@@ -521,12 +536,12 @@ public class Bootstrapper : WpfLibBootstrapper
 
     protected override void RegisterTypes()
     {
-            container.RegisterSingleton<ViewBViewModel>();
+       container.RegisterSingleton<ViewBViewModel>();
     }
 
     protected override void RegisterCustomRegionAdapters()
     {
-        RegionAdapterContainer.RegisterAdapter(new StackPanelRegionAdapter()); // <===
+        RegionAdapterContainer.RegisterAdapter(typeof(StackPanel), new StackPanelRegionAdapter()); // <===
     }
 }
 ```
@@ -567,4 +582,117 @@ bindableObject.PropertyChanged += (s, e) =>
     MessageBox.Show(e.PropertyName);
 };
 this.DataContext = bindableObject;
+```
+
+## AnimatableContentControl
+
+> Content Control that allows to animate on content change. 
+
+2 Storyboards : 
+* EntranceAnimation 
+* ExitAnimation
+* Simultaneous (boolean) allow to play simultaneously the animations.
+
+EntranceAnimation: Target "CurrentContentPresenter" 
+ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter"
+
+
+```xml
+<mvvmLib:AnimatableContentControl x:Name="AnimatableContentControl1" 
+                                    mvvmLib:RegionManager.ContentRegionName="AnimationSample" 
+                                    Simultaneous="True"
+                                    IsCancelled="{Binding IsCancelled}"
+                                    Grid.Row="1">
+    <mvvmLib:AnimatableContentControl.ExitAnimation>
+        <Storyboard>
+            <!-- 1. translate -->
+            <DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                                From="0" To="400" 
+                                Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </mvvmLib:AnimatableContentControl.ExitAnimation>
+    <mvvmLib:AnimatableContentControl.EntranceAnimation>
+        <Storyboard>
+            <!-- 1. translate -->
+            <DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                                From="400" To="0" 
+                                Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </mvvmLib:AnimatableContentControl.EntranceAnimation>
+</mvvmLib:AnimatableContentControl>
+```
+
+## TransitioningContentControl
+
+> Allows to play a transition on loaded.
+
+2 Storyboards:
+* EntranceTransition: played when control loaded (or explicitly with "DoEnter")
+* ExitTransition: played explicitly with "DoLeave" or IsLeaving dependency property (for example played when the user click on a tab close button)
+
+Other methods:
+* CancelTransition
+* Reset: reset the render transform property and opacity + cancel transition
+
+```xml
+<mvvmLib:TransitioningContentControl x:Name="TransitioningContentControl1" Margin="0,20">
+        <mvvmLib:TransitioningContentControl.EntranceTransition>
+            <Storyboard>
+                <DoubleAnimation Storyboard.TargetName="ContentPresenter" 
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" 
+                                    From="0" To="1" Duration="0:0:0.6">
+                    <DoubleAnimation.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+        </mvvmLib:TransitioningContentControl.EntranceTransition>
+        <mvvmLib:TransitioningContentControl.ExitTransition>
+            <Storyboard>
+                <DoubleAnimation Storyboard.TargetName="ContentPresenter" 
+                                    Storyboard.TargetProperty="(UIElement.Opacity)" 
+                                    From="1" To="0" Duration="0:0:2"/>
+            </Storyboard>
+</mvvmLib:TransitioningContentControl.ExitTransition>
+```
+
+## TransitioningItemsControl
+
+> ItemsControl that allows to animate on item insertion and deletion. 
+
+The "ControlledAnimation" avoid to set the target and the target property of the storyboard. The TargetPropertyType is a shortcut. But it's possible to target explicitly the target property of the storyboard with "TargetProperty" dependency property.
+
+```xml
+<mvvmLib:TransitioningItemsControl x:Name="I2"
+                                        ItemsSource="{Binding MyItems}" 
+                                        TransitionClearHandling="Transition"
+                                        IsCancelled="{Binding IsCancelled}">
+    <mvvmLib:TransitioningItemsControl.EntranceAnimation>
+        <mvvmLib:ParallelAnimation>
+
+            <mvvmLib:ControlledAnimation TargetPropertyType="TranslateX">
+                <DoubleAnimation From="200" To="0"  Duration="0:0:2"/>
+            </mvvmLib:ControlledAnimation>
+
+        </mvvmLib:ParallelAnimation>
+    </mvvmLib:TransitioningItemsControl.EntranceAnimation>
+
+    <mvvmLib:TransitioningItemsControl.ExitAnimation>
+        <mvvmLib:ParallelAnimation>
+            <mvvmLib:ControlledAnimation TargetPropertyType="TranslateX">
+                <DoubleAnimation From="0" To="200" Duration="0:0:2"/>
+            </mvvmLib:ControlledAnimation>
+        </mvvmLib:ParallelAnimation>
+    </mvvmLib:TransitioningItemsControl.ExitAnimation>
+</mvvmLib:TransitioningItemsControl>
 ```

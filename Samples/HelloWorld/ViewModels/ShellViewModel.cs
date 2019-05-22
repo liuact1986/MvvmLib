@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace HelloWorld.ViewModels
 {
-    public class ShellViewModel : ILoadedEventListener
+    public class ShellViewModel : IIsLoaded
     {
         private readonly IRegionNavigationService regionNavigationService;
 
@@ -13,7 +13,7 @@ namespace HelloWorld.ViewModels
             this.regionNavigationService = regionNavigationService;
         }
 
-        public async void OnLoaded(FrameworkElement view, object parameter)
+        public async void OnLoaded(object parameter)
         {
             await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(typeof(HomeView), "Hello World!");
         }

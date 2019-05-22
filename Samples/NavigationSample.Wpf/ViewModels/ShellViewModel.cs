@@ -1,14 +1,15 @@
-﻿using MvvmLib.Mvvm;
+﻿using MvvmLib.Message;
+using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using NavigationSample.Wpf.Events;
 using NavigationSample.Wpf.Views;
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ShellViewModel : BindableBase, ILoadedEventListener
+    public class ShellViewModel : BindableBase
     {
         private bool isBusy;
 
@@ -18,6 +19,12 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref isBusy, value); }
         }
 
+        private string title;
+        public string Title
+        {
+            get { return title; }
+            set { SetProperty(ref title, value); }
+        }
 
         private IRegionNavigationService regionNavigationService;
 
@@ -25,17 +32,28 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ICommand WhenAvailableCommand { get; }
 
-        public ShellViewModel(IRegionNavigationService regionNavigationService)
+        public ShellViewModel(IRegionNavigationService regionNavigationService, IEventAggregator eventAggregator)
         {
+            Title = "Navigation Sample [WPF]";
+
             this.regionNavigationService = regionNavigationService;
 
             NavigateCommand = new RelayCommand<Type>(OnNavigate);
 
             WhenAvailableCommand = new RelayCommand(OnWhenAvailable);
+
+            eventAggregator.GetEvent<ChangeTitleEvent>().Subscribe(OnChangeTitle);
+        }
+
+        private void OnChangeTitle(string newTitle)
+        {
+            Title = newTitle;
         }
 
         private async void OnWhenAvailable()
         {
+            OnChangeTitle("Wait region loaded with WhenAvailable");
+
             IsBusy = true;
 
             if (!await regionNavigationService.NavigateWhenAvailable("WhenAvailableRegion", typeof(ViewC),
@@ -57,41 +75,9 @@ namespace NavigationSample.Wpf.ViewModels
             IsBusy = false;
         }
 
-        private async void OnNavigate(Type viewType)
+        private async void OnNavigate(Type sourceType)
         {
-            await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(viewType);
-        }
-
-        public void OnLoaded(FrameworkElement view, object parameter)
-        {
-            var region = regionNavigationService.GetContentRegion("MainRegion");
-            //region.ConfigureAnimation(new OpacityAnimation { From = 0, To = 1 }, new OpacityAnimation { From = 1, To = 0 });
-        }
-    }
-
-    public class ViewCViewModel : BindableBase, INavigatable
-    {
-        private string message;
-        public string Message
-        {
-            get { return message; }
-            set { SetProperty(ref message, value); }
-        }
-
-        public void OnNavigatedTo(object parameter)
-        {
-            if (parameter != null)
-                Message = (string)parameter;
-        }
-
-        public void OnNavigatingFrom()
-        {
-
-        }
-
-        public void OnNavigatingTo(object parameter)
-        {
-
+            await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(sourceType);
         }
     }
 }

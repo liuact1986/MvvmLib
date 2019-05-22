@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:MvvmLib.Wpf">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MvvmLib.Wpf;component/Themes/AnimatableContentControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MvvmLib.Wpf;component/Themes/TransitioningContentControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MvvmLib.Wpf;component/Themes/TransitioningItemsControl.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
+</ResourceDictionary>

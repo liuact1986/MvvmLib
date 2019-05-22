@@ -1,8 +1,10 @@
 ﻿
 using MvvmLib.IoC;
+using MvvmLib.Navigation;
 using NavigationSample.Wpf.Models;
 using NavigationSample.Wpf.Views;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace NavigationSample
 {
@@ -23,4 +25,5 @@ namespace NavigationSample
             container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
         }
     }
+
 }

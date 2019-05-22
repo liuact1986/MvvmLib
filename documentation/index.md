@@ -26,11 +26,13 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **RegionNavigationService** allows to **navigate** _with regions_ 
 * **INavigatable**: allows the views and view models to be notified on navigate
 * **IActivatable**, **IDeactivatable**: allow to cancel navigation
-* **ILoadedEventListener**: allows to be notified when the view or window is loaded
+* **IIsLoaded**: allows to be notified when the view or window is loaded
 * **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
 * **ISelectable**: allows to select a view 
+* **IsSelected**: allows to be notifed from view model on selection changed for ItemsRegion with Selector (ListBox, TabControl, etc.)
 * **BootstrapperBase**: bootstrapper base class
 * **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
+* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate on content change / insertion, etc.
 
 ## MvvmLib.Windows (Navigation) [uwp]
   
@@ -82,7 +84,6 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 | [MvvmLib.Core](https://www.nuget.org/packages/MvvmLib.Core/)  | Yes  | BindableBase, Validation, commands, Messenger | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Core.svg?style=flat-square)
 | [MvvmLib.Wpf](https://www.nuget.org/packages/MvvmLib.Wpf/) | Yes  | Navigation with view model, view composition | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Wpf.svg?style=flat-square) |
 | [MvvmLib.IoC](https://www.nuget.org/packages/MvvmLib.IoC/) | No  | IoC Container or use Unity, Autofac, etc. | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square) |
-| [MvvmLib.Animation.Wpf](https://www.nuget.org/packages/MvvmLib.Animation.Wpf/) | No | AnimatableContentControl and animation classes | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Animation.Wpf.svg?style=flat-square) |
 | [MvvmLib.Adaptive.Wpf](https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/) | No | Make the view "responsive" | ![Nuget](https://img.shields.io/nuget/v/MvvmLib.Adaptive.Wpf.svg?style=flat-square) |
 
 ```

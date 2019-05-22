@@ -28,7 +28,7 @@ namespace MvvmLib.Mvvm
             DoInsertAddedItems(oldItems, newItems);
         }
 
-        private static void DoInsertAddedItems<T>(IList<T> oldItems, IList<T> newItems) where T : ISyncItem<T>
+        private static void DoInsertAddedItems<T>(IList<T> oldItems, IList<T> newItems) // where T : ISyncItem<T>
         {
             var itemsToAdd = newItems.Except(oldItems).ToList();
             foreach (var item in itemsToAdd)
@@ -42,7 +42,7 @@ namespace MvvmLib.Mvvm
             }
         }
 
-        private static void DoRemoveDeletedItems<T>(IList<T> oldItems, IList<T> newItems) where T : ISyncItem<T>
+        private static void DoRemoveDeletedItems<T>(IList<T> oldItems, IList<T> newItems) // where T : ISyncItem<T>
         {
             var itemsToRemove = oldItems.Except(newItems).ToList();
             foreach (var item in itemsToRemove)
@@ -68,7 +68,7 @@ namespace MvvmLib.Mvvm
         /// <typeparam name="T">The type</typeparam>
         /// <param name="oldItems">The old items</param>
         /// <param name="newItems">The new items</param>
-        public static void InsertAddedItems<T>(IList<T> oldItems, IList<T> newItems) where T : ISyncItem<T>
+        public static void InsertAddedItems<T>(IList<T> oldItems, IList<T> newItems) // where T : ISyncItem<T>
         {
             if (oldItems == null)
                 throw new ArgumentNullException(nameof(oldItems));
@@ -84,7 +84,7 @@ namespace MvvmLib.Mvvm
         /// <typeparam name="T">The type</typeparam>
         /// <param name="oldItems">The old items</param>
         /// <param name="newItems">The new items</param>
-        public static void RemoveDeletedItems<T>(IList<T> oldItems, IList<T> newItems) where T : ISyncItem<T>
+        public static void RemoveDeletedItems<T>(IList<T> oldItems, IList<T> newItems) // where T : ISyncItem<T>
         {
             if (oldItems == null)
                 throw new ArgumentNullException(nameof(oldItems));

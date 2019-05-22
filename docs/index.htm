@@ -100,11 +100,13 @@
 <li><strong>RegionNavigationService</strong> allows to <strong>navigate</strong> <em>with regions</em> </li>
 <li><strong>INavigatable</strong>: allows the views and view models to be notified on navigate</li>
 <li><strong>IActivatable</strong>, <strong>IDeactivatable</strong>: allow to cancel navigation</li>
-<li><strong>ILoadedEventListener</strong>: allows to be notified when the view or window is loaded</li>
+<li><strong>IIsLoaded</strong>: allows to be notified when the view or window is loaded</li>
 <li><strong>IViewLifetimeStrategy</strong>: Allows to get always the same instance of a view (Singleton) for a region</li>
 <li><strong>ISelectable</strong>: allows to select a view </li>
+<li><strong>IsSelected</strong>: allows to be notifed from view model on selection changed for ItemsRegion with Selector (ListBox, TabControl, etc.)</li>
 <li><strong>BootstrapperBase</strong>: bootstrapper base class</li>
 <li><strong>BindableObject</strong>: Allows to bind a value or object to Value dependency property and be notified on value changed.</li>
+<li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate on content change / insertion, etc.</li>
 </ul>
 <h2 id="mvvmlib.windows-navigation-uwp">MvvmLib.Windows (Navigation) [uwp]<a class="headerlink" href="#mvvmlib.windows-navigation-uwp" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <ul>
@@ -175,12 +177,6 @@
 	<td>No</td>
 	<td>IoC Container or use Unity, Autofac, etc.</td>
 	<td><img src="https://img.shields.io/nuget/v/MvvmLib.IoC.svg?style=flat-square" alt="Nuget" /></td>
-</tr>
-<tr>
-	<td><a href="https://www.nuget.org/packages/MvvmLib.Animation.Wpf/" target="_blank">MvvmLib.Animation.Wpf</a></td>
-	<td>No</td>
-	<td>AnimatableContentControl and animation classes</td>
-	<td><img src="https://img.shields.io/nuget/v/MvvmLib.Animation.Wpf.svg?style=flat-square" alt="Nuget" /></td>
 </tr>
 <tr>
 	<td><a href="https://www.nuget.org/packages/MvvmLib.Adaptive.Wpf/" target="_blank">MvvmLib.Adaptive.Wpf</a></td>

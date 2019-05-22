@@ -3,12 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NavigationSample.Wpf.Views"
-             Background="#347777"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel VerticalAlignment="Center">
-        <TextBlock Text="View C" FontSize="40" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"></TextBlock>
-        <TextBlock Text="{Binding Message, FallbackValue='No value'}" FontSize="24" HorizontalAlignment="Center"></TextBlock>
-    </StackPanel>
+             mc:Ignorable="d">
+    <Grid Background="#22a6b3">
+        <StackPanel Margin="10" VerticalAlignment="Center">
+            <TextBlock Text="View C" FontSize="40" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding Message, FallbackValue='No value'}" FontSize="24"  HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
 </UserControl>

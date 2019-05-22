@@ -23,7 +23,7 @@ namespace NavigationSample
 
         protected override void SetViewFactory()
         {
-            //ViewResolver.SetViewFactory((viewType) => container.GetNewInstance(viewType));
+            ViewResolver.SetViewFactory((viewType) => container.GetNewInstance(viewType));
         }
 
         protected override void SetViewModelFactory()

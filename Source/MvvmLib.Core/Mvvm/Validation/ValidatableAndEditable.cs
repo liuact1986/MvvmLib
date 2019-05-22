@@ -6,7 +6,7 @@ namespace MvvmLib.Mvvm
     /// <summary>
     /// Allows to validate and edit properties.
     /// </summary>
-    public class ValidatableAndEditable : Validatable, INotifyDataErrorInfo, IEditableObject
+    public class ValidatableAndEditable : Validatable, IEditableObject
     {
         private readonly IEditableObjectService editableService;
 

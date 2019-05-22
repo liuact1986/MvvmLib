@@ -1,53 +1,146 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
-    <Version>0.3.1</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>Library for Wpf with Navigation, View Composition, Guards and view model participation.
-
-      * Navigation
-      * Regions: change and animate the content of ContentRegion (ContentControl) and ItemsRegions (ItemsControl, TabControl, ... and more with Adapters)
-      * ViewModelLocator: allows to resolve ViewModel for regions and for window with ResolveWindowViewModel
-      * RegionManager: allows to register a region with attached properties
-      * RegionNavigationService: allows to navigate with regions
-      * INavigatable: allows views and view models to be notified on navigate
-      * IActivatable, IDeactivatable: allow to cancel navigation
-      * ILoadedEventListener: allows to be notified when the view or window is loaded
-      * Mvvm
-      * BootstrapperBase: base class for Bootstrapper</Description>
-    <Authors>romagny13</Authors>
-    <licenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</licenseUrl>
-    <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
-    <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>
-    <PackageTags>mvvm composition navigation</PackageTags>
-    <Copyright>Copyright ©  romagny 13 - 2018/ 2019</Copyright>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{42A0EE09-1F4E-495B-BA10-950E51DB6DEE}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>MvvmLib.Wpf</RootNamespace>
+    <AssemblyName>MvvmLib.Wpf</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Projects\MvvmLib\Source\MvvmLib.Wpf\MvvmLib.Wpf.xml</DocumentationFile>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\MvvmLib.Wpf.xml</DocumentationFile>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
+    <Compile Include="Adapters\ItemsControlRegionAdapter.cs" />
+    <Compile Include="Adapters\RegionAdapterResolver.cs" />
+    <Compile Include="Adapters\TransitioningItemsControlRegionAdapter.cs" />
+    <Compile Include="Animation\AnimationTargetPropertyType.cs" />
+    <Compile Include="Animation\ControlledAnimation.cs" />
+    <Compile Include="Animation\ParallelAnimation.cs" />
+    <Compile Include="Animation\StoryboardAccessor.cs" />
+    <Compile Include="BootstrapperBase.cs" />
+    <Compile Include="ContentRegion.cs" />
+    <Compile Include="Controls\AnimatableContentControl.cs" />
+    <Compile Include="Controls\ReadOnlyCollection.cs" />
+    <Compile Include="Controls\TransitioningContentControl.cs" />
+    <Compile Include="Controls\TransitioningItemsControl.cs" />
+    <Compile Include="Event\NavigationEntryEventArgs.cs" />
+    <Compile Include="History\ContentRegionHistory.cs" />
+    <Compile Include="History\ItemsRegionHistory.cs" />
+    <Compile Include="History\NavigationEntry.cs" />
+    <Compile Include="History\NavigationEntryCollection.cs" />
+    <Compile Include="Adapters\IItemsRegionAdapter.cs" />
+    <Compile Include="Adapters\SelectorRegionAdapter.cs" />
+    <Compile Include="Interfaces\ICanActivate.cs" />
+    <Compile Include="Interfaces\ICanDeactivate.cs" />
+    <Compile Include="Interfaces\IIsSelected.cs" />
+    <Compile Include="Utils\XamlHelper.cs" />
+    <Compile Include="Event\RegionNavigationEventArgs.cs" />
+    <Compile Include="Event\RegionNavigationFailedEventArgs.cs" />
+    <Compile Include="Event\RegionNavigationType.cs" />
+    <Compile Include="Event\RegionRegisteredEventArgs.cs" />
+    <Compile Include="Event\RegionUnregisteredEventArgs.cs" />
+    <Compile Include="Exception\NavigationFailedException.cs" />
+    <Compile Include="Exception\RegionResolutionFailedException.cs" />
+    <Compile Include="Interfaces\IIsLoaded.cs" />
+    <Compile Include="Interfaces\INavigatable.cs" />
+    <Compile Include="Interfaces\IRegion.cs" />
+    <Compile Include="Interfaces\IRegionNavigationService.cs" />
+    <Compile Include="Interfaces\ISelectable.cs" />
+    <Compile Include="ItemsRegion.cs" />
+    <Compile Include="LoadedEventListener.cs" />
+    <Compile Include="Logger\Category.cs" />
+    <Compile Include="Logger\DebugLogger.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\Priority.cs" />
+    <Compile Include="Mvvm\BindableObject.cs" />
+    <Compile Include="RegionBase.cs" />
+    <Compile Include="RegionManager.cs" />
+    <Compile Include="RegionNavigationService.cs" />
+    <Compile Include="RegionsRegistry.cs" />
+    <Compile Include="Event\ViewLoadedEventArgs.cs" />
+    <Compile Include="Utils\EnumerableUtils.cs" />
+    <Compile Include="ViewModelLocationProvider.cs" />
+    <Compile Include="ViewModelLocator.cs" />
+    <Compile Include="ViewResolver.cs" />
+    <Page Include="Themes\AnimatableContentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\TransitioningContentControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\TransitioningItemsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
-
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
