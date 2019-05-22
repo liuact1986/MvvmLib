@@ -664,10 +664,12 @@ this.DataContext = bindableObject;
 <blockquote>
 <p>Content Control that allows to animate on content change. </p>
 </blockquote>
-<p>2 Storyboards : 
-* EntranceAnimation 
-* ExitAnimation
-* Simultaneous (boolean) allow to play simultaneously the animations.</p>
+<p>2 Storyboards : </p>
+<ul>
+<li>EntranceAnimation </li>
+<li>ExitAnimation</li>
+<li>Simultaneous (boolean) allow to play simultaneously the animations.</li>
+</ul>
 <p>EntranceAnimation: Target &quot;CurrentContentPresenter&quot; 
 ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &quot;PreviousContentPresenter&quot;</p>
 <pre><code class="xml">&lt;mvvmLib:AnimatableContentControl x:Name=&quot;AnimatableContentControl1&quot; 
@@ -708,12 +710,16 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
 <blockquote>
 <p>Allows to play a transition on loaded.</p>
 </blockquote>
-<p>2 Storyboards:
-* EntranceTransition: played when control loaded (or explicitly with &quot;DoEnter&quot;)
-* ExitTransition: played explicitly with &quot;DoLeave&quot; or IsLeaving dependency property (for example played when the user click on a tab close button)</p>
-<p>Other methods:
-* CancelTransition
-* Reset: reset the render transform property and opacity + cancel transition</p>
+<p>2 Storyboards:</p>
+<ul>
+<li>EntranceTransition: played when control loaded (or explicitly with &quot;DoEnter&quot;)</li>
+<li>ExitTransition: played explicitly with &quot;DoLeave&quot; or IsLeaving dependency property (for example played when the user click on a tab close button)</li>
+</ul>
+<p>Other methods:</p>
+<ul>
+<li>CancelTransition</li>
+<li>Reset: reset the render transform property and opacity + cancel transition</li>
+</ul>
 <pre><code class="xml">&lt;mvvmLib:TransitioningContentControl x:Name=&quot;TransitioningContentControl1&quot; Margin=&quot;0,20&quot;&gt;
         &lt;mvvmLib:TransitioningContentControl.EntranceTransition&gt;
             &lt;Storyboard&gt;

@@ -589,6 +589,7 @@ this.DataContext = bindableObject;
 > Content Control that allows to animate on content change. 
 
 2 Storyboards : 
+
 * EntranceAnimation 
 * ExitAnimation
 * Simultaneous (boolean) allow to play simultaneously the animations.
@@ -637,10 +638,12 @@ ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousCo
 > Allows to play a transition on loaded.
 
 2 Storyboards:
+
 * EntranceTransition: played when control loaded (or explicitly with "DoEnter")
 * ExitTransition: played explicitly with "DoLeave" or IsLeaving dependency property (for example played when the user click on a tab close button)
 
 Other methods:
+
 * CancelTransition
 * Reset: reset the render transform property and opacity + cancel transition
 
