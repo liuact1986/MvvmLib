@@ -1,6 +1,5 @@
 ﻿using HelloWorld.Views;
 using MvvmLib.Navigation;
-using System.Windows;
 
 namespace HelloWorld.ViewModels
 {

@@ -150,6 +150,9 @@ namespace MvvmLib.Navigation
                     if (this.backStack.Count == 0)
                         OnCanGobackChanged();
                     break;
+                case NotifyCollectionChangedAction.Reset:
+                    OnCanGobackChanged();
+                    break;
             }
         }
 
@@ -180,6 +183,9 @@ namespace MvvmLib.Navigation
                 case NotifyCollectionChangedAction.Remove:
                     if (this.forwardStack.Count == 0)
                         OnCanGoForwardChanged();
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    OnCanGoForwardChanged();
                     break;
             }
         }

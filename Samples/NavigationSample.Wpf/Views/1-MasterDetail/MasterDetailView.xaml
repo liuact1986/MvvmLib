@@ -16,7 +16,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ContentControl mvvmLib:RegionManager.ContentRegionName="Master"></ContentControl>
+        <ContentControl mvvmLib:RegionManager.ContentRegionName="Master" />
 
         <mvvmLib:AnimatableContentControl mvvmLib:RegionManager.ContentRegionName="Detail" Grid.Column="1" Simultaneous="True">
             <mvvmLib:AnimatableContentControl.EntranceAnimation>

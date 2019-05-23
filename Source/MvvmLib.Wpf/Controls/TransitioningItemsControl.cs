@@ -16,7 +16,7 @@ namespace MvvmLib.Animation
         private const string InnerItemsControlPartName = "PART_Items";
         private ItemsControl innerItemsControl;
         private readonly Queue<TransitionQueueItem> actions;
-        private bool canAnimate = true;
+        private bool canAnimate;
 
         /// <summary>
         /// The collection of items of the control.
@@ -219,6 +219,7 @@ namespace MvvmLib.Animation
         public TransitioningItemsControl()
         {
             this.actions = new Queue<TransitionQueueItem>();
+            this.canAnimate = true;
         }
 
         /// <summary>

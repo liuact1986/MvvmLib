@@ -77,7 +77,7 @@ namespace MvvmLib.Wpf.Tests
                     index = e.NewStartingIndex;
                     foreach (var item in e.NewItems)
                     {
-                        ////control.Children.Insert(index, ((NavigationEntry)item).ViewOrObject);
+                        control.Children.Insert(index, ((NavigationEntry)item).ViewOrObject);
                         index++;
                     }
                     break;

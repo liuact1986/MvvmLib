@@ -19,7 +19,7 @@
         <TabControl nav:RegionManager.ItemsRegionName="TabRegion" Grid.Row="1">
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
-                    <Setter Property="Header" Value="{Binding Title}" />
+                    <Setter Property="Header" Value="{Binding DataContext.Title}" />
                 </Style>
             </TabControl.ItemContainerStyle>
         </TabControl>
