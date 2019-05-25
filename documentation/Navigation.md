@@ -237,7 +237,7 @@ public class ViewAViewModel : ICanActivate, ICanDeactivate
 
 ## ISelectable with NavigationSource
 
-Allows to use "same view" multiple times. For example in a Master/ details scenario, the details view is used for displaying each user.
+Allows to use the "same view" multiple times. For example in a Master/ details scenario, the details view is used for displaying each user.
 
 ```cs
 public class PersonDetailsViewModel : BindableBase, ISelectable 
@@ -276,10 +276,10 @@ public class ViewAViewModel
     {
 
         // empty
-        // DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
+        // DetailsSource = NavigationManager.GetOrCreateSharedSource<ItemDetailsViewModel>();
 
         // or with data at initialization
-        DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
+        DetailsSource = NavigationManager.GetOrCreateSharedSource<ItemDetailsViewModel>().With(new List<ItemDetailsViewModel>
         {
             new ItemDetailsViewModel(new Item { Name = "Item.1" }),
             new ItemDetailsViewModel(new Item { Name = "Item.2" })

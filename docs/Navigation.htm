@@ -359,7 +359,7 @@ await navigation.NavigateToRootAsync();
 </code></pre>
 
 <h2 id="iselectable-with-navigationsource">ISelectable with NavigationSource<a class="headerlink" href="#iselectable-with-navigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Allows to use &quot;same view&quot; multiple times. For example in a Master/ details scenario, the details view is used for displaying each user.</p>
+<p>Allows to use the &quot;same view&quot; multiple times. For example in a Master/ details scenario, the details view is used for displaying each user.</p>
 <pre><code class="cs">public class PersonDetailsViewModel : BindableBase, ISelectable 
 {
     private Person person;
@@ -393,10 +393,10 @@ await navigation.NavigateToRootAsync();
     {
 
         // empty
-        // DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;MyItemDetailsViewModel&gt;();
+        // DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;ItemDetailsViewModel&gt;();
 
         // or with data at initialization
-        DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;MyItemDetailsViewModel&gt;().With(new List&lt;MyItemDetailsViewModel&gt;
+        DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;ItemDetailsViewModel&gt;().With(new List&lt;ItemDetailsViewModel&gt;
         {
             new ItemDetailsViewModel(new Item { Name = &quot;Item.1&quot; }),
             new ItemDetailsViewModel(new Item { Name = &quot;Item.2&quot; })
