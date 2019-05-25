@@ -1,22 +1,18 @@
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 
-* **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
-* **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
-* **RegionManager**: allows to regiter a region with attached properties
-* **RegionNavigationService** allows to **navigate** _with regions_ 
-* **INavigatable**: allows the views and view models to be notified on navigate
-* **IActivatable**, **IDeactivatable**: allow to cancel navigation
-* **IIsLoaded**: allows to be notified when the view or window is loaded
-* **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
-* **ISelectable**: allows to select a view 
-* **IsSelected**: allows to be notifed from view model on selection changed for ItemsRegion with Selector (ListBox, TabControl, etc.)
-* **BootstrapperBase**: bootstrapper base class
-* **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate on content change / insertion, etc.
+* **NavigationSource**: navigation for _ContentControl_
+* **SharedSource**: for _ItemsControl_, _Selector_, etc.
+* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **NavigationManager**: allows to manage NavigationSources and SharedSources
+* **INavigatable**: allows views and _view models_ to be notified on navigate
+* **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
+* **IIsSelected**, **ISelectable**, **SelectionChangedBehavior**: allow to select a view 
+* **ViewModelLocator**: allows to **resolve ViewModel** for **views**
+* **BootstrapperBase**: base class for Bootstrapper
 
 ## ViewModelLocator
 
-> Allows to resolve ViewModels for regions and window (with **ResolveWindowViewModel**)
+> Allows to resolve ViewModels for Views with **ResolveViewModel**. 
 
 Default **convention**:
 
@@ -32,17 +28,18 @@ Default **convention**:
 Example with "View" and "ViewModel" namespaces
 
 ```cs
- ViewModelLocationProvider.SetViewTypeToViewModelTypeResolver((viewType) =>
-            {
-                var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
+ViewModelLocationProvider.ChangeConvention((viewType) =>
+{
+    var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
 
-                var viewName = viewType.FullName;
-                viewName = viewName.Replace(".View.", ".ViewModel."); // <===
-                var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
-                var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
+    var viewName = viewType.FullName;
+    viewName = viewName.Replace(".View.", ".ViewModel.");
+    var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
+    var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
 
-                return Type.GetType(viewModelName);
-            });
+    var viewModelType = Type.GetType(viewModelName);
+    return viewModelType;
+});
 ```
 
 ### Register a custom View Model for a view
@@ -53,125 +50,152 @@ For example: the view model for a ViewA is not ViewAViewModel but MyCustomViewAV
 ViewModelLocationProvider.RegisterCustom(typeof(ViewA), typeof(MyCustomViewAViewModel));
 ```
 
-### ResolveWindowViewModel Attached property (Window)
+### ResolveViewModel Attached property (Window, UserControl)
 
-Allows to resolve the view model of the Window. Example:
+Allows to resolve the view model of the Views. Example:
 
-**Only on Windows** (Shell or "popup")
 
 ```xml
-<Window x:Class="WpfLibSample.Views.Shell"
+<Window x:Class="Sample.Views.Shell"
         ...
          xmlns:nav="http://mvvmlib.com/"
-         nav:ViewModelLocator.ResolveWindowViewModel="True">
+         nav:ViewModelLocator.ResolveViewModel="True">
 ```
 
-## Regions 
+**Note**: NavigationSources and Shared Sources resolve automatically the ViewModel with the ViewModelLocator. So, using "ResolveViewModel" attached property is rarely required.
 
-namespace
-```
-xmlns:nav="http://mvvmlib.com/"
-```
 
-With a ContentControl
+## NavigationSource and ContentControlNavigationSource
 
-```xml
-<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
-```
+### NavigationSource
 
-With an ItemsControl
+The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.
 
-```xml
-<ItemsControl nav:RegionManager.ItemsRegionName="MyItemsRegion"></ItemsControl>
-```
 
-With a TabControl (with the Header binded to the property Title of the ViewModel for example)
-```xml
-<TabControl nav:RegionManager.ItemsRegionName="MyTabRegion">
-            <TabControl.ItemContainerStyle>
-                <Style TargetType="TabItem">
-                    <Setter Property="Header" Value="{Binding Title}" />
-                </Style>
-            </TabControl.ItemContainerStyle>
-</TabControl>
-```
-
-The control name could be used to resolve the region if more than one region with the same region name are registered 
-
-Example:
-
-```xml
-<ContentControl x:Name="MyContentRegion1" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
-<ContentControl x:Name="MyContentRegion2" nav:RegionManager.ContentRegionName="MyContentRegion"></ContentControl>
-```
-
-**Tip**: create a class with region names
+Example: Creating some Navigation sources in ShellViewModel
 
 ```cs
-internal class RegionNames
+public class ShellViewModel
 {
-    public static string ContentControlRegionName = "ContentControlRegion";
-    public static string ItemsControlRegionName = "ItemsControlRegion";
-    public static string TabControlRegionName = "TabControlRegion";
-    public static string StackPanelRegionName = "StackPanelRegionName";
-}
-```
-... And change the name
+    public NavigationSource Navigation { get; }
 
-```xml
-<ContentControl nav:RegionManager.ContentRegionName="{x:Static local:RegionNames.ContentControlRegionName}"></ContentControl>
-```
+    public ShellViewModel()
+    {     
+        Navigation = NavigationManager.CreateNavigationSource("Main");
 
-### RegionNavigationService
+        NavigationManager.CreateNavigationSource("Details");
 
-#### With Content Region
+        NavigationManager.CreateNavigationSource("AnimationSample");
 
-Inject the region manager (view and / or view model)
-
-```cs
-public class ViewAViewModel
-{
-    private IRegionNavigationService regionNavigationService;
-
-    public ViewAViewModel(IRegionNavigationService regionNavigationService)
-    {
-        this.regionNavigationService = regionNavigationService;
+        NavigationManager.CreateNavigationSource("HistorySample");
     }
 }
 ```
 
-And use it
+Get a NavigationSource:
 
 ```cs
-// GetContentRegion returns the last region registered for this region name
-await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA));
-
-// and the control name to target a control
-await regionNavigationService.GetContentRegion("MyContentRegion", "MyContentRegion1").NavigateAsync(typeof(ViewA));
+var navigation = NavigationManager.GetNavigationSource("Main");
 ```
 
-with parameter
+Or 
 
 ```cs
-await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), "my parameter");
+var navigation = NavigationManager.GetOrCreateNavigationSource("Main");
 ```
 
-with exit and entrance animations
+Bind the NavigationSource **Current** property to a **ContentControl**
+
+```xml
+<ContentControl Content="{Binding Navigation.Current}" />
+```
+
+The NavigationSource provide some quick Commands
+
+```xml
+<!--Navigate command -->
+<Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
+
+<!--GoBack command -->
+<Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" />
+
+<!--GoForward command -->
+<Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" />
+
+<!--NavigateToRoot command -->
+<Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" />
+```
+
+### ContentControlNavigationSource
+
+Inherits from NavigationSource and updates directly the content of the ContentControl.
+
+
+```xml
+<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
+```
+
+The namespace:
+
+```xml
+<UserControl ...
+            xmlns:mvvmLib="http://mvvmlib.com/">
+```
+
+## INavigatable
+
+> Allows to notify ViewModel with parameter
+
+* **OnNavigatingFrom**
+* **OnNavigatingTo**
+* **OnNavigatedTo**
 
 ```cs
-await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(typeof(ViewA), EntranceTransitionType.FadeIn, ExitTransitionType.FadeOut);
-```
+public class ViewAViewModel : INavigatable
+{
+    public void OnNavigatingTo(object parameter)
+    {
 
-**Content Region**
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+
+    }
+
+    public void OnNavigatingFrom()
+    {
+
+    }
+}
+```
 
 | Method | Description |
 | --- | --- |
-| NavigateAsync | Allows to navigate to a view or view model (with DataTemplate) (parameters: page type, parameter and navigation transition type) |
+| NavigateAsync | Allows to navigate to a view or view model (with DataTemplate) (parameters: source type, parameter) |
 | GoBackAsync | Allows to go to the previous view |
 | GoForwardAsync | Allows to go the next view |
 | NavigateToRootAsync | Allows to navigate to the first view/ root view |
 | RedirectAsync | allows to redirect to a view and do not add/remove current page from history |
 
+
+```cs
+var  navigation = NavigationManager.CreateNavigationSource("Main");
+
+await navigation.NavigateAsync(typeof(ViewA));
+
+// with parameter
+await navigation.NavigateAsync(typeof(ViewA), "My parameter");
+
+// GoBack
+await navigation.GoBackAsync();
+
+// GoForward
+await navigation.GoForwardAsync();
+
+// Navigate to root
+await navigation.NavigateToRootAsync();
+```
 
 | Property | Description |
 | --- | --- |
@@ -188,149 +212,35 @@ await regionNavigationService.GetContentRegion("MyContentRegion").NavigateAsync(
 | Navigated | Invoked after navigation ends |
 | NavigatingFailed | Invoked after navigation was cancelled |
 
-**Animation with content control**
 
- [See MvvmLib.Animation.Wpf](https://romagny13.github.io/MvvmLib/Animation.htm)
+## Navigation Guards (ICanActivate, ICanDeactivate)
 
-#### With Items Region
-
-AddAsync
-
-```cs
-await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA));
-
-// by control name
-await regionNavigationService.GetItemsRegion("MyItemsRegion","MyItemsRegion1").AddAsync(typeof(ViewA));
-
-// with a parameter
-await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA),"my parameter");
-
-// with transition
-await regionNavigationService.GetItemsRegion("MyItemsRegion").AddAsync(typeof(ViewA), EntranceTransitionType.SlideInFromRight);
-```
-
-InsertAsync
-
-```cs
-// example : index 2
-await regionNavigationService.GetItemsRegion("MyItemsRegion").InsertAsync(2, typeof(ViewD));
-```
-
-RemoveLastAsync (remove the last item)
-
-```cs
-await regionNavigationService.GetItemsRegion("MyItemsRegion").RemoveLastAsync(ExitTransitionType.SlideOutToBottom);
-```
-
-RemoveAtAsync
-
-```cs
-// example : index 2
-await WpfNavigationService.Default.GetItemsRegion(RegionNames.ItemsControlRegionName).RemoveAtAsync(2);
-```
-
-**ItemsRegion Methods** :
-
-* **AddAsync**
-* **InsertAsync**
-* **RemoveAtAsync**, **Remove**, **Clear**
-* **FindIndex**, **FindControlIndex**, **FindContextIndex**
-
-## INavigatable
-
-For View and/or View model
-
-Example:
-
-```cs
-public class ViewAViewModel : INavigatable
-{
-    // Allows to preload data before region content has changed
-    public void OnNavigatingTo(object parameter)
-    {
-        
-    }
-
-    // Invoked after navigation ends
-    public void OnNavigatedTo(object parameter)
-    {
-        
-    }
-
-    // Invoked before leaving
-    public void OnNavigatingFrom()
-    {
-        
-    }
-}
-```
-
-## ICanActivate and ICanDeactivate Navigation Guards
-
-Allow to cancel navigation (View and/or View model)
+Useful when the user want to leave a page or close a tabitem for example.
 
 ```cs
 public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
+
     public Task<bool> CanActivateAsync(object parameter)
     {
-        var result = MessageBox.Show("Activate View A?", "Activate (VIEWMODEL)", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        var result = MessageBox.Show("Can activate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
         return Task.FromResult(result);
     }
 
     public Task<bool> CanDeactivateAsync()
     {
-        var result = MessageBox.Show("Deactivate View A?", "Deactivate", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        var result = MessageBox.Show("Can deactivate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
         return Task.FromResult(result);
     }
 }
 ```
 
-## IIsLoaded
+## ISelectable with NavigationSource
 
-> Allows to be notifed from ViewModel when view is loaded.
-
-```cs
-public class ShellViewModel : IIsLoaded
-{
-    IRegionNavigationService regionNavigationService;
-
-    public ShellViewModel(IRegionNavigationService regionNavigationService)
-    {
-        this.regionNavigationService = regionNavigationService;
-    }
-
-    public async void OnLoaded(object parameter)
-    {
-        await regionNavigationService.GetContentRegion("ContentRegion").NavigateAsync(typeof(HomeView));
-    }
-}
-```
-
-## ISelectable
-
-Allows to select an existing item and not re-create a new item (for example with a tabcontrol). 
-
-
-Example with ItemsRegion. Select a TabITem for a TabControl 
+Allows to use "same view" multiple times. For example in a Master/ details scenario, the details view is used for displaying each user.
 
 ```cs
-public class MyTabViewModel : ISelectable
-{
-    public string Title => "My Tab";
-
-    public bool IsTarget(Type viewType, object parameter)
-    {
-       // check the view type or the navigation parameter (id) for example
-        return viewType == typeof(MyTabView);
-    }
-}
-```
-
-Example with Content Region
-
-```cs
-public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable 
+public class PersonDetailsViewModel : BindableBase, ISelectable 
 {
     private Person person;
     public Person Person
@@ -339,60 +249,127 @@ public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable
         set { SetProperty(ref person, value); }
     }
 
-    private IRegionNavigationService regionNavigationService;
+    // etc.
 
-    private IFakePeopleService fakePeopleService;
-
-    public PersonDetailsViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
-    {
-        this.regionNavigationService = regionNavigationService;
-        this.fakePeopleService = fakePeopleService;
-    }
-
-    public void OnNavigatingFrom()
-    {
-
-    }
-
-    public void OnNavigatingTo(object parameter)
-    {
-        int id = (int)parameter;
-        var person = fakePeopleService.GetPersonById(id);
-        Person = person;
-    }
-
-    public void OnNavigatedTo(object parameter)
-    {
-
-    }
-
-    // we have a list of active views
-    // select the view (note do not use Singleton with IViewLifetimeStrategy for this scenario)
     public bool IsTarget(Type viewType, object parameter)
     {
         if (parameter != null)
-        {
-            return person.Id == (int)parameter; // pass the id as parameter
-        }
+            return person.Id == (int)parameter;
+        
         return false;
     }
 }
 ```
 
-## IIsSelected
+## SharedSource for ItemsControl, ListBox, TabControl, etc.
 
-> Allow to be notifed from ViewModel on selection changed event (SelectedItems) for ItemsRegion with a Selector control (ListBox, TabControl, etc.)
+Provides an Items collection that implements INotifyCollectionChanged, a SelectedItem and more to quickly bind sources... add, remove, replace, move items, select an item by SelectedIndex or SelectedItem, etc. INotifyCollectionChanged and INotifyPropertyChanged do the work for the UI.
 
 ```cs
-public class ViewCViewModel : BindableBase, IIsSelected
+public class ViewAViewModel
 {
-    private string message;
-    public string Message
+    public SharedSource<ItemDetailsViewModel> DetailsSource { get; }
+
+    public ICommand AddCommand { get; }
+
+    public  ViewAViewModel()
     {
-        get { return message; }
-        set { SetProperty(ref message, value); }
+
+        // empty
+        // DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
+
+        // or with data at initialization
+        DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
+        {
+            new ItemDetailsViewModel(new Item { Name = "Item.1" }),
+            new ItemDetailsViewModel(new Item { Name = "Item.2" })
+        });
+
+        AddCommand = new RelayCommand(Add);
     }
 
+    private async void Add()
+    {
+        await DetailsSource.Items.AddAsync(new ItemDetailsViewModel(new Item { Name = $"Item.{DetailsSource.Items.Count + 1}" }));
+    }
+}
+```
+
+Bind the source to controls:
+
+ItemsControl
+
+```xml
+<ItemsControl ItemsSource="{Binding DetailsSource.Items}" />
+```
+
+Selector (ListBox, TabControl, etc.) :
+
+```xml
+<ListView ItemsSource="{Binding DetailsSource.Items}" SelectedItem="{Binding DetailsSource.SelectedItem}" />
+```
+
+```xml
+<TabControl ItemsSource="{Binding DetailsSource.Items}"  SelectedItem="{Binding DetailsSource.SelectedItem}">
+    <TabControl.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Item.Name}" Margin="20,0"/>
+                <Button Content="X" 
+                        Command="{Binding CloseCommand}" 
+                        HorizontalAlignment="Right" Height="20" Width="20" 
+                        VerticalAlignment="Top" />
+            </StackPanel>
+        </DataTemplate>
+    </TabControl.ItemTemplate>
+</TabControl>
+```
+
+**Tip**: Use an interface (IDetailViewModel for example) for TabControl that can display multiple views.
+
+```cs
+public interface IDetailsViewModel
+{
+    string Title { get; set; }
+}
+
+public abstract class DetailsViewModelBase : BindableBase, IDetailsViewModel
+{
+    protected string title;
+    public string Title
+    {
+        get { return title; }
+        set { SetProperty(ref title, value); }
+    }
+
+    public SharedSource<IDetailsViewModel> DetailsSource { get; }
+
+    public DetailsViewModelBase()
+    {
+        DetailsSource = SharedSourceManager.GetOrCreate<IDetailsViewModel>();
+    }
+}
+
+public class ViewAViewModel : DetailsViewModelBase, ICanDeactivate
+{
+    // ...
+}
+public class ViewBViewModel : DetailsViewModelBase
+{
+    // ...
+}
+```
+
+## IIsSelected, ISelectable and SelectionChangedBehavior
+
+We could bind easly the SelectedItem of the SharedSource to a Selector.
+
+**IIsSelected** allows to be notified from ViewModel of selection.
+
+
+```cs
+public class ViewCViewModel : DetailsViewModelBase, IIsSelected
+{
     private bool isSelected;
     public bool IsSelected
     {
@@ -401,12 +378,33 @@ public class ViewCViewModel : BindableBase, IIsSelected
         {
             SetProperty(ref isSelected, value);
             if (isSelected)
-                Message = "ACTIVE";
+                Title = "ACTIVE";
             else
-                Message = "NOT Active";
+                Title = "NOT Active";
         }
     }
 }
+```
+
+**ISelectable** allows for example to select a tabitem opened
+
+```cs
+public class ViewDViewModel : DetailsViewModelBase, ISelectable
+{
+    public bool IsTarget(Type sourceType, object parameter)
+    {
+        return sourceType == typeof(ViewDViewModel);
+    }
+}
+```
+
+**SelectionChangedBehavior** allow to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
+
+```xml
+<ListView ItemsSource="{Binding DetailsSource.Items}"
+          SelectedItem="{Binding DetailsSource.SelectedItem}"
+          mvvmLib:NavigationInteraction.SelectionChangedBehavior="True"
+          SelectionMode="Multiple" />
 ```
 
 ## Create a Bootsrapper
@@ -428,7 +426,6 @@ public abstract class MvvmLibBootstrapper : BootstrapperBase
     {
         container.RegisterInstance<IInjector>(container);
         container.RegisterSingleton<IEventAggregator, EventAggregator>();
-        container.RegisterSingleton<IRegionManager, RegionManager>();
     }
 
     protected override void SetViewFactory()
@@ -487,103 +484,6 @@ public partial class App : Application
 ```
 
 
-## Create a custom  items region Adapter
-
-Implement IItemsRegionAdapter.
-
-Example for a StackPanel
-
-```cs
-public class StackPanelRegionAdapter : IItemsRegionAdapter
-{
-    private StackPanel control;
-    public DependencyObject Control
-    {
-        get { return control; }
-        set
-        {
-            if (value is StackPanel stackPanel)
-                control = stackPanel;
-            else
-                throw new InvalidOperationException("Invalid control type");
-        }
-    }
-
-    public void Adapt(ItemsRegion region)
-    {
-        if (region == null)
-            throw new ArgumentNullException(nameof(region));
-
-        region.History.Entries.CollectionChanged += OnEntriesCollectionChanged;
-    }
-
-    private void OnEntriesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-       // update the stackpanel children ...
-    }
-}
-```
-
-Then register this adapter (on Application Startup)
-
-```cs
-public class Bootstrapper : WpfLibBootstrapper
-{
-    protected override Window CreateShell()
-    {
-        return container.GetInstance<Shell>();
-    }
-
-    protected override void RegisterTypes()
-    {
-       container.RegisterSingleton<ViewBViewModel>();
-    }
-
-    protected override void RegisterCustomRegionAdapters()
-    {
-        RegionAdapterContainer.RegisterAdapter(typeof(StackPanel), new StackPanelRegionAdapter()); // <===
-    }
-}
-```
-
-And use it
-
-```xml
-<StackPanel nav:RegionManager.ItemsRegionName="{x:Static local:RegionNames.StackPanelRegionName}"></StackPanel>
-```
-
-## BindableObject<T>
-
-> Allows to bind a value or object to `Value` dependency property and be notified on value changed.
-
-Example 1:
-
-```cs
-var bindableObject = new BindableObject<string>();
-bindableObject.PropertyChanged += (s, e) =>
-{
-    MessageBox.Show(e.PropertyName);
-};
-bindableObject.Value = "my value";
-```
-
-Example 2:
-
-binding in Xaml
-
-```xml
-<TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-```
-
-```cs
-var bindableObject = new BindableObject<string>();
-bindableObject.PropertyChanged += (s, e) =>
-{
-    MessageBox.Show(e.PropertyName);
-};
-this.DataContext = bindableObject;
-```
-
 ## AnimatableContentControl
 
 > Content Control that allows to animate on content change. 
@@ -599,17 +499,35 @@ ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousCo
 
 
 ```xml
-<mvvmLib:AnimatableContentControl x:Name="AnimatableContentControl1" 
-                                    mvvmLib:RegionManager.ContentRegionName="AnimationSample" 
-                                    Simultaneous="True"
-                                    IsCancelled="{Binding IsCancelled}"
-                                    Grid.Row="1">
+<mvvmLib:AnimatableContentControl mvvmLib:NavigationManager.SourceName="Main">
+    <mvvmLib:AnimatableContentControl.EntranceAnimation>
+        <Storyboard>
+            <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                             From="400" To="0" Duration="0:0:0.4"  />
+        </Storyboard>
+    </mvvmLib:AnimatableContentControl.EntranceAnimation>
     <mvvmLib:AnimatableContentControl.ExitAnimation>
         <Storyboard>
-            <!-- 1. translate -->
+            <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                             From="0" To="400" Duration="0:0:0.4"  />
+        </Storyboard>
+    </mvvmLib:AnimatableContentControl.ExitAnimation>
+</mvvmLib:AnimatableContentControl>
+```
+
+Or Simulatneous
+
+```xml
+  <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" 
+                                    Simultaneous="True"
+                                    IsCancelled="{Binding IsCancelled}">
+    <mvvmLib:AnimatableContentControl.ExitAnimation>
+        <Storyboard>
             <DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
-                                From="0" To="400" 
+                                From="0" To="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" 
                                 Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
                 <DoubleAnimation.EasingFunction>
                     <SineEase EasingMode="EaseInOut" />
@@ -619,10 +537,9 @@ ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousCo
     </mvvmLib:AnimatableContentControl.ExitAnimation>
     <mvvmLib:AnimatableContentControl.EntranceAnimation>
         <Storyboard>
-            <!-- 1. translate -->
             <DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
-                                From="400" To="0" 
+                                From="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" To="0" 
                                 Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
                 <DoubleAnimation.EasingFunction>
                     <SineEase EasingMode="EaseInOut" />
@@ -632,6 +549,7 @@ ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousCo
     </mvvmLib:AnimatableContentControl.EntranceAnimation>
 </mvvmLib:AnimatableContentControl>
 ```
+
 
 ## TransitioningContentControl
 
@@ -676,10 +594,9 @@ Other methods:
 The "ControlledAnimation" avoid to set the target and the target property of the storyboard. The TargetPropertyType is a shortcut. But it's possible to target explicitly the target property of the storyboard with "TargetProperty" dependency property.
 
 ```xml
-<mvvmLib:TransitioningItemsControl x:Name="I2"
-                                        ItemsSource="{Binding MyItems}" 
-                                        TransitionClearHandling="Transition"
-                                        IsCancelled="{Binding IsCancelled}">
+<mvvmLib:TransitioningItemsControl ItemsSource="{Binding MyItems}" 
+                                   TransitionClearHandling="Transition"
+                                   IsCancelled="{Binding IsCancelled}">
     <mvvmLib:TransitioningItemsControl.EntranceAnimation>
         <mvvmLib:ParallelAnimation>
 

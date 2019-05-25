@@ -20,19 +20,15 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 
-* **Regions**: change and animate the content of **ContentRegion** (ContentControl) and **ItemsRegions** (ItemsControl, TabControl, ... and more with Adapters) 
-* **ViewModelLocator**: allows to resolve ViewModel for regions and for window with **ResolveWindowViewModel**
-* **RegionManager**: allows to regiter a region with attached properties
-* **RegionNavigationService** allows to **navigate** _with regions_ 
-* **INavigatable**: allows the views and view models to be notified on navigate
-* **IActivatable**, **IDeactivatable**: allow to cancel navigation
-* **IIsLoaded**: allows to be notified when the view or window is loaded
-* **IViewLifetimeStrategy**: Allows to get always the same instance of a view (Singleton) for a region
-* **ISelectable**: allows to select a view 
-* **IsSelected**: allows to be notifed from view model on selection changed for ItemsRegion with Selector (ListBox, TabControl, etc.)
-* **BootstrapperBase**: bootstrapper base class
-* **BindableObject**: Allows to bind a value or object to Value dependency property and be notified on value changed.
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate on content change / insertion, etc.
+* **NavigationSource**: navigation for _ContentControl_
+* **SharedSource**: for _ItemsControl_, _Selector_, etc.
+* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **NavigationManager**: allows to manage NavigationSources and SharedSources
+* **INavigatable**: allows views and _view models_ to be notified on navigate
+* **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
+* **IIsSelected**, **ISelectable**, **SelectionChangedBehavior**: allow to select a view 
+* **ViewModelLocator**: allows to **resolve ViewModel** for **views**
+* **BootstrapperBase**: base class for Bootstrapper
 
 ## MvvmLib.Windows (Navigation) [uwp]
   
