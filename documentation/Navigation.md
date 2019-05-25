@@ -362,7 +362,7 @@ public class ViewBViewModel : DetailsViewModelBase
 
 ## IIsSelected, ISelectable and SelectionChangedBehavior
 
-We could bind easly the SelectedItem of the SharedSource to a Selector.
+Bind the Items collection and the SelectedItem of the SharedSource is easy.
 
 **IIsSelected** allows to be notified from ViewModel of selection.
 
