@@ -42,7 +42,7 @@
         </StackPanel>
 
         <mvvmLib:AnimatableContentControl x:Name="AnimatableContentControl1" 
-                                          mvvmLib:RegionManager.ContentRegionName="AnimationSample" 
+                                          Content="{Binding Navigation.Current}" 
                                           Simultaneous="True"
                                           IsCancelled="{Binding IsCancelled}"
                                           Grid.Row="1">

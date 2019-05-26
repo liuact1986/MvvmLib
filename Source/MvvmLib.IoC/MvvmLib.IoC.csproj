@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.7</Version>
+    <Version>0.2.0</Version>
     <Description>MvvmLib IoC Container.
 
-* DI (Dependency Injection)
-  * Injector: allows to **register Types, Singletons, Instances, values, auto discover types, inject properties, etc.</Description>
+* Allows to register and resolve Type, Singleton, Instance, factory, values
+* Auto discover types and types for interfaces not registered
+* Inject properties and manage circular references
+* Attributes: PreferredConstructor, PreferredImplementation (for interfaces), Dependency (for properties) 
+Etc.</Description>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/romagny13/MvvmLib/blob/master/LICENSE</PackageLicenseUrl>
     <Company>romagny13</Company>

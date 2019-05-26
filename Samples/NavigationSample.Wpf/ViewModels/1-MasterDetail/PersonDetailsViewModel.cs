@@ -22,15 +22,12 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref saveMessage, value); }
         }
 
-        private IRegionNavigationService regionNavigationService;
-
         public ICommand SaveCommand { get; }
 
         private IFakePeopleService fakePeopleService;
 
-        public PersonDetailsViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
+        public PersonDetailsViewModel(IFakePeopleService fakePeopleService)
         {
-            this.regionNavigationService = regionNavigationService;
             this.fakePeopleService = fakePeopleService;
 
             SaveCommand = new RelayCommand<object>(Save);

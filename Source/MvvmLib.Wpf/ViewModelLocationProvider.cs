@@ -6,14 +6,17 @@ using System.Reflection;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The ViewModelLocationProvider class locates the view model for the view.
+    /// The ViewModelLocationProvider allows to resolve the view model type for a view and crete the view model instance.
     /// </summary>
     public class ViewModelLocationProvider
     {
-        private readonly static Dictionary<Type, Type> viewTypeToViewModelTypeCache = new Dictionary<Type, Type>();
-        private readonly static Dictionary<Type, Type> viewTypeToViewModelTypeCustomRegistrations = new Dictionary<Type, Type>();
+        private readonly static Dictionary<Type, Type> customRegistrations;
+        private readonly static Dictionary<Type, Type> cache;
 
-        private static Func<Type, Type> viewTypeToViewModelTypeResolver =
+        /// <summary>
+        /// The default convention.
+        /// </summary>
+        private static readonly Func<Type, Type> defaultViewTypeToViewModelTypeResolver =
              viewType =>
              {
                  var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
@@ -26,14 +29,31 @@ namespace MvvmLib.Navigation
                  return Type.GetType(viewModelName);
              };
 
+        /// <summary>
+        /// Custom convention.
+        /// </summary>
+        private static Func<Type, Type> viewTypeToViewModelTypeResolver;
+
+        /// <summary>
+        /// The default view model factory. Can be override with <see cref="SetViewModelFactory(Func{Type, object})"/>.
+        /// </summary>
         private static Func<Type, object> viewModelFactory = (viewModelType) => Activator.CreateInstance(viewModelType);
+
+        static ViewModelLocationProvider()
+        {
+            customRegistrations = new Dictionary<Type, Type>();
+            cache = new Dictionary<Type, Type>();
+        }
 
         /// <summary>
         /// Allows to change the convention used to resolve ViewModels for the views.
         /// </summary>
         /// <param name="viewTypeToViewModelTypeResolver">The new convention</param>
-        public static void SetViewTypeToViewModelTypeResolver(Func<Type, Type> viewTypeToViewModelTypeResolver)
+        public static void ChangeConvention(Func<Type, Type> viewTypeToViewModelTypeResolver)
         {
+            if (viewTypeToViewModelTypeResolver == null)
+                throw new ArgumentNullException(nameof(viewTypeToViewModelTypeResolver));
+
             ViewModelLocationProvider.viewTypeToViewModelTypeResolver = viewTypeToViewModelTypeResolver;
         }
 
@@ -44,37 +64,82 @@ namespace MvvmLib.Navigation
         /// <param name="viewModelType">The view model type</param>
         public static void RegisterCustom(Type viewType, Type viewModelType)
         {
-            viewTypeToViewModelTypeCustomRegistrations[viewType] = viewModelType;
+            if (viewType == null)
+                throw new ArgumentNullException(nameof(viewType));
+            if (viewModelType == null)
+                throw new ArgumentNullException(nameof(viewModelType));
+
+            customRegistrations[viewType] = viewModelType;
         }
 
         /// <summary>
-        /// The view model factory receives a view model type and have to create an instance of the view model. It could uses a ioc container to create the instance and resolve view model dependences.
+        /// Allows to change the default view model factory.
         /// </summary>
-        /// <param name="viewModelFactory"></param>
+        /// <param name="viewModelFactory">The new factory</param>
         public static void SetViewModelFactory(Func<Type, object> viewModelFactory)
         {
+            if (viewModelFactory == null)
+                throw new ArgumentNullException(nameof(viewModelFactory));
+
             ViewModelLocationProvider.viewModelFactory = viewModelFactory;
         }
 
-        internal static Type ResolveViewModelType(Type viewType)
+        /// <summary>
+        /// Allows to resolve the view model type for a view type.
+        /// </summary>
+        /// <param name="viewType">The view type</param>
+        /// <returns>The view model type or null</returns>
+        public static Type ResolveViewModelType(Type viewType)
         {
-            if (viewTypeToViewModelTypeCache.ContainsKey(viewType))
-                return viewTypeToViewModelTypeCache[viewType];
+            if (cache.TryGetValue(viewType, out Type cachedViewModelType))
+            {
+                return cachedViewModelType;
+            }
             else
             {
-                // custom Registration ? 
-                if (viewTypeToViewModelTypeCustomRegistrations.ContainsKey(viewType))
-                    return viewTypeToViewModelTypeCustomRegistrations[viewType];
+                Type viewModelType = null;
+                if (customRegistrations.TryGetValue(viewType, out Type customRegistration))
+                    viewModelType = customRegistration;
+                else
+                {
+                    if (viewTypeToViewModelTypeResolver != null)
+                        viewModelType = viewTypeToViewModelTypeResolver(viewType);
+                    else
+                        viewModelType = defaultViewTypeToViewModelTypeResolver(viewType);
+                }
 
-                var viewModelType = viewTypeToViewModelTypeResolver(viewType);
-                viewTypeToViewModelTypeCache.Add(viewType, viewModelType);
+                if (viewModelType != null)
+                    cache[viewType] = viewModelType;
+
                 return viewModelType;
             }
         }
 
-        internal static object ResolveViewModel(Type viewModelType)
+        /// <summary>
+        /// Creates the view model instance with the view model factory.
+        /// </summary>
+        /// <param name="viewModelType">The view model type</param>
+        /// <returns>The view model instance</returns>
+        public static object CreateViewModelInstance(Type viewModelType)
         {
-            return viewModelFactory(viewModelType);
+            var viewModel = viewModelFactory(viewModelType);
+            return viewModel;
+        }
+
+        /// <summary>
+        /// Resets to the default convention.
+        /// </summary>
+        public static void ResetConvention()
+        {
+            viewTypeToViewModelTypeResolver = null;
+        }
+
+        /// <summary>
+        /// Resets the view model factory.
+        /// </summary>
+        public static void ResetViewModelFactory()
+        {
+            viewModelFactory = (viewModelType) => Activator.CreateInstance(viewModelType);
         }
     }
 }

@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="NavigationSample.Wpf.Views.SharedSourceSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:NavigationSample.Wpf.Views"      
+             xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"            
+             xmlns:mvvmLib="http://mvvmlib.com/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type viewModels:MyItemDetailsViewModel}">
+            <views:MyItemDetailsView />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ItemTemplateWithCloseButton">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Content="{Binding}"/>
+                <Button x:Name="CloseButton" Content="X" 
+                                Command="{Binding CloseCommand}" 
+                                Height="20" Width="20" Grid.Column="1" HorizontalAlignment="Right"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    
+    <Grid Background="White">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+        </Grid.Effect>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+            <Button Content="Add" Command="{Binding AddCommand}" Margin="5"/>
+        </StackPanel>
+
+        <TabControl ItemsSource="{Binding DetailsSource.Items}" 
+                    SelectedItem="{Binding DetailsSource.SelectedItem}" 
+                    Grid.Row="1">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Item.Name}" Margin="20,0"/>
+                        <Button x:Name="CloseButton" Content="X" 
+                                Command="{Binding CloseCommand}" 
+                                HorizontalAlignment="Right" Height="20" Width="20" 
+                                VerticalAlignment="Top" />
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
+
+        <ListView ItemsSource="{Binding DetailsSource.Items}"
+                  SelectedItem="{Binding DetailsSource.SelectedItem}" 
+                  ItemTemplate="{StaticResource ItemTemplateWithCloseButton}"
+                  Grid.Row="2">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <ItemsControl ItemsSource="{Binding DetailsSource.Items}"
+                      ItemTemplate="{StaticResource ItemTemplateWithCloseButton}"
+                      Grid.Column="1" Grid.Row="1" />
+
+        <mvvmLib:TransitioningItemsControl ItemsSource="{Binding DetailsSource.Items}" 
+                                           ItemTemplate="{StaticResource ItemTemplateWithCloseButton}"
+                                           Grid.Column="1" Grid.Row="2">
+            <mvvmLib:TransitioningItemsControl.EntranceAnimation>
+                <mvvmLib:ParallelAnimation>
+
+                    <mvvmLib:ControlledAnimation TargetPropertyType="TranslateX">
+                        <DoubleAnimation From="200" To="0" Duration="0:0:0.5" />
+                    </mvvmLib:ControlledAnimation>
+
+                </mvvmLib:ParallelAnimation>
+            </mvvmLib:TransitioningItemsControl.EntranceAnimation>
+            <mvvmLib:TransitioningItemsControl.ExitAnimation>
+                <mvvmLib:ParallelAnimation>
+
+                    <mvvmLib:ControlledAnimation TargetPropertyType="TranslateX">
+                        <DoubleAnimation From="0" To="200" Duration="0:0:0.5" />
+                    </mvvmLib:ControlledAnimation>
+
+                </mvvmLib:ParallelAnimation>
+            </mvvmLib:TransitioningItemsControl.ExitAnimation>
+        </mvvmLib:TransitioningItemsControl>
+    </Grid>
+</UserControl>

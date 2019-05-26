@@ -11,103 +11,36 @@
 
     <Grid Background="{StaticResource PageBackground}">
         <Grid.Effect>
-           <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
         </Grid.Effect>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-        <Grid Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <WrapPanel Orientation="Horizontal">
+            <Button Content="Add View C" Command="{Binding AddCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}" Margin="5"/>
+            <Button Content="Add View D" Command="{Binding AddCommand}" CommandParameter="{x:Type viewModels:ViewDViewModel}" Margin="5" />
+        </WrapPanel>
 
-            <WrapPanel Orientation="Horizontal">
-                <Button Content="Add View C" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5"/>
-                <Button Content="Add View D" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewD}" Margin="5" />
-            </WrapPanel>
-
-            <TabControl x:Name="TabControl1" mvvmLib:RegionManager.ItemsRegionName="TabControlRegion" Grid.Row="1">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel x:Name="SP" Orientation="Horizontal" 
-                                DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type TabItem}}}">
-                            <TextBlock Text="{Binding DataContext.Message}" Margin="20,0"/>
-                            <Button x:Name="CloseButton" Content="X" 
-                                Command="{Binding DataContext.CloseTabItemCommand}" 
-                                CommandParameter="{Binding DataContext}"
-                                HorizontalAlignment="Right" Height="20" Width="20" 
-                                VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-            </TabControl>
-
-            <Border BorderBrush="Black" BorderThickness="2" Grid.Row="2" Background="#fff" VerticalAlignment="Bottom" Height="200">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <Label FontWeight="SemiBold">Entries</Label>
-                    <ListView ItemsSource="{Binding TabControlRegion.History.Entries}"  Margin="5" Grid.Row="1" BorderThickness="0">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding SourceType.Name}" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-
-                    <Label FontWeight="SemiBold" Grid.Column="1">Current</Label>
-                    <StackPanel Grid.Column="1" Grid.Row="1">
-                        <TextBlock Text="{Binding TabControlRegion.History.Current.SourceType.Name}"  Margin="5"/>
-                    </StackPanel>
-
-                    <Label FontWeight="SemiBold" Grid.Column="2">Current Index</Label>
-                    <StackPanel Grid.Column="2" Grid.Row="1">
-                        <TextBlock Text="{Binding TabControlRegion.History.CurrentIndex}"  Margin="5"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-        </Grid>
-        <Grid Grid.Column="1" Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <WrapPanel Orientation="Horizontal">
-                <!-- View Models-->
-                <Button Content="Add ViewModel C" Command="{Binding AddViewModelCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}"  Margin="5" />
-                <Button Content="Add ViewModel D" Command="{Binding AddViewModelCommand}" CommandParameter="{x:Type viewModels:ViewDViewModel}"  Margin="5" />
-            </WrapPanel>
-
-            <!-- Navigate to ViewModel + DataTemplate -->
-            <TabControl x:Name="TabControl2" mvvmLib:RegionManager.ItemsRegionName="TabControlRegion2" Grid.Column="1" Grid.Row="1">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel x:Name="SP" Orientation="Horizontal">
-                            <TextBlock Text="{Binding Message}" Margin="20,0"/>
-                            <Button x:Name="CloseButton" Content="X" 
-                                Command="{Binding CloseTabItemCommand2}" 
+        <TabControl x:Name="TabControl1" 
+                    ItemsSource="{Binding DetailsSource.Items}" 
+                    SelectedItem="{Binding DetailsSource.SelectedItem}" 
+                    Grid.Row="1">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel x:Name="SP" Orientation="Horizontal">
+                        <TextBlock Text="{Binding Message}" Margin="20,0"/>
+                        <Button x:Name="CloseButton" Content="X" 
+                                Command="{Binding CloseCommand}" 
                                 CommandParameter="{Binding}"
                                 HorizontalAlignment="Right" Height="20" Width="20" 
                                 VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-            </TabControl>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
 
-        </Grid>
     </Grid>
+
 </UserControl>

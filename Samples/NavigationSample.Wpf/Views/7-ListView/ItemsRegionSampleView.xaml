@@ -19,18 +19,28 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal">
-            <Button Content="Add View C" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
-            <Button Content="Add View D" Command="{Binding AddCommand}" CommandParameter="{x:Type views:ViewD}" Margin="5" />
-            <!-- View Models-->
             <Button Content="Add ViewModel C" Command="{Binding AddCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}" Margin="5" />
             <Button Content="Add ViewModel D" Command="{Binding AddCommand}" CommandParameter="{x:Type viewModels:ViewDViewModel}" Margin="5" />
         </WrapPanel>
         
-        <TextBlock Text="Selection Mode multiple / Active" FontSize="14" FontStyle="Italic" Margin="5" Grid.Row="1"/>
+        <TextBlock Text="Selection Mode multiple + SelectionChangedBehavior" FontSize="14" FontStyle="Italic" Margin="5" Grid.Row="1"/>
 
-        <ListView x:Name="ListView1" mvvmLib:RegionManager.ItemsRegionName="ListViewRegion" SelectionMode="Multiple" Grid.Row="2" Background="Transparent" 
+        <ListView x:Name="ListView1" 
+                  ItemsSource="{Binding DetailsSource.Items}"
+                  SelectedItem="{Binding DetailsSource.SelectedItem}"
+                  mvvmLib:NavigationInteraction.SelectionChangedBehavior="True"
+                  SelectionMode="Multiple" 
+                  Grid.Row="2" 
+                  Background="Transparent" 
                   HorizontalContentAlignment="Stretch"
-                  ItemContainerStyle="{StaticResource ListViewItemStyle}" />
+                  ItemContainerStyle="{StaticResource ListViewItemStyle}">
+            <!--<mvvmLib:NavigationInteraction.Behaviors>
+                <mvvmLib:NavigationBehaviorCollection>
+                    <mvvmLib:SelectionChangedBehavior />
+                </mvvmLib:NavigationBehaviorCollection>
+            </mvvmLib:NavigationInteraction.Behaviors>-->
+            <!-- or  -->
+        </ListView>
 
     </Grid>
 </UserControl>

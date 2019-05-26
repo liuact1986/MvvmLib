@@ -25,8 +25,8 @@ namespace NavigationSample.Wpf.Views
                 new MenuItem("Observable History", IconKind.History, () => Navigate(typeof(HistorySampleView))),
                 new MenuItem("TabControl", IconKind.Tab, () => Navigate(typeof(TabControlSampleView))),
                 new MenuItem("ListView", IconKind.LibraryBooks, () => Navigate(typeof(ItemsRegionSampleView))),
-                new MenuItem("When available", IconKind.Alarm, () => ExecuteWhenAvailable()),
-                new MenuItem("Child Regions", IconKind.HumanChild, () => Navigate(typeof(ChildRegionSampleView)))
+                new MenuItem("ContentControl NavigationSource", IconKind.Car, () => Navigate(typeof(ContentControlNavigationSourceSampleView))),
+                new MenuItem("Shared Source", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView)))
             };
 
             ListView1.ItemsSource = menuItems;
@@ -42,12 +42,6 @@ namespace NavigationSample.Wpf.Views
         {
             var viewModel = DataContext as ShellViewModel;
             viewModel.NavigateCommand.Execute(sourceType);
-        }
-
-        private void ExecuteWhenAvailable()
-        {
-            var viewModel = DataContext as ShellViewModel;
-            viewModel.WhenAvailableCommand.Execute(null);
         }
 
         private void OnHamburgerButtonClick(object sender, RoutedEventArgs e)

@@ -5,7 +5,7 @@ using System.ComponentModel;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The navigation entry collection. Allows to changes. Implements <see cref="INotifyCollectionChanged"/> (Add and Remove actions) and <see cref="INotifyPropertyChanged"/> (Count and indexer).
+    /// The navigation entry collection. Allows to notify changes. Implements <see cref="INotifyCollectionChanged"/> and <see cref="INotifyPropertyChanged"/>.
     /// </summary>
     public class NavigationEntryCollection : Collection<NavigationEntry>, INotifyCollectionChanged, INotifyPropertyChanged
     {
@@ -13,7 +13,7 @@ namespace MvvmLib.Navigation
         private const string IndexerName = "Item[]";
 
         /// <summary>
-        /// Invoked on collection changed (Add and Remove actions).
+        /// Invoked on collection changed.
         /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -120,10 +120,6 @@ namespace MvvmLib.Navigation
         /// </summary>
         protected override void ClearItems()
         {
-            //int count = Items.Count;
-            //for (int i = count - 1; i >= 0; i--)
-            //    this.RemoveAt(i);
-
             Items.Clear();
             OnPropertyChanged(CountString);
             OnPropertyChanged(IndexerName);

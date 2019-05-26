@@ -3,10 +3,10 @@ using MvvmLib.Navigation;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ViewCViewModel : ViewModelBase, INavigatable, IIsSelected
+
+    public class ViewCViewModel : ViewModelBase, INavigatable, IIsSelected, IDetailViewModel
     {
-        public ViewCViewModel(IRegionNavigationService regionNavigationService)
-            : base(regionNavigationService)
+        public ViewCViewModel()
         { }
 
         private bool isSelected;

@@ -24,9 +24,9 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand ClearCommand { get; set; }
         public ICommand CancelCommand { get; set; }
 
-        public AnimationQueueViewModel()
+        public AnimationQueueViewModel(IEventAggregator eventAggregator)
         {
-            Singleton<EventAggregator>.Instance.GetEvent<ChangeTitleEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
+            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
 
             this.MyItems = new ObservableCollection<ItemDetailsViewModel>();
 
@@ -55,11 +55,7 @@ namespace NavigationSample.Wpf.ViewModels
         {
             AddInternal();
             AddInternal();
-
-            // insert index 1
             InsertInternal(1);
-            // insert index 3
-            //InsertInternal(3);
         }
 
         private void OnDeleteItemEventFired(ItemDetailsViewModel itemDetailsViewModel)

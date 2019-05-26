@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Source\MvvmLib.IoC\MvvmLib.IoC.csproj" />
+    <ProjectReference Include="..\MyTestLibrary\MyIoCTestLibrary\MyIoCTestLibrary.csproj" />
   </ItemGroup>
 
 </Project>

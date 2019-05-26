@@ -20,16 +20,16 @@
 
         <WrapPanel Orientation="Horizontal">
             <TextBlock Text="Content region" Margin="6"></TextBlock>
-            <Button Content="Root" Command="{Binding NavigateToRootCommand}" Margin="5" />
-            <Button Content="Go Back" Command="{Binding GoBackCommand}" Margin="5" />
-            <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
-            <Button Content="View B" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
-            <Button Content="View C" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
-            <Button Content="Go Forward" Command="{Binding GoForwardCommand}" Margin="5" />
+            <Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" Margin="5" />
+            <Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" Margin="5" />
+            <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
+            <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
+            <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
+            <Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" Margin="5" />
         </WrapPanel>
 
-        <!--<ContentControl x:Name="ContentRegion1" mvvmLib:RegionManager.ContentRegionName="ContentRegion" Grid.Row="1"/>-->
-        <mvvmLib:AnimatableContentControl x:Name="ContentRegion1" mvvmLib:RegionManager.ContentRegionName="ContentRegion" Grid.Row="1">
+        <!--<ContentControl Content="{Binding Navigation.Current}" Grid.Row="1"/>-->
+        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Row="1">
             <mvvmLib:AnimatableContentControl.EntranceAnimation>
                 <Storyboard>
                     <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
@@ -59,27 +59,15 @@
                 </Grid.ColumnDefinitions>
 
                 <Label FontWeight="SemiBold">Back Stack</Label>
-                <ListView ItemsSource="{Binding ContentRegion1History.BackStack}"  Margin="5" Grid.Row="1" BorderThickness="0">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding SourceType.Name}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <ListView ItemsSource="{Binding Navigation.History.BackStack}" ItemTemplate="{StaticResource StackTemplate}" Margin="5" Grid.Row="1" BorderThickness="0" />
 
                 <Label FontWeight="SemiBold" Grid.Column="1">Current Entry</Label>
                 <StackPanel Grid.Column="1" Grid.Row="1">
-                    <TextBlock Text="{Binding ContentRegion1History.Current.SourceType.Name}"  Margin="5"/>
+                    <TextBlock Text="{Binding Navigation.History.Current.SourceType.Name}"  Margin="5"/>
                 </StackPanel>
 
                 <Label FontWeight="SemiBold" Grid.Column="2">Forward Stack</Label>
-                <ListView ItemsSource="{Binding ContentRegion1History.ForwardStack}" Grid.Column="2" Grid.Row="1" Margin="5" BorderThickness="0">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding SourceType.Name}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <ListView ItemsSource="{Binding Navigation.History.ForwardStack}" ItemTemplate="{StaticResource StackTemplate}" Grid.Column="2" Grid.Row="1" Margin="5" BorderThickness="0" />
             </Grid>
         </Border>
     </Grid>

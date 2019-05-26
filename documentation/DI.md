@@ -1,11 +1,17 @@
 # DI \(Dependency Injection\) with Injector
 
-The injector can **resolve all types automatically** (views, view models, ect.) 
+> The injector allows to **resolve all types and types for implemented interfaces automatically** (views, view models, services) 
+
+  * Allows to **register** and **resolve** Type, Singleton, Instance, factory, values
+  * **Auto discover** types and types for interfaces not registered
+  * **Inject** properties and manage circular references
+  * Attributes: **PreferredConstructor**, **PreferredImplementation** (for interfaces), **Dependency** (for properties) 
+
 
 **Require to be registered :**
 
-* All **types with** their **interfaces**
 * **Singletons**
+* Use the **PreferredImplementation attribute** with many implementation of interfaces.
 
 
 Namespace: required for extensions methods
@@ -85,6 +91,23 @@ injector.RegisterInstance<Item>(new Item { MyString = "My value" });
 injector.RegisterType<WithFunc>();
 
 var instance = service.GetInstance<WithFunc>(); 
+```
+
+The injector resolves not registered **interfaces**. For many implementations use the **PreferredImplementationAttribute** Example:
+
+```cs
+public interface IMyService
+{ }
+
+public class MyService1 : IMyService
+{ }
+
+[PreferredImplementation]
+public class MyService2 : IMyService
+{ }
+
+public class MyService3 : IMyService
+{ }
 ```
 
 ### Registering Type with interfaces

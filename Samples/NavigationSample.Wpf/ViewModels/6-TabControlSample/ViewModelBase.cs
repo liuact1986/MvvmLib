@@ -1,5 +1,6 @@
 ﻿using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
@@ -12,36 +13,18 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref message, value); }
         }
 
-        private ItemsRegion tabControlRegion;
-        private ItemsRegion tabControlRegion2;
+        public SharedSource<IDetailViewModel> DetailsSource { get; }
 
-        public IRelayCommand CloseTabItemCommand { get; }
+        public ICommand CloseCommand { get; }
 
-        public IRelayCommand CloseTabItemCommand2 { get; }
-
-        public ViewModelBase(IRegionNavigationService regionNavigationService)
+        public ViewModelBase()
         {
-            if (regionNavigationService.IsItemsRegionDiscovered("TabControlRegion"))
+            DetailsSource = NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
+
+            CloseCommand = new RelayCommand<IDetailViewModel>(async (item) =>
             {
-                this.tabControlRegion = regionNavigationService.GetItemsRegion("TabControlRegion");
-                this.tabControlRegion2 = regionNavigationService.GetItemsRegion("TabControlRegion2");
-
-                CloseTabItemCommand = new RelayCommand<object>(async (item) =>
-                {
-                    //var index = tabControlRegion.FindIndex(item);
-                    //if (index != -1)
-                    //    await tabControlRegion.RemoveAtAsync(index);
-                    // or
-                    await tabControlRegion.RemoveAsync(item);
-                });
-
-
-                CloseTabItemCommand2 = new RelayCommand<object>(async (item) =>
-                {
-                    await tabControlRegion2.RemoveAsync(item);
-                });
-
-            }
+                await DetailsSource.Items.RemoveAsync(item);
+            });
         }
     }
 }

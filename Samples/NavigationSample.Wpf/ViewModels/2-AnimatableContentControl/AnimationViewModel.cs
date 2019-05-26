@@ -15,17 +15,21 @@ namespace NavigationSample.Wpf.ViewModels
         public bool IsCancelled
         {
             get { return isCancelled; }
-            set { SetProperty(ref isCancelled , value); }
+            set { SetProperty(ref isCancelled, value); }
         }
+
+        public NavigationSource Navigation { get; }
 
         public ObservableCollection<Duration> Durations { get; set; }
 
         public ICommand NavigateCommand { get; }
         public ICommand CancelAnimationsCommand { get; }
 
-        public AnimationViewModel(IRegionNavigationService regionNavigationService, IEventAggregator eventAggregator)
+        public AnimationViewModel(IEventAggregator eventAggregator)
         {
             eventAggregator.GetEvent<ChangeTitleEvent>().Publish("ContentControl animation with AnimatableContentControl");
+
+            Navigation = NavigationManager.GetNavigationSource("AnimationSample");
 
             this.Durations = new ObservableCollection<Duration>
             {
@@ -35,7 +39,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             NavigateCommand = new RelayCommand<Type>(async (sourceType) =>
             {
-                await regionNavigationService.NavigateAsync("AnimationSample", sourceType);
+                await Navigation.NavigateAsync(sourceType);
             });
 
             CancelAnimationsCommand = new RelayCommand(() =>

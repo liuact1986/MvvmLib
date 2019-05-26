@@ -5,64 +5,54 @@ using System.Windows;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// Allows to resolve the ViewModel for a view.
+    /// Allows to resolve the ViewModel with the <see cref="ViewModelLocationProvider"/> for a view. 
     /// </summary>
     public class ViewModelLocator
     {
         /// <summary>
-        /// Gets The resolve view model value.
+        /// Gets the Resolve View Model value for the dependency object.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static bool GetResolveWindowViewModel(DependencyObject obj)
+        /// <param name="obj">The dependency object</param>
+        /// <returns>True if ResoleViewModel is requested</returns>
+        public static bool GetResolveViewModel(DependencyObject obj)
         {
-            return (bool)obj.GetValue(ResolveWindowViewModelProperty);
+            return (bool)obj.GetValue(ResolveViewModelProperty);
         }
 
         /// <summary>
-        /// Sets The resolve view model value.
+        /// Sets the Resolve View Model value.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="value"></param>
-        public static void SetResolveWindowViewModel(DependencyObject obj, bool value)
+        /// <param name="obj">The dependency object</param>
+        /// <param name="value">The bool value</param>
+        public static void SetResolveViewModel(DependencyObject obj, bool value)
         {
-            obj.SetValue(ResolveWindowViewModelProperty, value);
+            obj.SetValue(ResolveViewModelProperty, value);
         }
 
         /// <summary>
-        /// Allows to resolve ViewModel for a Window.
+        /// Allows to resolve ViewModel for a view.
         /// </summary>
-        public static readonly DependencyProperty ResolveWindowViewModelProperty =
-           DependencyProperty.RegisterAttached("ResolveWindowViewModel", typeof(bool), typeof(ViewModelLocator),
-               new PropertyMetadata(false, OnResolveWindowViewModelChanged));
+        public static readonly DependencyProperty ResolveViewModelProperty =
+            DependencyProperty.RegisterAttached("ResolveViewModel", typeof(bool), typeof(ViewModelLocator), new PropertyMetadata(false, OnResolveViewModelChanged));
 
-        private static void OnResolveWindowViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnResolveViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!DesignerProperties.GetIsInDesignMode(d))
-                if ((bool)e.NewValue)
-                    if (d is Window window)
-                        window.Activated += OnWindowActivated;
-                    else
-                        throw new ArgumentException($"\"ResolveWindowViewModel\" is only available for Window");
-        }
-
-        private static void OnWindowActivated(object sender, EventArgs e)
-        {
-            var window = sender as Window;
-
-            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(window.GetType());
-
-            object context = null;
-            if (viewModelType != null)
             {
-                context = ViewModelLocationProvider.ResolveViewModel(viewModelType);
-                window.DataContext = context;
+                if ((bool)e.NewValue)
+                {
+                    if (!(d is FrameworkElement))
+                        throw new InvalidOperationException($"The ResolveViewModel attached property only support a view. Type \"{d.GetType()}\"");
+
+                    var frameworkElement = d as FrameworkElement;
+                    var viewModelType = ViewModelLocationProvider.ResolveViewModelType(frameworkElement.GetType());
+                    if (viewModelType != null)
+                    {
+                        var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
+                        frameworkElement.DataContext = context;
+                    }
+                }
             }
-
-            if (context != null && context is IIsLoaded loadedEventListener)
-                loadedEventListener.OnLoaded(null);
-
-            window.Activated -= OnWindowActivated;
         }
     }
 

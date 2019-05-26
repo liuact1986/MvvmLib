@@ -25,6 +25,7 @@ namespace MvvmLib.Animation
         private bool handleContentChanged;
         private StoryboardAccessor entranceStoryboardAccessor;
         private StoryboardAccessor exitStoryboardAccessor;
+        private bool hasApplyTemplate;
 
         /// <summary>
         /// Checks if the control is animating.
@@ -151,6 +152,8 @@ namespace MvvmLib.Animation
         /// </summary>
         public override void OnApplyTemplate()
         {
+            if (hasApplyTemplate)
+                return;
 
             base.OnApplyTemplate();
 
@@ -160,6 +163,8 @@ namespace MvvmLib.Animation
 
             SetEntranceAnimationResource();
             SetExitAnimationResource();
+
+            hasApplyTemplate = true;
         }
 
         /// <summary>
@@ -170,6 +175,9 @@ namespace MvvmLib.Animation
         protected override void OnContentChanged(object oldContent, object newContent)
         {
             base.OnContentChanged(oldContent, newContent);
+
+            if (!hasApplyTemplate)
+                ApplyTemplate();
 
             if (handleContentChanged)
                 this.RunOrEnqueue(oldContent, newContent);
@@ -313,6 +321,7 @@ namespace MvvmLib.Animation
 
         private void RunOrEnqueue(object oldContent, object newContent)
         {
+
             if (IsAnimating)
                 queue.Enqueue(new AnimationQueueItem(oldContent, newContent));
             else

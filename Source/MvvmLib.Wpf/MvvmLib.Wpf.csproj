@@ -49,54 +49,47 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Adapters\ItemsControlRegionAdapter.cs" />
-    <Compile Include="Adapters\RegionAdapterResolver.cs" />
-    <Compile Include="Adapters\TransitioningItemsControlRegionAdapter.cs" />
     <Compile Include="Animation\AnimationTargetPropertyType.cs" />
     <Compile Include="Animation\ControlledAnimation.cs" />
     <Compile Include="Animation\ParallelAnimation.cs" />
     <Compile Include="Animation\StoryboardAccessor.cs" />
+    <Compile Include="Behavior\IAssociatedObject.cs" />
+    <Compile Include="Behavior\NavigationBehavior.cs" />
+    <Compile Include="Behavior\NavigationBehaviorCollection.cs" />
+    <Compile Include="Behavior\NavigationInteraction.cs" />
     <Compile Include="BootstrapperBase.cs" />
-    <Compile Include="ContentRegion.cs" />
     <Compile Include="Controls\AnimatableContentControl.cs" />
     <Compile Include="Controls\ReadOnlyCollection.cs" />
     <Compile Include="Controls\TransitioningContentControl.cs" />
     <Compile Include="Controls\TransitioningItemsControl.cs" />
-    <Compile Include="Event\NavigationEntryEventArgs.cs" />
-    <Compile Include="History\ContentRegionHistory.cs" />
-    <Compile Include="History\ItemsRegionHistory.cs" />
+    <Compile Include="EventArgs\NavigationEventArgs.cs" />
+    <Compile Include="EventArgs\NavigationFailedEventArgs.cs" />
+    <Compile Include="Exception\NavigationFailedException.cs" />
+    <Compile Include="History\CanGoBackEventArgs.cs" />
+    <Compile Include="History\CanGoForwardEventArgs.cs" />
+    <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
     <Compile Include="History\NavigationEntry.cs" />
     <Compile Include="History\NavigationEntryCollection.cs" />
-    <Compile Include="Adapters\IItemsRegionAdapter.cs" />
-    <Compile Include="Adapters\SelectorRegionAdapter.cs" />
+    <Compile Include="History\NavigationHistory.cs" />
     <Compile Include="Interfaces\ICanActivate.cs" />
     <Compile Include="Interfaces\ICanDeactivate.cs" />
     <Compile Include="Interfaces\IIsSelected.cs" />
-    <Compile Include="Utils\XamlHelper.cs" />
-    <Compile Include="Event\RegionNavigationEventArgs.cs" />
-    <Compile Include="Event\RegionNavigationFailedEventArgs.cs" />
-    <Compile Include="Event\RegionNavigationType.cs" />
-    <Compile Include="Event\RegionRegisteredEventArgs.cs" />
-    <Compile Include="Event\RegionUnregisteredEventArgs.cs" />
-    <Compile Include="Exception\NavigationFailedException.cs" />
-    <Compile Include="Exception\RegionResolutionFailedException.cs" />
-    <Compile Include="Interfaces\IIsLoaded.cs" />
     <Compile Include="Interfaces\INavigatable.cs" />
-    <Compile Include="Interfaces\IRegion.cs" />
-    <Compile Include="Interfaces\IRegionNavigationService.cs" />
     <Compile Include="Interfaces\ISelectable.cs" />
-    <Compile Include="ItemsRegion.cs" />
-    <Compile Include="LoadedEventListener.cs" />
     <Compile Include="Logger\Category.cs" />
     <Compile Include="Logger\DebugLogger.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\Priority.cs" />
+    <Compile Include="NavigationManager.cs" />
+    <Compile Include="NavigationSource.cs" />
+    <Compile Include="NavigationType.cs" />
+    <Compile Include="SelectableRegistration.cs" />
+    <Compile Include="Behavior\SelectionChangedBehavior.cs" />
+    <Compile Include="SharedSource\ISharedSource.cs" />
+    <Compile Include="SharedSource\SharedSource.cs" />
+    <Compile Include="SharedSource\SharedSourceItemCollection.cs" />
+    <Compile Include="Utils\XamlHelper.cs" />
     <Compile Include="Mvvm\BindableObject.cs" />
-    <Compile Include="RegionBase.cs" />
-    <Compile Include="RegionManager.cs" />
-    <Compile Include="RegionNavigationService.cs" />
-    <Compile Include="RegionsRegistry.cs" />
-    <Compile Include="Event\ViewLoadedEventArgs.cs" />
     <Compile Include="Utils\EnumerableUtils.cs" />
     <Compile Include="ViewModelLocationProvider.cs" />
     <Compile Include="ViewModelLocator.cs" />
@@ -141,6 +134,11 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\MvvmLib.Core\MvvmLib.Core.csproj">
+      <Project>{204995e8-e36b-4fef-9d4e-f2fb3de28c71}</Project>
+      <Name>MvvmLib.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

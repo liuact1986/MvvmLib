@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mvvmLib="http://mvvmlib.com/"
+             mvvmLib:ViewModelLocator.ResolveViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ListView x:Name="PeopleListView" ItemsSource="{Binding People}" SelectedItem="{Binding SelectedPerson}" />
+        <ListView x:Name="PeopleListView" 
+                  ItemsSource="{Binding DetailsSource.Items}" 
+                  SelectedItem="{Binding DetailsSource.SelectedItem}" />
     </Grid>
 </UserControl>

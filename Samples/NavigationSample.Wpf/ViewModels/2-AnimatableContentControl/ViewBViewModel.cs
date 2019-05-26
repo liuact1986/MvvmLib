@@ -1,12 +1,17 @@
 ﻿using MvvmLib.Mvvm;
-using MvvmLib.Navigation;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ViewBViewModel : ViewModelBase 
+    public class ViewBViewModel : BindableBase
     {
-        public ViewBViewModel(IRegionNavigationService regionNavigationService)
-            : base(regionNavigationService)
+        private string message;
+        public string Message
+        {
+            get { return message; }
+            set { SetProperty(ref message, value); }
+        }
+
+        public ViewBViewModel()
         {
             Message = "View B [ViewModel]";
         }

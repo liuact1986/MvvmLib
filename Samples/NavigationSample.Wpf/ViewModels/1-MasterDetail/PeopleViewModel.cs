@@ -2,56 +2,51 @@
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Models;
 using NavigationSample.Wpf.Views;
-using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
     public class PeopleViewModel : BindableBase
     {
-        public ObservableCollection<Person> People { get; set; }
+        public SharedSource<Person> DetailsSource { get; }
+        public NavigationSource Navigation { get; }
 
-        private Person selectedPerson;
-        public Person SelectedPerson
-        {
-            get { return selectedPerson; }
-            set
-            {
-                if (SetProperty(ref selectedPerson, value))
-                    ShowDetails(selectedPerson);
-            }
-        }
-
-        private IRegionNavigationService regionNavigationService;
         private IFakePeopleService fakePeopleService;
 
-        public ICommand SelectedPersonChangedCommand { get; }
-
-        public PeopleViewModel(IRegionNavigationService regionNavigationService, IFakePeopleService fakePeopleService)
+        public PeopleViewModel(IFakePeopleService fakePeopleService)
         {
-            this.regionNavigationService = regionNavigationService;
             this.fakePeopleService = fakePeopleService;
 
-            SelectedPersonChangedCommand = new RelayCommand<Person>(ShowDetails);
+            Navigation = NavigationManager.GetOrCreateNavigationSource("Details");
+
+            DetailsSource = NavigationManager.GetOrCreateSharedSource<Person>();
+            DetailsSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
 
             this.Load();
+        }
+
+        private async void OnDetailsSourceSelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
+        {
+            var person = e.SelectedItem as Person;
+            if (person != null)
+            {
+                await Navigation.NavigateAsync(typeof(PersonDetailsView), person.Id);
+                // ViewModel
+                //await Navigation.NavigateAsync(typeof(PersonDetailsViewModel), person.Id);
+            }
         }
 
         private void Load()
         {
             var peopleList = fakePeopleService.GetPeople();
-            this.People = new ObservableCollection<Person>(peopleList);
-
-            if (this.People.Count > 0)
-                SelectedPerson = People[0];
+            DetailsSource.With(peopleList);
         }
 
         private async void ShowDetails(Person person)
         {
-            await regionNavigationService.GetContentRegion("Detail").NavigateAsync(typeof(PersonDetailsView), person.Id);
+            await Navigation.NavigateAsync(typeof(PersonDetailsView), person.Id);
             // ViewModel
-            //await regionNavigationService.GetContentRegion("Detail").NavigateAsync(typeof(PersonDetailsViewModel), person.Id);
+            //await Navigation.NavigateAsync(typeof(PersonDetailsViewModel), person.Id);
         }
     }
 }

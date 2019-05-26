@@ -32,40 +32,14 @@
                 <views:PersonDetailsView />
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type viewModels:FirstViewModel}">
-                <views:First />
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type viewModels:SecondViewModel}">
-                <views:Second />
-            </DataTemplate>
-
             <DataTemplate DataType="{x:Type viewModels:TransitoningControlViewModel}">
                 <TextBlock Text="{Binding Message}" FontSize="24" FontFamily="MV Boli" />
             </DataTemplate>
 
+            <DataTemplate x:Key="StackTemplate">
+                <TextBlock Text="{Binding SourceType.Name}" />
+            </DataTemplate>
 
-            <!-- Dark -->
-            <!-- Background -->
-            <!--
-            <Color x:Key="ShadowColor">#FF838383</Color>
-            <SolidColorBrush x:Key="ContentBackground" Color="#FF292930" />
-            <LinearGradientBrush x:Key="PanelBackground" EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF2D2D30"/>
-                <GradientStop Color="#FF3A3A44" Offset="1" />
-            </LinearGradientBrush>
-            <SolidColorBrush x:Key="HamburgerButtonBackground" Color="#FF1188DE" />
-            <SolidColorBrush x:Key="StatusBarBackground" Color="#FF007ACC" />
-            <SolidColorBrush x:Key="PageHeaderBackground" Color="#FF1C1C1C" />
-            <SolidColorBrush x:Key="PageBackground" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="MaterialDesignSelection" Color="#FFE82E2E" />
-            <SolidColorBrush x:Key="MaterialDesignFlatButtonClick" Color="#FF0097FB" />
-            --><!-- Foreground --><!--
-            <SolidColorBrush x:Key="MenuForeground" Color="White" />
-            <SolidColorBrush x:Key="PageHeaderTitleForeground" Color="White" />
-            -->
-
-            <!-- Light -->
             <Color x:Key="ShadowColor">#FFA8A8A8</Color>
             <SolidColorBrush x:Key="ContentBackground" Color="#FF1C1C1C" />
             <LinearGradientBrush x:Key="PanelBackground" EndPoint="0.5,1" StartPoint="0.5,0">
@@ -81,7 +55,6 @@
             </LinearGradientBrush>
             <SolidColorBrush x:Key="MaterialDesignSelection" Color="#FFE82E2E" />
             <SolidColorBrush x:Key="MaterialDesignFlatButtonClick" Color="#FF0097FB" />
-            <!-- Foreground -->
             <SolidColorBrush x:Key="MenuForeground" Color="White" />
             <SolidColorBrush x:Key="PageHeaderTitleForeground" Color="White" />
 

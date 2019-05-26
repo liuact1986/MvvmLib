@@ -17,6 +17,7 @@ namespace MvvmLib.Animation
         private ItemsControl innerItemsControl;
         private readonly Queue<TransitionQueueItem> actions;
         private bool canAnimate;
+        private bool hasApplyTemplate;
 
         /// <summary>
         /// The collection of items of the control.
@@ -227,9 +228,14 @@ namespace MvvmLib.Animation
         /// </summary>
         public override void OnApplyTemplate()
         {
+            if (hasApplyTemplate)
+                return;
+
             base.OnApplyTemplate();
 
             this.innerItemsControl = this.GetTemplateChild(InnerItemsControlPartName) as ItemsControl;
+
+            hasApplyTemplate = true;
         }
 
         private void OnTransitionCompleted()
@@ -244,6 +250,16 @@ namespace MvvmLib.Animation
 
         private void SetItemsSource(IEnumerable source)
         {
+            if (!hasApplyTemplate)
+                ApplyTemplate();
+
+            int index = 0;
+            foreach (var item in source)
+            {
+                InsertItem(index, item);
+                index++;
+            }
+
             if (source is INotifyCollectionChanged notifyCollectionChanged)
                 notifyCollectionChanged.CollectionChanged += OnSourceCollectionChanged;
             else

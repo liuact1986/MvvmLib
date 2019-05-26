@@ -3,27 +3,13 @@ using System.Runtime.Serialization;
 
 namespace MvvmLib.Navigation
 {
-    public enum NavigationFailedExceptionType
-    {
-        DeactivationCancelled,
-        ActivationCancelled,
-        ExceptionThrown
-    }
-
-    public enum NavigationFailedSourceType
-    {
-        ViewOrObject,
-        Context,
-        InnerException
-    }
-
     [Serializable]
     public class NavigationFailedException : Exception
     {
-        private readonly NavigationFailedExceptionType navivationFailedExceptionType;
-        public NavigationFailedExceptionType NavivationFailedExceptionType
+        private readonly NavigationFailedExceptionType navigationFailedExceptionType;
+        public NavigationFailedExceptionType NavigationFailedExceptionType
         {
-            get { return navivationFailedExceptionType; }
+            get { return navigationFailedExceptionType; }
         }
 
         private readonly NavigationFailedSourceType navigationFailedSourceType;
@@ -32,16 +18,16 @@ namespace MvvmLib.Navigation
             get { return navigationFailedSourceType; }
         }
 
-        private readonly object viewOrContext;
-        public object ViewOrContext
+        private readonly object originalSource;
+        public object OriginalSource
         {
-            get { return viewOrContext; }
+            get { return originalSource; }
         }
 
-        private readonly IRegion region;
-        public IRegion Region
+        private readonly object sender;
+        public object Sender
         {
-            get { return region; }
+            get { return sender; }
         }
 
         public NavigationFailedException()
@@ -57,12 +43,12 @@ namespace MvvmLib.Navigation
         }
 
         public NavigationFailedException(NavigationFailedExceptionType navigationFailedExceptionType,
-            NavigationFailedSourceType navigationFailedSourceType, object viewOrContext, IRegion region)
+            NavigationFailedSourceType navigationFailedSourceType, object originalSource, object sender)
         {
-            this.navivationFailedExceptionType = navigationFailedExceptionType;
+            this.navigationFailedExceptionType = navigationFailedExceptionType;
             this.navigationFailedSourceType = navigationFailedSourceType;
-            this.viewOrContext = viewOrContext;
-            this.region = region;
+            this.originalSource = originalSource;
+            this.sender = sender;
         }
 
         protected NavigationFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -71,7 +57,21 @@ namespace MvvmLib.Navigation
 
         public override string ToString()
         {
-            return $"\"{NavivationFailedExceptionType}\" by the \"{NavigationFailedSourceType}\", Source \"{ViewOrContext}\", Region \"{Region.RegionName}\"";
+            return $"\"{navigationFailedExceptionType}\" by the \"{navigationFailedSourceType}\", Source \"{originalSource}\", Sender \"{sender}\"";
         }
+    }
+
+    public enum NavigationFailedExceptionType
+    {
+        DeactivationCancelled,
+        ActivationCancelled,
+        ExceptionThrown
+    }
+
+    public enum NavigationFailedSourceType
+    {
+        Source,
+        Context,
+        InnerException
     }
 }

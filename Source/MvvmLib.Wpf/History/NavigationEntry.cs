@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace MvvmLib.Navigation
 {
@@ -20,7 +18,7 @@ namespace MvvmLib.Navigation
 
         private readonly object source;
         /// <summary>
-        /// The view or object.
+        /// The source.
         /// </summary>
         public object Source
         {
@@ -45,27 +43,17 @@ namespace MvvmLib.Navigation
             get { return context; }
         }
 
-        internal List<RegionBase> childRegions;
-        /// <summary>
-        /// The child regions.
-        /// </summary>
-        public List<RegionBase> ChildRegions
-        {
-            get { return childRegions; }
-        }
-
         /// <summary>
         /// Creates the navigation entry.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        /// <param name="viewOrObject">The view or object</param>
+        /// <param name="source">The source</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="context">The context</param>
-        public NavigationEntry(Type sourceType, object viewOrObject, object parameter, object context)
+        public NavigationEntry(Type sourceType, object source, object parameter, object context)
         {
-            this.childRegions = new List<RegionBase>();
             this.sourceType = sourceType;
-            this.source = viewOrObject;
+            this.source = source;
             this.parameter = parameter;
             this.context = context;
         }

@@ -90,11 +90,19 @@
                 <div role="main">
                     <div class="section">
 <h1 id="di-dependency-injection-with-injector">DI (Dependency Injection) with Injector<a class="headerlink" href="#di-dependency-injection-with-injector" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
-<p>The injector can <strong>resolve all types automatically</strong> (views, view models, ect.) </p>
+<blockquote>
+<p>The injector allows to <strong>resolve all types and types for implemented interfaces automatically</strong> (views, view models, services) </p>
+</blockquote>
+<ul>
+<li>Allows to <strong>register</strong> and <strong>resolve</strong> Type, Singleton, Instance, factory, values</li>
+<li><strong>Auto discover</strong> types and types for interfaces not registered</li>
+<li><strong>Inject</strong> properties and manage circular references</li>
+<li>Attributes: <strong>PreferredConstructor</strong>, <strong>PreferredImplementation</strong> (for interfaces), <strong>Dependency</strong> (for properties) </li>
+</ul>
 <p><strong>Require to be registered :</strong></p>
 <ul>
-<li>All <strong>types with</strong> their <strong>interfaces</strong></li>
 <li><strong>Singletons</strong></li>
+<li>Use the <strong>PreferredImplementation attribute</strong> with many implementation of interfaces.</li>
 </ul>
 <p>Namespace: required for extensions methods</p>
 <pre><code class="cs">using MvvmLib.Ioc;
@@ -156,6 +164,21 @@ injector.RegisterFactory&lt;Item&gt;(&quot;my key&quot;, () =&gt; new Item());
 injector.RegisterType&lt;WithFunc&gt;();
 
 var instance = service.GetInstance&lt;WithFunc&gt;(); 
+</code></pre>
+
+<p>The injector resolves not registered <strong>interfaces</strong>. For many implementations use the <strong>PreferredImplementationAttribute</strong> Example:</p>
+<pre><code class="cs">public interface IMyService
+{ }
+
+public class MyService1 : IMyService
+{ }
+
+[PreferredImplementation]
+public class MyService2 : IMyService
+{ }
+
+public class MyService3 : IMyService
+{ }
 </code></pre>
 
 <h3 id="registering-type-with-interfaces">Registering Type with interfaces<a class="headerlink" href="#registering-type-with-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>

@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
         xmlns:converters="clr-namespace:NavigationSample.Wpf.Converters"
         xmlns:mvvmLib="http://mvvmlib.com/"
-        mvvmLib:ViewModelLocator.ResolveWindowViewModel="True"
+        mvvmLib:ViewModelLocator.ResolveViewModel="True"
         x:Name="MainWindow"
         mc:Ignorable="d"
         MinHeight="600"
@@ -57,7 +57,7 @@
 
                 <Grid x:Name="Content" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                     <Grid Margin="10">
-                        <ContentControl mvvmLib:RegionManager.ContentRegionName="MainRegion" />
+                        <ContentControl Content="{Binding Navigation.Current}" />
                     </Grid>
                 </Grid>
             </Grid>
@@ -99,7 +99,7 @@
 
         <StackPanel Background="{StaticResource StatusBarBackground}" VerticalAlignment="Bottom" Height="22" Grid.Row="1">
             <StatusBarItem  VerticalAlignment="Center" HorizontalAlignment="Right">
-                <ProgressBar IsIndeterminate="True"  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Width="100" Height="16" />
+                <ProgressBar IsIndeterminate="True"  Visibility="Collapsed" Width="100" Height="16" />
             </StatusBarItem>
         </StackPanel>
     </Grid>

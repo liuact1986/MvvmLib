@@ -22,8 +22,11 @@ ___
 
 
 ## MvvmLib.IoC (Dependency Injection) [netstandard 2.0, net 4.5]
-  * **Injector**: allows to **register Types, Singletons, Instances, values, auto discover types, etc.**.
 
+  * Allows to **register** and **resolve** Type, Singleton, Instance, factory, values
+  * **Auto discover** types and types for interfaces not registered
+  * **Inject** properties and manage circular references
+  * Attributes: **PreferredConstructor**, **PreferredImplementation** (for interfaces), **Dependency** (for properties) 
 
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 

@@ -16,6 +16,7 @@ namespace MvvmLib.IoC
         private readonly ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>> registrations;
         private readonly TypeInformationManager typeInformationManager;
         private readonly ObjectCreationManager objectCreationManager;
+        private readonly ScannedTypeManager scannedTypeManager;
         private readonly SingletonCache singletonCache;
 
         private bool autoDiscovery;
@@ -83,8 +84,18 @@ namespace MvvmLib.IoC
         /// <param name="typeInformationManager">The type information manager</param>
         /// <param name="objectCreationManager">The object creation manager</param>
         /// <param name="singletonCache">The cache for singletons</param>
-        internal Injector(TypeInformationManager typeInformationManager, ObjectCreationManager objectCreationManager, SingletonCache singletonCache)
+        /// <param name="scannedTypeManager">The scanned type manager</param>
+        protected internal Injector(TypeInformationManager typeInformationManager, ObjectCreationManager objectCreationManager, SingletonCache singletonCache, ScannedTypeManager scannedTypeManager)
         {
+            if (typeInformationManager == null)
+                throw new ArgumentNullException(nameof(typeInformationManager));
+            if (objectCreationManager == null)
+                throw new ArgumentNullException(nameof(objectCreationManager));
+            if (singletonCache == null)
+                throw new ArgumentNullException(nameof(singletonCache));
+            if (scannedTypeManager == null)
+                throw new ArgumentNullException(nameof(scannedTypeManager));
+
             registrations = new ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>>();
             registered = new List<EventHandler<RegistrationEventArgs>>();
             resolved = new List<EventHandler<ResolutionEventArgs>>();
@@ -92,7 +103,7 @@ namespace MvvmLib.IoC
             this.typeInformationManager = typeInformationManager;
             this.objectCreationManager = objectCreationManager;
             this.singletonCache = singletonCache;
-
+            this.scannedTypeManager = scannedTypeManager;
             this.autoDiscovery = true;
         }
 
@@ -100,10 +111,8 @@ namespace MvvmLib.IoC
         /// Creates the injector class.
         /// </summary>
         public Injector()
-            : this(new TypeInformationManager(), new ObjectCreationManager(), new SingletonCache())
+            : this(new TypeInformationManager(), new ObjectCreationManager(), new SingletonCache(), new ScannedTypeManager())
         { }
-
-
 
         #region Registration
 
@@ -420,7 +429,13 @@ namespace MvvmLib.IoC
             if (!IsRegistered(type, name) && autoDiscovery)
             {
                 if (type.IsInterface)
-                    throw new ResolutionFailedException($"Cannot resolve the unregistered type for \"{type.Name}\"");
+                {
+                    var implementationType = scannedTypeManager.FindImplementationType(type);
+                    if (implementationType == null)
+                        throw new ResolutionFailedException($"Unable to resolve the type for the interface not registered \"{type.Name}\"");
+
+                    RegisterType(type, name, implementationType);
+                }
 
                 if (IsValueContainerType(type))
                     throw new ResolutionFailedException($"Invalid registration type \"{type.Name}\"");
