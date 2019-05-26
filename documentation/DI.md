@@ -246,9 +246,7 @@ var instances = service.GetAllInstances<Item>();
 
 ## AutoDiscovery
 
-By default, the injector try to resolve automatically non registered types.
-
-To change this behavior:
+By default, the non registered types are resolved. To change this behavior:
 
 ```cs
 injector.AutoDiscovery = false;
@@ -256,9 +254,7 @@ injector.AutoDiscovery = false;
 
 ## NonPublicConstructors and NonPublicProperties
 
-By default, the injector find public and private constructors/ properties
-
-To change this behavior:
+By default, non public constructors/ properties are found. To change this behavior:
 
 ```cs
 injector.NonPublicConstructors = false;
@@ -292,7 +288,7 @@ public class MyViewModel
 
 ## DelegateFactoryType
 
-By default, the injector use the ExpressionDelegateFactoryType (create instances with expressions linq)
+The **ExpressionDelegateFactoryType** is used by **default** to create instances (Expressions **Linq**).
 
 Change to ReflectionDelegateFactory (less performant)
 

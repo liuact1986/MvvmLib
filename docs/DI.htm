@@ -287,14 +287,12 @@ var item2 = injector.GetInstance&lt;Item&gt;(&quot;my key&quot;);
 </code></pre>
 
 <h2 id="autodiscovery">AutoDiscovery<a class="headerlink" href="#autodiscovery" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>By default, the injector try to resolve automatically non registered types.</p>
-<p>To change this behavior:</p>
+<p>By default, the non registered types are resolved. To change this behavior:</p>
 <pre><code class="cs">injector.AutoDiscovery = false;
 </code></pre>
 
 <h2 id="nonpublicconstructors-and-nonpublicproperties">NonPublicConstructors and NonPublicProperties<a class="headerlink" href="#nonpublicconstructors-and-nonpublicproperties" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>By default, the injector find public and private constructors/ properties</p>
-<p>To change this behavior:</p>
+<p>By default, non public constructors/ properties are found. To change this behavior:</p>
 <pre><code class="cs">injector.NonPublicConstructors = false;
 injector.NonPublicProperties = false;
 </code></pre>
@@ -322,7 +320,7 @@ injector.NonPublicProperties = false;
 </code></pre>
 
 <h2 id="delegatefactorytype">DelegateFactoryType<a class="headerlink" href="#delegatefactorytype" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>By default, the injector use the ExpressionDelegateFactoryType (create instances with expressions linq)</p>
+<p>The <strong>ExpressionDelegateFactoryType</strong> is used by <strong>default</strong> to create instances (Expressions <strong>Linq</strong>).</p>
 <p>Change to ReflectionDelegateFactory (less performant)</p>
 <pre><code class="cs">injector.DelegateFactoryType = DelegateFactoryType.Reflection;
 </code></pre>
