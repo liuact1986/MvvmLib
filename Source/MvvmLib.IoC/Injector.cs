@@ -436,11 +436,13 @@ namespace MvvmLib.IoC
 
                     RegisterType(type, name, implementationType);
                 }
+                else
+                {
+                    if (IsValueContainerType(type))
+                        throw new ResolutionFailedException($"Invalid registration type \"{type.Name}\"");
 
-                if (IsValueContainerType(type))
-                    throw new ResolutionFailedException($"Invalid registration type \"{type.Name}\"");
-
-                RegisterType(type, name);
+                    RegisterType(type, name);
+                }
             }
         }
 
@@ -503,7 +505,7 @@ namespace MvvmLib.IoC
                     }
                     else
                     {
-                        this.RegisterType(parameterType);
+                        this.TryRegisterTypeIfNotRegistered(parameterType, DefaultName);
                         var registrationEntry = this.registrations[parameterType].Last();
                         return this.DoGetInstance(registrationEntry.Value, parameterType, registrationEntry.Key);
                     }

@@ -19,14 +19,15 @@ namespace MvvmLib.Navigation
         private static readonly Func<Type, Type> defaultViewTypeToViewModelTypeResolver =
              viewType =>
              {
-                 var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
+                 var assemblyName = viewType.GetTypeInfo().Assembly.FullName;
 
-                 var viewName = viewType.FullName;
-                 viewName = viewName.Replace(".Views.", ".ViewModels.");
-                 var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
-                 var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
+                 var viewFullName = viewType.FullName;
+                 viewFullName = viewFullName.Replace(".Views.", ".ViewModels.");
+                 var suffix = viewFullName.EndsWith("View") ? "Model" : "ViewModel";
+                 var viewModelAssemblyQualifiedName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewFullName, suffix, assemblyName);
 
-                 return Type.GetType(viewModelName);
+                 var viewModelType = Type.GetType(viewModelAssemblyQualifiedName);
+                 return viewModelType;
              };
 
         /// <summary>

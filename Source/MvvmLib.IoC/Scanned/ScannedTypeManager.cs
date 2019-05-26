@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace MvvmLib.IoC
@@ -54,8 +53,8 @@ namespace MvvmLib.IoC
             if (!interfaceType.IsInterface)
                 throw new InvalidOperationException($"An interface is expected. Current \"{interfaceType}\"");
 
-            var implementationTypes = GetAssembly(interfaceType.GetTypeInfo().Assembly).GetTypes().ThatImplement(interfaceType); //.Where(t => t.GetInterfaces().Contains(interfaceType));
-            int count = implementationTypes.Count();
+            var implementationTypes = GetAssembly(interfaceType.GetTypeInfo().Assembly).GetTypes().ThatImplement(interfaceType);
+            int count = implementationTypes.Count;
             if (count == 1)
             {
                 return implementationTypes[0].Type;

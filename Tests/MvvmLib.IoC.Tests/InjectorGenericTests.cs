@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
 using MvvmLib.IoC.Tests;
+using MvvmLib.IoC.Tests.Scanned;
 
 namespace MvvmLib.Tests.IoC
 {
@@ -21,7 +22,7 @@ namespace MvvmLib.Tests.IoC
             var o = new ObjectCreationManager();
             //var service = new Injector(new TypeInformationManager(), o, new SingletonCache());
             var service = Activator.CreateInstance(typeof(Injector),
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { new TypeInformationManager(), o, new SingletonCache() }, null)
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { new TypeInformationManager(), o, new SingletonCache(), new ScannedTypeManager() }, null)
                 as Injector;
 
             Assert.AreEqual(DelegateFactoryType.Expression, o.DelegateFactoryType);
@@ -834,6 +835,174 @@ namespace MvvmLib.Tests.IoC
             Assert.AreEqual(i1b, i3b);
         }
 
+        [TestMethod]
+        public void Auto_Registering_With_Interface()
+        {
+            var injector = new Injector();
+            var instance = injector.GetInstance<IMyAwesomeService>();
+
+            Assert.AreEqual(typeof(MyAwesomeService), instance.GetType());
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Interface_With_PreferredImplementation_Attribute()
+        {
+            var injector = new Injector();
+            var instance = injector.GetInstance<IMyAwesomeServiceB>();
+
+            Assert.AreEqual(typeof(MyAwesomeServiceB2), instance.GetType());
+        }
+
+        [TestMethod]
+        public void Auto_Registering_Cannot_Resolve_Multiple_Implementation_WIthout_Attribute()
+        {
+            var injector = new Injector();
+            bool failed = false;
+            string error = null;
+            try
+            {
+                var instance = injector.GetInstance<IMyAwesomeServiceC>();
+            }
+            catch (Exception ex)
+            {
+                failed = true;
+                error = ex.Message;
+            }
+
+            Assert.AreEqual(true, failed);
+            Assert.AreEqual("Unable to resolve the type for the interface not registered \"IMyAwesomeServiceC\"", error);
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Interface_That_Have_No_Implemntation()
+        {
+            var injector = new Injector();
+            bool failed = false;
+            string error = null;
+            try
+            {
+                var instance = injector.GetInstance<IMYInterfaceWithNoImplementation>();
+            }
+            catch (Exception ex)
+            {
+                failed = true;
+                error = ex.Message;
+            }
+
+            Assert.AreEqual(true, failed);
+            Assert.AreEqual("Unable to resolve the type for the interface not registered \"IMYInterfaceWithNoImplementation\"", error);
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Interface_Inherit_From_Interface()
+        {
+            var injector = new Injector();
+            var instance = injector.GetInstance<IMyChildInterfaceA>();
+
+            Assert.AreEqual(typeof(MyChildA), instance.GetType());
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Base_Interface()
+        {
+            var injector = new Injector();
+            var instance = injector.GetInstance<IMyBaseInterface>();
+
+            Assert.AreEqual(typeof(MyChildA), instance.GetType());
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Base_Interface_With_Many_Interface_Implementation()
+        {
+            var injector = new Injector();
+            bool failed = false;
+            string error = null;
+            try
+            {
+                var instance = injector.GetInstance<IMyBaseInterfaceB>();
+            }
+            catch (Exception ex)
+            {
+                failed = true;
+                error = ex.Message;
+            }
+
+            Assert.AreEqual(true, failed);
+            Assert.AreEqual("Unable to resolve the type for the interface not registered \"IMyBaseInterfaceB\"", error);
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Base_Interface_With_Each_Interface_And_Implementation()
+        {
+            var injector = new Injector();
+            var instance1 = injector.GetInstance<IMyChildInterfaceB1>();
+            Assert.AreEqual(typeof(MyChildB1), instance1.GetType());
+
+            var instance2 = injector.GetInstance<IMyChildInterfaceB2>();
+            Assert.AreEqual(typeof(MyChildB2), instance2.GetType());
+        }
+
+        [TestMethod]
+        public void Auto_Registering_With_Base_Interface_Resolve_Injected_Parameter_With_Interface()
+        {
+            var injector = new Injector();
+            var instance = injector.GetInstance<IMyServiceC>();
+            Assert.AreEqual(typeof(MyServiceC), instance.GetType());
+            Assert.IsNotNull(((MyServiceC) instance).ChildA);
+        }
+    }
+
+    // A
+    public interface IMyBaseInterface { }
+
+    public interface IMyChildInterfaceA : IMyBaseInterface
+    {
+
+    }
+
+    public class MyChildA : IMyChildInterfaceA
+    {
+
+    }
+
+    // 
+
+    public interface IMYInterfaceWithNoImplementation
+    {
+
+    }
+
+    // B
+    public interface IMyBaseInterfaceB { }
+
+    public interface IMyChildInterfaceB1 : IMyBaseInterfaceB
+    { }
+
+    public interface IMyChildInterfaceB2 : IMyBaseInterfaceB
+    { }
+
+    public class MyChildB1 : IMyChildInterfaceB1
+    {
+
+    }
+
+    public class MyChildB2 : IMyChildInterfaceB2
+    {
+
+    }
+
+    // C
+
+    public interface IMyServiceC { }
+
+    public class MyServiceC : IMyServiceC
+    {
+        public IMyChildInterfaceA ChildA { get; }
+
+        public MyServiceC(IMyChildInterfaceA childA)
+        {
+            ChildA = childA;
+        }
     }
 
     public interface ILookupDataServiceType1
@@ -855,11 +1024,11 @@ namespace MvvmLib.Tests.IoC
     {
         public string Message1 { get; set; }
         public string Message2 { get; set; }
-        public string Message3 { get; set; } 
+        public string Message3 { get; set; }
 
         public LookupDataService()
         {
-            Message1  = "default 1";
+            Message1 = "default 1";
             Message2 = "default 2";
             Message3 = "default 3";
         }
