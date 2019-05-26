@@ -166,7 +166,7 @@ injector.RegisterType&lt;WithFunc&gt;();
 var instance = service.GetInstance&lt;WithFunc&gt;(); 
 </code></pre>
 
-<p>The injector resolves not registered <strong>interfaces</strong>. For many implementations use the <strong>PreferredImplementationAttribute</strong> Example:</p>
+<p>The injector resolves not registered types for <strong>interfaces</strong>. For many implementations use the <strong>PreferredImplementationAttribute</strong> Example:</p>
 <pre><code class="cs">public interface IMyService
 { }
 
