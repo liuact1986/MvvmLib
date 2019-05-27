@@ -7,6 +7,7 @@
 * **INavigatable**: allows views and _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionChangedBehavior**: allow to select a view 
+* **Navigation Behaviors**: **SelectionChangedBehavior** and **EventToCommandBehavior**
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **BootstrapperBase**: base class for Bootstrapper
 
@@ -401,10 +402,18 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
 **SelectionChangedBehavior** allow to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
 
 ```xml
-<ListView ItemsSource="{Binding DetailsSource.Items}"
-          SelectedItem="{Binding DetailsSource.SelectedItem}"
-          mvvmLib:NavigationInteraction.SelectionChangedBehavior="True"
-          SelectionMode="Multiple" />
+<ListView x:Name="ListView1" 
+            ItemsSource="{Binding DetailsSource.Items}"
+            SelectedItem="{Binding DetailsSource.SelectedItem}"
+            SelectionMode="Multiple" 
+            Grid.Row="2" 
+            Background="Transparent" 
+            HorizontalContentAlignment="Stretch"
+            ItemContainerStyle="{StaticResource ListViewItemStyle}">
+    <mvvmLib:NavigationInteraction.Behaviors>
+        <mvvmLib:SelectionChangedBehavior />
+    </mvvmLib:NavigationInteraction.Behaviors>
+</ListView>
 ```
 
 ## Create a Bootsrapper
@@ -615,4 +624,44 @@ The "ControlledAnimation" avoid to set the target and the target property of the
         </mvvmLib:ParallelAnimation>
     </mvvmLib:TransitioningItemsControl.ExitAnimation>
 </mvvmLib:TransitioningItemsControl>
+```
+
+## InvokeToCommandBehavior
+
+> Allows to bind an event to a command.
+
+Sample button "Click" event binded to a ViewModel command
+
+```xml
+<Button Content="Click event">
+    <mvvmLib:NavigationInteraction.Behaviors>
+        <mvvmLib:EventToCommandBehavior EventName="Click" Command="{Binding SayHelloCommand}" CommandParameter="World"/>
+    </mvvmLib:NavigationInteraction.Behaviors>
+</Button>
+```
+
+ViewModel
+
+```cs
+public class ViewAViewModel : BindableBase
+{
+    private string message;
+    public string Message
+    {
+        get { return message; }
+        set { SetProperty(ref message, value); }
+    }
+
+    public ICommand SayHelloCommand { get; }
+
+    public ViewAViewModel()
+    {
+        SayHelloCommand = new RelayCommand<string>(SayHello);
+    }
+
+    private void SayHello(string value)
+    {
+        Message = $"Hello {value}! {DateTime.Now.ToLongTimeString()}";
+    }
+}
 ```

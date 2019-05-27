@@ -61,6 +61,8 @@
 
 <li class="tocentry"><a href="#transitioningitemscontrol">TransitioningItemsControl</a></li>
 
+<li class="tocentry"><a href="#invoketocommandbehavior">InvokeToCommandBehavior</a></li>
+
 </ul>
 <li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
 </li>
@@ -106,6 +108,7 @@
 <li><strong>INavigatable</strong>: allows views and <em>view models</em> to be notified on navigate</li>
 <li><strong>ICanActivate</strong>, <strong>ICanDeactivate</strong>: allow to cancel navigation</li>
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionChangedBehavior</strong>: allow to select a view </li>
+<li><strong>Navigation Behaviors</strong>: <strong>SelectionChangedBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
 <li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for <strong>views</strong></li>
 <li><strong>BootstrapperBase</strong>: base class for Bootstrapper</li>
 </ul>
@@ -501,10 +504,18 @@ public class ViewBViewModel : DetailsViewModelBase
 </code></pre>
 
 <p><strong>SelectionChangedBehavior</strong> allow to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.</p>
-<pre><code class="xml">&lt;ListView ItemsSource=&quot;{Binding DetailsSource.Items}&quot;
-          SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;
-          mvvmLib:NavigationInteraction.SelectionChangedBehavior=&quot;True&quot;
-          SelectionMode=&quot;Multiple&quot; /&gt;
+<pre><code class="xml">&lt;ListView x:Name=&quot;ListView1&quot; 
+            ItemsSource=&quot;{Binding DetailsSource.Items}&quot;
+            SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;
+            SelectionMode=&quot;Multiple&quot; 
+            Grid.Row=&quot;2&quot; 
+            Background=&quot;Transparent&quot; 
+            HorizontalContentAlignment=&quot;Stretch&quot;
+            ItemContainerStyle=&quot;{StaticResource ListViewItemStyle}&quot;&gt;
+    &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
+        &lt;mvvmLib:SelectionChangedBehavior /&gt;
+    &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
+&lt;/ListView&gt;
 </code></pre>
 
 <h2 id="create-a-bootsrapper">Create a Bootsrapper<a class="headerlink" href="#create-a-bootsrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -695,6 +706,42 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
         &lt;/mvvmLib:ParallelAnimation&gt;
     &lt;/mvvmLib:TransitioningItemsControl.ExitAnimation&gt;
 &lt;/mvvmLib:TransitioningItemsControl&gt;
+</code></pre>
+
+<h2 id="invoketocommandbehavior">InvokeToCommandBehavior<a class="headerlink" href="#invoketocommandbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to bind an event to a command.</p>
+</blockquote>
+<p>Sample button &quot;Click&quot; event binded to a ViewModel command</p>
+<pre><code class="xml">&lt;Button Content=&quot;Click event&quot;&gt;
+    &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
+        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;Click&quot; Command=&quot;{Binding SayHelloCommand}&quot; CommandParameter=&quot;World&quot;/&gt;
+    &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
+&lt;/Button&gt;
+</code></pre>
+
+<p>ViewModel</p>
+<pre><code class="cs">public class ViewAViewModel : BindableBase
+{
+    private string message;
+    public string Message
+    {
+        get { return message; }
+        set { SetProperty(ref message, value); }
+    }
+
+    public ICommand SayHelloCommand { get; }
+
+    public ViewAViewModel()
+    {
+        SayHelloCommand = new RelayCommand&lt;string&gt;(SayHello);
+    }
+
+    private void SayHello(string value)
+    {
+        Message = $&quot;Hello {value}! {DateTime.Now.ToLongTimeString()}&quot;;
+    }
+}
 </code></pre>
 
 

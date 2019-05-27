@@ -30,6 +30,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **INavigatable**: allows views and _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionChangedBehavior**: allow to select a view 
+* **Navigation Behaviors**: **SelectionChangedBehavior** and **EventToCommandBehavior**
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **BootstrapperBase**: base class for Bootstrapper
 
