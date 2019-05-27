@@ -53,10 +53,13 @@
     <Compile Include="Animation\ControlledAnimation.cs" />
     <Compile Include="Animation\ParallelAnimation.cs" />
     <Compile Include="Animation\StoryboardAccessor.cs" />
+    <Compile Include="Behavior\AssociatableCollection.cs" />
+    <Compile Include="Behavior\EventToCommandBehavior.cs" />
     <Compile Include="Behavior\IAssociatedObject.cs" />
     <Compile Include="Behavior\NavigationBehavior.cs" />
     <Compile Include="Behavior\NavigationBehaviorCollection.cs" />
     <Compile Include="Behavior\NavigationInteraction.cs" />
+    <Compile Include="Behavior\SelectionChangedBehavior.cs" />
     <Compile Include="BootstrapperBase.cs" />
     <Compile Include="Controls\AnimatableContentControl.cs" />
     <Compile Include="Controls\ReadOnlyCollection.cs" />
@@ -84,7 +87,6 @@
     <Compile Include="NavigationSource.cs" />
     <Compile Include="NavigationType.cs" />
     <Compile Include="SelectableRegistration.cs" />
-    <Compile Include="Behavior\SelectionChangedBehavior.cs" />
     <Compile Include="SharedSource\ISharedSource.cs" />
     <Compile Include="SharedSource\SharedSource.cs" />
     <Compile Include="SharedSource\SharedSourceItemCollection.cs" />

@@ -9,15 +9,16 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class SharedSourceSampleViewModel
+    public class SharedSourceSampleViewModel : SyncTitleViewModel
     {
         public SharedSource<MyItemDetailsViewModel> DetailsSource { get; }
 
         public ICommand AddCommand { get; }
 
         public SharedSourceSampleViewModel(IEventAggregator eventAggregator)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("SharedSource for ItemsControls, Selectors, etc.");
+            this.Title = "SharedSource for ItemsControls, Selectors, etc.";
 
             DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
             {

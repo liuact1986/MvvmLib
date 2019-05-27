@@ -28,18 +28,14 @@
         <ListView x:Name="ListView1" 
                   ItemsSource="{Binding DetailsSource.Items}"
                   SelectedItem="{Binding DetailsSource.SelectedItem}"
-                  mvvmLib:NavigationInteraction.SelectionChangedBehavior="True"
                   SelectionMode="Multiple" 
                   Grid.Row="2" 
                   Background="Transparent" 
                   HorizontalContentAlignment="Stretch"
                   ItemContainerStyle="{StaticResource ListViewItemStyle}">
-            <!--<mvvmLib:NavigationInteraction.Behaviors>
-                <mvvmLib:NavigationBehaviorCollection>
-                    <mvvmLib:SelectionChangedBehavior />
-                </mvvmLib:NavigationBehaviorCollection>
-            </mvvmLib:NavigationInteraction.Behaviors>-->
-            <!-- or  -->
+            <mvvmLib:NavigationInteraction.Behaviors>
+                <mvvmLib:SelectionChangedBehavior />
+            </mvvmLib:NavigationInteraction.Behaviors>
         </ListView>
 
     </Grid>

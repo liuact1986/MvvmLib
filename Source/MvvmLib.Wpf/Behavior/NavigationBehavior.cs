@@ -3,30 +3,35 @@
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The navigation behavior base class.
+    /// The navigation behavior base class. 
+    /// Inherits from <see cref="Freezable"/> <see cref="http://drwpf.com/blog/2008/05/22/leveraging-freezables-to-provide-an-inheritance-context-for-bindings/"/>
     /// </summary>
-    public abstract class NavigationBehavior : DependencyObject
+    public abstract class NavigationBehavior : Freezable, IAssociatedObject
     {
-        private bool isAttached;
         /// <summary>
-        /// Checks if attached.
+        /// The associated dependency object.
         /// </summary>
-        public bool IsAttached
+        protected DependencyObject associatedObject;
+        /// <summary>
+        /// The associated dependency object.
+        /// </summary>
+        public DependencyObject AssociatedObject
         {
-            get { return isAttached; }
+            get { return associatedObject; }
+            set { associatedObject = value; }
         }
 
         /// <summary>
         /// Attaches the behavior.
         /// </summary>
-        public void Attach()
+        public void Attach(DependencyObject associatedObject)
         {
-            isAttached = true;
+            this.associatedObject = associatedObject;
             OnAttach();
         }
 
         /// <summary>
-        /// Detaches th behavior.
+        /// Detaches the behavior.
         /// </summary>
         public void Detach()
         {

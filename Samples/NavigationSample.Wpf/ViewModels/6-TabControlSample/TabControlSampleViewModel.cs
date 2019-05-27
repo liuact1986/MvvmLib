@@ -7,7 +7,7 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class TabControlSampleViewModel : BindableBase
+    public class TabControlSampleViewModel : SyncTitleViewModel
     {
         public SharedSource<IDetailViewModel> DetailsSource { get; }
 
@@ -15,8 +15,9 @@ namespace NavigationSample.Wpf.ViewModels
         public IRelayCommand AddViewModelCommand { get; }
 
         public TabControlSampleViewModel(IEventAggregator eventAggregator, IInjector injector)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+            this.Title = "TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)";
 
             DetailsSource = NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
 

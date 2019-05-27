@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="NavigationSample.Wpf.Views.NavigationBehaviorsSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
+             xmlns:mvvmLib="http://mvvmlib.com/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid Background="{StaticResource PageBackground}">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+        </Grid.Effect>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="EventToCommandBehavior:" FontWeight="SemiBold" FontStyle="Italic" Margin="5"/>
+            <Button Content="Click event" HorizontalAlignment="Left" Margin="5">
+                <mvvmLib:NavigationInteraction.Behaviors>
+                    <mvvmLib:EventToCommandBehavior EventName="Click" Command="{Binding SayHelloCommand}" CommandParameter="World"/>
+                </mvvmLib:NavigationInteraction.Behaviors>
+            </Button>
+            <TextBlock Text="{Binding Message}" Margin="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="SelectionChangedBehavior:" FontWeight="SemiBold" FontStyle="Italic" Margin="5"/>
+            <TextBlock Margin="5">
+             <Hyperlink Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ItemsRegionSampleView}">ListView Sample</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -60,6 +60,7 @@
     <Compile Include="Controls\MaterialDesignIcon.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmLibBootstrapper.cs" />
+    <Compile Include="ViewModels\SyncTitleViewModel.cs" />
     <Compile Include="ViewModels\4-TransitioningItemsControl\AnimationQueueViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\AnimationViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\IDetailViewModel.cs" />
@@ -68,8 +69,9 @@
     <Compile Include="ViewModels\1-MasterDetail\MasterDetailViewModel.cs" />
     <Compile Include="ViewModels\1-MasterDetail\PeopleViewModel.cs" />
     <Compile Include="ViewModels\1-MasterDetail\PersonDetailsViewModel.cs" />
-    <Compile Include="ViewModels\ContentControlNavigationSourceSampleViewModel.cs" />
+    <Compile Include="ViewModels\8-ContentControlNaavigationSource\ContentControlNavigationSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\9-SharedSource\SharedSourceSampleViewModel.cs" />
+    <Compile Include="ViewModels\10-NavigationBehaviors\NavigationBehaviorsSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\TabControlSampleViewModel.cs" />
     <Compile Include="ViewModels\3-TransitioningContentControl\TransitioningContentControlSampleViewModel.cs" />
@@ -111,6 +113,9 @@
     </Compile>
     <Compile Include="Views\9-SharedSource\MyItemDetailsView.xaml.cs">
       <DependentUpon>MyItemDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\10-NavigationBehaviors\NavigationBehaviorsSampleView.xaml.cs">
+      <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
@@ -183,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\9-SharedSource\MyItemDetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\10-NavigationBehaviors\NavigationBehaviorsSampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

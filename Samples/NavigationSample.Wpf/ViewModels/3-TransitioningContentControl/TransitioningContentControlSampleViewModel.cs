@@ -4,11 +4,12 @@ using NavigationSample.Wpf.Events;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class TransitioningContentControlSampleViewModel
+    public class TransitioningContentControlSampleViewModel :SyncTitleViewModel
     {
         public TransitioningContentControlSampleViewModel(IEventAggregator eventAggregator)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("Animation with TransitioningContentControl");
+            this.Title = "Animation with TransitioningContentControl";
         }
     }
 }

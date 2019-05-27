@@ -8,7 +8,7 @@ using System.Windows.Input;
 namespace NavigationSample.Wpf.ViewModels
 {
 
-    public class AnimationQueueViewModel : BindableBase
+    public class AnimationQueueViewModel : SyncTitleViewModel
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -25,8 +25,9 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand CancelCommand { get; set; }
 
         public AnimationQueueViewModel(IEventAggregator eventAggregator)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
+            this.Title = "Animation with TransitioningItemsControl + ControlledAnimation ";
 
             this.MyItems = new ObservableCollection<ItemDetailsViewModel>();
 

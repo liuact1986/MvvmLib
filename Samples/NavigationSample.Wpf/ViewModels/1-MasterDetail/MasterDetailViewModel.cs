@@ -1,18 +1,18 @@
 ﻿using MvvmLib.Message;
 using MvvmLib.Navigation;
-using NavigationSample.Wpf.Events;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class MasterDetailViewModel
+
+    public class MasterDetailViewModel : SyncTitleViewModel
     {
         public NavigationSource Navigation { get; }
 
-        public MasterDetailViewModel(IEventAggregator eventAggregator)
+        public MasterDetailViewModel(IEventAggregator eventAggregator) : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("Master Detail with ISelectable (PersonDetailsViewModel)");
-
+            this.Title = "Master Detail with ISelectable (PersonDetailsViewModel)";
             Navigation = NavigationManager.GetOrCreateNavigationSource("Details");
         }
+
     }
 }

@@ -8,42 +8,49 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// Allows to handle the <see cref="Selector.SelectionChanged"/> event for a <see cref="Selector"/> and set <see cref="IIsSelected"/> for items collection.
     /// </summary>
-    public class SelectionChangedBehavior : NavigationBehavior, IAssociatedObject
+    public class SelectionChangedBehavior : NavigationBehavior
     {
-        private Selector selector;
         /// <summary>
-        /// The <see cref="Selector"/> (ListBox, TabControl, etc.).
+        /// Creates the <see cref="Freezable"/>.
         /// </summary>
-        public DependencyObject AssociatedObject
+        /// <returns>An instance of the <see cref="SelectionChangedBehavior"/></returns>
+        protected override Freezable CreateInstanceCore()
         {
-            get { return selector; }
-            set { selector = value as Selector; }
+            return new SelectionChangedBehavior();
         }
 
         /// <summary>
-        /// Handle the <see cref="Selector.SelectionChanged"/> event to set <see cref="IIsSelected"/> for items that implements the interface.
+        /// Handles the <see cref="Selector.SelectionChanged"/> event to set <see cref="IIsSelected"/> for items that implements the interface.
         /// </summary>
         protected override void OnAttach()
         {
-            if (selector == null)
-                throw new ArgumentNullException(nameof(AssociatedObject));
+            CheckAssociatedObjectType();
 
-            selector.SelectionChanged += OnSelectionChanged;
+            ((Selector)associatedObject).SelectionChanged += OnSelectionChanged;
         }
 
         /// <summary>
-        /// Unhandle the <see cref="Selector.SelectionChanged"/> event for the selector.
+        /// Unhandles the <see cref="Selector.SelectionChanged"/> event for the selector.
         /// </summary>
         protected override void OnDetach()
         {
-            if (selector != null)
-                selector.SelectionChanged -= OnSelectionChanged;
+            if (associatedObject != null)
+            {
+                CheckAssociatedObjectType();
+                ((Selector)associatedObject).SelectionChanged -= OnSelectionChanged;
+            }
+        }
+
+        private void CheckAssociatedObjectType()
+        {
+            if (!(associatedObject is Selector))
+                throw new InvalidOperationException($"Selector (ListBox, TabControl, etc.) is expected for the SelectionChangedBehavior. Current \"{associatedObject.GetType().Name}\"");
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // inactive
-            var items = selector.Items;
+            var items = ((Selector)associatedObject).Items;
             foreach (var removedItem in e.RemovedItems)
             {
                 foreach (var item in items)
@@ -74,4 +81,5 @@ namespace MvvmLib.Navigation
             }
         }
     }
+
 }

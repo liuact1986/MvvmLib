@@ -12,4 +12,16 @@ namespace NavigationSample.Wpf.Events
     {
 
     }
+
+    public class NavigateEvent : ParameterizedEvent<NavigateEventArgs>
+    {
+
+    }
+
+    public class NavigateEventArgs
+    {
+        public Type SourceType { get; set; }
+
+        public object Parameter { get; set; }
+    }
 }

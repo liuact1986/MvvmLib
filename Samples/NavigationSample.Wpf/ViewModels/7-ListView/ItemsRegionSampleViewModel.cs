@@ -7,14 +7,15 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ItemsRegionSampleViewModel
+    public class ItemsRegionSampleViewModel : SyncTitleViewModel
     {
         public SharedSource<IDetailViewModel> DetailsSource { get; }
         public IRelayCommand AddCommand { get; }
 
         public ItemsRegionSampleViewModel(IEventAggregator eventAggregator, IInjector injector)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("ListView with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+            this.Title = "ListView with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)";
 
             DetailsSource = NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
 

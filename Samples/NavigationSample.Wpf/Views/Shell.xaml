@@ -10,25 +10,19 @@
         mvvmLib:ViewModelLocator.ResolveViewModel="True"
         x:Name="MainWindow"
         mc:Ignorable="d"
-        MinHeight="600"
-        MinWidth="800"
-        Title="Navigation Sample" Height="600" Width="800">
+        MinHeight="720"
+        MinWidth="1152"
+        Title="Navigation Sample" Height="640" Width="800">
 
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        
+
         <Storyboard x:Key="CloseMenu">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Width)" Storyboard.TargetName="Panel">
-                <EasingDoubleKeyFrame KeyTime="0" Value="260"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="48"/>
-            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimation  Storyboard.TargetName="Panel" Storyboard.TargetProperty="(Grid.Width)" Duration="0:0:0.4" To="48"/>
         </Storyboard>
         <Storyboard x:Key="OpenMenu">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Width)" Storyboard.TargetName="Panel">
-                <EasingDoubleKeyFrame KeyTime="0" Value="48"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="260"/>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
+            <DoubleAnimation  Storyboard.TargetName="Panel" Storyboard.TargetProperty="(Grid.Width)" Duration="0:0:0.4" To="260"/>
+        </Storyboard>        
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -49,10 +43,23 @@
                 </Grid.RowDefinitions>
 
                 <Grid x:Name="Header" Background="{StaticResource PageHeaderBackground}" Height="48">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
                     <Grid.Effect>
                         <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}" />
                     </Grid.Effect>
-                    <TextBlock Text="{Binding Title, FallbackValue='Navigation Sample [WPF]'}" HorizontalAlignment="Center" Foreground="{StaticResource PageHeaderTitleForeground}" VerticalAlignment="Center" FontSize="22" />
+
+                    <Button Command="{Binding Navigation.GoBackCommand}"
+                            Visibility="{Binding Navigation.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Width="60" Style="{StaticResource MaterialDesignFlatButton}">
+                        <local:MaterialDesignIcon Width="24" Height="24" Brush="{StaticResource MenuForeground}" Icon="ArrowLeft" />
+                    </Button>
+                    
+                    <TextBlock Text="{Binding Title, FallbackValue='Navigation Sample [WPF]'}" 
+                               Foreground="{StaticResource PageHeaderTitleForeground}" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Grid.Column="1" />
                 </Grid>
 
                 <Grid x:Name="Content" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
@@ -71,7 +78,7 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <Button x:Name="HamburgerButton" Background="{StaticResource HamburgerButtonBackground}" Width="48" Height="48" Style="{StaticResource MaterialDesignFlatButton}" 
+                <Button x:Name="HamburgerButton" Background="{DynamicResource HamburgerButtonBackground}" Width="48" Height="48" Style="{StaticResource MaterialDesignFlatButton}" 
                         HorizontalAlignment="Left" 
                         Click="OnHamburgerButtonClick">
                     <local:MaterialDesignIcon Width="24" Height="24" Brush="White" Icon="Menu" />

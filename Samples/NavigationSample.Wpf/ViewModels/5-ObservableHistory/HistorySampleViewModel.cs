@@ -6,13 +6,14 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class HistorySampleViewModel
+    public class HistorySampleViewModel :SyncTitleViewModel
     {
         public NavigationSource Navigation { get; }
 
         public HistorySampleViewModel(IEventAggregator eventAggregator)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("Observable History");
+            this.Title = "Observable History";
 
             Navigation = NavigationManager.GetNavigationSource("HistorySample");
         }

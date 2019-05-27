@@ -236,6 +236,8 @@ namespace MvvmLib.Navigation
             NavigateToRootCommand.RaiseCanExecuteChanged();
             GoBackCommand.RaiseCanExecuteChanged();
 
+            OnPropertyChanged(nameof(CanGoBack));
+
             foreach (var handler in this.canGoBackChanged)
                 handler(this, EventArgs.Empty);
         }
@@ -243,6 +245,8 @@ namespace MvvmLib.Navigation
         private void OnCanGoForwardChanged(object sender, EventArgs e)
         {
             GoForwardCommand.RaiseCanExecuteChanged();
+
+            OnPropertyChanged(nameof(CanGoForward));
 
             foreach (var handler in this.canGoForwardChanged)
                 handler(this, EventArgs.Empty);

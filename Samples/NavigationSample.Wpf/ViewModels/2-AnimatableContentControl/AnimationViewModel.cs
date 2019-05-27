@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel : BindableBase
+    public class AnimationViewModel : SyncTitleViewModel
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -26,8 +26,9 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand CancelAnimationsCommand { get; }
 
         public AnimationViewModel(IEventAggregator eventAggregator)
+              : base(eventAggregator)
         {
-            eventAggregator.GetEvent<ChangeTitleEvent>().Publish("ContentControl animation with AnimatableContentControl");
+            this.Title = "ContentControl animation with AnimatableContentControl";
 
             Navigation = NavigationManager.GetNavigationSource("AnimationSample");
 
