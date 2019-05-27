@@ -406,9 +406,6 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
             ItemsSource="{Binding DetailsSource.Items}"
             SelectedItem="{Binding DetailsSource.SelectedItem}"
             SelectionMode="Multiple" 
-            Grid.Row="2" 
-            Background="Transparent" 
-            HorizontalContentAlignment="Stretch"
             ItemContainerStyle="{StaticResource ListViewItemStyle}">
     <mvvmLib:NavigationInteraction.Behaviors>
         <mvvmLib:SelectionChangedBehavior />
