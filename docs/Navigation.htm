@@ -61,7 +61,7 @@
 
 <li class="tocentry"><a href="#transitioningitemscontrol">TransitioningItemsControl</a></li>
 
-<li class="tocentry"><a href="#invoketocommandbehavior">InvokeToCommandBehavior</a></li>
+<li class="tocentry"><a href="#eventtocommandbehavior">EventToCommandBehavior</a></li>
 
 </ul>
 <li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
@@ -503,7 +503,7 @@ public class ViewBViewModel : DetailsViewModelBase
 }
 </code></pre>
 
-<p><strong>SelectionChangedBehavior</strong> allow to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.</p>
+<p><strong>SelectionChangedBehavior</strong> allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.</p>
 <pre><code class="xml">&lt;ListView x:Name=&quot;ListView1&quot; 
             ItemsSource=&quot;{Binding DetailsSource.Items}&quot;
             SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;
@@ -589,7 +589,7 @@ public class ViewBViewModel : DetailsViewModelBase
 <ul>
 <li>EntranceAnimation </li>
 <li>ExitAnimation</li>
-<li>Simultaneous (boolean) allow to play simultaneously the animations.</li>
+<li>Simultaneous (boolean) allows to play simultaneously the animations.</li>
 </ul>
 <p>EntranceAnimation: Target &quot;CurrentContentPresenter&quot; 
 ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &quot;PreviousContentPresenter&quot;</p>
@@ -705,7 +705,7 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
 &lt;/mvvmLib:TransitioningItemsControl&gt;
 </code></pre>
 
-<h2 id="invoketocommandbehavior">InvokeToCommandBehavior<a class="headerlink" href="#invoketocommandbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="eventtocommandbehavior">EventToCommandBehavior<a class="headerlink" href="#eventtocommandbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
 <p>Allows to bind an event to a command.</p>
 </blockquote>

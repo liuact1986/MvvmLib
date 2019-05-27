@@ -399,7 +399,7 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
 }
 ```
 
-**SelectionChangedBehavior** allow to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
+**SelectionChangedBehavior** allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
 
 ```xml
 <ListView x:Name="ListView1" 
@@ -498,7 +498,7 @@ public partial class App : Application
 
 * EntranceAnimation 
 * ExitAnimation
-* Simultaneous (boolean) allow to play simultaneously the animations.
+* Simultaneous (boolean) allows to play simultaneously the animations.
 
 EntranceAnimation: Target "CurrentContentPresenter" 
 ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter"
@@ -623,7 +623,7 @@ The "ControlledAnimation" avoid to set the target and the target property of the
 </mvvmLib:TransitioningItemsControl>
 ```
 
-## InvokeToCommandBehavior
+## EventToCommandBehavior
 
 > Allows to bind an event to a command.
 
