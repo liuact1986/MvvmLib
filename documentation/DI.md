@@ -16,7 +16,7 @@
 
 ## Comparison
 
-_For example with Autofac that is a great IoC Container_
+_For example with Autofac that is a great IoC Container_. 
 
 **Autofac**
 
@@ -123,7 +123,7 @@ public class MyService3 : IMyService
 { }
 ```
 
-Its possible to register services (interfaces + implemenation) discovered as singletons:
+Its possible to register services (interfaces + implementation) discovered as singletons:
 
 ```cs
 injector.LifetimeOnDiscovery = LifetimeOnDiscovery.SingletonOnlyForServices;
