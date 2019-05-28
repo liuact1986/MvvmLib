@@ -14,6 +14,21 @@
 * Use the **PreferredImplementation attribute** with many implementation of interfaces.
 
 
+## Comparison
+
+_For example with Autofac that is a great IoC Container_
+
+**Autofac**
+
+<img src="https://res.cloudinary.com/romagny13/image/upload/v1559055307/comp_autofac_bsognl.png" />
+
+**Injector**
+
+<img src="https://res.cloudinary.com/romagny13/image/upload/v1559055307/comp_injector_giz5by.png" />
+
+
+## Registering
+
 Namespace: required for extensions methods
 
 ```cs
@@ -31,8 +46,6 @@ public class MyViewModel
     }
 }
 ```
-
-## Registering
 
 ### Constructor Injection
 
