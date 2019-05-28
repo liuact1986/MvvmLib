@@ -16,7 +16,7 @@
 
 ## Comparison
 
-_For example with Autofac that is a great IoC Container_. 
+_For example with Autofac_
 
 **Autofac**
 

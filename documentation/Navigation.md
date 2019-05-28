@@ -23,7 +23,6 @@ Default **convention**:
     * _view name + "ViewModel"_ (example: ShellViewModel for Shell)
     * Or if the view name ends by "View": _view name + "Model"_ (example: NavigationViewModel for NavigationView)
 
-
 ### Change the convention
 
 Example with "View" and "ViewModel" namespaces

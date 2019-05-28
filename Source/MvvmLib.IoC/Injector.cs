@@ -462,7 +462,7 @@ namespace MvvmLib.IoC
                             RegisterType(type, name, implementationType);
                             break;
                         case LifetimeOnDiscovery.SingletonOnlyForServices:
-                            RegisterType(type, name, implementationType).AsSingleton().AsServiceAutomaticallyDiscovered();
+                            RegisterType(type, name, implementationType).AsSingleton();
                             break;
                     }
                 }
