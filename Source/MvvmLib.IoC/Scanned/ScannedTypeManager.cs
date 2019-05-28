@@ -18,12 +18,23 @@ namespace MvvmLib.IoC
             get { return assemblies; }
         }
 
+        private Dictionary<string, Type> resolvedTypes;
+        /// <summary>
+        /// The resolved types.
+        /// </summary>
+        public Dictionary<string, Type> ResolvedTypes
+        {
+            get { return resolvedTypes; }
+        }
+
+
         /// <summary>
         /// Initializes the ScannedTypeManager.
         /// </summary>
         public ScannedTypeManager()
         {
             assemblies = new Dictionary<string, ScannedAssembly>();
+            resolvedTypes = new Dictionary<string, Type>();
         }
 
         private ScannedAssembly GetAssembly(Assembly assembly)
@@ -53,24 +64,36 @@ namespace MvvmLib.IoC
             if (!interfaceType.IsInterface)
                 throw new InvalidOperationException($"An interface is expected. Current \"{interfaceType}\"");
 
-            var implementationTypes = GetAssembly(interfaceType.GetTypeInfo().Assembly).GetTypes().ThatImplement(interfaceType);
-            int count = implementationTypes.Count;
-            if (count == 1)
+            var interfaceAssemblyQualifiedName = interfaceType.AssemblyQualifiedName;
+            if (resolvedTypes.TryGetValue(interfaceAssemblyQualifiedName, out Type type))
             {
-                return implementationTypes[0].Type;
+                return type;
             }
             else
             {
-                foreach (var implementationType in implementationTypes)
+                var implementationTypes = GetAssembly(interfaceType.GetTypeInfo().Assembly).GetTypes().ThatImplement(interfaceType);
+                int count = implementationTypes.Count;
+                if (count == 1)
                 {
-                    var attribute = implementationType.Type.GetCustomAttribute(typeof(PreferredImplementationAttribute)) as PreferredImplementationAttribute;
-                    if (attribute != null)
+                    var resolvedType = implementationTypes[0].Type;
+                    resolvedTypes[interfaceAssemblyQualifiedName] = resolvedType;
+                    return resolvedType;
+                }
+                else
+                {
+                    foreach (var implementationType in implementationTypes)
                     {
-                        return implementationType.Type;
+                        var attribute = implementationType.Type.GetCustomAttribute(typeof(PreferredImplementationAttribute)) as PreferredImplementationAttribute;
+                        if (attribute != null)
+                        {
+                            var resolvedType = implementationType.Type;
+                            resolvedTypes[interfaceAssemblyQualifiedName] = resolvedType;
+                            return resolvedType;
+                        }
                     }
                 }
+                return null;
             }
-            return null;
         }
     }
 }

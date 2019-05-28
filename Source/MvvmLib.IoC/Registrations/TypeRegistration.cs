@@ -46,6 +46,15 @@ namespace MvvmLib.IoC
             internal set { valueContainer = value; }
         }
 
+        internal bool asServiceAutomaticallyDiscovered;
+        /// <summary>
+        /// Checks if the service have been discovered with <see cref="Injector.AutoDiscovery"/> option.
+        /// </summary>
+        public bool AsServiceAutomaticallyDiscovered
+        {
+            get { return asServiceAutomaticallyDiscovered; }
+        }
+
         /// <summary>
         /// Creates the type registration class.
         /// </summary>

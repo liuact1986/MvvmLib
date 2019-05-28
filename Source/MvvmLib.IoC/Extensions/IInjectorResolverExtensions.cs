@@ -2,6 +2,7 @@
 
 namespace MvvmLib.IoC
 {
+
     /// <summary>
     /// Injector resolution extension methods.
     /// </summary>

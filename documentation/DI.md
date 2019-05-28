@@ -110,6 +110,12 @@ public class MyService3 : IMyService
 { }
 ```
 
+Its possible to register services (interfaces + implemenation) discovered as singletons:
+
+```cs
+injector.LifetimeOnDiscovery = LifetimeOnDiscovery.SingletonOnlyForServices;
+```
+
 ### Registering Type with interfaces
 
 ```cs

@@ -59,5 +59,11 @@ namespace MvvmLib.IoC
             registration.onResolved = action;
             return this;
         }
+
+        internal TypeRegistrationOptions AsServiceAutomaticallyDiscovered()
+        {
+            registration.asServiceAutomaticallyDiscovered = true;
+            return this;
+        }
     }
 }

@@ -950,6 +950,22 @@ namespace MvvmLib.Tests.IoC
             Assert.AreEqual(typeof(MyServiceC), instance.GetType());
             Assert.IsNotNull(((MyServiceC) instance).ChildA);
         }
+
+        [TestMethod]
+        public void GetService_With_Lifetime()
+        {
+            var injector = GetService();
+            var instance = injector.GetInstance<IMyAwesomeService>();
+            Assert.AreEqual(typeof(MyAwesomeService), instance.GetType());
+
+            injector.LifetimeOnDiscovery = LifetimeOnDiscovery.SingletonOnlyForServices;
+
+            var instance2 = injector.GetInstance<IMyAwesomeService>();
+            Assert.AreNotEqual(instance2, instance);
+
+            var instance3 = injector.GetInstance<IMyAwesomeService>();
+            Assert.AreNotEqual(instance3, instance2);
+        }
     }
 
     // A

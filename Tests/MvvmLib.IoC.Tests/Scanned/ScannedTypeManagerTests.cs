@@ -80,6 +80,21 @@ namespace MvvmLib.IoC.Tests.Scanned
             manager.FindImplementationType(typeof(IMyExternalService));
             Assert.AreEqual(2, manager.Assemblies.Count);
         }
+
+        [TestMethod]
+        public void Cache_The_ImplementationType()
+        {
+            var manager = new ScannedTypeManager();
+            var type = manager.FindImplementationType(typeof(IMyAwesomeService));
+            Assert.AreEqual(typeof(MyAwesomeService), type);
+
+            Assert.AreEqual(1, manager.ResolvedTypes.Count);
+            Assert.AreEqual("MvvmLib.IoC.Tests.Scanned.IMyAwesomeService, MvvmLib.IoC.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", typeof(IMyAwesomeService).AssemblyQualifiedName);
+            Assert.AreEqual(type, manager.ResolvedTypes[typeof(IMyAwesomeService).AssemblyQualifiedName]);
+
+            var type2 = manager.FindImplementationType(typeof(IMyAwesomeService));
+            Assert.AreEqual(type2, type);
+        }
     }
 
     // A

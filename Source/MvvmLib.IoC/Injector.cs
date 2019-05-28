@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace MvvmLib.IoC
 {
+
     /// <summary>
     /// Allows to register or discover types, factories, instances then create instances and inject dependencies.
     /// </summary>
@@ -58,6 +59,17 @@ namespace MvvmLib.IoC
             set { this.objectCreationManager.DelegateFactoryType = value; }
         }
 
+        private LifetimeOnDiscovery lifetimeOnDiscovery;
+        /// <summary>
+        /// The lifetime used with <see cref="AutoDiscovery"/> (<see cref="LifetimeOnDiscovery.Transcient"/> by default).
+        /// </summary>
+        public LifetimeOnDiscovery LifetimeOnDiscovery
+        {
+            get { return lifetimeOnDiscovery; }
+            set { lifetimeOnDiscovery = value; }
+        }
+
+
         private readonly List<EventHandler<RegistrationEventArgs>> registered;
         /// <summary>
         /// Invoked on registration.
@@ -99,6 +111,8 @@ namespace MvvmLib.IoC
             registrations = new ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>>();
             registered = new List<EventHandler<RegistrationEventArgs>>();
             resolved = new List<EventHandler<ResolutionEventArgs>>();
+
+            this.lifetimeOnDiscovery = LifetimeOnDiscovery.Transcient;
 
             this.typeInformationManager = typeInformationManager;
             this.objectCreationManager = objectCreationManager;
@@ -364,6 +378,9 @@ namespace MvvmLib.IoC
                     if (this.typeInformationManager.TypeCache.ContainsKey(type))
                         this.typeInformationManager.TypeCache.Remove(type);
 
+                    if (this.scannedTypeManager.ResolvedTypes.ContainsKey(type.AssemblyQualifiedName))
+                        this.scannedTypeManager.ResolvedTypes.Remove(type.AssemblyQualifiedName);
+
                     return true;
                 }
             }
@@ -393,10 +410,15 @@ namespace MvvmLib.IoC
                 if (this.typeInformationManager.TypeCache.ContainsKey(type))
                     this.typeInformationManager.TypeCache.Remove(type);
 
+                if (this.scannedTypeManager.ResolvedTypes.ContainsKey(type.AssemblyQualifiedName))
+                    this.scannedTypeManager.ResolvedTypes.Remove(type.AssemblyQualifiedName);
+
                 return true;
             }
             return false;
         }
+
+
 
         /// <summary>
         /// Unregisters the registration for the type.
@@ -434,7 +456,15 @@ namespace MvvmLib.IoC
                     if (implementationType == null)
                         throw new ResolutionFailedException($"Unable to resolve the type for the interface not registered \"{type.Name}\"");
 
-                    RegisterType(type, name, implementationType);
+                    switch (lifetimeOnDiscovery)
+                    {
+                        case LifetimeOnDiscovery.Transcient:
+                            RegisterType(type, name, implementationType);
+                            break;
+                        case LifetimeOnDiscovery.SingletonOnlyForServices:
+                            RegisterType(type, name, implementationType).AsSingleton().AsServiceAutomaticallyDiscovered();
+                            break;
+                    }
                 }
                 else
                 {

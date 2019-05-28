@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
 using MvvmLib.IoC.Tests;
+using MvvmLib.IoC.Tests.Scanned;
 
 namespace MvvmLib.Tests.IoC
 {
@@ -417,27 +418,27 @@ namespace MvvmLib.Tests.IoC
             Assert.AreEqual("my default value", r1.item.myString);
         }
 
-        [TestMethod]
-        public void AutoDiscory_With_Interface_Fail()
-        {
-            var service = GetService();
+        //[TestMethod]
+        //public void AutoDiscory_With_Interface_Fail()
+        //{
+        //    var service = GetService();
 
-            bool fail = false;
-            string error = "";
+        //    bool fail = false;
+        //    string error = "";
 
-            try
-            {
-                var r1 = service.GetInstance(typeof(IMyService));
-            }
-            catch (Exception ex)
-            {
-                fail = true;
-                error = ex.Message;
-            }
+        //    try
+        //    {
+        //        var r1 = service.GetInstance(typeof(IMyService));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        fail = true;
+        //        error = ex.Message;
+        //    }
 
-            Assert.IsTrue(fail);
-            Assert.AreEqual("Cannot resolve the unregistered type for \"IMyService\"", error);
-        }
+        //    Assert.IsTrue(fail);
+        //    Assert.AreEqual("Cannot resolve the unregistered type for \"IMyService\"", error);
+        //}
 
         [TestMethod]
         public void Not_Resolve_UnregisteredType_WithProperty_ResolveUnregistered_False()
@@ -575,7 +576,7 @@ namespace MvvmLib.Tests.IoC
             var c = new SingletonCache();
 
             var injector = Activator.CreateInstance(typeof(Injector),
-                      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c }, null)
+                      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c, new ScannedTypeManager() }, null)
                       as Injector;
 
             injector.RegisterSingleton<Item>();
@@ -599,7 +600,7 @@ namespace MvvmLib.Tests.IoC
             var o = new ObjectCreationManager();
             var c = new SingletonCache();
             var injector = Activator.CreateInstance(typeof(Injector),
-              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c }, null)
+              BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c, new ScannedTypeManager() }, null)
               as Injector;
 
             var item2 = new Item { myString = "with k1" };
@@ -639,6 +640,7 @@ namespace MvvmLib.Tests.IoC
             Assert.IsFalse(injector.IsRegistered<Item>());
             Assert.IsFalse(injector.IsRegistered<Item>("k1"));
         }
+
 
         //[TestMethod]
         //public void Clear()

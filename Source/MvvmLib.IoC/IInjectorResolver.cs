@@ -14,6 +14,11 @@ namespace MvvmLib.IoC
         bool AutoDiscovery { get; set; }
 
         /// <summary>
+        /// The lifetime used with <see cref="AutoDiscovery"/> (<see cref="LifetimeOnDiscovery.Transcient"/> by default).
+        /// </summary>
+        LifetimeOnDiscovery LifetimeOnDiscovery { get; set; }
+
+        /// <summary>
         /// Allows to include non public constructors.
         /// </summary>
         bool NonPublicConstructors { get; set; }
