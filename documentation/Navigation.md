@@ -110,7 +110,7 @@ Bind the NavigationSource **Current** property to a **ContentControl**
 <ContentControl Content="{Binding Navigation.Current}" />
 ```
 
-The NavigationSource provide some quick Commands
+The NavigationSource provides some quick Commands
 
 ```xml
 <!--Navigate command -->
@@ -325,7 +325,7 @@ Selector (ListBox, TabControl, etc.) :
 </TabControl>
 ```
 
-**Tip**: Use an interface (IDetailViewModel for example) for TabControl that can display multiple views.
+**Tip**: Use an interface (IDetailViewModel for example) for TabControls that can display multiple views.
 
 ```cs
 public interface IDetailsViewModel
@@ -500,14 +500,11 @@ public partial class App : Application
 * Simultaneous (boolean) allows to play simultaneously the animations.
 * CanAnimateOnLoad: allows to cancel animation on load
 
-EntranceAnimation: Target "CurrentContentPresenter" 
-ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter"
-
-
 ```xml
 <mvvmLib:AnimatableContentControl mvvmLib:NavigationManager.SourceName="Main">
     <mvvmLib:AnimatableContentControl.EntranceAnimation>
         <Storyboard>
+            <!-- Target "CurrentContentPresenter"  -->
             <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                              From="400" To="0" Duration="0:0:0.4"  />
@@ -515,6 +512,7 @@ ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousCo
     </mvvmLib:AnimatableContentControl.EntranceAnimation>
     <mvvmLib:AnimatableContentControl.ExitAnimation>
         <Storyboard>
+            <!-- Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter" -->
             <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                              From="0" To="400" Duration="0:0:0.4"  />
@@ -529,18 +527,6 @@ Or Simulatneous
   <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" 
                                     Simultaneous="True"
                                     IsCancelled="{Binding IsCancelled}">
-    <mvvmLib:AnimatableContentControl.ExitAnimation>
-        <Storyboard>
-            <DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
-                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
-                                From="0" To="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" 
-                                Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
-                <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-    </mvvmLib:AnimatableContentControl.ExitAnimation>
     <mvvmLib:AnimatableContentControl.EntranceAnimation>
         <Storyboard>
             <DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
@@ -553,6 +539,18 @@ Or Simulatneous
             </DoubleAnimation>
         </Storyboard>
     </mvvmLib:AnimatableContentControl.EntranceAnimation>
+    <mvvmLib:AnimatableContentControl.ExitAnimation>
+        <Storyboard>
+            <DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                                From="0" To="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" 
+                                Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </mvvmLib:AnimatableContentControl.ExitAnimation>
 </mvvmLib:AnimatableContentControl>
 ```
 

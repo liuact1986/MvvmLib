@@ -191,7 +191,7 @@ View model name:
 <pre><code class="xml">&lt;ContentControl Content=&quot;{Binding Navigation.Current}&quot; /&gt;
 </code></pre>
 
-<p>The NavigationSource provide some quick Commands</p>
+<p>The NavigationSource provides some quick Commands</p>
 <pre><code class="xml">&lt;!--Navigate command --&gt;
 &lt;Button Content=&quot;View A&quot; Command=&quot;{Binding Navigation.NavigateCommand}&quot; CommandParameter=&quot;{x:Type views:ViewA}&quot; /&gt;
 
@@ -439,7 +439,7 @@ await navigation.NavigateToRootAsync();
 &lt;/TabControl&gt;
 </code></pre>
 
-<p><strong>Tip</strong>: Use an interface (IDetailViewModel for example) for TabControl that can display multiple views.</p>
+<p><strong>Tip</strong>: Use an interface (IDetailViewModel for example) for TabControls that can display multiple views.</p>
 <pre><code class="cs">public interface IDetailsViewModel
 {
     string Title { get; set; }
@@ -592,11 +592,10 @@ public class ViewBViewModel : DetailsViewModelBase
 <li>Simultaneous (boolean) allows to play simultaneously the animations.</li>
 <li>CanAnimateOnLoad: allows to cancel animation on load</li>
 </ul>
-<p>EntranceAnimation: Target &quot;CurrentContentPresenter&quot; 
-ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &quot;PreviousContentPresenter&quot;</p>
 <pre><code class="xml">&lt;mvvmLib:AnimatableContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot;&gt;
     &lt;mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
         &lt;Storyboard&gt;
+            &lt;!-- Target &quot;CurrentContentPresenter&quot;  --&gt;
             &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
                              Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
                              From=&quot;400&quot; To=&quot;0&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
@@ -604,6 +603,7 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
     &lt;/mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
     &lt;mvvmLib:AnimatableContentControl.ExitAnimation&gt;
         &lt;Storyboard&gt;
+            &lt;!-- Target &quot;CurrentContentPresenter&quot; or with Simulatenous &quot;PreviousContentPresenter&quot; --&gt;
             &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
                              Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
                              From=&quot;0&quot; To=&quot;400&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
@@ -616,18 +616,6 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
 <pre><code class="xml">  &lt;mvvmLib:AnimatableContentControl Content=&quot;{Binding Navigation.Current}&quot; 
                                     Simultaneous=&quot;True&quot;
                                     IsCancelled=&quot;{Binding IsCancelled}&quot;&gt;
-    &lt;mvvmLib:AnimatableContentControl.ExitAnimation&gt;
-        &lt;Storyboard&gt;
-            &lt;DoubleAnimation  Storyboard.TargetName=&quot;PreviousContentPresenter&quot;
-                                Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
-                                From=&quot;0&quot; To=&quot;{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}&quot; 
-                                Duration=&quot;{Binding ElementName=DuractionComboBox,Path=SelectedItem}&quot;&gt;
-                &lt;DoubleAnimation.EasingFunction&gt;
-                    &lt;SineEase EasingMode=&quot;EaseInOut&quot; /&gt;
-                &lt;/DoubleAnimation.EasingFunction&gt;
-            &lt;/DoubleAnimation&gt;
-        &lt;/Storyboard&gt;
-    &lt;/mvvmLib:AnimatableContentControl.ExitAnimation&gt;
     &lt;mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
         &lt;Storyboard&gt;
             &lt;DoubleAnimation  Storyboard.TargetName=&quot;CurrentContentPresenter&quot;
@@ -640,6 +628,18 @@ ExitAnimation: Target &quot;CurrentContentPresenter&quot; or with Simulatenous &
             &lt;/DoubleAnimation&gt;
         &lt;/Storyboard&gt;
     &lt;/mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
+    &lt;mvvmLib:AnimatableContentControl.ExitAnimation&gt;
+        &lt;Storyboard&gt;
+            &lt;DoubleAnimation  Storyboard.TargetName=&quot;PreviousContentPresenter&quot;
+                                Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
+                                From=&quot;0&quot; To=&quot;{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}&quot; 
+                                Duration=&quot;{Binding ElementName=DuractionComboBox,Path=SelectedItem}&quot;&gt;
+                &lt;DoubleAnimation.EasingFunction&gt;
+                    &lt;SineEase EasingMode=&quot;EaseInOut&quot; /&gt;
+                &lt;/DoubleAnimation.EasingFunction&gt;
+            &lt;/DoubleAnimation&gt;
+        &lt;/Storyboard&gt;
+    &lt;/mvvmLib:AnimatableContentControl.ExitAnimation&gt;
 &lt;/mvvmLib:AnimatableContentControl&gt;
 </code></pre>
 
