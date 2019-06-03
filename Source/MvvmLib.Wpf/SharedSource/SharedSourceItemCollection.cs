@@ -121,9 +121,6 @@ namespace MvvmLib.Navigation
                     return true;
                 }
 
-                // TODO : lien entre control selector, handle selection changed event
-                //  shared source collection items
-
                 await CheckCanActivateOrThrowAsync(item, parameter);
 
                 OnNavigatingTo(item, parameter);
@@ -218,7 +215,7 @@ namespace MvvmLib.Navigation
             int index = IndexOf(item);
             if (index == -1)
             {
-                // throw new Exception("Unable to find the index for the item"); // log
+                Logger.Log($"Unable to find the index for the item \"{item}\"", Category.Warn, Priority.High);
                 return false;
             }
             else

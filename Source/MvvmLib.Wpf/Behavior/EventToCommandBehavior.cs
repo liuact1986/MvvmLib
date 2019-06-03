@@ -113,13 +113,13 @@ namespace MvvmLib.Navigation
             if (EventName == null)
                 throw new InvalidOperationException("The EventName is not provided");
 
-            EventInfo eventInfo = AssociatedObject.GetType().GetRuntimeEvent(EventName);
+            EventInfo eventInfo = associatedObject.GetType().GetRuntimeEvent(EventName);
             if (eventInfo == null)
-                throw new ArgumentException($"Unable to register the '{EventName}' event.");
+                throw new ArgumentException($"Unable to register the \"{EventName}\" event.");
 
             MethodInfo methodInfo = typeof(EventToCommandBehavior).GetTypeInfo().GetDeclaredMethod(nameof(HandleEvent));
             eventHandler = methodInfo.CreateDelegate(eventInfo.EventHandlerType, this);
-            eventInfo.AddEventHandler(AssociatedObject, eventHandler);
+            eventInfo.AddEventHandler(associatedObject, eventHandler);
         }
 
         private void HandleEvent(object sender, object eventArgs)
@@ -145,9 +145,9 @@ namespace MvvmLib.Navigation
             if (EventName == null || eventHandler == null)
                 return;
 
-            EventInfo eventInfo = AssociatedObject.GetType().GetRuntimeEvent(EventName);
+            EventInfo eventInfo = associatedObject.GetType().GetRuntimeEvent(EventName);
             if (eventInfo == null)
-                throw new ArgumentException($"Unable to register the '{EventName}' event.");
+                throw new ArgumentException($"Unable to unregister the \"{EventName}\" event.");
 
             eventInfo.RemoveEventHandler(AssociatedObject, eventHandler);
             eventHandler = null;

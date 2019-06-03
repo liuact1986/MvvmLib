@@ -51,7 +51,7 @@
 
 <li class="tocentry"><a href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.</a></li>
 
-<li class="tocentry"><a href="#iisselected-iselectable-and-selectionchangedbehavior">IIsSelected, ISelectable and SelectionChangedBehavior</a></li>
+<li class="tocentry"><a href="#iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior</a></li>
 
 <li class="tocentry"><a href="#create-a-bootsrapper">Create a Bootsrapper</a></li>
 
@@ -107,8 +107,8 @@
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
 <li><strong>INavigatable</strong>: allows views and <em>view models</em> to be notified on navigate</li>
 <li><strong>ICanActivate</strong>, <strong>ICanDeactivate</strong>: allow to cancel navigation</li>
-<li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionChangedBehavior</strong>: allow to select a view </li>
-<li><strong>Navigation Behaviors</strong>: <strong>SelectionChangedBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
+<li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
+<li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
 <li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for <strong>views</strong></li>
 <li><strong>BootstrapperBase</strong>: base class for Bootstrapper</li>
 </ul>
@@ -472,7 +472,7 @@ public class ViewBViewModel : DetailsViewModelBase
 }
 </code></pre>
 
-<h2 id="iisselected-iselectable-and-selectionchangedbehavior">IIsSelected, ISelectable and SelectionChangedBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionchangedbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Bind the Items collection and the SelectedItem of the SharedSource is easy.</p>
 <p><strong>IIsSelected</strong> allows to be notified from ViewModel of selection.</p>
 <pre><code class="cs">public class ViewCViewModel : DetailsViewModelBase, IIsSelected
@@ -503,14 +503,14 @@ public class ViewBViewModel : DetailsViewModelBase
 }
 </code></pre>
 
-<p><strong>SelectionChangedBehavior</strong> allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.</p>
+<p><strong>SelectionSyncBehavior</strong> allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.</p>
 <pre><code class="xml">&lt;ListView x:Name=&quot;ListView1&quot; 
             ItemsSource=&quot;{Binding DetailsSource.Items}&quot;
             SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;
             SelectionMode=&quot;Multiple&quot; 
             ItemContainerStyle=&quot;{StaticResource ListViewItemStyle}&quot;&gt;
     &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
-        &lt;mvvmLib:SelectionChangedBehavior /&gt;
+        &lt;mvvmLib:SelectionSyncBehavior /&gt;
     &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
 &lt;/ListView&gt;
 </code></pre>

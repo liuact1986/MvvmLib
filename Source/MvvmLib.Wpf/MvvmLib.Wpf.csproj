@@ -59,7 +59,7 @@
     <Compile Include="Behavior\NavigationBehavior.cs" />
     <Compile Include="Behavior\NavigationBehaviorCollection.cs" />
     <Compile Include="Behavior\NavigationInteraction.cs" />
-    <Compile Include="Behavior\SelectionChangedBehavior.cs" />
+    <Compile Include="Behavior\SelectionSyncBehavior.cs" />
     <Compile Include="BootstrapperBase.cs" />
     <Compile Include="Controls\AnimatableContentControl.cs" />
     <Compile Include="Controls\ReadOnlyCollection.cs" />

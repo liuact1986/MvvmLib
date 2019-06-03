@@ -6,8 +6,8 @@
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **INavigatable**: allows views and _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
-* **IIsSelected**, **ISelectable**, **SelectionChangedBehavior**: allow to select a view 
-* **Navigation Behaviors**: **SelectionChangedBehavior** and **EventToCommandBehavior**
+* **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
+* **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **BootstrapperBase**: base class for Bootstrapper
 
@@ -360,7 +360,7 @@ public class ViewBViewModel : DetailsViewModelBase
 }
 ```
 
-## IIsSelected, ISelectable and SelectionChangedBehavior
+## IIsSelected, ISelectable and SelectionSyncBehavior
 
 Bind the Items collection and the SelectedItem of the SharedSource is easy.
 
@@ -398,7 +398,7 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
 }
 ```
 
-**SelectionChangedBehavior** allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
+**SelectionSyncBehavior** allows to notify all ViewModels (that implements IIsSelected) for a ListView with selection mode Multiple for example.
 
 ```xml
 <ListView x:Name="ListView1" 
@@ -407,7 +407,7 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
             SelectionMode="Multiple" 
             ItemContainerStyle="{StaticResource ListViewItemStyle}">
     <mvvmLib:NavigationInteraction.Behaviors>
-        <mvvmLib:SelectionChangedBehavior />
+        <mvvmLib:SelectionSyncBehavior />
     </mvvmLib:NavigationInteraction.Behaviors>
 </ListView>
 ```

@@ -10,7 +10,7 @@ namespace MvvmLib.Navigation
     {
         private const string DefaultFrameName = "__default__";
 
-        static Dictionary<string, KeyValuePair<Frame, INavigationService>> navigationServices
+        private static Dictionary<string, KeyValuePair<Frame, INavigationService>> navigationServices
             = new Dictionary<string, KeyValuePair<Frame, INavigationService>>();
 
         /// <summary>
@@ -82,7 +82,8 @@ namespace MvvmLib.Navigation
         /// <returns>The navigation service</returns>
         public INavigationService GetNamed(string name)
         {
-            if (!IsRegistered(name)){ throw new NavigationException("No navigation service with the name \"" + name + "\" registered"); }
+            if (!IsRegistered(name))
+                throw new NavigationException("No navigation service with the name \"" + name + "\" registered"); 
 
             return navigationServices[name].Value;
         }

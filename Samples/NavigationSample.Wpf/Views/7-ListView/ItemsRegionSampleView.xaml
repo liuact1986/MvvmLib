@@ -23,7 +23,7 @@
             <Button Content="Add ViewModel D" Command="{Binding AddCommand}" CommandParameter="{x:Type viewModels:ViewDViewModel}" Margin="5" />
         </WrapPanel>
         
-        <TextBlock Text="Selection Mode multiple + SelectionChangedBehavior" FontSize="14" FontStyle="Italic" Margin="5" Grid.Row="1"/>
+        <TextBlock Text="Selection Mode multiple + SelectionSyncBehavior" FontSize="14" FontStyle="Italic" Margin="5" Grid.Row="1"/>
 
         <ListView x:Name="ListView1" 
                   ItemsSource="{Binding DetailsSource.Items}"
@@ -34,7 +34,7 @@
                   HorizontalContentAlignment="Stretch"
                   ItemContainerStyle="{StaticResource ListViewItemStyle}">
             <mvvmLib:NavigationInteraction.Behaviors>
-                <mvvmLib:SelectionChangedBehavior />
+                <mvvmLib:SelectionSyncBehavior />
             </mvvmLib:NavigationInteraction.Behaviors>
         </ListView>
 

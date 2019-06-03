@@ -20,16 +20,27 @@
 
         <StackPanel>
             <TextBlock Text="EventToCommandBehavior:" FontWeight="SemiBold" FontStyle="Italic" Margin="5"/>
-            <Button Content="Click event" HorizontalAlignment="Left" Margin="5">
+            <TextBlock Text="Sample 1 (Click):" FontWeight="Light"  Margin="5"/>
+            <Button Content="Click!" HorizontalAlignment="Left" Margin="5">
                 <mvvmLib:NavigationInteraction.Behaviors>
                     <mvvmLib:EventToCommandBehavior EventName="Click" Command="{Binding SayHelloCommand}" CommandParameter="World"/>
                 </mvvmLib:NavigationInteraction.Behaviors>
             </Button>
             <TextBlock Text="{Binding Message}" Margin="5"/>
-        </StackPanel>
 
+            <TextBlock Text="Sample 2 (SelectionChanged):" FontWeight="Light" Margin="5"/>
+            <ListView x:Name="ListView1" ItemsSource="{Binding People}" MinHeight="150" Margin="5">
+                <mvvmLib:NavigationInteraction.Behaviors>
+                    <mvvmLib:EventToCommandBehavior EventName="SelectionChanged" 
+                                                    Command="{Binding SelectPersonCommand}" 
+                                                    CommandParameter="{Binding ElementName=ListView1, Path=SelectedItem}"/>
+                </mvvmLib:NavigationInteraction.Behaviors>
+            </ListView>
+            <TextBlock Text="{Binding Message2}" Margin="5"/>
+        </StackPanel>
+        
         <StackPanel Grid.Row="1">
-            <TextBlock Text="SelectionChangedBehavior:" FontWeight="SemiBold" FontStyle="Italic" Margin="5"/>
+            <TextBlock Text="SelectionSyncBehavior:" FontWeight="SemiBold" FontStyle="Italic" Grid.Row="3" Margin="5"/>
             <TextBlock Margin="5">
              <Hyperlink Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ItemsRegionSampleView}">ListView Sample</Hyperlink>
             </TextBlock>
