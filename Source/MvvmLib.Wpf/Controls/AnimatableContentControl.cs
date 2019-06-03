@@ -26,6 +26,7 @@ namespace MvvmLib.Animation
         private StoryboardAccessor entranceStoryboardAccessor;
         private StoryboardAccessor exitStoryboardAccessor;
         private bool hasApplyTemplate;
+        private bool canAnimate;
 
         /// <summary>
         /// Checks if the control is animating.
@@ -124,6 +125,21 @@ namespace MvvmLib.Animation
         }
 
         /// <summary>
+        /// Allows to cancel animation on load.
+        /// </summary>
+        public bool CanAnimateOnLoad
+        {
+            get { return (bool)GetValue(CanAnimateOnLoadProperty); }
+            set { SetValue(CanAnimateOnLoadProperty, value); }
+        }
+
+        /// <summary>
+        /// Allows to cancel animation on load.
+        /// </summary>
+        public static readonly DependencyProperty CanAnimateOnLoadProperty =
+            DependencyProperty.Register("CanAnimateOnLoad", typeof(bool), typeof(AnimatableContentControl), new PropertyMetadata(true));
+
+        /// <summary>
         /// Invoked on animation completed.
         /// </summary>
         public event EventHandler AnimationCompleted;
@@ -145,6 +161,7 @@ namespace MvvmLib.Animation
         {
             this.queue = new Queue<AnimationQueueItem>();
             this.handleContentChanged = true;
+            this.canAnimate = true;
         }
 
         /// <summary>
@@ -179,6 +196,9 @@ namespace MvvmLib.Animation
             if (!hasApplyTemplate)
                 ApplyTemplate();
 
+            if (!IsLoaded && !CanAnimateOnLoad)
+                canAnimate = false;
+
             if (handleContentChanged)
                 this.RunOrEnqueue(oldContent, newContent);
         }
@@ -208,7 +228,7 @@ namespace MvvmLib.Animation
 
         private void DoLeave(Action onLeaveCompleted)
         {
-            if (ExitAnimation != null)
+            if (canAnimate && ExitAnimation != null)
             {
                 var storyboard = GetExitAnimationStoryboardInResources();
                 exitStoryboardAccessor = new StoryboardAccessor(storyboard);
@@ -226,7 +246,7 @@ namespace MvvmLib.Animation
 
         private void DoEnter(Action onEnterCompleted)
         {
-            if (EntranceAnimation != null)
+            if (canAnimate && EntranceAnimation != null)
             {
                 var storyboard = GetEntranceAnimationStoryboardInResources();
                 entranceStoryboardAccessor = new StoryboardAccessor(storyboard);
@@ -315,6 +335,7 @@ namespace MvvmLib.Animation
             else
             {
                 IsAnimating = false;
+                canAnimate = true;
                 OnCompleted();
             }
         }

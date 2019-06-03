@@ -34,11 +34,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var n1 = NavigationManager.CreateNavigationSource("k1");
             var n2 = NavigationManager.GetNavigationSource("k1");
             Assert.AreEqual(n1, n2);
-        }
 
-        [TestMethod]
-        public async Task Removes_The_NavigationSource()
-        {
             Assert.IsTrue(NavigationManager.RemoveNavigationSource("k1"));
             Assert.AreEqual(false, NavigationManager.NavigationSources.ContainsKey("k1"));
         }
@@ -53,10 +49,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task GetOrCreateSharedSource()
+        public async Task GetOrCreateSharedSource_Returns_The_Same_Instance()
         {
             var n1 = NavigationManager.GetOrCreateSharedSource<Item>();
-            var n2 = NavigationManager.GetNavigationSource("k1");
+            var n2 = NavigationManager.GetOrCreateSharedSource<Item>();
             Assert.AreEqual(n1, n2);
         }
     }

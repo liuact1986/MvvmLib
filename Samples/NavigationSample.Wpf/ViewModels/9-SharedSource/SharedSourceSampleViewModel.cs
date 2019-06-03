@@ -20,11 +20,14 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.Title = "SharedSource for ItemsControls, Selectors, etc.";
 
+            //DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
+
             DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
             {
                 new MyItemDetailsViewModel(new MyItem { Name = "Item.1" }),
                 new MyItemDetailsViewModel(new MyItem { Name = "Item.2" })
             });
+
 
             AddCommand = new RelayCommand(Add);
         }

@@ -45,6 +45,7 @@
                                           Content="{Binding Navigation.Current}" 
                                           Simultaneous="True"
                                           IsCancelled="{Binding IsCancelled}"
+                                          CanAnimateOnLoad="False"
                                           Grid.Row="1">
             <mvvmLib:AnimatableContentControl.ExitAnimation>
                 <Storyboard>

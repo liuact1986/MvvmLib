@@ -498,6 +498,7 @@ public partial class App : Application
 * EntranceAnimation 
 * ExitAnimation
 * Simultaneous (boolean) allows to play simultaneously the animations.
+* CanAnimateOnLoad: allows to cancel animation on load
 
 EntranceAnimation: Target "CurrentContentPresenter" 
 ExitAnimation: Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter"
