@@ -1,48 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MvvmLib.Navigation;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MvvmLib.Navigation;
 
 namespace AdaptiveSample.Views
 {
-    /// <summary>
-    /// Logique d'interaction pour HomeView.xaml
-    /// </summary>
     public partial class HomeView : UserControl
     {
-        IRegionNavigationService regionNavigationService;
+        public NavigationSource Navigation { get; }
 
-        public HomeView(IRegionNavigationService regionNavigationService)
+        public HomeView()
         {
-            this.regionNavigationService = regionNavigationService;
-
             InitializeComponent();
+
+            this.Navigation = NavigationManager.GetNavigationSource("Main");
         }
 
         private async void OnGoBreakpoint(object sender, RoutedEventArgs e)
         {
-            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario1));
+            await Navigation.NavigateAsync(typeof(Scenario1));
         }
 
         private async void OnGoDataContext(object sender, RoutedEventArgs e)
         {
-            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario2));
+            await Navigation.NavigateAsync(typeof(Scenario2));
         }
 
         private async void OnGoAsControl(object sender, RoutedEventArgs e)
         {
-            await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(Scenario3));
+            await Navigation.NavigateAsync(typeof(Scenario3));
         }
     }
 }

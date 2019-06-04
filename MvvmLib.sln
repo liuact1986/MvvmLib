@@ -83,7 +83,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationSample.Android", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTestLibrary", "Tests\MyTestLibrary\MyTestLibrary.csproj", "{F765C302-B21C-4948-8AF2-6B1F37D3431E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyIoCTestLibrary", "Tests\MyTestLibrary\MyIoCTestLibrary\MyIoCTestLibrary.csproj", "{550A241B-EF3C-4461-9BF4-AE0CFC891344}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyIoCTestLibrary", "Tests\MyTestLibrary\MyIoCTestLibrary\MyIoCTestLibrary.csproj", "{550A241B-EF3C-4461-9BF4-AE0CFC891344}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

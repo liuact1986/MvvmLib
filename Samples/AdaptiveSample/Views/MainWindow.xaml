@@ -9,6 +9,6 @@
         WindowStartupLocation="CenterScreen"
         Title="Adaptive Sample" Height="350" Width="525">
     <Grid>
-        <ContentControl x:Name="Main" nav:RegionManager.ContentRegionName="Main"></ContentControl>
+        <ContentControl x:Name="Main" nav:NavigationManager.SourceName="Main"></ContentControl>
     </Grid>
 </Window>

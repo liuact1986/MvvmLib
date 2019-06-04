@@ -1,6 +1,7 @@
 # Mvvm
 
 * **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **ChangeTracker**: allows to track object changes.
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
 * **SyncUtils** Allows to **sync lists and collections** 
@@ -374,6 +375,151 @@ And use it
  <TextBox Text="{Binding User.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 <!-- with converter -->
 <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" Foreground="Red"></TextBlock>
+```
+
+## ChangeTracker
+
+> Usefull for example with a TabItem with an asterisk that indicates changes
+
+### UseReflection (default)
+
+```cs
+public class Person : BindableBase
+{
+    private string firstName;
+    public string FirstName
+    {
+        get { return firstName; }
+        set { SetProperty(ref firstName, value); }
+    }
+
+    private string lastName;
+    public string LastName
+    {
+        get { return lastName; }
+        set { SetProperty(ref lastName, value); }
+    }
+
+    // or ObservableCollection, etc.
+    public List<Friend> Friends { get; set; }
+
+    public Person()
+    {
+        this.Friends = new List<Friend>();
+    }
+}
+
+public class Friend : BindableBase
+{
+    private string email;
+    public string Email
+    {
+        get { return email; }
+        set { SetProperty(ref email, value); }
+    }
+}
+```
+
+```cs
+this.Person = new Person();
+this.Tracker = new ChangeTracker(this.Person);
+
+// handle property changed
+this.Person.PropertyChanged += OnPersonPropertyChanged;
+```
+
+```cs
+private void OnPersonPropertyChanged(object sender, PropertyChangedEventArgs e)
+{
+    this.Tracker.CheckChanges();
+}
+// for list or collection, create a command and invoke this.Tracker.CheckChanges()
+private void AddFriend(Friend friend)
+{
+    this.Person.Friends.Add(friend);
+    this.Tracker.CheckChanges();
+}
+```
+
+TabControl with asterisk for example
+
+```xml
+<TabControl ItemsSource="{Binding TabItemsSource.Items}" 
+            SelectedItem="{Binding TabItemsSource.SelectedItem}" 
+            Grid.Row="1">
+    <TabControl.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Title}" Margin="10,0"/>
+                <TextBlock Text="*" VerticalAlignment="Top"
+                            Visibility="{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </DataTemplate>
+    </TabControl.ItemTemplate>
+</TabControl>
+```
+
+### UseEquals
+
+```cs
+public class Person
+{
+    public string FirstName { get; set; }
+
+    public string LastName { get; set; }
+
+    public ObservableCollection<Friend> Friends { get; set; }
+
+    public Person()
+    {
+        Friends = new ObservableCollection<Friend>();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Person other)
+        {
+            // properties
+            var propertiesEqual = other.FirstName.Equals(FirstName) && other.LastName.Equals(LastName);
+            if (!propertiesEqual)
+                return false;
+
+            // list / collection
+            if (Friends == null)
+            {
+                if (other.Friends != null)
+                    return false;
+            }
+            else if (other.Friends == null)
+            {
+                if (Friends != null)
+                    return false;
+            }
+            if (Friends.Count != other.Friends.Count)
+                return false;
+
+            for (int i = 0; i < Friends.Count; i++)
+            {
+                if (!Friends[i].Equals(other.Friends[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
+}
+```
+
+```cs
+this.Person = new Person();
+this.Tracker = new ChangeTracker(this.Person);
+this.Tracker.TrackerMode = ChangeTrackerMode.UseEquals;
+
+// handle changes with control event (TextBox text Changed for example) or with a Behavior 
+// and invoke this.Tracker.CheckChanges();
+
+// for list or collection, create a command and invoke this.Tracker.CheckChanges()
 ```
 
 ## NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver
@@ -883,4 +1029,3 @@ var subscriberOptions = eventAggregator.GetEvent<DataSavedEvent>().Subscribe(_ =
 
 var success = eventAggregator.GetEvent<DataSavedEvent>().Unsubscribe(subscriberOptions.Token);
 ```
-

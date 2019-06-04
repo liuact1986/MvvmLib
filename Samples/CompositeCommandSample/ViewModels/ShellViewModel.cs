@@ -2,27 +2,31 @@
 using CompositeCommandSample.Views;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
-using System.Windows;
+using System.Collections.Generic;
 
 namespace CompositeCommandSample.ViewModels
 {
-    public class ShellViewModel : IIsLoaded
+    public class ShellViewModel
     {
+        private readonly IApplicationCommands applicationCommands;
+
         public CompositeCommand SaveAllCommand { get; }
+        public SharedSource<TabViewModel> TabItemsSource { get; }
 
-        private IRegionNavigationService regionNavigationService;
-
-        public ShellViewModel(IApplicationCommands applicationCommands, IRegionNavigationService regionNavigationService)
+        public ShellViewModel(IApplicationCommands applicationCommands)
         {
+            this.applicationCommands = applicationCommands;
             SaveAllCommand = applicationCommands.SaveAllCommand;
-            this.regionNavigationService = regionNavigationService;
+
+            this.TabItemsSource = NavigationManager.GetOrCreateSharedSource<TabViewModel>();
+            this.Load();
         }
 
-        public async void OnLoaded(object parameter)
+        public async void Load()
         {
-            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
-            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");
-            await regionNavigationService.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabC");
+            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabA"));
+            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabB"));
+            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabC"));
         }
     }
 

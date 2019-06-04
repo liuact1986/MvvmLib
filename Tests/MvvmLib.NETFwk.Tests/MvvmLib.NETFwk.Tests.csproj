@@ -49,6 +49,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeTrackerTests.cs" />
     <Compile Include="Message\EventAggregatorTests.cs" />
     <Compile Include="Message\SubscriberOptionsTests.cs" />
     <Compile Include="Message\PublisherEventTests.cs" />

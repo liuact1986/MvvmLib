@@ -126,40 +126,6 @@ namespace MvvmLib
             return null;
         }
 
-        public static Array CreateArray(Type elementType, int length)
-        {
-            return Array.CreateInstance(elementType, length);
-        }
-
-        internal static IList CreateListOrCollection(Type type, Type elementType)
-        {
-            var listType = type.GetGenericTypeDefinition().MakeGenericType(elementType);
-            return Activator.CreateInstance(listType) as IList;
-        }
-
-        public static IList CreateListOrCollection(Type type)
-        {
-            if (!type.IsGenericType) { throw new InvalidOperationException("CreateListOrCollection require a Generic type. Type \"" + type.Name + "\""); }
-
-            var elementType = type.GenericTypeArguments[0];
-            return CreateListOrCollection(type, elementType);
-        }
-
-        internal static IDictionary CreateDictionary(Type type, Type keyType, Type valueType)
-        {
-            return Activator.CreateInstance(type) as IDictionary;
-        }
-
-        public static IDictionary CreateDictionary(Type type)
-        {
-            if (type.GetGenericTypeDefinition() != typeof(Dictionary<,>)) { throw new InvalidOperationException("CreateDictionary require a Generic type definition. Type \"" + type.Name + "\""); }
-
-            var keyType = type.GenericTypeArguments[0];
-            var valueType = type.GenericTypeArguments[1];
-
-            return CreateDictionary(type, keyType, valueType);
-        }
-
         public static PropertyInfo[] GetProperties(Type type, bool nonPublic = true)
         {
             var flags = GetFlags(nonPublic);
@@ -169,48 +135,117 @@ namespace MvvmLib
         public static FieldInfo[] GetFields(Type type, bool nonPublic = true)
         {
             var flags = GetFlags(nonPublic);
+            return type.GetFields(flags);
+        }
 
-            var filteredFields = new List<FieldInfo>();
+        //public static FieldInfo[] GetFields(Type type, bool nonPublic = true)
+        //{
+        //    var flags = GetFlags(nonPublic);
 
-            var fields = type.GetFields(flags);
-            foreach (var field in fields)
+        //    var filteredFields = new List<FieldInfo>();
+
+        //    var fields = type.GetFields(flags);
+        //    foreach (var field in fields)
+        //    {
+        //        // remove backing fields
+        //        var attributes = field.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false);
+        //        if (attributes.Length == 0)
+        //        {
+        //            filteredFields.Add(field);
+        //        }
+        //    }
+
+        //    return filteredFields.ToArray();
+        //}
+
+        public static bool IsEnumerableType(Type type)
+        {
+#if NETSTANDARD2_0
+            return typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(type);
+#else
+            return typeof(IEnumerable).IsAssignableFrom(type);
+#endif
+        }
+
+        public static bool IsDictionaryType(Type type)
+        {
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
             {
-                // remove backing fields
-                var attributes = field.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false);
-                if (attributes.Length == 0)
+                if (interfaceType == typeof(IDictionary))
                 {
-                    filteredFields.Add(field);
+                    return true;
                 }
             }
-
-            return filteredFields.ToArray();
+            return false;
         }
 
-        public static bool IsFunc(Type type)
+        public static bool IsGenericDictionaryType(Type type)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Func<>);
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public static MethodInfo GetMethod(Type type, string methodName, Type[] types)
+
+        public static Type[] GetGenericDictionaryArguments(Type type)
         {
-            var method = type.GetMethod(methodName, types);
-            return method;
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                {
+                    return interfaceType.GetGenericArguments();
+                }
+            }
+            return null;
         }
 
-        public static MethodInfo GetMethod(Type type, string methodName)
+        public static bool IsGenericListOrCollectionType(Type type)
         {
-            return GetMethod(type, methodName, new Type[] { });
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType.IsGenericType &&
+                    (interfaceType.GetGenericTypeDefinition() == typeof(IList<>) || interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public static MethodInfo GetStaticMethod(Type type, string methodName, Type[] types)
+        public static Type[] GetGenericListOrCollectionArguments(Type type)
         {
-            var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, null, types, null);
-            return method;
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType.IsGenericType &&
+                    (interfaceType.GetGenericTypeDefinition() == typeof(IList<>) || interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    return interfaceType.GetGenericArguments();
+                }
+            }
+            return null;
         }
 
-        public static MethodInfo GetStaticMethod(Type type, string methodName)
+        public static bool IsListOrCollectionType(Type type)
         {
-            return GetStaticMethod(type, methodName, new Type[] { type });
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType == typeof(IList) || interfaceType == typeof(ICollection))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

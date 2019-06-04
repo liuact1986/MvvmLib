@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelloWorld.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,14 @@ namespace HelloWorld.Views
         public Shell()
         {
             InitializeComponent();
+
+            this.Loaded += OnShellLoaded;
+        }
+
+        private void OnShellLoaded(object sender, RoutedEventArgs e)
+        {
+            //var vm = DataContext as ShellViewModel;
+            //vm.NavigateToHome();
         }
     }
 }

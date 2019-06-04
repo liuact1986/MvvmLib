@@ -42,17 +42,29 @@ namespace MvvmLib.Navigation
                 if ((bool)e.NewValue)
                 {
                     if (!(d is FrameworkElement))
-                        throw new InvalidOperationException($"The ResolveViewModel attached property only support a view. Type \"{d.GetType()}\"");
+                        throw new InvalidOperationException($"The ResolveViewModel attached property only support a view. Type \"{d.GetType().Name}\"");
 
                     var frameworkElement = d as FrameworkElement;
-                    var viewModelType = ViewModelLocationProvider.ResolveViewModelType(frameworkElement.GetType());
-                    if (viewModelType != null)
-                    {
-                        var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
-                        frameworkElement.DataContext = context;
-                    }
+                    frameworkElement.Initialized += OnFrameworkElementInitialized;
                 }
             }
+        }
+
+        private static void OnFrameworkElementInitialized(object sender, EventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+
+            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(frameworkElement.GetType());
+            if (viewModelType != null)
+            {
+                // problem with attached property SourceName defined after ResolveViewModel
+                // => tries to create view model instance and inject dependencies
+                // => but not find ContentControlNavigationSource
+                var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
+                frameworkElement.DataContext = context;
+            }
+
+            frameworkElement.Initialized += OnFrameworkElementInitialized;
         }
     }
 

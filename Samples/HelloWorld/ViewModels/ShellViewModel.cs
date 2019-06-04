@@ -3,18 +3,25 @@ using MvvmLib.Navigation;
 
 namespace HelloWorld.ViewModels
 {
-    public class ShellViewModel : IIsLoaded
+    public class ShellViewModel
     {
-        private readonly IRegionNavigationService regionNavigationService;
+        public NavigationSource Navigation { get; }
 
-        public ShellViewModel(IRegionNavigationService regionNavigationService)
+        public ShellViewModel()
         {
-            this.regionNavigationService = regionNavigationService;
+            // 1. With <ContentControl Content="{Binding Navigation.Current}" />
+            // this.Navigation = NavigationManager.GetOrCreateNavigationSource("Main");
+
+            // 2 ... or with <ContentControl mvvmLib:NavigationManager.SourceName="Main"/>
+            this.Navigation = NavigationManager.GetNavigationSource("Main");
+
+
+            this.NavigateToHome();
         }
 
-        public async void OnLoaded(object parameter)
+        public async void NavigateToHome()
         {
-            await regionNavigationService.GetContentRegion("MainRegion").NavigateAsync(typeof(HomeView), "Hello World!");
+            await Navigation.NavigateAsync(typeof(HomeView), "Hello World!");
         }
     }
 }

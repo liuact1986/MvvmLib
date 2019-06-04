@@ -8,13 +8,12 @@ namespace AdaptiveSample.Views
 {
     public partial class Scenario1 : UserControl
     {
-        IRegionNavigationService regionNavigationService;
 
-        public Scenario1(IRegionNavigationService regionNavigationService)
+        public Scenario1()
         {
-            this.regionNavigationService = regionNavigationService;
-
             InitializeComponent();
+
+            this.Navigation = NavigationManager.GetNavigationSource("Main");
 
             var listener = new BreakpointListener();
 
@@ -28,6 +27,8 @@ namespace AdaptiveSample.Views
             listener.BreakpointChanged += OnChanged;
         }
 
+        public NavigationSource Navigation { get; }
+
         private void OnChanged(object sender, BreakpointChangedEventArgs e)
         {
             List.Items.Add($"Active breakpoint: {e.Width}px");
@@ -35,7 +36,7 @@ namespace AdaptiveSample.Views
 
         private async void OnGoBack(object sender, RoutedEventArgs e)
         {
-            await regionNavigationService.GetContentRegion("Main").GoBackAsync();
+            await Navigation.GoBackAsync();
         }
     }
 }

@@ -21,7 +21,6 @@ namespace AdaptiveSample
         {
             container.RegisterInstance<IInjector>(container);
             container.RegisterSingleton<IEventAggregator, EventAggregator>();
-            container.RegisterSingleton<IRegionNavigationService, RegionNavigationService>();
         }
 
         protected override void SetViewFactory()

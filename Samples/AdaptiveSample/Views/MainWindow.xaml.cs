@@ -7,20 +7,19 @@ namespace AdaptiveSample.Views
 {
     public partial class MainWindow : Window
     {
-        IRegionNavigationService regionNavigationService;
+        public NavigationSource Navigation { get; }
 
-        public MainWindow(IRegionNavigationService regionNavigationService)
+        public MainWindow()
         {
             InitializeComponent();
 
-            this.regionNavigationService = regionNavigationService;
-
-            this.Activated += MainWindow_Activated;
+            this.Navigation = NavigationManager.GetNavigationSource("Main");
+            NavigateToHome();
         }
 
-        private async  void MainWindow_Activated(object sender, EventArgs e)
+        private async  void NavigateToHome()
         {
-           await regionNavigationService.GetContentRegion("Main").NavigateAsync(typeof(HomeView));
+           await Navigation.NavigateAsync(typeof(HomeView));
         }
     }
 }

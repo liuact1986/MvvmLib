@@ -21,18 +21,19 @@ namespace AdaptiveSample.Views
     /// </summary>
     public partial class Scenario3 : UserControl
     {
-        IRegionNavigationService regionNavigationService;
 
-        public Scenario3(IRegionNavigationService regionNavigationService)
+        public Scenario3()
         {
-            this.regionNavigationService = regionNavigationService;
-
             InitializeComponent();
+
+            this.Navigation = NavigationManager.GetNavigationSource("Main");
         }
+
+        public NavigationSource Navigation { get; }
 
         private async void OnGoBack(object sender, RoutedEventArgs e)
         {
-            await regionNavigationService.GetContentRegion("Main").GoBackAsync();
+            await Navigation.GoBackAsync();
         }
     }
 }

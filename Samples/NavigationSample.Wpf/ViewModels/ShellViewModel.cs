@@ -5,7 +5,6 @@ using NavigationSample.Wpf.Events;
 using NavigationSample.Wpf.Views;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -39,7 +38,6 @@ namespace NavigationSample.Wpf.ViewModels
             eventAggregator.GetEvent<ChangeTitleEvent>().Subscribe(OnChangeTitle);
             eventAggregator.GetEvent<NavigateEvent>().Subscribe(OnNavigate);
         }
-
 
         private void RegisterSources()
         {

@@ -3,7 +3,6 @@ using MvvmLib.Navigation;
 using NavigationSample.Wpf.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,15 +42,10 @@ namespace NavigationSample.Wpf.Views
             };
 
             ViewModel = DataContext as ShellViewModel;
+            ViewModel.Navigation.Navigated += OnNavigated;
 
             ListView1.ItemsSource = menuItems;
 
-            ViewModel.Navigation.Navigated += OnNavigated;
-            this.Loaded += OnShellLoaded;
-        }
-
-        private void OnShellLoaded(object sender, RoutedEventArgs e)
-        {
             handleSelectionChanged = true;
             ListView1.SelectedIndex = 0;
         }
