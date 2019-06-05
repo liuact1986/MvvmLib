@@ -9,6 +9,7 @@
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
 * **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
+* **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **BootstrapperBase**: base class for Bootstrapper
 
 ## ViewModelLocator
@@ -64,6 +65,32 @@ Allows to resolve the view model of the Views. Example:
 
 **Note**: NavigationSources and Shared Sources resolve automatically the ViewModel with the ViewModelLocator. So, using "ResolveViewModel" attached property is rarely required.
 
+**IIsLoaded** allows to notify view model that the view is loaded for a view that use resolve view model attached property
+
+```cs
+public class AuthorsViewModel : IIsLoaded
+{
+    private readonly IAuthorLookupService authorLookupService;
+
+    public ObservableCollection<LookupItem> Authors { get; set; }
+
+    public AuthorsViewModel(IAuthorLookupService authorLookupService)
+    {
+        this.authorLookupService = authorLookupService;
+    }
+
+    public async void LoadAsync()
+    {
+        var authors = await this.authorLookupService.GetAuthorLookupAsync();
+        this.Authors = new ObservableCollection<LookupItem>(authors);
+    }
+
+    public void OnLoaded()
+    {
+        LoadAsync();
+    }
+}
+```
 
 ## NavigationSource and ContentControlNavigationSource
 

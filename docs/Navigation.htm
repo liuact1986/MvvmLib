@@ -110,6 +110,7 @@
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
 <li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
 <li><strong>ViewModelLocator</strong>: allows to <strong>resolve ViewModel</strong> for <strong>views</strong></li>
+<li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
 <li><strong>BootstrapperBase</strong>: base class for Bootstrapper</li>
 </ul>
 <h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -158,6 +159,31 @@ View model name:
 </code></pre>
 
 <p><strong>Note</strong>: NavigationSources and Shared Sources resolve automatically the ViewModel with the ViewModelLocator. So, using &quot;ResolveViewModel&quot; attached property is rarely required.</p>
+<p><strong>IIsLoaded</strong> allows to notify view model that the view is loaded for a view that use resolve view model attached property</p>
+<pre><code class="cs">public class AuthorsViewModel : IIsLoaded
+{
+    private readonly IAuthorLookupService authorLookupService;
+
+    public ObservableCollection&lt;LookupItem&gt; Authors { get; set; }
+
+    public AuthorsViewModel(IAuthorLookupService authorLookupService)
+    {
+        this.authorLookupService = authorLookupService;
+    }
+
+    public async void LoadAsync()
+    {
+        var authors = await this.authorLookupService.GetAuthorLookupAsync();
+        this.Authors = new ObservableCollection&lt;LookupItem&gt;(authors);
+    }
+
+    public void OnLoaded()
+    {
+        LoadAsync();
+    }
+}
+</code></pre>
+
 <h2 id="navigationsource-and-contentcontrolnavigationsource">NavigationSource and ContentControlNavigationSource<a class="headerlink" href="#navigationsource-and-contentcontrolnavigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <h3 id="navigationsource">NavigationSource<a class="headerlink" href="#navigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.</p>
