@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.Logger;
+using System;
 using System.ComponentModel;
 using System.Windows;
 
@@ -9,6 +10,13 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class ViewModelLocator
     {
+        private static readonly ILogger Logger;
+
+        static ViewModelLocator()
+        {
+            Logger = new DebugLogger();
+        }
+
         /// <summary>
         /// Gets the Resolve View Model value for the dependency object.
         /// </summary>
@@ -45,26 +53,35 @@ namespace MvvmLib.Navigation
                         throw new InvalidOperationException($"The ResolveViewModel attached property only support a view. Type \"{d.GetType().Name}\"");
 
                     var frameworkElement = d as FrameworkElement;
-                    frameworkElement.Initialized += OnFrameworkElementInitialized;
+                    frameworkElement.Loaded += OnFrameworkElementLoaded;
                 }
             }
         }
 
-        private static void OnFrameworkElementInitialized(object sender, EventArgs e)
+        private static void OnFrameworkElementLoaded(object sender, EventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
 
             var viewModelType = ViewModelLocationProvider.ResolveViewModelType(frameworkElement.GetType());
             if (viewModelType != null)
             {
-                // problem with attached property SourceName defined after ResolveViewModel
-                // => tries to create view model instance and inject dependencies
-                // => but not find ContentControlNavigationSource
+                // Initialized => sub child => child => parent
+                // Loaded => parent => child => sub child
                 var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
-                frameworkElement.DataContext = context;
-            }
+                if (context == null)
+                    Logger.Log($"No ViewModel found for \"{viewModelType.Name}\" with ResolveViewModel dependency attached property on \"{frameworkElement.GetType()}\"", Category.Warn, Priority.High);
+                else
+                {
+                    frameworkElement.DataContext = context;
 
-            frameworkElement.Initialized += OnFrameworkElementInitialized;
+                    if (context is IIsLoaded)
+                        ((IIsLoaded)context).OnLoaded();
+                }
+            }
+            else
+                Logger.Log($"No ViewModel Type found with ResolveViewModel dependency attached property on \"{frameworkElement.GetType()}\"", Category.Warn, Priority.High);
+
+            frameworkElement.Loaded += OnFrameworkElementLoaded;
         }
     }
 

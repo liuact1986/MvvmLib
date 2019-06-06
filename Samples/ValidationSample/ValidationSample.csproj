@@ -59,13 +59,26 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\User.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\ValidatableAndEditableSampleViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelValidatableSampleViewModel.cs" />
+    <Compile Include="ViewModels\WrapperSampleViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ValidatableAndEditableSampleView.xaml.cs">
+      <DependentUpon>ValidatableAndEditableSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewModelValidatableSampleView.xaml.cs">
+      <DependentUpon>ViewModelValidatableSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WrapperSampleView.xaml.cs">
+      <DependentUpon>WrapperSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Wrapper\UserWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +112,18 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ValidatableAndEditableSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewModelValidatableSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\WrapperSampleView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

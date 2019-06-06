@@ -1,97 +1,50 @@
-﻿using MvvmLib.Mvvm;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace ValidationSample.Windows.Models
+namespace ValidationSample.Models
 {
-    //public class User
-    //{
-    //    public int Id { get; set; }
-
-    //    [Required]
-    //    [StringLength(5)] // for demo
-    //    public string FirstName { get; set; }
-
-    //    [StringLength(2)] // for demo
-    //    public string LastName { get; set; }
-
-    //    // object, list , etc.
-    //}
-
-    //public class UserWrapper : ModelWrapper<User>
-    //{
-    //    public UserWrapper(User model) : base(model)
-    //    {
-    //    }
-
-    //    public int Id { get { return Model.Id; } }
-
-    //    public string FirstName
-    //    {
-    //        get { return GetValue<string>(); }
-    //        set { SetValue(value); }
-    //    }
-
-    //    public string LastName
-    //    {
-    //        get { return GetValue<string>(); }
-    //        set { SetValue(value); }
-    //    }
-
-    //    // etc.
-
-    //    // custom validations
-    //    protected override IEnumerable<string> DoCustomValidations(string propertyName)
-    //    {
-    //        switch (propertyName)
-    //        {
-    //            case nameof(FirstName):
-    //                if (string.Equals(FirstName, "Marie", StringComparison.OrdinalIgnoreCase))
-    //                {
-    //                    yield return "Marie is not allowed";
-    //                }
-    //                break;
-    //        }
-    //    }
-    //}
-
-    public class User : ValidatableAndEditable
+    public class User
     {
         public int Id { get; set; }
 
-        private string firstName;
         [Required]
-        [StringLength(5)] // for demo
-        public string FirstName
-        {
-            get { return firstName; }
-            set { SetProperty(ref firstName, value); }
-        }
+        [StringLength(5)]
+        public string FirstName { get; set; }
 
-        private string lastName;
-        [StringLength(2)] // for demo
-        public string LastName
-        {
-            get { return lastName; }
-            set { SetProperty(ref lastName, value); }
-        }
+        [StringLength(2)]
+        public string LastName { get; set; }
 
-        // custom validations
-        protected override IEnumerable<string> DoCustomValidations(string propertyName)
-        {
-            switch (propertyName)
-            {
-                case nameof(FirstName):
-                    if (string.Equals(FirstName, "Marie", StringComparison.OrdinalIgnoreCase))
-                    {
-                        yield return "Marie is not allowed";
-                    }
-                    break;
-            }
-        }
 
-        // object, list , etc.
+        [MaxItems(3, ErrorMessage = "The user cannot have more than 2 pets.")]
+        public ICollection<string> Pets { get; set; }
+
+        public User()
+        {
+            this.Pets = new Collection<string>();
+        }
     }
 
+    public class MaxItemsAttribute : ValidationAttribute
+    {
+        private readonly int maxItems;
+
+        public MaxItemsAttribute(int maxItems)
+        {
+            this.maxItems = maxItems;
+        }
+
+        public override bool IsValid(object value)
+        {
+            if (value is IList)
+            {
+                var isValid = ((IList)value).Count < maxItems;
+                return isValid;
+            }
+            else
+                throw new NotSupportedException();
+        }
+    }
 }

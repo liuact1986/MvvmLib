@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace MvvmLib
 {
@@ -137,26 +136,6 @@ namespace MvvmLib
             var flags = GetFlags(nonPublic);
             return type.GetFields(flags);
         }
-
-        //public static FieldInfo[] GetFields(Type type, bool nonPublic = true)
-        //{
-        //    var flags = GetFlags(nonPublic);
-
-        //    var filteredFields = new List<FieldInfo>();
-
-        //    var fields = type.GetFields(flags);
-        //    foreach (var field in fields)
-        //    {
-        //        // remove backing fields
-        //        var attributes = field.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false);
-        //        if (attributes.Length == 0)
-        //        {
-        //            filteredFields.Add(field);
-        //        }
-        //    }
-
-        //    return filteredFields.ToArray();
-        //}
 
         public static bool IsEnumerableType(Type type)
         {

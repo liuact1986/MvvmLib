@@ -1,6 +1,6 @@
 # Mvvm
 
-* **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
 * **ChangeTracker**: allows to track object changes.
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command
@@ -123,10 +123,6 @@ user.CancelEdit();
 
 ## Validatable
 
-> Allows to validate.
-
-## ValidatableAndEditable
-
 > Validation + Edition
 
 Allows to **validate** the model with **Data Annotations** and **custom validations**. Allows to cancel and **restore** **old values**. 
@@ -155,7 +151,7 @@ Allows to **validate** the model with **Data Annotations** and **custom validati
 The model requires to use SetProperty
 
 ```cs
-public class User : ValidatableAndEditable
+public class User : Validatable
 {
     private string firstName;
 
@@ -181,10 +177,13 @@ var user = new User
 
 
 // validate a property
-user.ValidateProperty("FirstName", "");
+user.ValidateProperty("FirstName");
 
 // validate all
 user.ValidateAll();
+
+// summary
+var allErrors = user.GeErrorSummary();
 
 if (user.HasErrors)
 {
@@ -196,6 +195,8 @@ user.Reset();
 
 // reset the errors, is submitted and the model
 user.CancelEdit();
+
+
 
 // etc.
 ```
@@ -323,7 +324,7 @@ Create a Style that displays errors
                     <AdornedElementPlaceholder x:Name="placeholder"/>
                     <!--TextBlock with error -->
                     <TextBlock FontSize="12" Foreground="Red" 
-                        Text="{Binding ElementName=placeholder,Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"/>
+                               Text="{Binding ElementName=placeholder,Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"/>
                 </StackPanel>
             </ControlTemplate>
         </Setter.Value>
@@ -333,7 +334,7 @@ Create a Style that displays errors
             <Setter Property="Background" Value="Red"/>
             <!--Tooltip with error -->
             <Setter Property="ToolTip" 
-            Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
         </Trigger>
     </Style.Triggers>
 </Style>

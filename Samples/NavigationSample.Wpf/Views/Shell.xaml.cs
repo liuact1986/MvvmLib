@@ -41,6 +41,11 @@ namespace NavigationSample.Wpf.Views
                 new MenuItem(nameof(NavigationBehaviorsSampleView), "Navigation Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView)))
             };
 
+            this.Loaded += OnShellLoaded;
+        }
+
+        private void OnShellLoaded(object sender, RoutedEventArgs e)
+        {
             ViewModel = DataContext as ShellViewModel;
             ViewModel.Navigation.Navigated += OnNavigated;
 

@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Base class for wrapping model. Allows to validate and edit properties.
+    /// Allows to wrap a model. Edit, validate and notify the UI of changes.
     /// </summary>
-    /// <typeparam name="TModel">The model</typeparam>
-    public class ModelWrapper<TModel> : ValidatableAndEditable
+    /// <typeparam name="TModel"></typeparam>
+    public class ModelWrapper<TModel> : ValidatableBase where TModel : class
     {
-        private readonly TModel model;
+        private readonly Dictionary<string, PropertyInfo> propertyCache;
+
+        private TModel model;
         /// <summary>
-        /// The model wrapped.
+        /// The model.
         /// </summary>
         public TModel Model
         {
@@ -20,78 +23,103 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Creates the model wrapper class.
+        /// Creates the model wrapper.
         /// </summary>
-        /// <param name="model">The model</param>
-        /// <param name="editableObjectService">The editable object service</param>
-        public ModelWrapper(TModel model, IEditableObjectService editableObjectService)
-            : base(model)
+        /// <param name="model">The model to wrap</param>
+        public ModelWrapper(TModel model)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
-            if (editableObjectService == null)
-                throw new ArgumentNullException(nameof(editableObjectService));
+
+            this.propertyCache = new Dictionary<string, PropertyInfo>();
 
             this.model = model;
+            this.editor = new ObjectEditor(typeof(TModel));
+            this.Validator = new ObjectValidator(model, (propertyName) => DoCustomValidations(propertyName));
         }
 
-
-        /// <summary>
-        /// Creates the model wrapper class.
-        /// </summary>
-        /// <param name="model">The model</param>
-        public ModelWrapper(TModel model)
-           : this(model, new EditableObjectService())
-        { }
-
-        /// <summary>
-        /// Gets the property.
-        /// </summary>
-        /// <param name="propertyName">The property name</param>
-        /// <returns>The <see cref="PropertyInfo"/> or null</returns>
-        protected PropertyInfo GetProperty(string propertyName)
+        private PropertyInfo GetProperty(string propertyName)
         {
-            var properties = this.GetProperties();
-            if (properties.TryGetValue(propertyName, out PropertyInfo property))
+            if (propertyCache.TryGetValue(propertyName, out PropertyInfo property))
+            {
                 return property;
+            }
+            else
+            {
+                property = typeof(TModel).GetProperty(propertyName);
+                if (property == null)
+                    throw new ArgumentException($"Property \"{propertyName}\" not found  on \"{typeof(TModel).Name}\"");
 
-            return null;
+                propertyCache[propertyName] = property;
+                return property;
+            }
         }
 
         /// <summary>
-        /// Gets the value for a property.
+        /// Gets the value for the property.
         /// </summary>
         /// <typeparam name="TValue">The value type</typeparam>
         /// <param name="propertyName">The property name</param>
         /// <returns>The value</returns>
-        protected virtual TValue GetValue<TValue>([CallerMemberName]string propertyName = null)
+        protected TValue GetValue<TValue>([CallerMemberName]string propertyName = null)
         {
             var property = GetProperty(propertyName);
-            if (property == null) { throw new ArgumentException($"Property \"{propertyName}\" not found in {this.Model.GetType().Name}"); }
-
-            var value = property.GetValue(Model, null);
+            var value = property.GetValue(Model);
             return (TValue)value;
         }
 
         /// <summary>
-        /// Sets the value for a property.
+        /// Sets the value for the property.
         /// </summary>
         /// <typeparam name="TValue">The value type</typeparam>
         /// <param name="value">The new value</param>
         /// <param name="propertyName">The property name</param>
-        protected virtual void SetValue<TValue>(TValue value, [CallerMemberName]string propertyName = null)
+        /// <returns>True if value updated</returns>
+        protected virtual bool SetValue<TValue>(TValue value, [CallerMemberName]string propertyName = null)
         {
             var property = GetProperty(propertyName);
-            if (property == null) { throw new ArgumentException($"Property \"{propertyName}\" not found in {this.Model.GetType().Name}"); }
+            var oldValue = property.GetValue(Model);
+            if (Equals(oldValue, value))
+            {
+                return false;
+            }
+            else
+            {
+                property.SetValue(Model, value);
+                OnPropertyChanged(propertyName);
+                if (CanValidateOnPropertyChanged)
+                    ValidateProperty(propertyName, value);
 
-            property.SetValue(Model, value);
-            OnPropertyChanged(propertyName);
-            OnPropertyChanged(string.Empty);
-
-            if (CanValidateOnPropertyChanged)
-                this.ValidateProperty(propertyName, value);
+                return true;
+            }
         }
 
+        /// <summary>
+        /// Begins edition.
+        /// </summary>
+        public override void BeginEdit()
+        {
+            this.editor.Store(this.model);
+        }
+
+        /// <summary>
+        /// Cancels changes.
+        /// </summary>
+        public override void CancelEdit()
+        {
+            this.editor.Restore();
+            this.Reset();
+            this.OnPropertyChanged(string.Empty);
+            this.OnEditionCancelled();
+        }
+
+        /// <summary>
+        /// Ends edition.
+        /// </summary>
+        public override void EndEdit()
+        {
+            this.editor.Clean();
+        }
     }
 
 }

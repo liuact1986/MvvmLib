@@ -3,23 +3,22 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
-* Mvvm
-  * BindableBase, Validatable, Editable, ValidateAndEditable and ModelWrapper base classes for Models and ViewModels
-  * ChangeTracker: allows to track object changes.
-  * NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver: allows to observe and filter an object that implements INotifyPropertyChanged
-  * Commands and composite command
-  * Sync extensions for list and collections. Allows to sync data
-  * Singleton
-* EventAggregator : allows to subscribe, publish and filter messages</Description>
+* BindableBase, Editable, Validatable and ModelWrapper base classes for Models and ViewModels
+* Commands and composite command
+* EventAggregator : allows to subscribe, publish and filter messages
+* ChangeTracker: allows to track object changes.
+* Singleton
+* NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver: allows to observe and filter an object that implements INotifyPropertyChanged
+* Sync extensions for list and collections. Allows to sync data</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <Authors>romagny13</Authors>
     <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>
-    <PackageTags>mvvm, library, wpf, uwp, windows, validation, commands, messenger</PackageTags>
+    <PackageTags>mvvm, library, wpf, uwp, windows, validation, commands, eventaggregator</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">

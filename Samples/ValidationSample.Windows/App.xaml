@@ -2,8 +2,13 @@
     x:Class="ValidationSample.Windows.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ValidationSample.Windows">
+    xmlns:local="using:ValidationSample.Windows"
+    xmlns:converters="using:ValidationSample.Windows.Converters">
 
+    <Application.Resources>
 
+        <converters:FirstErrorConverter x:Name="FirstErrorConverter" />
+
+    </Application.Resources>
     
 </Application>

@@ -123,9 +123,22 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\ValidatableAndEditableSamplePageViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelValidatableSamplePageViewModel.cs" />
+    <Compile Include="ViewModels\WrapperSamplePageViewModel.cs" />
+    <Compile Include="Views\ValidatableAndEditableSamplePage.xaml.cs">
+      <DependentUpon>ValidatableAndEditableSamplePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewModelValidatableSamplePage.xaml.cs">
+      <DependentUpon>ViewModelValidatableSamplePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WrapperSamplePage.xaml.cs">
+      <DependentUpon>WrapperSamplePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Wrapper\UserWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -148,10 +161,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
@@ -163,6 +172,24 @@
       <Project>{5462ae63-cbb9-46c2-b800-311fd7c7be72}</Project>
       <Name>MvvmLib.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ValidatableAndEditableSamplePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewModelValidatableSamplePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\WrapperSamplePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

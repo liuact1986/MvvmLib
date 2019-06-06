@@ -25,9 +25,6 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
             Assert.AreEqual("Marie", user.FirstName);
             Assert.AreEqual("Bellin", user.LastName);
         }
-
-
-
     }
 
     public class ItemEdit

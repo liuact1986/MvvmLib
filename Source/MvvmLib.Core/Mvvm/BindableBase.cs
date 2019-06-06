@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Base class for models and view models. Implements <see cref="INotifyPropertyChanged"/>. Allows to notify that a property has changed.
+    /// The Base class for models and view models. Implements <see cref="INotifyPropertyChanged"/>.
     /// </summary>
     public class BindableBase : INotifyPropertyChanged
     {
         /// <summary>
-        /// The property changed event handler.
+        /// Invoked on property changed.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 

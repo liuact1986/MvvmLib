@@ -8,8 +8,24 @@ namespace ValidationSample.Views
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            this.DataContext = new MainWindowViewModel();
+        private void OnWrapperSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title = "Wrapper Sample";
+            MainContent.Content = new WrapperSampleView();
+        }
+
+        private void OnValidatableAndEditableSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title = "Validatable Sample";
+            MainContent.Content = new ValidatableAndEditableSampleView();
+        }
+
+        private void OnViewModelValidatableSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title = "ViewModel Validatable Sample";
+            MainContent.Content = new ViewModelValidatableSampleView();
         }
     }
 }

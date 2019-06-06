@@ -155,7 +155,7 @@ namespace MvvmLib.Core.Tests.Utils
         {
             var fields = ReflectionUtils.GetFields(typeof(ItemWithFields));
 
-            Assert.AreEqual(1, fields.Length);
+            Assert.AreEqual(2, fields.Length);
             Assert.AreEqual("myStringField", fields[0].Name);
         }
 
@@ -165,7 +165,7 @@ namespace MvvmLib.Core.Tests.Utils
             var fields = ReflectionUtils.GetFields(typeof(ItemWithPrivateFields));
             var fields2 = ReflectionUtils.GetFields(typeof(ItemWithPrivateFields), false);
 
-            Assert.AreEqual(1, fields.Length);
+            Assert.AreEqual(2, fields.Length);
             Assert.AreEqual("myStringField", fields[0].Name);
 
             Assert.AreEqual(0, fields2.Length);

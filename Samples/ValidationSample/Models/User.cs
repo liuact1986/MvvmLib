@@ -1,6 +1,7 @@
-﻿using MvvmLib.Mvvm;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ValidationSample.Models
@@ -16,43 +17,34 @@ namespace ValidationSample.Models
         [StringLength(2)]
         public string LastName { get; set; }
 
-        // object, list , etc.
+
+        [MaxItems(3, ErrorMessage = "The user cannot have more than 2 pets.")]
+        public ICollection<string> Pets { get; set; }
+
+        public User()
+        {
+            this.Pets = new Collection<string>();
+        }
     }
 
-    public class UserWrapper : ModelWrapper<User>
+    public class MaxItemsAttribute : ValidationAttribute
     {
-        public UserWrapper(User model) : base(model)
+        private readonly int maxItems;
+
+        public MaxItemsAttribute(int maxItems)
         {
+            this.maxItems = maxItems;
         }
 
-        public int Id { get { return Model.Id; } }
-
-        public string FirstName
+        public override bool IsValid(object value)
         {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
-        }
-
-        public string LastName
-        {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
-        }
-
-        // etc.
-
-        // custom validations
-        protected override IEnumerable<string> DoCustomValidations(string propertyName)
-        {
-            switch (propertyName)
+            if (value is IList)
             {
-                case nameof(FirstName):
-                    if (string.Equals(FirstName, "Marie", StringComparison.OrdinalIgnoreCase))
-                    {
-                        yield return "Marie is not allowed";
-                    }
-                    break;
+                var isValid = ((IList)value).Count < maxItems;
+                return isValid;
             }
+            else
+                throw new NotSupportedException();
         }
     }
 }

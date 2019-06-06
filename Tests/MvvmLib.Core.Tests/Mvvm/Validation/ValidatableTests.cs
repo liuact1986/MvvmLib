@@ -1,12 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ComponentModel.DataAnnotations;
-using MvvmLib;
 using MvvmLib.Mvvm;
 using System.Linq;
 
 namespace MvvmLib.Core.Tests.Mvvm.Validation
 {
-
     [TestClass]
     public class ValidatableTests
     {
@@ -15,7 +12,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         public void TestCanValidateOnChange_WithOnChange()
         {
 
-            var model = new UserValidatable
+            var model = new UserValidatableAndEditable
             {
                 FirstName = "Marie",
                 LastName = "Bellin",
@@ -30,7 +27,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         public void TestCanValidateOnChange_WithOnSubmit()
         {
 
-            var model = new UserValidatable
+            var model = new UserValidatableAndEditable
             {
                 ValidationType = ValidationHandling.OnSubmit,
                 FirstName = "Marie",
@@ -49,7 +46,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         public void TestCanValidateOnChange_WithExplicit()
         {
 
-            var model = new UserValidatable
+            var model = new UserValidatableAndEditable
             {
                 ValidationType = ValidationHandling.Explicit,
                 FirstName = "Marie",
@@ -68,13 +65,13 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         public void TestHasNoError()
         {
 
-            var user = new UserValidatable
+            var user = new UserValidatableAndEditable
             {
-                FirstName = "Marie",
+                FirstName ="Marie",
                 LastName = "Bellin"
             };
 
-            user.ValidateProperty("FirstName", user.FirstName);
+            user.ValidateProperty("FirstName");
             var errors = user.GetErrors("FirstName");
             Assert.IsFalse(user.HasErrors);
             Assert.IsNull(errors);
@@ -83,13 +80,13 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         [TestMethod]
         public void TestHasError()
         {
-            var user = new UserValidatable
+            var user = new UserValidatableAndEditable
             {
                 FirstName = "M",
                 LastName = "Bellin"
             };
 
-            user.ValidateProperty("FirstName", user.FirstName);
+            user.ValidateProperty("FirstName");
 
             var errors = user.GetErrors("FirstName");
             var r = errors.Cast<string>().ToList();
@@ -102,7 +99,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         [TestMethod]
         public void TestValidateAll()
         {
-            var model = new UserValidatable
+            var model = new UserValidatableAndEditable
             {
                 FirstName = "Marie",
                 LastName = "Bellin"
@@ -117,7 +114,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         [TestMethod]
         public void TestValidateAll_HasErrors()
         {
-            var model = new UserValidatable
+            var model = new UserValidatableAndEditable
             {
                 FirstName = "M",
                 LastName = ""
@@ -138,7 +135,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
         [TestMethod]
         public void TestValidate_IsCalledOnPropertyChanged()
         {
-            var user = new UserValidatable
+            var user = new UserValidatableAndEditable
             {
                 ValidationType = ValidationHandling.OnPropertyChange,
                 FirstName = "M",
@@ -154,33 +151,25 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
             var r2 = user.GetErrors("FirstName");
             Assert.IsNull(r2);
         }
-    }
 
-    public class UserValidatable : Validatable
-    {
-        private string firstName;
-
-        [Required(ErrorMessage = "FirstName required")]
-        [MinLength(2, ErrorMessage = "FirstName too short")]
-        public string FirstName
+        [TestMethod]
+        public void BeginEdit_And_Cancel()
         {
-            get { return firstName; }
-            set { this.SetProperty(ref firstName, value); }
-        }
+            var user = new UserValidatableAndEditable
+            {
+                FirstName = "Marie",
+                LastName = "Bellin"
+            };
 
-        private string lastName;
-        [Required(ErrorMessage = "LastName required")]
-        public string LastName
-        {
-            get { return lastName; }
-            set { this.SetProperty(ref lastName, value); }
-        }
+            user.BeginEdit();
 
-        private int? age;
-        public int? Age
-        {
-            get { return age; }
-            set { this.SetProperty(ref age, value); }
+            user.FirstName = "updated firstname";
+            user.LastName = "updated lastname";
+
+            user.CancelEdit();
+
+            Assert.AreEqual("Marie", user.FirstName);
+            Assert.AreEqual("Bellin", user.LastName);
         }
     }
 

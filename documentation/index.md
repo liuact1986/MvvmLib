@@ -6,7 +6,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
-* **BindableBase**, **Editable**, **Validatable**, **ValidatableAndEditable** and **ModelWrapper** base classes for _Models and ViewModels_
+* **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
 * **ChangeTracker**: allows to track object changes.
 * **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
 * **Commands** and **composite** command

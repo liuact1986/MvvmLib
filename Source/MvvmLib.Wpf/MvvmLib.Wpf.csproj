@@ -76,6 +76,7 @@
     <Compile Include="History\NavigationHistory.cs" />
     <Compile Include="Interfaces\ICanActivate.cs" />
     <Compile Include="Interfaces\ICanDeactivate.cs" />
+    <Compile Include="Interfaces\IIsLoaded.cs" />
     <Compile Include="Interfaces\IIsSelected.cs" />
     <Compile Include="Interfaces\INavigatable.cs" />
     <Compile Include="Interfaces\ISelectable.cs" />

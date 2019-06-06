@@ -1,6 +1,6 @@
-﻿using ValidationSample.Windows.ViewModels;
+﻿using ValidationSample.Windows.Views;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace ValidationSample.Windows
 {
@@ -10,13 +10,24 @@ namespace ValidationSample.Windows
         public MainPage()
         {
             this.InitializeComponent();
-
-            ViewModel = new MainPageViewModel();
-
-            this.DataContext = ViewModel;
         }
 
-        public MainPageViewModel ViewModel { get;  }
+        private void OnWrapperSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title.Text = "Wrapper Sample";
+            MainContent.Content = new WrapperSamplePage();
+        }
 
+        private void OnValidatableAndEditableSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title.Text = "Validatable Sample";
+            MainContent.Content = new ValidatableAndEditableSamplePage();
+        }
+
+        private void OnViewModelValidatableSampleClick(object sender, RoutedEventArgs e)
+        {
+            this.Title.Text = "ViewModel Validatable Sample";
+            MainContent.Content = new ViewModelValidatableSamplePage();
+        }
     }
 }

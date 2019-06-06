@@ -19,7 +19,7 @@ namespace MvvmLib.Core.Tests.Mvvm.Validation
 
             var wrapper = new UserModelWrapper(user);
 
-            wrapper.ValidateProperty("FirstName", user.FirstName);
+            wrapper.ValidateProperty("FirstName");
 
             var errors = wrapper.GetErrors("FirstName");
             var r = errors.Cast<string>().ToList();
