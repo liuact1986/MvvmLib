@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class PersonDetailsViewModel : BindableBase, INavigatable, ISelectable 
+    public class PersonDetailsViewModel : BindableBase, INavigationAware, ISelectable 
     {
         private Person person;
         public Person Person

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace MvvmLib.Message
@@ -9,8 +10,22 @@ namespace MvvmLib.Message
     /// </summary>
     public class EventAggregator : IEventAggregator
     {
-        private readonly SynchronizationContext DefaultSynchronizationContext = SynchronizationContext.Current;
-        private readonly ConcurrentDictionary<Type, IEvent> events = new ConcurrentDictionary<Type, IEvent>();
+        private static readonly SynchronizationContext DefaultSynchronizationContext;
+
+        private readonly ConcurrentDictionary<Type, IEvent> events;
+
+        static EventAggregator()
+        {
+            DefaultSynchronizationContext = SynchronizationContext.Current;
+        }
+
+        /// <summary>
+        /// Creates the <see cref="EventAggregator"/>.
+        /// </summary>
+        public EventAggregator()
+        {
+            events = new ConcurrentDictionary<Type, IEvent>();
+        }
 
         private SynchronizationContext synchronizationContext;
         /// <summary>
@@ -23,7 +38,7 @@ namespace MvvmLib.Message
         }
 
         /// <summary>
-        /// Gets or create the event.
+        /// Gets or creates the event.
         /// </summary>
         /// <typeparam name="TEvent">The event type</typeparam>
         /// <returns>The event class</returns>

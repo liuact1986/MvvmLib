@@ -3,7 +3,7 @@
     /// <summary>
     /// Allows to notify the view model and / or the view.
     /// </summary>
-    public interface INavigatable
+    public interface INavigationAware
     {
         /// <summary>
         /// Invoked before leaving the view.

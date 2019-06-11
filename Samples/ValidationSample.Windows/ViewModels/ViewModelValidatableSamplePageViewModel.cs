@@ -61,6 +61,10 @@ namespace ValidationSample.ViewModels
 
     public class ViewModelValidatableSamplePageViewModel : BindableBase
     {
+
+        public ObservableCollection<ValidationHandling> ValidationTypes { get; set; }
+
+
         public ViewModelValidatable User { get; set; }
 
         private string selectedPet;
@@ -78,13 +82,6 @@ namespace ValidationSample.ViewModels
 
         public ObservableCollection<string> Summary { get; private set; }
 
-        public List<ValidationHandling> ValidationTypes => new List<ValidationHandling>
-        {
-            ValidationHandling.OnPropertyChange,
-            ValidationHandling.OnSubmit,
-            ValidationHandling.Explicit
-        };
-
         public ICommand SaveCommand { get; }
         public ICommand AddPetCommand { get; }
         public IRelayCommand RemovePetCommand { get; }
@@ -92,6 +89,13 @@ namespace ValidationSample.ViewModels
 
         public ViewModelValidatableSamplePageViewModel()
         {
+            ValidationTypes = new ObservableCollection<ValidationHandling>
+            {
+                ValidationHandling.OnPropertyChange,
+                ValidationHandling.OnSubmit,
+                ValidationHandling.Explicit
+            };
+
             this.User = new ViewModelValidatable(1, "Marie", "Bell");
             this.User.Pets.Add("Cat");
             this.User.Pets.CollectionChanged += OnPetsCollectionChanged;

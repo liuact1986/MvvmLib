@@ -3,7 +3,7 @@
 namespace MvvmLib.Message
 {
     /// <summary>
-    /// The event contract.
+    /// Contract for <see cref="EmptyEvent"/> and <see cref="ParameterizedEvent{TPayload}"/>.
     /// </summary>
     public interface IEvent
     {

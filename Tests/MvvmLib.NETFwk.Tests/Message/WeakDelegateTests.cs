@@ -13,7 +13,7 @@ namespace MvvmLib.Core.Tests.Message
         {
             var c = new MyWeakClass();
 
-            var w = new WeakDelegate((Action)c.MySimpleMethod);
+            var w = new WeakDelegate((Action)c.MySimpleMethod, false);
 
             GC.Collect();
 
@@ -25,7 +25,7 @@ namespace MvvmLib.Core.Tests.Message
         {
             var c = new MyWeakClass();
 
-            var w = new WeakDelegate((Action)c.MySimpleMethod);
+            var w = new WeakDelegate((Action)c.MySimpleMethod, false);
 
             c = null;
             GC.Collect();
@@ -34,11 +34,24 @@ namespace MvvmLib.Core.Tests.Message
         }
 
         [TestMethod]
+        public void KeepAlive()
+        {
+            var c = new MyWeakClass();
+
+            var w = new WeakDelegate((Action)c.MySimpleMethod, true);
+
+            c = null;
+            GC.Collect();
+
+            Assert.IsNotNull(w.Target);
+        }
+
+        [TestMethod]
         public void Not_Collect_With_Parameterized_Method()
         {
             var c = new MyWeakClass();
 
-            var w = new WeakDelegate((Action<string>)c.MyMethod);
+            var w = new WeakDelegate((Action<string>)c.MyMethod, false);
 
             GC.Collect();
 
@@ -50,7 +63,7 @@ namespace MvvmLib.Core.Tests.Message
         {
             var c = new MyWeakClass();
 
-            var w = new WeakDelegate((Action<string>)c.MyMethod);
+            var w = new WeakDelegate((Action<string>)c.MyMethod, false);
 
             c = null;
             GC.Collect();
@@ -59,14 +72,26 @@ namespace MvvmLib.Core.Tests.Message
         }
 
         [TestMethod]
+        public void KeppAlive_With_Parameterized_Method()
+        {
+            var c = new MyWeakClass();
+
+            var w = new WeakDelegate((Action<string>)c.MyMethod, true);
+
+            c = null;
+            GC.Collect();
+
+            Assert.IsNotNull(w.Target);
+        }
+
+        [TestMethod]
         public void Work_With_Static_Method()
         {
-            var w = new WeakDelegate((Action)MyWeakClass.MyStaticMethod);
+            var w = new WeakDelegate((Action)MyWeakClass.MyStaticMethod, false);
 
             Assert.IsNotNull(w.Target);
         }
     }
-
 
     public class MyWeakClass
     {

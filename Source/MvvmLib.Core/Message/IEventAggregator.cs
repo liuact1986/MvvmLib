@@ -6,7 +6,7 @@
     public interface IEventAggregator
     {
         /// <summary>
-        /// Gets or create the event.
+        /// Gets or creates the event.
         /// </summary>
         /// <typeparam name="TEvent">The event type</typeparam>
         /// <returns>The event class</returns>

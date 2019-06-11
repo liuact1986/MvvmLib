@@ -1,8 +1,6 @@
 ﻿using MvvmLib.Message;
 using MvvmLib.Mvvm;
-using NavigationSample.Wpf.Events;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels

@@ -10,10 +10,9 @@ namespace MvvmLib.Message
     /// </summary>
     public class EmptyEvent : IEvent
     {
-        private readonly List<Subscriber> subscribers = new List<Subscriber>();
+        private readonly List<Subscriber> subscribers;
 
         private SynchronizationContext synchronizationContext;
-
         /// <summary>
         /// The synchronization context.
         /// </summary>
@@ -24,13 +23,22 @@ namespace MvvmLib.Message
         }
 
         /// <summary>
+        /// Creates the <see cref="EmptyEvent"/>
+        /// </summary>
+        public EmptyEvent()
+        {
+            subscribers = new List<Subscriber>();
+        }
+
+        /// <summary>
         /// Checks if a subscriber is registered for the action.
         /// </summary>
         /// <param name="action">The action</param>
         /// <returns>True if registered</returns>
         public bool Contains(Action action)
         {
-            if (action == null) { throw new ArgumentNullException(nameof(action)); }
+            if (action == null)
+                throw new ArgumentNullException(nameof(action)); 
 
             lock (subscribers)
             {
@@ -43,14 +51,16 @@ namespace MvvmLib.Message
         /// Allows to subscribe to the event.
         /// </summary>
         /// <param name="action">The action</param>
-        /// <returns>The subscription options</returns>
-        public SubscriberOptions Subscribe(Action action)
+        /// <param name="keepAlive">Allows to keep the reference alive</param>
+        /// <returns>The subscriber options</returns>
+        public SubscriberOptions Subscribe(Action action, bool keepAlive)
         {
-            if (action == null) { throw new ArgumentNullException(nameof(action)); }
+            if (action == null)
+                throw new ArgumentNullException(nameof(action)); 
 
             var subscriptionToken = new SubscriptionToken(Unsubscribe);
 
-            var weakAction = new WeakDelegate(action);
+            var weakAction = new WeakDelegate(action, keepAlive);
             var subscriber = new Subscriber(subscriptionToken, synchronizationContext, weakAction);
 
             lock (subscribers)
@@ -60,6 +70,16 @@ namespace MvvmLib.Message
 
             var options = new SubscriberOptions(subscriber);
             return options;
+        }
+
+        /// <summary>
+        /// Allows to subscribe to the event.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>The subscriber options</returns>
+        public SubscriberOptions Subscribe(Action action)
+        {
+            return this.Subscribe(action, false);
         }
 
         /// <summary>

@@ -85,14 +85,6 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Registers custom region adapters.
-        /// </summary>
-        protected virtual void RegisterCustomRegionAdapters()
-        {
-
-        }
-
-        /// <summary>
         /// Called after the bootstrapper process ends.
         /// </summary>
         protected virtual void OnInitialized()
@@ -102,6 +94,14 @@ namespace MvvmLib.Navigation
             {
                 Application.Current.MainWindow.Show();
             }
+        }
+
+        /// <summary>
+        /// Allows to preload data for application
+        /// </summary>
+        protected virtual void PreloadApplicationData()
+        {
+
         }
 
         /// <summary>
@@ -133,8 +133,8 @@ namespace MvvmLib.Navigation
             this.logger.Log("Configuring the service locator.", Category.Debug, Priority.Low);
             ConfigureServiceLocator();
 
-            this.logger.Log("Registering custom region adapters.", Category.Debug, Priority.Low);
-            RegisterCustomRegionAdapters();
+            this.logger.Log("Preloading application data.", Category.Debug, Priority.Low);
+            PreloadApplicationData();
 
             this.logger.Log("Creates the shell.", Category.Debug, Priority.Low);
             var shell = CreateShell();

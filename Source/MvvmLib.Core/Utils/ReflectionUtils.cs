@@ -8,6 +8,17 @@ namespace MvvmLib
 {
     public sealed class ReflectionUtils
     {
+
+        private static Type[] actionTypes = new Type[]
+        {
+            typeof(Action<>), typeof(Action<,>),typeof(Action<,,>),typeof(Action<,,,>),typeof(Action<,,,,>),typeof(Action<,,,,,>),typeof(Action<,,,,,,>),typeof(Action<,,,,,,,>)
+        };
+
+        private static Type[] funcTypes = new Type[]
+        {
+            typeof(Func<>), typeof(Func<,>),typeof(Func<,,>),typeof(Func<,,,>),typeof(Func<,,,,>),typeof(Func<,,,,,>),typeof(Func<,,,,,,>),typeof(Func<,,,,,,,>),typeof(Func<,,,,,,,,>)
+        };
+
         public static ConstructorInfo GetDefaultConstructor(Type type, bool nonPublic = true)
         {
             var constructors = GetConstructors(type, nonPublic);
@@ -225,6 +236,24 @@ namespace MvvmLib
                 }
             }
             return false;
+        }
+
+        public static bool IsDelegateType(Type type)
+        {
+            var isDelegateType = typeof(Delegate).IsAssignableFrom(type);
+            return isDelegateType;
+        }
+
+        public static bool IsActionType(Type type)
+        {
+            var isActionType = type == typeof(Action) || type.IsGenericType && actionTypes.Contains(type.GetGenericTypeDefinition());
+            return isActionType;
+        }
+
+        public static bool IsFuncType(Type type)
+        {
+            var isFuncType = type.IsGenericType && funcTypes.Contains(type.GetGenericTypeDefinition());
+            return isFuncType;
         }
     }
 }

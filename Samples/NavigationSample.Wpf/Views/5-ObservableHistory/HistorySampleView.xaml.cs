@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using MvvmLib.Navigation;
+using NavigationSample.Wpf.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace NavigationSample.Wpf.Views
 {
@@ -7,6 +10,15 @@ namespace NavigationSample.Wpf.Views
         public HistorySampleView()
         {
             InitializeComponent();
+        }
+
+        private async void OnMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            var frameworkElement = sender as FrameworkElement;
+            var item = frameworkElement.DataContext as SourceMenuItem;
+
+            var vm = this.DataContext as HistorySampleViewModel;
+            await vm.Navigation.MoveToAsync(item.Index);
         }
     }
 }

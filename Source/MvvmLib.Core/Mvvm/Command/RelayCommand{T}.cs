@@ -2,61 +2,57 @@
 
 namespace MvvmLib.Mvvm
 {
+
     /// <summary>
-    /// Generic command with parameter.
+    /// Command with parameter.
     /// </summary>
-    /// <typeparam name="TParameter">The parameter type</typeparam>
     public class RelayCommand<TParameter> : RelayCommandBase
     {
-        /// <summary>
-        /// The action to execute.
-        /// </summary>
-        protected Action<TParameter> executeCommand;
+        private readonly Action<TParameter> executeMethod;
+        private readonly Func<TParameter, bool> canExecuteMethod;
 
         /// <summary>
-        /// The function to check if command have to be executed.
+        /// Creates the <see cref="RelayCommand"/>.
         /// </summary>
-        protected Func<TParameter, bool> canExecuteCommand;
-
-        /// <summary>
-        /// Creates a Relay command.
-        /// </summary>
-        /// <param name="executeCommand">The action to execute</param>
-        /// <param name="canExecuteCommand">The function to check if command have to be executed</param>
-        public RelayCommand(Action<TParameter> executeCommand, Func<TParameter, bool> canExecuteCommand)
+        /// <param name="executeMethod">The method to execute</param>
+        /// <param name="canExecuteMethod">The method used to check if the <see cref="executeMethod"/> can be invoked</param>
+        public RelayCommand(Action<TParameter> executeMethod, Func<TParameter, bool> canExecuteMethod)
         {
-            this.executeCommand = executeCommand ?? throw new ArgumentNullException(nameof(executeCommand));
-            this.canExecuteCommand = canExecuteCommand;
+            if (executeMethod == null)
+                throw new ArgumentNullException(nameof(executeMethod));
+
+            this.executeMethod = executeMethod;
+            this.canExecuteMethod = canExecuteMethod;
         }
 
         /// <summary>
         /// Creates a Relay command.
         /// </summary>
-        /// <param name="executeCommand">The action to execute</param>
-        public RelayCommand(Action<TParameter> executeCommand)
-            : this(executeCommand, (p) => true)
+        /// <param name="executeMethod">The action to execute</param>
+        public RelayCommand(Action<TParameter> executeMethod)
+            : this(executeMethod, (t) => true)
         { }
 
         /// <summary>
-        /// Checks if command have to be executed.
+        /// Use the <see cref="canExecuteMethod"/> to check if the <see cref="executeMethod"/> can be invoked.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         /// <returns>True if command have to be executed</returns>
         public override bool CanExecute(object parameter)
         {
-            var canExecute = canExecuteCommand.Invoke((TParameter)parameter);
+            var canExecute = canExecuteMethod.Invoke((TParameter)parameter);
             return canExecute;
         }
 
         /// <summary>
-        /// Invokes the execute command.
+        /// Invokes the <see cref="executeMethod"/>.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         public override void Execute(object parameter)
         {
-            executeCommand.Invoke((TParameter)parameter);
+            executeMethod.Invoke((TParameter)parameter);
         }
-    }
 
+    }
 
 }

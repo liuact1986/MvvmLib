@@ -41,6 +41,8 @@
             </DataTemplate>
 
             <Color x:Key="ShadowColor">#FFA8A8A8</Color>
+            <Color x:Key="PrimaryColor">#2980b9</Color>
+            <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource PrimaryColor}"/>
             <SolidColorBrush x:Key="ContentBackground" Color="#FF1C1C1C" />
             <LinearGradientBrush x:Key="PanelBackground" EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FF2D2D30"/>
@@ -58,7 +60,18 @@
             <SolidColorBrush x:Key="MenuForeground" Color="White" />
             <SolidColorBrush x:Key="PageHeaderTitleForeground" Color="White" />
 
+            <Style x:Key="Heading" TargetType="{x:Type TextBlock}">
+                <Setter Property="TextBlock.Foreground" Value="#2980b9" />
+                <Setter Property="TextBlock.FontSize" Value="14"/>
+                <Setter Property="FrameworkElement.VerticalAlignment" Value="Center"/>
+            </Style>
 
+            <Style TargetType="Button">
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Padding" Value="5" />
+            </Style>
+            
             <Style x:Key="FocusVisual">
                 <Setter Property="Control.Template">
                     <Setter.Value>
@@ -116,6 +129,43 @@
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                                 </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="InformationListViewItemStyle" TargetType="{x:Type ListViewItem}">
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Padding" Value="4,1"/>
+                <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+                <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Selector.IsSelectionActive" Value="False"/>
+                                        <Condition Property="IsSelected" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                                        <Condition Property="IsSelected" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>

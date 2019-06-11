@@ -81,27 +81,27 @@ namespace MvvmLib.Core.Tests.Mvvm
         //    Assert.AreEqual(2, result.MyReadOnlyList.Count);
         //}
 
-        [TestMethod]
-        public void DeepClone_WithProperty_CannotWrite()
-        {
-            var cloner = GetService();
+        //[TestMethod]
+        //public void DeepClone_WithProperty_CannotWrite()
+        //{
+        //    var cloner = GetService();
 
-            var item = new ItemWithPrivatePropertyCannotWrite("p1");
-            var result = cloner.DeepClone<ItemWithPrivatePropertyCannotWrite>(item);
+        //    var item = new ItemWithPrivatePropertyCannotWrite("p1");
+        //    var result = cloner.DeepClone<ItemWithPrivatePropertyCannotWrite>(item);
 
-            Assert.AreEqual(null, result.MyString);
-        }
+        //    Assert.AreEqual("", result.MyString);
+        //}
 
-        [TestMethod]
-        public void DeepClone_WithProperty_CannotRead()
-        {
-            var cloner = GetService();
+        //[TestMethod]
+        //public void DeepClone_WithProperty_CannotRead()
+        //{
+        //    var cloner = GetService();
 
-            var item = new ItemWithPrivatePropertyCannotRead("p1");
-            var result = cloner.DeepClone<ItemWithPrivatePropertyCannotRead>(item);
+        //    var item = new ItemWithPrivatePropertyCannotRead("p1");
+        //    var result = cloner.DeepClone<ItemWithPrivatePropertyCannotRead>(item);
 
-            Assert.AreEqual(null, result.myString);
-        }
+        //    Assert.AreEqual("", result.myString);
+        //}
 
         [TestMethod]
         public void DeepClone()
@@ -270,39 +270,12 @@ namespace MvvmLib.Core.Tests.Mvvm
 
             var r2 = cloner.DeepClone<ItemWithFieldAndProperties>(item);
 
-            Assert.AreEqual(null, r1.myField);
+            Assert.AreEqual("", r1.myField);
             Assert.AreEqual("p1", r1.MyString);
             Assert.AreEqual("f1", r2.myField);
             Assert.AreEqual("p1", r2.MyString);
         }
 
-        [TestMethod]
-        public void IncludePrivateFields()
-        {
-            var cloner = GetService();
-
-            cloner.NonPublicFields = false;
-
-            var item = new ItemWithPrivateFieldAndProperties("f1", "p1");
-            var r1 = cloner.DeepClone<ItemWithPrivateFieldAndProperties>(item);
-
-            cloner.IncludeFields = true;
-
-            var r2 = cloner.DeepClone<ItemWithPrivateFieldAndProperties>(item);
-
-            cloner.NonPublicFields = true;
-
-            var r3 = cloner.DeepClone<ItemWithPrivateFieldAndProperties>(item);
-
-            Assert.AreEqual(null, r1.myField);
-            Assert.AreEqual("p1", r1.MyString);
-
-            Assert.AreEqual(null, r2.myField);
-            Assert.AreEqual("p1", r2.MyString);
-
-            Assert.AreEqual("f1", r3.myField);
-            Assert.AreEqual("p1", r3.MyString);
-        }
 
         [TestMethod]
         public void CloneWithInterfaces()
@@ -363,6 +336,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             Assert.AreEqual(1, r2.MyDict.Count);
             Assert.AreEqual(typeof(MyItem), r2.MyDict["k1"].GetType());
             Assert.AreEqual("Dict v1", r2.MyDict["k1"].MyString);
+
+
         }
 
         [TestMethod]

@@ -6,7 +6,7 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class SyncTitleViewModel : BindableBase, INavigatable
+    public class SyncTitleViewModel : BindableBase, INavigationAware
     {
         private readonly IEventAggregator eventAggregator;
 
@@ -40,7 +40,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         }
 
-        public void OnNavigatedTo(object parameter)
+        public virtual void OnNavigatedTo(object parameter)
         {
             SetTitle();
         }

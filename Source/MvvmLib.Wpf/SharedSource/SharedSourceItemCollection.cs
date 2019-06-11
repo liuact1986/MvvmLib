@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -17,7 +18,7 @@ namespace MvvmLib.Navigation
 
         private ILogger logger;
         /// <summary>
-        /// The logger used by the library.
+        /// The logger used.
         /// </summary>
         public ILogger Logger
         {
@@ -36,110 +37,149 @@ namespace MvvmLib.Navigation
 
                 return this.items[index];
             }
-            set
-            {
-                SetItem(index, value);
-            }
+            set { SetItem(index, value); }
         }
-
 
         public int Count
         {
             get { return this.items.Count; }
         }
 
-        public Func<Type, object, bool> Filter { get; internal set; }
+        internal Func<Type, object, bool> findAndSelectSelectable;
+        public Func<Type, object, bool> FindAndSelectSelectable
+        {
+            get { return findAndSelectSelectable; }
+        }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public SharedSourceItemCollection()
         {
             this.items = new List<T>();
         }
 
-        internal void SetItems(IList<T> list)
+        public SharedSourceItemCollection(IList<T> initItems)
         {
-            items = list;
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
+
+            InializeItems(initItems);
         }
 
-        public SharedSourceItemCollection(IList<T> list)
+        public SharedSourceItemCollection(Dictionary<T, object> initItems)
         {
-            if (list == null)
-                throw new ArgumentNullException(nameof(list));
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
 
-            SetItems(list);
+            InializeItems(initItems);
         }
 
-        private async Task CheckCanActivateOrThrowAsync(T item, object parameter)
+        internal void InializeItems(IList<T> initItems)
         {
-            if (item is ICanActivate)
+            // items = list;
+            this.items = new List<T>();
+            for (int i = 0; i < initItems.Count; i++)
             {
-                if (!await ((ICanActivate)item).CanActivateAsync(parameter))
-                    throw new NavigationFailedException(NavigationFailedExceptionType.ActivationCancelled, NavigationFailedSourceType.Source, item, this);
+                var itemItem = initItems[i];
+                this.InsertInternal(i, itemItem, null);
             }
         }
 
-        private async Task CheckCanDeactivateOrThrowAsync(T item)
+        internal void InializeItems(Dictionary<T, object> initItems)
         {
-            if (item is ICanDeactivate)
+            // items = list;
+            this.items = new List<T>();
+            int i = 0;
+            foreach (var item in initItems)
             {
-                if (!await ((ICanDeactivate)item).CanDeactivateAsync())
-                    throw new NavigationFailedException(NavigationFailedExceptionType.DeactivationCancelled, NavigationFailedSourceType.Source, item, this);
+                this.InsertInternal(i, item.Key, item.Value);
+                i++;
             }
         }
 
-        private static void OnNavigatingTo(T item, object parameter)
+        #region Events
+
+        private void OnPropertyChanged(string propertyName)
         {
-            if (item is INavigatable)
-                ((INavigatable)item).OnNavigatingTo(parameter);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private static void OnNavigatedTo(T item, object parameter)
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            if (item is INavigatable)
-                ((INavigatable)item).OnNavigatingTo(parameter);
+            this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
         }
 
-        private static void OnNavigatingFrom(T item)
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
         {
-            if (item is INavigatable)
-                ((INavigatable)item).OnNavigatingFrom();
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
         }
 
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, object oldItem, object newItem, int index)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, object removedItem, int newIndex, int oldIndex)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, removedItem, newIndex, oldIndex));
+        }
+
+        #endregion // Events
+
+        public bool Contains(T item)
+        {
+            return items.Contains(item);
+        }
+
+        public int IndexOf(T item)
+        {
+            return items.IndexOf(item);
+        }
 
         public async Task<bool> InsertAsync(int index, T item, object parameter)
         {
-            bool success = true;
-            try
-            {
-                if (index < 0 || index > this.items.Count)
-                    throw new IndexOutOfRangeException();
+            if (index < 0 || index > this.items.Count)
+                throw new IndexOutOfRangeException();
 
-                if(Filter != null && Filter(item.GetType(), parameter))
+            if (findAndSelectSelectable != null && findAndSelectSelectable(item.GetType(), parameter))
+            {
+                return false;
+            }
+
+            if (item is FrameworkElement)
+            {
+                var frameworkElement = item as FrameworkElement;
+                if (await NavigationHelper.CanActivateAsync(frameworkElement, frameworkElement.DataContext, parameter))
                 {
+                    InsertInternal(index, item, parameter);
+
                     return true;
                 }
-
-                await CheckCanActivateOrThrowAsync(item, parameter);
-
-                OnNavigatingTo(item, parameter);
-
-                this.items.Insert(index, item);
-
-                OnNavigatedTo(item, parameter);
-
-                OnPropertyChanged(CountString);
-                OnPropertyChanged(IndexerName);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Log(ex.ToString(), Category.Exception, Priority.High);
-                success = false;
-            }
+                if (await NavigationHelper.CanActivateAsync(item, parameter))
+                {
+                    InsertInternal(index, item, parameter);
 
-            return success;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void InsertInternal(int index, T item, object parameter)
+        {
+            NavigationHelper.OnNavigatingTo(item, parameter);
+
+            this.items.Insert(index, item);
+
+            NavigationHelper.OnNavigatedTo(item, parameter);
+
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerName);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
         }
 
         public async Task<bool> InsertAsync(int index, T item)
@@ -172,42 +212,25 @@ namespace MvvmLib.Navigation
 
         public async Task<bool> RemoveAtAsync(int index)
         {
-            bool success = true;
+            if (index < 0 && index > this.items.Count - 1)
+                throw new IndexOutOfRangeException();
 
-            try
+            var item = this.items[index];
+
+            if (await NavigationHelper.CanDeactivateAsync(item))
             {
-                if (index < 0 && index >= this.items.Count)
-                    throw new IndexOutOfRangeException();
-
-                var item = this.items[index];
-
-                await CheckCanDeactivateOrThrowAsync(item);
-
-                OnNavigatingFrom(item);
+                NavigationHelper.OnNavigatingFrom(item);
 
                 this.items.RemoveAt(index);
 
                 OnPropertyChanged(CountString);
                 OnPropertyChanged(IndexerName);
                 OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex.ToString(), Category.Exception, Priority.High);
-                success = false;
+
+                return true;
             }
 
-            return success;
-        }
-
-        public bool Contains(T item)
-        {
-            return items.Contains(item);
-        }
-
-        public int IndexOf(T item)
-        {
-            return items.IndexOf(item);
+            return false;
         }
 
         public async Task<bool> RemoveAsync(T item)
@@ -229,16 +252,6 @@ namespace MvvmLib.Navigation
         /// <param name="newIndex">The new index</param>
         public void Move(int oldIndex, int newIndex)
         {
-            MoveItem(oldIndex, newIndex);
-        }
-
-        /// <summary>
-        /// Moves item  at old index to new index.
-        /// </summary>
-        /// <param name="oldIndex">The old index</param>
-        /// <param name="newIndex">The new index</param>
-        protected virtual void MoveItem(int oldIndex, int newIndex)
-        {
             var removedItem = items[oldIndex];
 
             items.RemoveAt(oldIndex);
@@ -250,32 +263,28 @@ namespace MvvmLib.Navigation
 
         public async Task<bool> ClearAsync()
         {
-            bool success = true;
-            try
+            int count = items.Count;
+            // 3 ... 2 ... 1 ... 0 
+            for (int index = count - 1; index >= 0; index--)
             {
-                int count = items.Count;
-                // 3 ... 2 ... 1 ... 0 
-                for (int index = count - 1; index >= 0; index--)
+                var item = this.items[index];
+
+                if (await NavigationHelper.CanDeactivateAsync(item))
                 {
-                    var item = this.items[index];
-
-                    await CheckCanDeactivateOrThrowAsync(item);
-
-                    OnNavigatingFrom(item);
-
+                    NavigationHelper.OnNavigatingFrom(item);
                     this.items.RemoveAt(index);
                 }
-                OnPropertyChanged(CountString);
-                OnPropertyChanged(IndexerName);
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex.ToString(), Category.Exception, Priority.High);
-                success = false;
+                else
+                {
+                    return false;
+                }
             }
 
-            return success;
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerName);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            return true;
         }
 
         public void CopyTo(T[] array, int index)
@@ -292,35 +301,5 @@ namespace MvvmLib.Navigation
         {
             return this.items.GetEnumerator();
         }
-
-        #region Events
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object oldItem, object newItem, int index)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItem, oldItem, index));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object removedItem, int newIndex, int oldIndex)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, removedItem, newIndex, oldIndex));
-        }
-
-        #endregion // Events
     }
-
 }

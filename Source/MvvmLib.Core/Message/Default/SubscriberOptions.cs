@@ -26,13 +26,13 @@
         }
 
         /// <summary>
-        /// Allows to change executionstrategy.
+        /// Allows to change the executionstrategy.
         /// </summary>
         /// <param name="executionStrategy">The execution strategy</param>
         /// <returns>The subscriber options</returns>
         public SubscriberOptions WithExecutionStrategy(ExecutionStrategyType executionStrategy)
         {
-            subscriber.InvocationStrategy = executionStrategy;
+            subscriber.ExecutionStrategy = executionStrategy;
             return this;
         }
     }

@@ -17,7 +17,7 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.Title = "ListView with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)";
 
-            DetailsSource = NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
+            DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
             AddCommand = new RelayCommand<Type>(async (sourceType) =>
             {

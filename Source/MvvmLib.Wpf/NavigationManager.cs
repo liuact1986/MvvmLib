@@ -8,17 +8,22 @@ using System.Windows.Data;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The Navigation Manager class. Allows to create <see cref="NavigationSource"/> for <see cref="ContentControl"/> and <see cref="SharedSource{T}"/> for <see cref="ItemsControl"/>, ListBox, <see cref="TabControl"/>, etc.
+    /// The Navigation Manager class. Allows to create <see cref="NavigationSourceContainer"/> for <see cref="ContentControl"/> and <see cref="SharedSource{T}"/> for <see cref="ItemsControl"/>, ListBox, <see cref="TabControl"/>, etc.
     /// </summary>
     public class NavigationManager
     {
-        private static readonly Dictionary<string, NavigationSource> navigationSources;
         /// <summary>
-        /// Gets the navigation sources.
+        /// The default key used for <see cref="KeyedNavigationSource"/>.
         /// </summary>
-        public static IReadOnlyDictionary<string, NavigationSource> NavigationSources
+        public const string DefaultKeyedNavigationSourceKey = "__Default__";
+
+        private static readonly Dictionary<string, NavigationSourceContainer> allNavigationSources;
+        /// <summary>
+        /// The navigation sources.
+        /// </summary>
+        public static IReadOnlyDictionary<string, NavigationSourceContainer> AllNavigationSources
         {
-            get { return navigationSources; }
+            get { return allNavigationSources; }
         }
 
         private static readonly Dictionary<Type, ISharedSource> sharedSources;
@@ -30,7 +35,7 @@ namespace MvvmLib.Navigation
             get { return sharedSources; }
         }
 
-        private static Dictionary<Type, Dictionary<string, ISharedSource>> keyedSharedSources;
+        private static readonly Dictionary<Type, Dictionary<string, ISharedSource>> keyedSharedSources;
         /// <summary>
         /// The keyed shared sources.
         /// </summary>
@@ -40,27 +45,27 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Gets the source name.
+        /// Gets the navigation source name.
         /// </summary>
-        /// <param name="obj">The dependency object</param>
-        /// <returns>The source name</returns>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static string GetSourceName(DependencyObject obj)
         {
             return (string)obj.GetValue(SourceNameProperty);
         }
 
         /// <summary>
-        /// Sets the source name for the dependency object.
+        /// Sets the naigation source.
         /// </summary>
-        /// <param name="obj">The dependency object</param>
-        /// <param name="value">The source name</param>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
         public static void SetSourceName(DependencyObject obj, string value)
         {
             obj.SetValue(SourceNameProperty, value);
         }
 
         /// <summary>
-        /// Allows to register a <see cref="ContentControlNavigationSource"/> with the attached property.
+        /// Allows to create a <see cref="ContentControlNavigationSource"/> with the attached property.
         /// </summary>
         public static readonly DependencyProperty SourceNameProperty =
             DependencyProperty.RegisterAttached("SourceName", typeof(string), typeof(NavigationManager), new PropertyMetadata(null, OnSourceNameChanged));
@@ -76,17 +81,17 @@ namespace MvvmLib.Navigation
                 if (control.Content != null || (BindingOperations.GetBinding(control, ContentControl.ContentProperty) != null))
                     throw new InvalidOperationException("ContentControl is not empty or binded");
 
-                var name = (string)e.NewValue;
-                if (name == null)
+                var sourceName = (string)e.NewValue;
+                if (sourceName == null)
                     throw new ArgumentException("A SourceName is required");
 
-                RegisterNavigationSource(name, new ContentControlNavigationSource(name, control));
+                RegisterNavigationSource(sourceName, new ContentControlNavigationSource(sourceName, control));
             }
         }
 
         static NavigationManager()
         {
-            navigationSources = new Dictionary<string, NavigationSource>();
+            allNavigationSources = new Dictionary<string, NavigationSourceContainer>();
             sharedSources = new Dictionary<Type, ISharedSource>();
             keyedSharedSources = new Dictionary<Type, Dictionary<string, ISharedSource>>();
         }
@@ -97,73 +102,127 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to register a custom Navigation source.
+        /// Allows to register a <see cref="NavigationSource"/>. The navigation source is created if not registered.
         /// </summary>
-        /// <param name="name">The name / key</param>
+        /// <param name="sourceName">The Navigation source name</param>
         /// <param name="navigationSource">The navigation source</param>
-        public static void RegisterNavigationSource(string name, NavigationSource navigationSource)
+        public static void RegisterNavigationSource(string sourceName, NavigationSource navigationSource)
         {
-            if (navigationSources.ContainsKey(name))
-                throw new ArgumentException($"A navigation source with the name \"{name}\" is already registered");
-
-            navigationSources[name] = navigationSource;
-        }
-
-        /// <summary>
-        /// Creates the navigation source.
-        /// </summary>
-        /// <param name="name">The name / key</param>
-        /// <returns>The navigation source created</returns>
-        public static NavigationSource CreateNavigationSource(string name)
-        {
-            if (navigationSources.ContainsKey(name))
-                throw new ArgumentException($"A navigation source with the name \"{name}\" is already registered");
-
-            var navigationSource = new NavigationSource(name);
-            navigationSources[name] = navigationSource;
-            return navigationSource;
-        }
-
-        /// <summary>
-        /// Gets an existing navigation source.
-        /// </summary>
-        /// <param name="name">The name / key</param>
-        /// <returns>The navigation source found or null</returns>
-        public static NavigationSource GetNavigationSource(string name)
-        {
-            if (navigationSources.TryGetValue(name, out NavigationSource navigationSource))
+            if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
             {
-                return navigationSource;
+                var existingNavigationSource = navigationSourceContainer[0];
+                navigationSource.Sync(existingNavigationSource.History);
+                navigationSourceContainer.Register(navigationSource);
+            }
+            else
+            {
+                navigationSourceContainer = new NavigationSourceContainer();
+                navigationSourceContainer.Register(navigationSource);
+                allNavigationSources[sourceName] = navigationSourceContainer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the navigation source collection for the source name.
+        /// </summary>
+        /// <param name="sourceName">The Navigation source name</param>
+        /// <returns>The navigation source collection or null</returns>
+        public static NavigationSourceContainer GetNavigationSources(string sourceName)
+        {
+            if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
+            {
+                return navigationSourceContainer;
             }
             return null;
         }
 
         /// <summary>
-        /// Gets an existing navigation source for the name or creates a new navigation source.
+        /// Unregisters all navigation sources for the navigation source name.
         /// </summary>
-        /// <param name="name">The name / key</param>
-        /// <returns>The navigation source found or created</returns>
-        public static NavigationSource GetOrCreateNavigationSource(string name)
+        /// <param name="sourceName">The Navigation source name</param>
+        /// <returns>True if removed</returns>
+        public static bool UnregisterNavigationSources(string sourceName)
         {
-            if (navigationSources.TryGetValue(name, out NavigationSource navigationSource))
-                return navigationSource;
-            else
-                return CreateNavigationSource(name);
-        }
-
-        /// <summary>
-        /// Removes the navigation source.
-        /// </summary>
-        /// <param name="name">The name / key</param>
-        /// <returns>true if removed</returns>
-        public static bool RemoveNavigationSource(string name)
-        {
-            if (navigationSources.ContainsKey(name))
+            if (allNavigationSources.ContainsKey(sourceName))
             {
-                var removed = navigationSources.Remove(name);
+                var removed = allNavigationSources.Remove(sourceName);
                 return removed;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Unregisters the navigation source from the <see cref="NavigationSourceContainer"/>.
+        /// </summary>
+        /// <param name="sourceName">The navigation source name</param>
+        /// <param name="navigationSource">The navigation source</param>
+        /// <returns>True if removed</returns>
+        public static bool UnregisterNavigationSource(string sourceName, NavigationSource navigationSource)
+        {
+            if (sourceName == null)
+                throw new ArgumentNullException(nameof(sourceName));
+            if (navigationSource == null)
+                throw new ArgumentNullException(nameof(navigationSource));
+
+            if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
+            {
+                if (navigationSourceContainer.IsRegistered(navigationSource))
+                {
+                    return navigationSourceContainer.Unregister(navigationSource);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Creates the <see cref="NavigationSourceContainer"/> with a default <see cref="KeyedNavigationSource"/> with the default key <see cref="DefaultKeyedNavigationSourceKey"/>.
+        /// </summary>
+        /// <param name="sourceName">The navigation source name</param>
+        /// <returns>The navigation source created</returns>
+        public static NavigationSource CreateNavigationSource(string sourceName)
+        {
+            if (allNavigationSources.ContainsKey(sourceName))
+                throw new ArgumentException($"A navigation source with the name \"{sourceName}\" is already registered");
+
+            var navigationSources = new NavigationSourceContainer();
+
+            var navigationSource = new KeyedNavigationSource(DefaultKeyedNavigationSourceKey);
+            navigationSources.Register(navigationSource);
+            allNavigationSources[sourceName] = navigationSources;
+
+            return navigationSource;
+        }
+
+        /// <summary>
+        /// Gets the first navigation source for the name.
+        /// </summary>
+        /// <param name="sourceName">The navigation source name</param>
+        /// <returns>The navigation source found or null</returns>
+        public static NavigationSource GetNavigationSource(string sourceName)
+        {
+            if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
+            {
+                var navigationSource = navigationSourceContainer[0];
+                return navigationSource;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Gets the first navigation source for the name or creates a new navigation source.
+        /// </summary>
+        /// <param name="sourceName">The navigation source name</param>
+        /// <returns>The navigation source found or created</returns>
+        public static NavigationSource GetOrCreateNavigationSource(string sourceName)
+        {
+            if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
+            {
+                var navigationSource = navigationSourceContainer[0];
+                return navigationSource;
+            }
+            else
+                return CreateNavigationSource(sourceName);
         }
 
         /// <summary>
@@ -183,6 +242,20 @@ namespace MvvmLib.Navigation
                 sharedSources[typeof(T)] = sharedSource;
                 return (SharedSource<T>)sharedSource;
             }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="SharedSource{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type used as key</typeparam>
+        /// <returns>The Shared Source</returns>
+        public static SharedSource<T> GetSharedSource<T>()
+        {
+            if (sharedSources.TryGetValue(typeof(T), out ISharedSource sharedSource))
+            {
+                return (SharedSource<T>)sharedSource;
+            }
+            return null;
         }
 
         /// <summary>
@@ -210,5 +283,22 @@ namespace MvvmLib.Navigation
             return (SharedSource<T>)newSharedSource;
         }
 
+        /// <summary>
+        /// Gets the <see cref="SharedSource{T}"/> with a name / key.
+        /// </summary>
+        /// <typeparam name="T">The type used as key</typeparam>
+        /// <param name="name">The name</param>
+        /// <returns>The Shared Source</returns>
+        public static SharedSource<T> GetSharedSource<T>(string name)
+        {
+            if (keyedSharedSources.TryGetValue(typeof(T), out Dictionary<string, ISharedSource> sharedSourcesOfType))
+            {
+                if (sharedSourcesOfType.TryGetValue(name, out ISharedSource sharedSource))
+                {
+                    return (SharedSource<T>)sharedSource;
+                }
+            }
+            return null;
+        }
     }
 }

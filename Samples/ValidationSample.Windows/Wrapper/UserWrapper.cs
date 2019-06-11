@@ -9,6 +9,22 @@ namespace ValidationSample.Wrapper
 {
     public class UserWrapper : ModelWrapper<User>
     {
+        public int Id { get { return Model.Id; } }
+
+        public string FirstName
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
+
+        public string LastName
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
+
+        public ObservableCollection<string> Pets { get; set; }
+
         public UserWrapper(User model)
             : base(model)
         {
@@ -68,23 +84,6 @@ namespace ValidationSample.Wrapper
             if (this.CanValidateOnPropertyChanged)
                 this.ValidateProperty("Pets");
         }
-
-        public int Id { get { return Model.Id; } }
-
-        public string FirstName
-        {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
-        }
-
-        public string LastName
-        {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
-        }
-
-
-        public ObservableCollection<string> Pets { get; set; }
 
         protected override IEnumerable<string> DoCustomValidations(string propertyName)
         {

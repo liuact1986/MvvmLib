@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.Navigation;
 
 namespace MvvmLib.Wpf.Tests.History
 {
-
     [TestClass]
     public class NavigationHistoryTests
     {
@@ -14,48 +14,49 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(1, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
             Assert.AreEqual(eA, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
-            Assert.AreEqual(1, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
+            Assert.AreEqual(2, history.Entries.Count);
+            Assert.AreEqual(1, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
             Assert.AreEqual(eB, history.Current);
             Assert.AreEqual(eA, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
-            Assert.AreEqual(2, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
-            Assert.AreEqual(eB, history.BackStack[1]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eC, history.Current);
             Assert.AreEqual(eB, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             history = null;
         }
@@ -65,69 +66,68 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
-            var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            var viewA = new ViewA();           
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
 
-            Assert.AreEqual(2, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
-            Assert.AreEqual(eB, history.BackStack[1]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eC, history.Current); //
             Assert.AreEqual(eB, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             // move back
 
             history.GoBack();
-            Assert.AreEqual(1, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(1, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eB, history.Current); // 
             Assert.AreEqual(eA, history.Previous);
             Assert.AreEqual(eC, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(1, history.ForwardStack.Count);
-            Assert.AreEqual(eC, history.ForwardStack[0]);
 
             history.GoBack();
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eA, history.Current); // 
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(eB, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(2, history.ForwardStack.Count);
-            Assert.AreEqual(eC, history.ForwardStack[0]);
-            Assert.AreEqual(eB, history.ForwardStack[1]);
 
             // navigate clear
             var viewD = new ViewD();
-            var contextD = new ViewDViewModel();
-            var eD = new NavigationEntry(typeof(ViewD), viewD, "D", contextD);
+            var eD = new NavigationEntry(typeof(ViewD), viewD, "D");
             history.Navigate(eD);
-            Assert.AreEqual(1, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
+            Assert.AreEqual(2, history.Entries.Count);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eD, history.Entries.ElementAt(1));
             Assert.AreEqual(eD, history.Current); // 
             Assert.AreEqual(eA, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             history = null;
         }
@@ -137,58 +137,59 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
             history.GoBack();
             history.GoBack();
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eA, history.Current); // 
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(eB, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(2, history.ForwardStack.Count);
-            Assert.AreEqual(eC, history.ForwardStack[0]);
-            Assert.AreEqual(eB, history.ForwardStack[1]);
 
             // A <= B C
             // ...A => B  C
             history.GoForward();
-            Assert.AreEqual(1, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(1, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eB, history.Current); // 
             Assert.AreEqual(eA, history.Previous);
             Assert.AreEqual(eC, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(1, history.ForwardStack.Count);
-            Assert.AreEqual(eC, history.ForwardStack[0]);
 
             // ...A  B => C
             history.GoForward();
-            Assert.AreEqual(2, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
-            Assert.AreEqual(eB, history.BackStack[1]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eC, history.Current); // 
             Assert.AreEqual(eB, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             history = null;
         }
@@ -198,41 +199,113 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
-            Assert.AreEqual(2, history.BackStack.Count);
-            Assert.AreEqual(eA, history.BackStack[0]);
-            Assert.AreEqual(eB, history.BackStack[1]);
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
             Assert.AreEqual(eC, history.Current); //
             Assert.AreEqual(eB, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             history.NavigateToRoot();
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(1, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
             Assert.AreEqual(eA, history.Current); // 
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
+
+            history = null;
+        }
+
+        [TestMethod]
+        public void MoveTo()
+        {
+            var history = new NavigationHistory();
+
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
+            Assert.AreEqual(null, history.Current);
+            Assert.AreEqual(null, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(null, history.Root);
+
+            var viewA = new ViewA();
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            history.Navigate(eA);
+            var viewB = new ViewB();
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            history.Navigate(eB);
+            var viewC = new ViewC();
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            history.Navigate(eC);
+            var viewD = new ViewD();
+            var eD = new NavigationEntry(typeof(ViewD), viewD, "D");
+            history.Navigate(eD);
+            var viewE = new ViewE();
+            var eE = new NavigationEntry(typeof(ViewE), viewE, "E");
+            history.Navigate(eE);
+
+            //  [A B C D] E
+
+            Assert.AreEqual(5, history.Entries.Count);
+            Assert.AreEqual(4, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(eD, history.Entries.ElementAt(3));
+            Assert.AreEqual(eE, history.Entries.ElementAt(4));
+            Assert.AreEqual(eE, history.Current);
+            Assert.AreEqual(eD, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+            history.MoveTo(eB);
+            // [A] B [C D E]
+            Assert.AreEqual(5, history.Entries.Count);
+            Assert.AreEqual(1, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(eD, history.Entries.ElementAt(3));
+            Assert.AreEqual(eE, history.Entries.ElementAt(4));
+            Assert.AreEqual(eB, history.Current);
+            Assert.AreEqual(eA, history.Previous);
+            Assert.AreEqual(eC, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+            history.MoveTo(eD);
+            // [A] B [C D E]
+
+            Assert.AreEqual(5, history.Entries.Count);
+            Assert.AreEqual(3, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(eD, history.Entries.ElementAt(3));
+            Assert.AreEqual(eE, history.Entries.ElementAt(4));
+            Assert.AreEqual(eD, history.Current);
+            Assert.AreEqual(eC, history.Previous);
+            Assert.AreEqual(eE, history.Next);
+            Assert.AreEqual(eA, history.Root);
 
             history = null;
         }
@@ -242,12 +315,12 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             int count = 0;
             CanGoBackEventArgs ev = null;
@@ -259,29 +332,29 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(0, count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             Assert.AreEqual(0, count); // cannot go back
             Assert.AreEqual(0, count);
 
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
-            Assert.AreEqual(1, count); // can go back (backstack count 1)
+            Assert.AreEqual(1, count); // can go back (Entries count 1)
             Assert.AreEqual(true, ev.CanGoBack);
 
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
             Assert.AreEqual(1, count);
 
-            history.GoBack(); // B (backstack count 1)
+            history.GoBack(); // B (Entries count 1)
             Assert.AreEqual(1, count);
 
-            history.GoBack(); // A (backstack count 0) cannot go back
+            history.GoBack(); // A (Entries count 0) cannot go back
             Assert.AreEqual(2, count);
             Assert.AreEqual(false, ev.CanGoBack);
 
@@ -297,12 +370,12 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             int count = 0;
             CanGoForwardEventArgs ev = null;
@@ -314,16 +387,16 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(0, count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
             Assert.AreEqual(0, count);
             Assert.AreEqual(null, ev);
@@ -368,26 +441,26 @@ namespace MvvmLib.Wpf.Tests.History
                 if (e.PropertyName == "Current")
                     countPropertyChanged++;
             };
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
             Assert.AreEqual(0, count);
             Assert.AreEqual(0, countPropertyChanged);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             Assert.AreEqual(1, count);
             Assert.AreEqual(1, countPropertyChanged);
             Assert.AreEqual(eA, ev.CurrentEntry);
 
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             Assert.AreEqual(2, count);
             Assert.AreEqual(2, countPropertyChanged);
@@ -414,24 +487,24 @@ namespace MvvmLib.Wpf.Tests.History
         {
             var history = new NavigationHistory();
 
-            Assert.AreEqual(0, history.BackStack.Count);
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
             Assert.AreEqual(null, history.Current);
             Assert.AreEqual(null, history.Previous);
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(null, history.Root);
-            Assert.AreEqual(0, history.ForwardStack.Count);
 
             var viewA = new ViewA();
-            var contextA = new ViewAViewModel();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A", contextA);
+            
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
             history.Navigate(eA);
             var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B", contextB);
+            
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
             history.Navigate(eB);
             var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C", contextC);
+            
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
 
             int countEvCanGoBack = 0;
@@ -478,6 +551,8 @@ namespace MvvmLib.Wpf.Tests.History
 
             history = null;
         }
+
+
 
         [TestMethod]
         public void NavigateToRoot_Throw()
@@ -529,5 +604,77 @@ namespace MvvmLib.Wpf.Tests.History
 
             Assert.AreEqual(false, success);
         }
+
+    }
+
+
+    public class ViewA
+    {
+
+    }
+
+    public class ViewB
+    {
+
+    }
+
+    public class ViewC
+    {
+
+    }
+
+    public class ViewD
+    {
+
+    }
+
+    public class ViewE
+    {
+
+    }
+
+    public class ViewF
+    {
+
+    }
+
+    public class ViewG
+    {
+
+    }
+
+    public class ViewAViewModel
+    {
+
+    }
+
+    public class ViewBViewModel
+    {
+
+    }
+
+    public class ViewCViewModel
+    {
+
+    }
+
+    public class ViewDViewModel
+    {
+
+    }
+
+    public class ViewEViewModel
+    {
+
+    }
+
+    public class ViewFViewModel
+    {
+
+    }
+
+    public class ViewGViewModel
+    {
+
     }
 }

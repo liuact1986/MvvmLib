@@ -21,7 +21,7 @@ namespace CompositeCommandSample
 
         protected override void SetViewFactory()
         {
-            ViewResolver.SetViewFactory((viewType) => container.GetNewInstance(viewType));
+            SourceResolver.SetFactory((viewType) => container.GetNewInstance(viewType));
         }
 
         protected override void SetViewModelFactory()

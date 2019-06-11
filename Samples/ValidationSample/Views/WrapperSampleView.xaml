@@ -80,7 +80,7 @@
 
                     <TextBlock Text="Validation Type:" Margin="10 10 10 0"/>
                     <ComboBox ItemsSource="{Binding ValidationTypes}"
-                              SelectedValue="{Binding User.ValidationType, Mode=TwoWay}"
+                              SelectedItem="{Binding User.ValidationType, Mode=TwoWay}"
                               Grid.Column="1"/>
 
                     <TextBlock Text="Use Custom Validations:" Grid.Row="1" Margin="10 0"/>

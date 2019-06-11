@@ -10,11 +10,18 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public class ObjectEditor
     {
-        private readonly Cloner cloner;
         private object originalSource;
         private object trackedValue;
         private readonly IEnumerable<PropertyInfo> properties;
 
+        private readonly Cloner cloner;
+        /// <summary>
+        /// The cloner.
+        /// </summary>
+        public Cloner Cloner
+        {
+            get { return cloner; }
+        }
 
         /// <summary>
         /// Creates the editable object service.

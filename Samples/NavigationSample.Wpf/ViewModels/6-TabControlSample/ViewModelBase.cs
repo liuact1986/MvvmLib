@@ -19,7 +19,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ViewModelBase()
         {
-            DetailsSource = NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
+            DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
             CloseCommand = new RelayCommand<IDetailViewModel>(async (item) =>
             {

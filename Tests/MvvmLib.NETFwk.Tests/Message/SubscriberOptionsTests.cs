@@ -20,16 +20,16 @@ namespace MvvmLib.Core.Tests.Message
             });
 
             var token = new SubscriptionToken(unsub);
-            var weakAction = new WeakDelegate(action);
+            var weakAction = new WeakDelegate(action, false);
             var subscription = new Subscriber(token, synchronizationContext, weakAction);
             var options = new SubscriberOptions(subscription);
 
             Assert.AreEqual(token, options.Token);
             //
-            Assert.AreEqual(ExecutionStrategyType.PublisherThread, subscription.InvocationStrategy);
+            Assert.AreEqual(ExecutionStrategyType.PublisherThread, subscription.ExecutionStrategy);
             options.WithExecutionStrategy(ExecutionStrategyType.UIThread);
 
-            Assert.AreEqual(ExecutionStrategyType.UIThread, subscription.InvocationStrategy);
+            Assert.AreEqual(ExecutionStrategyType.UIThread, subscription.ExecutionStrategy);
         }
 
         [TestMethod]
@@ -42,16 +42,16 @@ namespace MvvmLib.Core.Tests.Message
             });
 
             var token = new SubscriptionToken(unsub);
-            var weakAction = new WeakDelegate(action);
+            var weakAction = new WeakDelegate(action, false);
             var subscription = new Subscriber<string>(token, synchronizationContext, weakAction);
             var options = new SubscriberOptions<string>(subscription);
 
             Assert.AreEqual(token, options.Token);
             //
-            Assert.AreEqual(ExecutionStrategyType.PublisherThread, subscription.InvocationStrategy);
+            Assert.AreEqual(ExecutionStrategyType.PublisherThread, subscription.ExecutionStrategy);
             options.WithExecutionStrategy(ExecutionStrategyType.UIThread);
 
-            Assert.AreEqual(ExecutionStrategyType.UIThread, subscription.InvocationStrategy);
+            Assert.AreEqual(ExecutionStrategyType.UIThread, subscription.ExecutionStrategy);
 
             //
             Assert.IsNotNull(subscription.Filter);

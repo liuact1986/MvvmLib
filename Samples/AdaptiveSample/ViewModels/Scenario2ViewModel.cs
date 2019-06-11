@@ -6,7 +6,7 @@ using MvvmLib.Navigation;
 
 namespace AdaptiveSample.ViewModels
 {
-    public class Scenario2ViewModel : BindableBase, INavigatable
+    public class Scenario2ViewModel : BindableBase, INavigationAware
     {
         private Dictionary<string, object> active;
         public Dictionary<string, object> Active

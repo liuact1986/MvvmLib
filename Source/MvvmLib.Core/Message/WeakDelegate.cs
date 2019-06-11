@@ -22,34 +22,55 @@ namespace MvvmLib.Message
         private readonly WeakReference weakReference;
         private readonly MethodInfo method;
         private readonly Type delegateType;
+        private readonly bool keepAlive;
+        private Delegate @delegate;
 
         /// <summary>
         /// Tries to create a delegate if weak reference target is alive.
         /// </summary>
-        public Delegate Target => TryGetDelegate();
+        public Delegate Target
+        {
+            get { return TryGetDelegate(); }
+        }
 
         /// <summary>
         /// Creates the weak delegate class.
         /// </summary>
         /// <param name="delegate">The delegate</param>
-        public WeakDelegate(Delegate @delegate)
+        /// <param name="keepAlive">Allows to keep alive the reference</param>
+        public WeakDelegate(Delegate @delegate, bool keepAlive)
         {
-            if (@delegate == null) { throw new ArgumentNullException(nameof(@delegate)); }
+            if (@delegate == null)
+                throw new ArgumentNullException(nameof(@delegate)); 
 
-            weakReference = new WeakReference(@delegate.Target);
-            method = @delegate.Method;
-            delegateType = @delegate.GetType();
+            if (keepAlive)
+            {
+                this.keepAlive = true;
+                this.@delegate = @delegate;
+            }
+            else
+            {
+                weakReference = new WeakReference(@delegate.Target);
+                method = @delegate.Method;
+                delegateType = @delegate.GetType();
+            }
         }
 
         private Delegate TryGetDelegate()
         {
-            if (method.IsStatic)
-                return Delegate.CreateDelegate(delegateType, null, method);
+            if (keepAlive)
+            {
+                return @delegate;
+            }
+            else
+            {
+                if (method.IsStatic)
+                    return Delegate.CreateDelegate(delegateType, null, method);
 
-            object target = weakReference.Target;
-            if (target != null)
-                return Delegate.CreateDelegate(delegateType, target, method);
-
+                object target = weakReference.Target;
+                if (target != null)
+                    return Delegate.CreateDelegate(delegateType, target, method);
+            }
 
             return null;
         }

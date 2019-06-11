@@ -87,8 +87,8 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="ValidationType" Margin="10 10 10 0"/>
-                    <ComboBox ItemsSource="{Binding ValidationTypes, Mode=TwoWay}" Width="120"
-                              SelectedValue="{Binding User.ValidationType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <ComboBox ItemsSource="{Binding ValidationTypes}"
+                              SelectedItem="{Binding User.ValidationType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               Grid.Column="1"/>
 
                     <TextBlock Text="Use Custom Validations:" Grid.Row="1" Margin="10 0"/>

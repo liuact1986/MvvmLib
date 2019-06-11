@@ -6,14 +6,11 @@ namespace MvvmLib.Mvvm
 {
 
     /// <summary>
-    /// The composite can executes multiple commands.
+    /// A command that can execute multiples commands simultaneously.
     /// </summary>
     public class CompositeCommand : ICommand
     {
-        /// <summary>
-        /// The list of the commands to execute.
-        /// </summary>
-        protected readonly List<ICommand> commands;
+        private readonly List<ICommand> commands;
         /// <summary>
         /// The list of the commands to execute.
         /// </summary>
@@ -51,12 +48,13 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Remove the command from commands list.
+        /// Removes the command from commands list.
         /// </summary>
         /// <param name="command">The command</param>
         public virtual bool Remove(ICommand command)
         {
-            if (command == null) { throw new ArgumentNullException(nameof(command)); }
+            if (command == null)
+                throw new ArgumentNullException(nameof(command)); 
 
             if (commands.Contains(command))
             {
@@ -67,18 +65,13 @@ namespace MvvmLib.Mvvm
             return false;
         }
 
-        /// <summary>
-        /// Allows the composite command to be notified on command can execute changed.
-        /// </summary>
-        /// <param name="sender">The command</param>
-        /// <param name="e">The event args</param>
-        protected virtual void OnCommandCanExecuteChanged(object sender, EventArgs e)
+        private void OnCommandCanExecuteChanged(object sender, EventArgs e)
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
-        /// Checks if commands have to be executed.
+        /// Use the canExecuteMethod for all commands.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         /// <returns>True if all commands can execute</returns>
@@ -94,7 +87,7 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Invokes the execute command.
+        /// Invokes the execute method for all <see cref="Commands"/>.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         public virtual void Execute(object parameter)

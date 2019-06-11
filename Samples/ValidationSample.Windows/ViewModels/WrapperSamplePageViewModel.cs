@@ -11,13 +11,19 @@ namespace ValidationSample.ViewModels
 
     public class WrapperSamplePageViewModel : BindableBase
     {
+
+        //public ObservableCollection<string> Pets { get; set; }
+
+        public ObservableCollection<ValidationHandling> ValidationTypes { get; set; }
+
+        public ObservableCollection<string> Summary { get; private set; }
+
         private UserWrapper user;
         public UserWrapper User
         {
             get { return user; }
             set { SetProperty(ref user, value); }
         }
-
 
         private string selectedPet;
         public string SelectedPet
@@ -32,17 +38,6 @@ namespace ValidationSample.ViewModels
             }
         }
 
-        public ObservableCollection<string> Summary { get; private set; }
-
-        //public ObservableCollection<string> Pets { get; set; }
-
-        public List<ValidationHandling> ValidationTypes => new List<ValidationHandling>
-        {
-            ValidationHandling.OnPropertyChange,
-            ValidationHandling.OnSubmit,
-            ValidationHandling.Explicit
-        };
-
         public ICommand SaveCommand { get; }
         public ICommand AddPetCommand { get; }
         public IRelayCommand RemovePetCommand { get; }
@@ -52,6 +47,12 @@ namespace ValidationSample.ViewModels
         {
             //Pets = new ObservableCollection<string>();
             Summary = new ObservableCollection<string>();
+            ValidationTypes = new ObservableCollection<ValidationHandling>
+            {
+                ValidationHandling.OnPropertyChange,
+                ValidationHandling.OnSubmit,
+                ValidationHandling.Explicit
+            };
 
             SaveCommand = new RelayCommand(OnSave);
             AddPetCommand = new RelayCommand(AddPet);

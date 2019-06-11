@@ -4,72 +4,165 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
+             xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"
+             xmlns:local="clr-namespace:NavigationSample.Wpf"
              x:Name="ThisControl"
              xmlns:mvvmLib="http://mvvmlib.com/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Background="{StaticResource PageBackground}">
         <Grid.Effect>
-           <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
         </Grid.Effect>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <WrapPanel Orientation="Horizontal">
-            <TextBlock Text="Content region" Margin="6"></TextBlock>
-            <Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" Margin="5" />
-            <Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" Margin="5" />
-            <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
-            <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
-            <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
-            <Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" Margin="5" />
-        </WrapPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <local:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+                <TextBlock Text="The back and forward buttons have context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
+            </StackPanel>
 
-        <!--<ContentControl Content="{Binding Navigation.Current}" Grid.Row="1"/>-->
-        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Row="1">
-            <mvvmLib:AnimatableContentControl.EntranceAnimation>
-                <Storyboard>
-                    <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <local:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+                <TextBlock Text="NavigationBrowser" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right"  />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <WrapPanel Orientation="Horizontal">
+                <Button Command="{Binding Navigation.NavigateToRootCommand}" Margin="5" ToolTip="Root">
+                    <local:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                </Button>
+                <Button Command="{Binding Navigation.GoBackCommand}" Margin="5" ToolTip="Back">
+                    <local:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <Button.ContextMenu>
+                        <ContextMenu ItemsSource="{Binding BackStack}" IsOpen="True">
+                            <ContextMenu.ItemTemplate>
+                                <DataTemplate>
+                                    <MenuItem Header="{Binding  DisplayName}" Click="OnMenuItemClick"/>
+                                </DataTemplate>
+                            </ContextMenu.ItemTemplate>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+                <Button Command="{Binding Navigation.GoForwardCommand}" Margin="5" ToolTip="Forward">
+                    <local:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <Button.ContextMenu>
+                        <ContextMenu ItemsSource="{Binding ForwardStack}" IsOpen="True">
+                            <ContextMenu.ItemTemplate>
+                                <DataTemplate>
+                                    <MenuItem Header="{Binding DisplayName}" 
+                                          Click="OnMenuItemClick"
+                                          />
+                                </DataTemplate>
+                            </ContextMenu.ItemTemplate>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+                <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
+                <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
+                <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
+                <Button Content="ViewModel A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}" Margin="5" />
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Margin="5,0">
+                <Button Content="First" Command="{Binding NavigationBrowser.MoveCurrentToFirstCommand}" Margin="5" />
+                <Button Content="Previous" Command="{Binding NavigationBrowser.MoveCurrentToPreviousCommand}" Margin="5" />
+                <Button Content="Next" Command="{Binding NavigationBrowser.MoveCurrentToNextCommand}" Margin="5" />
+                <Button Content="Last" Command="{Binding NavigationBrowser.MoveCurrentToLastCommand}" Margin="5" />
+                <TextBox x:Name="PositionTextBox" Width="80" Margin="5">
+                    <mvvmLib:NavigationInteraction.Behaviors>
+                        <mvvmLib:EventToCommandBehavior EventName="TextChanged" 
+                                                        Command="{Binding  NavigationBrowser.MoveCurrentToPositionCommand}"
+                                                        CommandParameter="{Binding ElementName=PositionTextBox,Path=Text}"
+                                                        />
+                    </mvvmLib:NavigationInteraction.Behaviors>
+                </TextBox>
+            </WrapPanel>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}">
+                <mvvmLib:AnimatableContentControl.EntranceAnimation>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                                      From="400" To="0" Duration="0:0:0.4"  />
-                </Storyboard>
-            </mvvmLib:AnimatableContentControl.EntranceAnimation>
-            <mvvmLib:AnimatableContentControl.ExitAnimation>
-                <Storyboard>
-                    <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                    </Storyboard>
+                </mvvmLib:AnimatableContentControl.EntranceAnimation>
+                <mvvmLib:AnimatableContentControl.ExitAnimation>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                                      From="0" To="400" Duration="0:0:0.4"  />
-                </Storyboard>
-            </mvvmLib:AnimatableContentControl.ExitAnimation>
-        </mvvmLib:AnimatableContentControl>
-        
-        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="2" Background="#fff" VerticalAlignment="Bottom" Height="200">
+                    </Storyboard>
+                </mvvmLib:AnimatableContentControl.ExitAnimation>
+            </mvvmLib:AnimatableContentControl>
+
+            <ContentControl Content="{Binding NavigationBrowser.Current}" Grid.Column="1"/>
+        </Grid>
+
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="3" Background="#fff" VerticalAlignment="Bottom" Height="260">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
-                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Label FontWeight="SemiBold">Back Stack</Label>
-                <ListView ItemsSource="{Binding Navigation.History.BackStack}" ItemTemplate="{StaticResource StackTemplate}" Margin="5" Grid.Row="1" BorderThickness="0" />
+                <Label FontWeight="SemiBold">HISTORY</Label>
+                <ListView ItemsSource="{Binding Navigation.History.Entries}" 
+                          SelectedItem="{Binding Navigation.History.Current, Mode=OneWay}"
+                          ItemTemplate="{StaticResource StackTemplate}"
+                          ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
+                          Margin="5" Grid.Row="1" BorderThickness="0" />
 
-                <Label FontWeight="SemiBold" Grid.Column="1">Current Entry</Label>
-                <StackPanel Grid.Column="1" Grid.Row="1">
+                <Label FontWeight="SemiBold" Grid.Column="1">SOURCES</Label>
+                <ListView ItemsSource="{Binding Navigation.Sources}" 
+                          SelectedItem="{Binding Navigation.Current, Mode=OneWay}"
+                          ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
+                          Margin="5" BorderThickness="0" Grid.Column="1" Grid.Row="1">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="5"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Label FontWeight="SemiBold" Grid.Row="2">CURRENT ENTRY</Label>
+                <StackPanel Grid.Row="3">
                     <TextBlock Text="{Binding Navigation.History.Current.SourceType.Name}"  Margin="5"/>
                 </StackPanel>
 
-                <Label FontWeight="SemiBold" Grid.Column="2">Forward Stack</Label>
-                <ListView ItemsSource="{Binding Navigation.History.ForwardStack}" ItemTemplate="{StaticResource StackTemplate}" Grid.Column="2" Grid.Row="1" Margin="5" BorderThickness="0" />
+                <Label FontWeight="SemiBold" Grid.Column="1" Grid.Row="2">CURRENT INDEX</Label>
+                <StackPanel  Grid.Column="1" Grid.Row="3">
+                    <TextBlock Text="{Binding Navigation.CurrentIndex}"  Margin="5" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
-    
+
 </UserControl>

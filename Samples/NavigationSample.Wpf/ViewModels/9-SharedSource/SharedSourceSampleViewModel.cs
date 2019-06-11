@@ -22,7 +22,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             //DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
 
-            DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
+            DetailsSource = NavigationManager.GetSharedSource<MyItemDetailsViewModel>().With(new List<MyItemDetailsViewModel>
             {
                 new MyItemDetailsViewModel(new MyItem { Name = "Item.1" }),
                 new MyItemDetailsViewModel(new MyItem { Name = "Item.2" })

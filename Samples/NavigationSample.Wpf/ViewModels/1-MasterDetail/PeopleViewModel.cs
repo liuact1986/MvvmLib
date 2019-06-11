@@ -17,9 +17,9 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.fakePeopleService = fakePeopleService;
 
-            Navigation = NavigationManager.GetOrCreateNavigationSource("Details");
+            Navigation = NavigationManager.GetNavigationSource("Details");
+            DetailsSource = NavigationManager.GetSharedSource<Person>();
 
-            DetailsSource = NavigationManager.GetOrCreateSharedSource<Person>();
             DetailsSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
 
             this.Load();

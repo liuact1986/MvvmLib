@@ -17,10 +17,12 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
     }
 
-    public class Vm : INavigatable, ICanActivate, ICanDeactivate
+    public class Vm : INavigationAware, ICanActivate, ICanDeactivate
     {
+        public static bool isOkOnNavigatingTo = false;
         public static bool isOkOnNavigatedTo = false;
-        public static object p = null;
+        public static object pOnNavigatedTo = null;
+        public static object pOnNavigatingTo = null;
         public static object pCanActivate = null;
 
         public static bool isOkOnNavigatingFrom = false;
@@ -47,7 +49,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         public void OnNavigatedTo(object parameter)
         {
             isOkOnNavigatedTo = true;
-            p = parameter;
+            pOnNavigatedTo = parameter;
         }
 
         public void OnNavigatingFrom()
@@ -58,8 +60,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
         public static void Reset()
         {
             isOkOnNavigatedTo = false;
-            p = null;
+            isOkOnNavigatingTo = false;
+            pOnNavigatedTo = null;
             pCanActivate = null;
+            pOnNavigatingTo = null;
             isOkOnNavigatingFrom = false;
             isOkCanActivate = false;
             isOkCanDeactivate = false;
@@ -69,11 +73,12 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         public void OnNavigatingTo(object parameter)
         {
-
+            isOkOnNavigatingTo = true;
+            pOnNavigatingTo = parameter;
         }
     }
 
-    public class ViewWithViewModelDataContext : ContentControl, INavigatable, ICanActivate, ICanDeactivate
+    public class ViewWithViewModelDataContext : ContentControl, ICanActivate, ICanDeactivate
     {
 
         public ViewWithViewModelDataContext()
@@ -81,15 +86,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             this.DataContext = new Vm();
         }
 
-        public static bool isOkOnNavigatedTo = false;
-        public static object p = null;
         public static object pCanActivate = null;
-
-        public static bool isOkOnNavigatingFrom = false;
-
         public static bool isOkCanActivate = false;
         public static bool isOkCanDeactivate = false;
-
         public static bool canActivate = true;
         public static bool canDeactivate = true;
 
@@ -106,36 +105,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             return Task.FromResult(canDeactivate);
         }
 
-        public void OnNavigatedTo(object parameter)
-        {
-            isOkOnNavigatedTo = true;
-            p = parameter;
-        }
-
-        public void OnNavigatingFrom()
-        {
-            isOkOnNavigatingFrom = true;
-        }
-
         public static void Reset()
         {
-            isOkOnNavigatedTo = false;
-            p = null;
             pCanActivate = null;
-            isOkOnNavigatingFrom = false;
             isOkCanActivate = false;
             isOkCanDeactivate = false;
             canActivate = true;
             canDeactivate = true;
         }
-
-        public void OnNavigatingTo(object parameter)
-        {
-
-        }
     }
 
-    public class NavigatableView : UserControl, INavigatable
+    public class NavigatableView : UserControl, INavigationAware
     {
         public static bool isOkOnNavigatedTo = false;
         public static object p = null;
@@ -166,7 +146,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
     }
 
-    public class ActivatableView : UserControl, INavigatable, ICanActivate, ICanDeactivate
+    public class ActivatableView : UserControl, INavigationAware, ICanActivate, ICanDeactivate
     {
         public static bool isOkOnNavigatedTo = false;
         public static object p = null;
@@ -227,41 +207,40 @@ namespace MvvmLib.Wpf.Tests.Navigation
     {
         private const string defaultKey = "default";
 
-        [TestMethod]
-        public async Task Navigate_View()
-        {
-            NavigatableView.Reset();
+        //[TestMethod]
+        //public async Task Navigate_View()
+        //{
+        //    NavigatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
-            Assert.AreEqual("1", navigationSource.Name);
+        //    var navigationSource = new NavigationSource();
 
-            await navigationSource.NavigateAsync(typeof(NavigatableView), "p1");
+        //    await navigationSource.NavigateAsync(typeof(NavigatableView), "p1");
 
-            Assert.AreEqual(typeof(NavigatableView), navigationSource.Current.GetType());
+        //    Assert.AreEqual(typeof(NavigatableView), navigationSource.Current.GetType());
 
-            Assert.AreEqual(true, NavigatableView.isOkOnNavigatedTo);
-            Assert.AreEqual("p1", NavigatableView.p);
-            Assert.AreEqual(false, NavigatableView.isOkOnNavigatingFrom);
+        //    Assert.AreEqual(true, NavigatableView.isOkOnNavigatedTo);
+        //    Assert.AreEqual("p1", NavigatableView.p);
+        //    Assert.AreEqual(false, NavigatableView.isOkOnNavigatingFrom);
 
-            await navigationSource.NavigateAsync(typeof(SimpleView));
-            Assert.AreEqual(typeof(SimpleView), navigationSource.Current.GetType());
+        //    await navigationSource.NavigateAsync(typeof(SimpleView));
+        //    Assert.AreEqual(typeof(SimpleView), navigationSource.Current.GetType());
 
-            Assert.AreEqual(true, NavigatableView.isOkOnNavigatingFrom);
-        }
+        //    Assert.AreEqual(true, NavigatableView.isOkOnNavigatingFrom);
+        //}
 
         [TestMethod]
         public async Task Navigate_To_ViewModel()
         {
             Vm.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(Vm), "p1");
 
             Assert.AreEqual(typeof(Vm), navigationSource.Current.GetType());
 
             Assert.AreEqual(true, Vm.isOkOnNavigatedTo);
-            Assert.AreEqual("p1", Vm.p);
+            Assert.AreEqual("p1", Vm.pOnNavigatedTo);
             Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
             Assert.AreEqual(true, Vm.isOkCanActivate);
         }
@@ -271,7 +250,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             ActivatableView.canActivate = true;
 
@@ -279,9 +258,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             await navigationSource.NavigateAsync(typeof(ActivatableView), "a1");
             Assert.AreEqual(true, ActivatableView.isOkCanActivate);
             Assert.AreEqual("a1", ActivatableView.pCanActivate);
-            Assert.AreEqual(true, ActivatableView.isOkOnNavigatedTo);
             Assert.AreEqual(false, ActivatableView.isOkCanDeactivate);
-            Assert.AreEqual(false, ActivatableView.isOkOnNavigatingFrom);
         }
 
         [TestMethod]
@@ -289,7 +266,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             ActivatableView.canActivate = false;
 
@@ -305,7 +282,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView));
 
@@ -316,7 +293,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(false, ActivatableView.isOkCanActivate);
             Assert.AreEqual(false, ActivatableView.isOkOnNavigatedTo);
             Assert.AreEqual(true, ActivatableView.isOkCanDeactivate);
-            Assert.AreEqual(true, ActivatableView.isOkOnNavigatingFrom);
+            //Assert.AreEqual(true, ActivatableView.isOkOnNavigatingFrom);
         }
 
         [TestMethod]
@@ -324,7 +301,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView));
 
@@ -343,7 +320,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             NavigatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(NavigatableView), "p1");
 
@@ -371,7 +348,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             NavigatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
@@ -398,7 +375,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -423,7 +400,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -448,7 +425,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
@@ -464,7 +441,6 @@ namespace MvvmLib.Wpf.Tests.Navigation
             await navigationSource.GoBackAsync();
 
             Assert.AreEqual(true, ActivatableView.isOkCanDeactivate);
-            Assert.AreEqual(true, ActivatableView.isOkOnNavigatingFrom);
         }
 
         [TestMethod]
@@ -472,7 +448,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
@@ -496,7 +472,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
@@ -525,7 +501,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
@@ -554,7 +530,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -574,7 +550,6 @@ namespace MvvmLib.Wpf.Tests.Navigation
             await navigationSource.GoForwardAsync();
 
             Assert.AreEqual(true, ActivatableView.isOkCanDeactivate);
-            Assert.AreEqual(true, ActivatableView.isOkOnNavigatingFrom);
         }
 
         [TestMethod]
@@ -582,7 +557,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ActivatableView.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ActivatableView), "a1");
 
@@ -611,19 +586,94 @@ namespace MvvmLib.Wpf.Tests.Navigation
             ViewWithViewModelDataContext.Reset();
             Vm.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
-            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkOnNavigatedTo);
-            Assert.AreEqual("p1", ViewWithViewModelDataContext.p);
-            Assert.AreEqual(false, ViewWithViewModelDataContext.isOkOnNavigatingFrom);
+            //Assert.AreEqual(true, ViewWithViewModelDataContext.isOkOnNavigatedTo);
+            //Assert.AreEqual("p1", ViewWithViewModelDataContext.p);
+            //Assert.AreEqual(false, ViewWithViewModelDataContext.isOkOnNavigatingFrom);
             Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanActivate);
 
             Assert.AreEqual(true, Vm.isOkOnNavigatedTo);
-            Assert.AreEqual("p1", Vm.p);
+            Assert.AreEqual("p1", Vm.pOnNavigatedTo);
             Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
             Assert.AreEqual(true, Vm.isOkCanActivate);
+        }
+
+        [TestMethod]
+        public async Task Guards_WithView_And_Vm()
+        {
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+
+            var navigationSource = new NavigationSource();
+
+            ViewWithViewModelDataContext.canActivate = false;
+
+            await navigationSource.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
+
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanActivate);
+            Assert.AreEqual("p1", ViewWithViewModelDataContext.pCanActivate);
+            Assert.AreEqual(false, Vm.isOkCanActivate);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingTo);
+            Assert.AreEqual(false, Vm.isOkOnNavigatedTo);
+            Assert.AreEqual(null, Vm.pOnNavigatedTo);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
+
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+
+            Vm.canActivate = false;
+
+            await navigationSource.NavigateAsync(typeof(ViewWithViewModelDataContext), "p2");
+
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanActivate);
+            Assert.AreEqual("p2", ViewWithViewModelDataContext.pCanActivate);
+            Assert.AreEqual(true, Vm.isOkCanActivate);
+            Assert.AreEqual("p2", Vm.pCanActivate);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingTo);
+            Assert.AreEqual(false, Vm.isOkOnNavigatedTo);
+            Assert.AreEqual(null, Vm.pOnNavigatedTo);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
+
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+
+            await navigationSource.NavigateAsync(typeof(ViewWithViewModelDataContext), "p3");
+
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanActivate);
+            Assert.AreEqual("p3", ViewWithViewModelDataContext.pCanActivate);
+            Assert.AreEqual(true, Vm.isOkCanActivate);
+            Assert.AreEqual("p3", Vm.pCanActivate);
+            Assert.AreEqual(true, Vm.isOkOnNavigatingTo);
+            Assert.AreEqual("p3", Vm.pOnNavigatingTo);
+            Assert.AreEqual(true, Vm.isOkOnNavigatedTo);
+            Assert.AreEqual("p3", Vm.pOnNavigatedTo);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
+
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+            Vm.canDeactivate = false;
+            await navigationSource.NavigateAsync(typeof(SimpleView));
+            Assert.AreEqual(true, Vm.isOkCanDeactivate);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
+            Assert.AreEqual(false, ViewWithViewModelDataContext.isOkCanDeactivate);
+
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+            ViewWithViewModelDataContext.canDeactivate = false;
+            await navigationSource.NavigateAsync(typeof(SimpleView));
+            Assert.AreEqual(true, Vm.isOkCanDeactivate);
+            Assert.AreEqual(false, Vm.isOkOnNavigatingFrom);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanDeactivate);
+
+            ViewWithViewModelDataContext.Reset();
+            Vm.Reset();
+            await navigationSource.NavigateAsync(typeof(SimpleView));
+            Assert.AreEqual(true, Vm.isOkCanDeactivate);
+            Assert.AreEqual(true, Vm.isOkOnNavigatingFrom);
+            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanDeactivate);
         }
 
         [TestMethod]
@@ -631,15 +681,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ViewWithViewModelDataContext.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             await navigationSource.NavigateAsync(typeof(ViewWithViewModelDataContext), "p1");
 
             await navigationSource.NavigateAsync(typeof(SimpleView));
 
             Assert.AreEqual(true, ViewWithViewModelDataContext.isOkCanDeactivate);
-            Assert.AreEqual(true, ViewWithViewModelDataContext.isOkOnNavigatingFrom);
-
             Assert.AreEqual(true, Vm.isOkCanDeactivate);
             Assert.AreEqual(true, Vm.isOkOnNavigatingFrom);
         }
@@ -649,10 +697,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ViewWithViewModelDataContext.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             bool isNotified = false;
-            NavigationEventArgs ev = null;
+            NavigatedEventArgs ev = null;
             navigationSource.Navigated += (s, e) =>
             {
                 isNotified = true;
@@ -673,10 +721,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             ViewWithViewModelDataContext.Reset();
 
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             bool isNotified = false;
-            NavigationEventArgs ev = null;
+            NavigatingEventArgs ev = null;
             navigationSource.Navigating += (s, e) =>
             {
                 isNotified = true;
@@ -696,7 +744,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         [TestMethod]
         public async Task Notify_OnNavigationFailed()
         {
-            var navigationSource = new NavigationSource("1");
+            var navigationSource = new NavigationSource();
 
             bool isNotified = false;
             NavigationFailedEventArgs ev = null;
@@ -713,10 +761,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             await navigationSource.NavigateAsync(typeof(ActivatableView), "p1");
 
             Assert.IsTrue(isNotified);
-            Assert.AreEqual(typeof(ActivatableView), ev.Exception.OriginalSource.GetType());
+            // Assert.AreEqual(typeof(ActivatableView), ev.Exception.OriginalSource.GetType()); ? TODO: details for navigation fail ?
             //Assert.AreEqual("p1", ev.Parameter);
         }
-
 
     }
 }

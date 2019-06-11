@@ -1,83 +1,41 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace MvvmLib.Navigation
 {
-
-    /// <summary>
-    /// The Navigation History.
-    /// </summary>
-    public sealed class NavigationHistory : INotifyPropertyChanged
+    public sealed class NavigationHistory : INavigationHistory
     {
-        private readonly NavigationEntryCollection backStack;
-        /// <summary>
-        /// The back stack.
-        /// </summary>
-        public NavigationEntryCollection BackStack
+        internal readonly NavigationEntryCollection entries;
+        public IReadOnlyCollection<NavigationEntry> Entries
         {
-            get { return backStack; }
+            get { return entries; }
         }
 
-        private readonly NavigationEntryCollection forwardStack;
-        /// <summary>
-        /// The forward stack.
-        /// </summary>
-        public NavigationEntryCollection ForwardStack
+        private int currentIndex;
+        public int CurrentIndex
         {
-            get { return forwardStack; }
+            get { return currentIndex; }
         }
 
-        /// <summary>
-        /// Gets the root entry. 
-        /// </summary>
         public NavigationEntry Root
         {
-            get
-            {
-                if (this.backStack.Count > 0)
-                    return this.backStack[0];
-                else
-                    return this.Current;
-            }
+            get { return this.currentIndex >= 0 ? this.entries[0] : null; }
         }
 
-        /// <summary>
-        /// Gets the previous entry.
-        /// </summary>
         public NavigationEntry Previous
         {
-            get
-            {
-                if (this.backStack.Count > 0)
-                    return this.backStack[this.backStack.Count - 1];
-
-                return null;
-            }
+            get { return this.currentIndex > 0 ? this.entries[this.currentIndex - 1] : null; }
         }
 
-        /// <summary>
-        /// Gets the next entry.
-        /// </summary>
-        public NavigationEntry Next
-        {
-            get
-            {
-                if (this.forwardStack.Count > 0)
-                    return this.forwardStack[this.forwardStack.Count - 1];
-
-                return null;
-            }
-        }
-
-        private NavigationEntry current;
-        /// <summary>
-        /// Gets the current entry.
-        /// </summary>
         public NavigationEntry Current
         {
-            get { return current; }
+            get { return this.currentIndex >= 0 ? this.entries[this.currentIndex] : null; }
+        }
+
+        public NavigationEntry Next
+        {
+            get { return this.currentIndex < this.entries.Count - 1 ? this.entries[this.currentIndex + 1] : null; }
         }
 
         /// <summary>
@@ -85,7 +43,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         public bool CanGoBack
         {
-            get { return this.backStack.Count > 0; }
+            get { return this.currentIndex > 0; }
         }
 
         /// <summary>
@@ -93,8 +51,13 @@ namespace MvvmLib.Navigation
         /// </summary>
         public bool CanGoForward
         {
-            get { return this.forwardStack.Count > 0; }
+            get { return this.currentIndex < this.entries.Count - 1; }
         }
+
+        /// <summary>
+        /// Invoked on property changed.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Invoked when the can go back value changed.
@@ -107,103 +70,19 @@ namespace MvvmLib.Navigation
         public event EventHandler<CanGoForwardEventArgs> CanGoForwardChanged;
 
         /// <summary>
-        /// Invoked on property changed.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
         /// Invoked on current entry changed.
         /// </summary>
         public event EventHandler<CurrentEntryChangedEventArgs> CurrentChanged;
 
-        /// <summary>
-        /// Creates the history.
-        /// </summary>
         public NavigationHistory()
         {
-            this.backStack = new NavigationEntryCollection();
-            this.forwardStack = new NavigationEntryCollection();
-
-            HandleGoBackChanged();
-            HandleGoForwardChanged();
-        }
-
-        private void OnCurrentChanged()
-        {
-            CurrentChanged?.Invoke(this, new CurrentEntryChangedEventArgs(Current));
+            this.entries = new NavigationEntryCollection();
+            this.currentIndex = -1;
         }
 
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Handles go back changed.
-        /// </summary>
-        public void HandleGoBackChanged()
-        {
-            this.backStack.CollectionChanged += OnBackStackCollectionChanged;
-        }
-
-        /// <summary>
-        /// Unhandles go back changed.
-        /// </summary>
-        public void UnhandleGoBackChanged()
-        {
-            this.backStack.CollectionChanged -= OnBackStackCollectionChanged;
-        }
-
-        private void OnBackStackCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    if (this.backStack.Count == 1)
-                        OnCanGobackChanged(true);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    if (this.backStack.Count == 0)
-                        OnCanGobackChanged(false);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    OnCanGobackChanged(false);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Handles go forward changed.
-        /// </summary>
-        public void HandleGoForwardChanged()
-        {
-            this.forwardStack.CollectionChanged += OnForwardStackCollectionChanged;
-        }
-
-        /// <summary>
-        /// Unhandles go forward changed.
-        /// </summary>
-        public void UnhandleGoForwardChanged()
-        {
-            this.forwardStack.CollectionChanged -= OnForwardStackCollectionChanged;
-        }
-
-        private void OnForwardStackCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    if (this.forwardStack.Count == 1)
-                        OnCanGoForwardChanged(true);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    if (this.forwardStack.Count == 0)
-                        OnCanGoForwardChanged(false);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    OnCanGoForwardChanged(false);
-                    break;
-            }
         }
 
         private void OnCanGobackChanged(bool canGoBack)
@@ -216,32 +95,36 @@ namespace MvvmLib.Navigation
             this.CanGoForwardChanged?.Invoke(this, new CanGoForwardEventArgs(canGoForward));
         }
 
-        private void SetCurrent(NavigationEntry entry)
+        private void OnCurrentChanged()
         {
-            this.current = entry;
-            OnPropertyChanged(nameof(Current));
-            OnCurrentChanged();
+            CurrentChanged?.Invoke(this, new CurrentEntryChangedEventArgs(Current));
         }
 
-        /// <summary>
-        /// Moves to the entry.
-        /// </summary>
-        /// <param name="entry">The new entry</param>
         public void Navigate(NavigationEntry entry)
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
 
-            // navigate => always new entry
-            // push current if exists to backstack
-            // clear forward stack
-            if (this.current != null)
-                this.backStack.Add(this.current);
+            int oldIndex = this.currentIndex;
 
-            this.SetCurrent(entry);
+            // insert index + 1
+            int newIndex = this.currentIndex + 1;
+            this.entries.Insert(newIndex, entry);
+            SetCurrent(newIndex);
 
-            if (this.forwardStack.Count > 0)
-                this.forwardStack.Clear();
+            // clear forward
+            if (this.entries.Count - 1 > this.currentIndex)
+            {
+                // remove from current index to count
+                int removeIndex = this.currentIndex + 1;
+                while (entries.Count > removeIndex)
+                    this.entries.RemoveAt(removeIndex);
+            }
+
+            if (oldIndex >= 0)
+                CheckCanGoBack(oldIndex);
+            if (this.currentIndex < this.entries.Count - 1)
+                OnCanGoForwardChanged(false);
         }
 
         /// <summary>
@@ -249,77 +132,116 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void NavigateToRoot()
         {
-            if (!CanGoBack && current == null)
+            if (!CanGoBack && currentIndex == -1)
                 throw new InvalidOperationException("Cannot process navigate to root. The history is empty");
 
-            // set current to root entry
-            // clear back stack
-            // clear forward stack
+            SetCurrent(0);
+            if (this.entries.Count > 1)
+            {
+                while (this.entries.Count > 1)
+                    this.entries.RemoveAt(1);
+            }
 
-            this.SetCurrent(this.Root);
+            OnCanGobackChanged(false);
+            OnCanGoForwardChanged(false);
+        }
 
-            this.backStack.Clear();
-            this.forwardStack.Clear();
+        internal void SetCurrent(int index)
+        {
+            this.currentIndex = index;
+            OnPropertyChanged(nameof(CurrentIndex));
+            OnPropertyChanged(nameof(Current));
+            OnCurrentChanged();
         }
 
         /// <summary>
         /// Moves to the previous entry.
         /// </summary>
-        /// <returns>The previous entry</returns>
-        public NavigationEntry GoBack()
+        public void GoBack()
         {
             if (!CanGoBack)
-                throw new InvalidOperationException("Cannot process go back. The back stack is empty");
+                throw new InvalidOperationException("Cannot process go back");
 
-            // get last backstack entry
-            var newCurrent = this.backStack.LastOrDefault();
-            if (newCurrent == null)
-                throw new InvalidOperationException("Cannot go back. Back Stack is empty");
+            int oldIndex = this.currentIndex;
+            int newIndex = this.currentIndex - 1;
 
-            this.backStack.RemoveAt(this.backStack.Count - 1); // remove last
+            SetCurrent(newIndex);
 
-            this.forwardStack.Add(this.Current);
-
-            this.SetCurrent(newCurrent);
-
-            return newCurrent;
+            CheckCanGoBack(oldIndex);
+            CheckCanGoForward(oldIndex);
         }
 
         /// <summary>
         /// Moves to the next entry.
         /// </summary>
-        /// <returns>The next entry</returns>
-        public NavigationEntry GoForward()
+        public void GoForward()
         {
             if (!CanGoForward)
-                throw new InvalidOperationException("Cannot process go forward. The forward stack is empty");
+                throw new InvalidOperationException("Cannot process go forward");
 
-            // get last forwardstack entry
-            var newCurrent = this.forwardStack.LastOrDefault();
-            if (newCurrent == null)
-                throw new InvalidOperationException("Cannot go forward. Forward Stack is empty");
+            int oldIndex = this.currentIndex;
+            int newIndex = this.currentIndex + 1;
 
-            this.forwardStack.RemoveAt(this.forwardStack.Count - 1); // remove last
+            SetCurrent(newIndex);
 
-            // push current to back stack
-            if (this.current == null)
-                throw new InvalidOperationException("The current entry cannot be null");
-
-            this.backStack.Add(this.Current);
-
-            this.SetCurrent(newCurrent);
-
-            return newCurrent;
+            CheckCanGoBack(oldIndex);
+            CheckCanGoForward(oldIndex);
         }
 
-        /// <summary>
-        /// Clears the history.
-        /// </summary>
+        private void CheckCanGoBack(int oldIndex)
+        {
+            // index 0 => 1
+            if (oldIndex == 0 && this.currentIndex == 1)
+                OnCanGobackChanged(true);
+            // index 1 => 0
+            if (oldIndex == 1 && this.currentIndex == 0)
+                OnCanGobackChanged(false);
+        }
+
+        private void CheckCanGoForward(int oldIndex)
+        {
+            // count - 1 => count - 2
+            if (oldIndex == this.entries.Count - 1 && this.currentIndex == this.entries.Count - 2)
+                OnCanGoForwardChanged(true);
+            // count - 2 => count -1
+            if (oldIndex == this.entries.Count - 2 && this.currentIndex == this.entries.Count - 1)
+                OnCanGoForwardChanged(false);
+        }
+
+        public void MoveTo(NavigationEntry entry)
+        {
+            var newIndex = this.entries.IndexOf(entry);
+            if (newIndex == -1)
+                throw new ArgumentException("Unable to find the index of the entry");
+
+            this.MoveTo(newIndex);
+        }
+
+        public void MoveTo(int index)
+        {
+            if (index < 0 || index > this.entries.Count)
+                throw new IndexOutOfRangeException();
+
+            SetCurrent(index);
+
+            if (index > 1)
+                OnCanGobackChanged(true);
+            else
+                OnCanGobackChanged(false);
+
+            if (index < this.entries.Count - 1)
+                OnCanGoForwardChanged(true);
+            else
+                OnCanGoForwardChanged(false);
+        }
+
         public void Clear()
         {
-            this.forwardStack.Clear();
-            this.backStack.Clear();
-            this.SetCurrent(null);
+            this.entries.Clear();
+            SetCurrent(-1);
+
+            this.OnCanGobackChanged(false);
+            this.OnCanGoForwardChanged(false);
         }
     }
 }

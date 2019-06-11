@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.3</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.3.0.2</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
@@ -19,6 +19,10 @@
     <Authors>romagny13</Authors>
     <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>
     <PackageTags>mvvm, library, wpf, uwp, windows, validation, commands, eventaggregator</PackageTags>
+    <Product>MvvmLib.Core</Product>
+    <PackageId>MvvmLib.Core</PackageId>
+    <PackageReleaseNotes>* Cloner, keepAlive eventAggregator</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">

@@ -7,9 +7,9 @@ namespace MvvmLib.Navigation
     {
         DeletionHandling DeletionHandling { get; set; }
         InsertionHandling InsertionHandling { get; set; }
+        int SelectedIndex { get; set; }
         Type SourceType { get; }
 
-        event PropertyChangedEventHandler PropertyChanged;
         event EventHandler<SharedSourceSelectedItemChangedEventArgs> SelectedItemChanged;
     }
 }

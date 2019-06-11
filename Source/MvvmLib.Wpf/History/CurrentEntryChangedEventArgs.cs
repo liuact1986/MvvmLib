@@ -3,7 +3,7 @@
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The region navigation event args class.
+    /// The current navigation event args class.
     /// </summary>
     public class CurrentEntryChangedEventArgs : EventArgs
     {
@@ -23,6 +23,30 @@ namespace MvvmLib.Navigation
         public CurrentEntryChangedEventArgs(NavigationEntry currentEntry)
         {
             this.currentEntry = currentEntry;
+        }
+    }
+
+    /// <summary>
+    /// The event class used on current changed for navigation sources.
+    /// </summary>
+    public class CurrentSourceChangedEventArgs : EventArgs
+    {
+        private object current;
+        /// <summary>
+        /// Gets the current source.
+        /// </summary>
+        public object Current
+        {
+            get { return current; }
+        }
+
+        /// <summary>
+        /// Create the current source changed event args class.
+        /// </summary>
+        /// <param name="current">The entry</param>
+        public CurrentSourceChangedEventArgs(object current)
+        {
+            this.current = current;
         }
     }
 }

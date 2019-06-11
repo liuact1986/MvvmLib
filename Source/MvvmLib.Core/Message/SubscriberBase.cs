@@ -2,27 +2,44 @@
 
 namespace MvvmLib.Message
 {
+    /// <summary>
+    /// Base class for <see cref="Subscriber"/> and <see cref="Subscriber{TPayload}"/>.
+    /// </summary>
     public class SubscriberBase
     {
-        protected SynchronizationContext synchronizationContext;
+        private SynchronizationContext synchronizationContext;
+        /// <summary>
+        /// The synchronization context.
+        /// </summary>
         public SynchronizationContext SynchronizationContext
         {
             get { return synchronizationContext; }
         }
 
-        protected readonly SubscriptionToken subscriptionToken;
+        private readonly SubscriptionToken subscriptionToken;
+        /// <summary>
+        /// The <see cref="SubscriptionToken"/>.
+        /// </summary>
         public SubscriptionToken SubscriptionToken
         {
             get { return subscriptionToken; }
         }
 
-        protected ExecutionStrategyType executionStrategy;
-        public ExecutionStrategyType InvocationStrategy
+        private ExecutionStrategyType executionStrategy;
+        /// <summary>
+        /// The execution strategy.
+        /// </summary>
+        public ExecutionStrategyType ExecutionStrategy
         {
             get { return executionStrategy; }
             set { executionStrategy = value; }
         }
 
+        /// <summary>
+        /// Creates the <see cref="SubscriberBase"/> class.
+        /// </summary>
+        /// <param name="subscriptionToken">The subscription token</param>
+        /// <param name="synchronizationContext">The synchronization context</param>
         public SubscriberBase(SubscriptionToken subscriptionToken, SynchronizationContext synchronizationContext)
         {
             this.executionStrategy = ExecutionStrategyType.PublisherThread;

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -41,13 +43,21 @@ namespace MvvmLib.Navigation
             get { return selectedIndex; }
             set
             {
-                if (value < 0 || value >= items.Count)
+                if (value < -1 || value > items.Count - 1)
                     throw new IndexOutOfRangeException();
 
                 if (value != selectedIndex)
                 {
-                    selectedIndex = value;
-                    SelectedItem = items[selectedIndex];
+                    if (value == -1)
+                    {
+                        selectedIndex = -1;
+                        SelectedItem = default(T);
+                    }
+                    else
+                    {
+                        selectedIndex = value;
+                        SelectedItem = items[selectedIndex];
+                    }
                 }
             }
         }
@@ -61,9 +71,9 @@ namespace MvvmLib.Navigation
             int index = 0;
             foreach (var item in items)
             {
-                if(index == selectedIndex)
+                if (index == selectedIndex)
                 {
-                    if(item is IIsSelected)
+                    if (item is IIsSelected)
                     {
                         ((IIsSelected)item).IsSelected = true;
                     }
@@ -98,54 +108,86 @@ namespace MvvmLib.Navigation
 
         public SharedSource()
         {
-            Intialize(null);
+            Intialize(null, false);
         }
 
-        public SharedSource(IList<T> list)
+        public SharedSource(IList<T> initItems)
         {
-            Intialize(list);
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
+
+            Intialize(initItems, true);
         }
 
-        public SharedSource<T> With(IList<T> list)
+        public SharedSource(Dictionary<T, object> initItems)
         {
-            Intialize(list);
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
+
+            Intialize(initItems, false);
+        }
+
+        public SharedSource<T> With(IList<T> initItems)
+        {
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
+
+            Intialize(initItems, true);
             return this;
         }
 
-        private void Intialize(IList<T> list)
+        public SharedSource<T> With(Dictionary<T, object> initItems)
         {
-            if (list != null)
+            if (initItems == null)
+                throw new ArgumentNullException(nameof(initItems));
+
+            Intialize(initItems, false);
+            return this;
+        }
+
+        private void Intialize(IEnumerable initItems, bool isList)
+        {
+            if (initItems != null)
             {
-                this.items = new SharedSourceItemCollection<T>(list);
-                this.items.Filter = (type, parameter) => TryGetSelectable(type, parameter);
+                this.items = isList ? new SharedSourceItemCollection<T>((IList<T>)initItems)
+                    : new SharedSourceItemCollection<T>((Dictionary<T, object>)initItems);
+                this.items.findAndSelectSelectable = (type, parameter) => FindAndSelectSelectable(type, parameter);
                 if (this.items.Count > 0)
-                    TrySelect(0);
+                    TrySelectingItem(0);
             }
             else
             {
                 this.items = new SharedSourceItemCollection<T>();
-                this.items.Filter = (type, parameter) => TryGetSelectable(type, parameter);
+                this.items.findAndSelectSelectable = (type, parameter) => FindAndSelectSelectable(type, parameter);
             }
             this.items.CollectionChanged += OnItemsCollectionChanged;
         }
 
-
-        /// <summary>
-        /// Tries to get the selectable.
-        /// </summary>
-        /// <param name="newItemType">The type of the new item</param>
-        /// <param name="parameter">The parameter</param>
-        /// <returns>The selectable found or null</returns>
-        protected bool TryGetSelectable(Type newItemType, object parameter)
+        private bool FindAndSelectSelectable(Type newItemType, object parameter)
         {
             foreach (var item in items)
             {
-                if (item is ISelectable)
+                if (item is FrameworkElement)
                 {
-                    if (((ISelectable)item).IsTarget(newItemType, parameter))
+                    var frameworkElement = item as FrameworkElement;
+                    if (frameworkElement.DataContext is ISelectable)
                     {
-                        SelectedItem = item;
-                        return true;
+                        if (((ISelectable)frameworkElement.DataContext).IsTarget(newItemType, parameter))
+                        {
+                            SelectedItem = item;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (item is ISelectable)
+                    {
+                        if (((ISelectable)item).IsTarget(newItemType, parameter))
+                        {
+                            SelectedItem = item;
+                            return true;
+                        }
                     }
                 }
             }
@@ -158,35 +200,30 @@ namespace MvvmLib.Navigation
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    TrySelect(e.NewStartingIndex);
+                    TrySelectingItem(e.NewStartingIndex);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    TrySelectingSourceAfterDeletion(e.OldStartingIndex);
+                    TrySelectingItemAfterDeletion(e.OldStartingIndex);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    TrySelect(e.NewStartingIndex);
+                    TrySelectingItem(e.NewStartingIndex);
                     break;
                 case NotifyCollectionChangedAction.Move:
-                    TrySelect(e.NewStartingIndex);
+                    TrySelectingItem(e.NewStartingIndex);
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    TrySelectingSourceAfterDeletion(-1);
+                    TrySelectingItemAfterDeletion(-1);
                     break;
             }
         }
 
-        private void TrySelect(int index)
+        private void TrySelectingItem(int index)
         {
             if (insertionHandling == InsertionHandling.SelectInserted)
                 SelectedItem = items[index];
         }
 
-        public T CreateNew()
-        {
-            return Activator.CreateInstance<T>();
-        }
-
-        private void TrySelectingSourceAfterDeletion(int index)
+        private void TrySelectingItemAfterDeletion(int index)
         {
             if (deletionHandling == DeletionHandling.Select)
             {
@@ -211,6 +248,11 @@ namespace MvvmLib.Navigation
             }
         }
 
+        public T CreateNewItem()
+        {
+            var item = SourceResolver.CreateInstance(typeof(T));
+            return (T)item;
+        }
 
         #region Events
 
@@ -230,7 +272,7 @@ namespace MvvmLib.Navigation
 
     public class SharedSourceSelectedItemChangedEventArgs : EventArgs
     {
-        private object selectedItem;
+        private readonly object selectedItem;
         public object SelectedItem
         {
             get { return selectedItem; }

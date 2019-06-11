@@ -4,7 +4,7 @@ using MvvmLib.Navigation;
 namespace NavigationSample.Wpf.ViewModels
 {
 
-    public class ViewCViewModel : ViewModelBase, INavigatable, IIsSelected, IDetailViewModel
+    public class ViewCViewModel : ViewModelBase, INavigationAware, IIsSelected, IDetailViewModel
     {
         public ViewCViewModel()
         { }

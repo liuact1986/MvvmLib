@@ -13,7 +13,7 @@ namespace MvvmLib.Message
         /// <summary>
         /// Payload : EventArgs class or string, ...
         /// </summary>
-        private readonly List<Subscriber<TPayload>> subscribers = new List<Subscriber<TPayload>>();
+        private readonly List<Subscriber<TPayload>> subscribers;
 
         private SynchronizationContext synchronizationContext;
         /// <summary>
@@ -26,13 +26,22 @@ namespace MvvmLib.Message
         }
 
         /// <summary>
+        /// Creates the <see cref="ParameterizedEvent{TPayload}"/>.
+        /// </summary>
+        public ParameterizedEvent()
+        {
+            subscribers = new List<Subscriber<TPayload>>();
+        }
+
+        /// <summary>
         /// Checks if a subscriber is registered for the action.
         /// </summary>
         /// <param name="action">The action</param>
-        /// <returns>True if registered</returns>
+        /// <returns>True if found</returns>
         public bool Contains(Action<TPayload> action)
         {
-            if (action == null) { throw new ArgumentNullException(nameof(action)); }
+            if (action == null)
+                throw new ArgumentNullException(nameof(action)); 
 
             lock (subscribers)
             {
@@ -45,14 +54,16 @@ namespace MvvmLib.Message
         /// Checks if a subscriber is registered for the action.
         /// </summary>
         /// <param name="action">The action</param>
-        /// <returns>True if registered</returns>
-        public SubscriberOptions<TPayload> Subscribe(Action<TPayload> action)
+        /// <param name="keepAlive">Allows to keep the reference alive</param>
+        /// <returns>The subscriber options</returns>
+        public SubscriberOptions<TPayload> Subscribe(Action<TPayload> action, bool keepAlive)
         {
-            if (action == null) { throw new ArgumentNullException(nameof(action)); }
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
 
             var subscriptionToken = new SubscriptionToken(Unsubscribe);
 
-            var weakAction = new WeakDelegate(action);
+            var weakAction = new WeakDelegate(action, keepAlive);
             var subscriber = new Subscriber<TPayload>(subscriptionToken, synchronizationContext, weakAction);
 
             lock (subscribers)
@@ -65,12 +76,23 @@ namespace MvvmLib.Message
         }
 
         /// <summary>
+        /// Checks if a subscriber is registered for the action.
+        /// </summary>
+        /// <param name="action">The action</param>
+        /// <returns>The subscriber options</returns>
+        public SubscriberOptions<TPayload> Subscribe(Action<TPayload> action)
+        {
+            return Subscribe(action, false);
+        }
+
+        /// <summary>
         /// Allows to subscribe to the event.
         /// </summary>
         /// <returns>The subscription options</returns>
         public bool Unsubscribe(SubscriptionToken token)
         {
-            if (token == null) { throw new ArgumentNullException(nameof(token)); }
+            if (token == null)
+                throw new ArgumentNullException(nameof(token));
 
             lock (subscribers)
             {
@@ -107,8 +129,10 @@ namespace MvvmLib.Message
                 }
 
                 if (subscribersToRemove.Count > 0)
+                {
                     foreach (var subscriberToRemove in subscribersToRemove)
                         subscribers.Remove(subscriberToRemove);
+                }
             }
         }
     }

@@ -41,15 +41,17 @@
 
 <li class="tocentry"><a href="#viewmodellocator">ViewModelLocator</a></li>
 
-<li class="tocentry"><a href="#navigationsource-and-contentcontrolnavigationsource">NavigationSource and ContentControlNavigationSource</a></li>
+<li class="tocentry"><a href="#navigationsource-keyednavigationsource-and-contentcontrolnavigationsource">NavigationSource, KeyedNavigationSource and ContentControlNavigationSource</a></li>
 
-<li class="tocentry"><a href="#inavigatable">INavigatable</a></li>
+<li class="tocentry"><a href="#inavigationaware">INavigationAware</a></li>
 
 <li class="tocentry"><a href="#navigation-guards-icanactivate-icandeactivate">Navigation Guards (ICanActivate, ICanDeactivate)</a></li>
 
 <li class="tocentry"><a href="#iselectable-with-navigationsource">ISelectable with NavigationSource</a></li>
 
 <li class="tocentry"><a href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.</a></li>
+
+<li class="tocentry"><a href="#navigationbrowser">NavigationBrowser</a></li>
 
 <li class="tocentry"><a href="#iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior</a></li>
 
@@ -105,7 +107,8 @@
 <li><strong>SharedSource</strong>: for <em>ItemsControl</em>, <em>Selector</em>, etc.</li>
 <li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
-<li><strong>INavigatable</strong>: allows views and <em>view models</em> to be notified on navigate</li>
+<li><strong>NavigationBrowser</strong>: allows to browse items sources.</li>
+<li><strong>INavigationAware</strong>: allows <em>view models</em> to be notified on navigate</li>
 <li><strong>ICanActivate</strong>, <strong>ICanDeactivate</strong>: allow to cancel navigation</li>
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
 <li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
@@ -184,7 +187,7 @@ View model name:
 }
 </code></pre>
 
-<h2 id="navigationsource-and-contentcontrolnavigationsource">NavigationSource and ContentControlNavigationSource<a class="headerlink" href="#navigationsource-and-contentcontrolnavigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="navigationsource-keyednavigationsource-and-contentcontrolnavigationsource">NavigationSource, KeyedNavigationSource and ContentControlNavigationSource<a class="headerlink" href="#navigationsource-keyednavigationsource-and-contentcontrolnavigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <h3 id="navigationsource">NavigationSource<a class="headerlink" href="#navigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.</p>
 <p>Example: Creating some Navigation sources in ShellViewModel</p>
@@ -195,18 +198,73 @@ View model name:
     public ShellViewModel()
     {     
         Navigation = NavigationManager.CreateNavigationSource(&quot;Main&quot;);
-
         NavigationManager.CreateNavigationSource(&quot;Details&quot;);
-
         NavigationManager.CreateNavigationSource(&quot;AnimationSample&quot;);
-
         NavigationManager.CreateNavigationSource(&quot;HistorySample&quot;);
     }
 }
 </code></pre>
 
-<p>Get a NavigationSource:</p>
+<p>... or with the Bootstrapper with the PreloadApplicationData</p>
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        : base(container)
+    { }
+
+    protected override Window CreateShell()
+    {
+        return container.GetInstance&lt;Shell&gt;();
+    }
+
+    protected override void RegisterTypes()
+    {
+        container.RegisterSingleton&lt;IFakePeopleService, FakePeopleService&gt;();
+    }
+
+    protected override void PreloadApplicationData()
+    {
+        NavigationManager.CreateNavigationSource(&quot;Main&quot;);
+        NavigationManager.CreateNavigationSource(&quot;Details&quot;);
+        NavigationManager.CreateNavigationSource(&quot;AnimationSample&quot;);
+        NavigationManager.CreateNavigationSource(&quot;HistorySample&quot;);
+
+        NavigationManager.GetOrCreateSharedSource&lt;IDetailViewModel&gt;();
+        NavigationManager.GetOrCreateSharedSource&lt;Person&gt;();
+        NavigationManager.GetOrCreateSharedSource&lt;MyItemDetailsViewModel&gt;();
+    }
+}
+</code></pre>
+
+<p>The method CreateNavigationSource creates a container (for navigation sources with source name provided) and a first Navigation Source (returned by the function). The first naigation source created is a KeyedNavigationSource with the default key.</p>
+<p>Its possible to register navigation sources for the same source name:</p>
+<pre><code class="cs">var n2 = new NavigationSource();
+NavigationManager.CreateNavigationSource(&quot;Main&quot;, n2);
+
+var n3 = new NavigationSource();
+NavigationManager.CreateNavigationSource(&quot;Main&quot;, n3);
+</code></pre>
+
+<p>Navigate simultaneously with all sources of a container</p>
+<pre><code class="cs">var navigationSources = NavigationManager.GetNavigationSources(&quot;Main&quot;);
+navigationSources.NavigateAsync(typeof(ViewA), &quot;My parameter&quot;);
+</code></pre>
+
+<p>The container provided some quick commands (these commands not check can go back / forward)</p>
+<ul>
+<li>NavigateCommand with source type</li>
+<li>NavigateToRootCommand</li>
+<li>GoBackCommand</li>
+<li>GoForwardCommand</li>
+</ul>
+<p>Get the first NavigationSource created:</p>
 <pre><code class="cs">var navigation = NavigationManager.GetNavigationSource(&quot;Main&quot;);
+</code></pre>
+
+<p>Get a navigation source</p>
+<pre><code class="cs">var navigation = NavigationManager.AllNavigationSources[&quot;Main&quot;][1];
+// or
+var navigation = NavigationManager.GetNavigationSources(&quot;Main&quot;)[1];
 </code></pre>
 
 <p>Or </p>
@@ -236,12 +294,18 @@ View model name:
 <pre><code class="xml">&lt;ContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot; /&gt;
 </code></pre>
 
+<p>Registering navigation sources for the same source name :</p>
+<pre><code class="xml">&lt;ContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot; /&gt;
+&lt;ContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot; /&gt;
+&lt;ContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot; /&gt;
+</code></pre>
+
 <p>The namespace:</p>
 <pre><code class="xml">&lt;UserControl ...
             xmlns:mvvmLib=&quot;http://mvvmlib.com/&quot;&gt;
 </code></pre>
 
-<h2 id="inavigatable">INavigatable<a class="headerlink" href="#inavigatable" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="inavigationaware">INavigationAware<a class="headerlink" href="#inavigationaware" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
 <p>Allows to notify ViewModel with parameter</p>
 </blockquote>
@@ -250,7 +314,7 @@ View model name:
 <li><strong>OnNavigatingTo</strong></li>
 <li><strong>OnNavigatedTo</strong></li>
 </ul>
-<pre><code class="cs">public class ViewAViewModel : INavigatable
+<pre><code class="cs">public class ViewAViewModel : INavigationAware
 {
     public void OnNavigatingTo(object parameter)
     {
@@ -269,6 +333,7 @@ View model name:
 }
 </code></pre>
 
+<p><strong>NavigationSource methods</strong></p>
 <table class="table table-bordered-all table-responsive">
 <thead>
 <tr>
@@ -498,6 +563,29 @@ public class ViewBViewModel : DetailsViewModelBase
 }
 </code></pre>
 
+<h2 id="navigationbrowser">NavigationBrowser<a class="headerlink" href="#navigationbrowser" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Allows to browse a source (NavigationSource, SharedSource, etc.) with a CollectionView.</p>
+</blockquote>
+<pre><code class="cs">this.PeopleSource = NavigationManager.GetOrCreateSharedSource&lt;PersonViewModel&gt;();
+this.Browser = new NavigationBrowser(this.PeopleSource.Items);
+</code></pre>
+
+<p>Add buttons and bind Borwser commands</p>
+<pre><code class="xml">&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.MoveCurrentToFirstCommand}&quot; /&gt;
+&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
+&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
+&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
+&lt;TextBox x:Name=&quot;PositionTextBox&quot; Width=&quot;80&quot;&gt;
+    &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
+        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;TextChanged&quot; 
+                                        Command=&quot;{Binding Browser.MoveCurrentToPositionCommand}&quot;
+                                        CommandParameter=&quot;{Binding ElementName=PositionTextBox, Path=Text}&quot;
+                                        /&gt;
+    &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
+&lt;/TextBox&gt;
+</code></pre>
+
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Bind the Items collection and the SelectedItem of the SharedSource is easy.</p>
 <p><strong>IIsSelected</strong> allows to be notified from ViewModel of selection.</p>
@@ -560,7 +648,7 @@ public class ViewBViewModel : DetailsViewModelBase
 
     protected override void SetViewFactory()
     {
-        ViewResolver.SetViewFactory((viewType) =&gt; container.GetNewInstance(viewType));
+        SourceResolver.SetFactory((viewType) =&gt; container.GetNewInstance(viewType));
     }
 
     protected override void SetViewModelFactory()

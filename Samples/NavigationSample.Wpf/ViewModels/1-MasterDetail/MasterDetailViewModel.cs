@@ -8,10 +8,11 @@ namespace NavigationSample.Wpf.ViewModels
     {
         public NavigationSource Navigation { get; }
 
-        public MasterDetailViewModel(IEventAggregator eventAggregator) : base(eventAggregator)
+        public MasterDetailViewModel(IEventAggregator eventAggregator)
+            : base(eventAggregator)
         {
             this.Title = "Master Detail with ISelectable (PersonDetailsViewModel)";
-            Navigation = NavigationManager.GetOrCreateNavigationSource("Details");
+            Navigation = NavigationManager.GetNavigationSource("Details");
         }
 
     }

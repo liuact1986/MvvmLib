@@ -7,18 +7,21 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public class Editable : BindableBase, IEditableObject
     {
+        private readonly ObjectEditor objectEditor;
         /// <summary>
-        /// The editable object service.
+        /// The object editor.
         /// </summary>
-        protected ObjectEditor editor;
-
+        public ObjectEditor ObjectEditor
+        {
+            get { return objectEditor; }
+        }
 
         /// <summary>
         /// Creates the editable.
         /// </summary>
         public Editable()
         {
-            this.editor = new ObjectEditor(this.GetType());
+            this.objectEditor = new ObjectEditor(this.GetType());
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void BeginEdit()
         {
-            this.editor.Store(this);
+            this.objectEditor.Store(this);
         }
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void CancelEdit()
         {
-            this.editor.Restore();
+            this.objectEditor.Restore();
             this.OnPropertyChanged(string.Empty);
         }
 
@@ -43,7 +46,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void EndEdit()
         {
-            this.editor.Clean();
+            this.objectEditor.Clean();
         }
     }
 }

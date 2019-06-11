@@ -5,7 +5,7 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// A collection of <see cref="NavigationBehavior"/>.
     /// </summary>
-    public sealed class NavigationBehaviorCollection : AssociatableCollection<NavigationBehavior>
+    public sealed class NavigationBehaviorCollection : AttachableCollection<NavigationBehavior>
     {
         internal NavigationBehaviorCollection()
         {

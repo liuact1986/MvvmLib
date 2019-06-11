@@ -23,7 +23,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public NavigationSource Navigation { get; private set; }
 
-        public ICommand NavigateCommand { get; }
+        //public ICommand NavigateCommand { get; }
 
         public ICommand WhenAvailableCommand { get; }
  
@@ -31,27 +31,28 @@ namespace NavigationSample.Wpf.ViewModels
         {
             Title = "Navigation Sample [WPF]";
 
-            RegisterSources();
+            Navigation = NavigationManager.GetNavigationSource("MainContent");
 
-            NavigateCommand = new RelayCommand<Type>(Navigate);
+            // RegisterAllSourcesForApplication();
+
+            //NavigateCommand = new RelayCommand<Type>(Navigate);
 
             eventAggregator.GetEvent<ChangeTitleEvent>().Subscribe(OnChangeTitle);
             eventAggregator.GetEvent<NavigateEvent>().Subscribe(OnNavigate);
         }
 
-        private void RegisterSources()
+        private void RegisterAllSourcesForApplication()
         {
-            Navigation = NavigationManager.CreateNavigationSource("MainContent");
+            //Navigation = NavigationManager.CreateNavigationSource("MainContent");
+            //// 1. Master Details
+            //NavigationManager.CreateNavigationSource("Details");
+            //// 2. AnimatableContentControl
+            //NavigationManager.CreateNavigationSource("AnimationSample");
+            //// 5. History Sample
+            //NavigationManager.CreateNavigationSource("HistorySample");
 
-            // 1. Master Details
-            NavigationManager.CreateNavigationSource("Details");
-            // 2. AnimatableContentControl
-            NavigationManager.CreateNavigationSource("AnimationSample");
-
-            // 5. History Sample
-            NavigationManager.CreateNavigationSource("HistorySample");
-            // 6. TabControl and ListView
-            NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
+            //// 6. TabControl and ListView
+            //NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
         }
 
         private void OnChangeTitle(string newTitle)
@@ -59,10 +60,10 @@ namespace NavigationSample.Wpf.ViewModels
             Title = newTitle;
         }
 
-        public async void Navigate(Type sourceType)
-        {
-            await Navigation.NavigateAsync(sourceType);
-        }
+        //public async void Navigate(Type sourceType)
+        //{
+        //    await Navigation.NavigateAsync(sourceType);
+        //}
 
         private async void OnNavigate(NavigateEventArgs args)
         {

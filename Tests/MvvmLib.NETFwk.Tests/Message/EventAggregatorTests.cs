@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.Message;
+using System;
 using System.Threading.Tasks;
 
 namespace MvvmLib.Core.Tests.Message
@@ -67,6 +68,112 @@ namespace MvvmLib.Core.Tests.Message
 
             Assert.AreEqual(true, isNotified);
         }
+
+
+        [TestMethod]
+        public void Not_KeepAlive_Subscriber()
+        {
+            MySub.IsNotified = false;
+
+            var ea = new EventAggregator();
+
+            var sub = new MySub();
+
+            ea.GetEvent<MyEmptyEvent>().Subscribe(sub.Execute, false);
+
+            ea.GetEvent<MyEmptyEvent>().Publish();
+
+            Assert.AreEqual(true, MySub.IsNotified);
+
+            MySub.IsNotified = false;
+            sub = null;
+            GC.Collect();
+
+            ea.GetEvent<MyEmptyEvent>().Publish();
+            Assert.AreEqual(false, MySub.IsNotified);
+        }
+
+        [TestMethod]
+        public void KeepAlive_Subscriber()
+        {
+            MySub.IsNotified = false;
+
+            var ea = new EventAggregator();
+
+            var sub = new MySub();
+
+            ea.GetEvent<MyEmptyEvent>().Subscribe(sub.Execute, true);
+
+            ea.GetEvent<MyEmptyEvent>().Publish();
+
+            Assert.AreEqual(true, MySub.IsNotified);
+
+            MySub.IsNotified = false;
+            sub = null;
+            GC.Collect();
+
+            ea.GetEvent<MyEmptyEvent>().Publish();
+            Assert.AreEqual(true, MySub.IsNotified);
+        }
+
+        [TestMethod]
+        public void Not_KeepAlive_Parameterized_Subscriber()
+        {
+            MySubWithParameterString.IsNotified = false;
+            MySubWithParameterString.MyString = null;
+
+            var ea = new EventAggregator();
+
+            var sub = new MySubWithParameterString();
+
+            ea.GetEvent<MyGenericEvent>().Subscribe(sub.Execute, false);
+
+            ea.GetEvent<MyGenericEvent>().Publish("A");
+
+            Assert.AreEqual(true, MySubWithParameterString.IsNotified);
+            Assert.AreEqual("A", MySubWithParameterString.MyString);
+
+            MySubWithParameterString.IsNotified = false;
+            MySubWithParameterString.MyString = null;
+
+            sub = null;
+            GC.Collect();
+
+            ea.GetEvent<MyGenericEvent>().Publish("B");
+
+            Assert.AreEqual(false, MySubWithParameterString.IsNotified);
+            Assert.AreEqual(null, MySubWithParameterString.MyString);
+        }
+
+        [TestMethod]
+        public void KeepAlive_Parameterized_Subscriber()
+        {
+            MySubWithParameterString.IsNotified = false;
+            MySubWithParameterString.MyString = null;
+
+            var ea = new EventAggregator();
+
+            var sub = new MySubWithParameterString();
+
+            ea.GetEvent<MyGenericEvent>().Subscribe(sub.Execute, true);
+
+            ea.GetEvent<MyGenericEvent>().Publish("A");
+
+            Assert.AreEqual(true, MySubWithParameterString.IsNotified);
+            Assert.AreEqual("A", MySubWithParameterString.MyString);
+
+            MySubWithParameterString.IsNotified = false;
+            MySubWithParameterString.MyString = null;
+
+            sub = null;
+            GC.Collect();
+
+            ea.GetEvent<MyGenericEvent>().Publish("B");
+
+            Assert.AreEqual(true, MySubWithParameterString.IsNotified);
+            Assert.AreEqual("B", MySubWithParameterString.MyString);
+        }
+
 
         [TestMethod]
         public void Notify_Subscriber_On_UIThread()
@@ -351,6 +458,29 @@ namespace MvvmLib.Core.Tests.Message
             Assert.AreEqual("a", r);
         }
 
+    }
+
+    public class MySub
+    {
+        public static bool IsNotified { get; set; }
+
+        public void Execute()
+        {
+            IsNotified = true;
+        }
+    
+    }
+
+    public class MySubWithParameterString
+    {
+        public static bool IsNotified { get; set; }
+        public static string MyString { get; set; }
+
+        public void Execute(string v)
+        {
+            IsNotified = true;
+            MyString = v;
+        }
     }
 
     public class FakeEvent : EmptyEvent

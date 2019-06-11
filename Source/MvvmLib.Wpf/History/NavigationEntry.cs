@@ -5,7 +5,7 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// The navigation entry class.
     /// </summary>
-    public class NavigationEntry 
+    public class NavigationEntry
     {
         private readonly Type sourceType;
         /// <summary>
@@ -34,15 +34,6 @@ namespace MvvmLib.Navigation
             get { return parameter; }
         }
 
-        private readonly object context;
-        /// <summary>
-        /// The context.
-        /// </summary>
-        public object Context
-        {
-            get { return context; }
-        }
-
         /// <summary>
         /// Creates the navigation entry.
         /// </summary>
@@ -50,12 +41,11 @@ namespace MvvmLib.Navigation
         /// <param name="source">The source</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="context">The context</param>
-        public NavigationEntry(Type sourceType, object source, object parameter, object context)
+        public NavigationEntry(Type sourceType, object source, object parameter)
         {
             this.sourceType = sourceType;
             this.source = source;
             this.parameter = parameter;
-            this.context = context;
         }
     }
 }

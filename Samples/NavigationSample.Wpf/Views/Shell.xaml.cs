@@ -36,9 +36,10 @@ namespace NavigationSample.Wpf.Views
                 new MenuItem(nameof(HistorySampleView),"Observable History", IconKind.History, () => Navigate(typeof(HistorySampleView))),
                 new MenuItem(nameof(TabControlSampleView),"TabControl", IconKind.Tab, () => Navigate(typeof(TabControlSampleView))),
                 new MenuItem(nameof(ItemsRegionSampleView), "ListView", IconKind.LibraryBooks, () => Navigate(typeof(ItemsRegionSampleView))),
-                new MenuItem(nameof(ContentControlNavigationSourceSampleView),"ContentControl NavigationSource", IconKind.Car, () => Navigate(typeof(ContentControlNavigationSourceSampleView))),
                 new MenuItem(nameof(SharedSourceSampleView), "Shared Source", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView))),
-                new MenuItem(nameof(NavigationBehaviorsSampleView), "Navigation Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView)))
+                new MenuItem(nameof(NavigationBehaviorsSampleView), "Navigation Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView))),
+                new MenuItem(nameof(MultipleSubscribersSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(MultipleSubscribersSampleView))),
+                new MenuItem(nameof(SharedSourceNavigationAndEditionSampleView), "Navigation and Edition", IconKind.Pencil, () => Navigate(typeof(SharedSourceNavigationAndEditionSampleView)))
             };
 
             this.Loaded += OnShellLoaded;
@@ -68,7 +69,7 @@ namespace NavigationSample.Wpf.Views
                 }
         }
 
-        private void OnNavigated(object sender, NavigationEventArgs e)
+        private void OnNavigated(object sender, NavigatedEventArgs e)
         {
             if (e.NavigationType == NavigationType.Back)
             {
@@ -83,9 +84,9 @@ namespace NavigationSample.Wpf.Views
             }
         }
 
-        private void Navigate(Type sourceType)
+        private async void Navigate(Type sourceType)
         {
-            ViewModel.Navigate(sourceType);
+            await ViewModel.Navigation.NavigateAsync(sourceType);
         }
 
         private void OnHamburgerButtonClick(object sender, RoutedEventArgs e)
@@ -93,7 +94,7 @@ namespace NavigationSample.Wpf.Views
             if (isAnimating)
                 return;
 
-            isAnimating = true;      
+            isAnimating = true;
 
             var storyboardName = isPaneOpened ? "CloseMenu" : "OpenMenu";
             var storyboard = (Storyboard)HamburgerButton.FindResource(storyboardName);

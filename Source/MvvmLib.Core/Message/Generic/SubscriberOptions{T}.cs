@@ -9,7 +9,6 @@ namespace MvvmLib.Message
     {
         private readonly Subscriber<TPayload> subscriber;
 
-
         /// <summary>
         /// The token.
         /// </summary>
@@ -28,28 +27,29 @@ namespace MvvmLib.Message
         }
 
         /// <summary>
-        /// Allwos to define a filter.
+        /// Allows to define a filter.
         /// </summary>
         /// <param name="filter">The filter</param>
         /// <returns>The subscriber options</returns>
         public SubscriberOptions<TPayload> WithFilter(Func<TPayload, bool> filter)
         {
-            if (filter == null) { throw new ArgumentNullException(nameof(filter)); }
+            if (filter == null)
+                throw new ArgumentNullException(nameof(filter)); 
 
-            var weakFilter = new WeakDelegate(filter);
+            var weakFilter = new WeakDelegate(filter, false);
             subscriber.weakFilter = weakFilter;
 
             return this;
         }
 
         /// <summary>
-        /// Allows to change executionstrategy.
+        /// Allows to change the executionstrategy.
         /// </summary>
         /// <param name="executionStrategy">The execution strategy</param>
         /// <returns>The subscriber options</returns>
         public SubscriberOptions<TPayload> WithExecutionStrategy(ExecutionStrategyType executionStrategy)
         {
-            subscriber.InvocationStrategy = executionStrategy;
+            subscriber.ExecutionStrategy = executionStrategy;
             return this;
         }
     }

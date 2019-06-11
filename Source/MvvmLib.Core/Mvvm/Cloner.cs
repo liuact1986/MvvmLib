@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace MvvmLib.Mvvm
 {
+
     /// <summary>
     /// Allows to clone values or objects.
     /// </summary>
     public class Cloner
     {
         private readonly CircularReferenceManager circularReferenceManager;
+        private readonly DefaultDelegateFactory delegateFactory;
         private readonly MethodInfo cloneGenericDictionaryMethod;
         private readonly MethodInfo cloneGenericListOrCollectionMethod;
 
+        private List<string> blackList;
+        /// <summary>
+        /// Allows to ignore field or property by name.
+        /// </summary>
+        public List<string> BlackList
+        {
+            get { return blackList; }
+        }
+
         private bool nonPublicConstructors;
         /// <summary>
-        /// Allows to include non public constructors.
+        /// Allows to include non public constructors (true by default).
         /// </summary>
         public bool NonPublicConstructors
         {
@@ -26,7 +39,7 @@ namespace MvvmLib.Mvvm
 
         private bool nonPublicProperties;
         /// <summary>
-        /// Allows to include non public properties.
+        /// Allows to include non public properties (true by default).
         /// </summary>
         public bool NonPublicProperties
         {
@@ -34,19 +47,9 @@ namespace MvvmLib.Mvvm
             set { nonPublicProperties = value; }
         }
 
-        private bool nonPublicFields;
-        /// <summary>
-        /// Allows to include non public fields.
-        /// </summary>
-        public bool NonPublicFields
-        {
-            get { return nonPublicFields; }
-            set { nonPublicFields = value; }
-        }
-
         private bool includeFields;
         /// <summary>
-        /// Allows to include fields.
+        /// Allows to include fields (false by default).
         /// </summary>
         public bool IncludeFields
         {
@@ -54,26 +57,156 @@ namespace MvvmLib.Mvvm
             set { includeFields = value; }
         }
 
+        private bool includeDelegates;
+        /// <summary>
+        /// Allows to clone <see cref="Delegate"/> (false by default). 
+        /// </summary>
+        public bool IncludeDelegates
+        {
+            get { return includeDelegates; }
+            set { includeDelegates = value; }
+        }
+
+        private ClonerErrorHandling errorHandling;
+        /// <summary>
+        /// Error handling (<see cref="ClonerErrorHandling.UseOriginalValue"/> by default).
+        /// </summary>
+        public ClonerErrorHandling ErrorHandling
+        {
+            get { return errorHandling; }
+            set { errorHandling = value; }
+        }
+
         /// <summary>
         /// Creates the cloner.
         /// </summary>
         public Cloner()
         {
-            NonPublicConstructors = true;
-            NonPublicProperties = true;
-            NonPublicFields = true;
-            IncludeFields = false;
-
-            circularReferenceManager = new CircularReferenceManager();
+            this.nonPublicConstructors = true;
+            this.nonPublicProperties = true;
+            this.includeFields = false;
+            this.errorHandling = ClonerErrorHandling.UseOriginalValue;
+            this.includeDelegates = false;
+            this.blackList = new List<string>();
+            this.circularReferenceManager = new CircularReferenceManager();
+            this.delegateFactory = new DefaultDelegateFactory();
 
             this.cloneGenericDictionaryMethod = typeof(Cloner).GetMethod("CloneGenericDictionary", BindingFlags.Instance | BindingFlags.NonPublic);
             this.cloneGenericListOrCollectionMethod = typeof(Cloner).GetMethod("CloneGenericListOrCollection", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        }
+
+        private Delegate CloneDelegate(Delegate @delegate)
+        {
+            var method = @delegate.Method;
+            var target = @delegate.Target;
+            var clone = Delegate.CreateDelegate(@delegate.GetType(), target, method);
+            return clone;
         }
 
         private object CreateInstance(Type type)
         {
-            var instance = ReflectionUtils.CreateInstance(type, nonPublicConstructors);
-            return instance;
+            try
+            {
+                var flags = ReflectionUtils.GetFlags(nonPublicConstructors);
+                var emptyConstructor = type.GetConstructor(flags, null, Type.EmptyTypes, null);
+                if (emptyConstructor != null)
+                {
+                    var instance = emptyConstructor.Invoke(null);
+                    return instance;
+                }
+                else
+                {
+                    var constructor = type.GetConstructors(flags).FirstOrDefault();
+                    if (constructor != null)
+                    {
+                        var parameters = constructor.GetParameters();
+                        var fakeParameters = new object[parameters.Length];
+                        int index = 0;
+                        foreach (ParameterInfo parameter in parameters)
+                        {
+                            var parameterType = parameter.ParameterType;
+                            if (parameterType.IsValueType)
+                            {
+                                fakeParameters[index] = Activator.CreateInstance(parameterType);
+                            }
+                            else if (parameterType == typeof(string))
+                            {
+                                fakeParameters[index] = ""; // avoid ArgumentNullException
+                            }
+                            else
+                            {
+                                if (ReflectionUtils.IsDelegateType(parameterType))
+                                {
+                                    if (!includeDelegates)
+                                    {
+                                        return null;
+                                    }
+                                    else
+                                    {
+                                        if (ReflectionUtils.IsActionType(parameterType))
+                                        {
+                                            if (parameterType.IsGenericType)
+                                            {
+                                                var types = parameterType.GetGenericArguments();
+                                                if (types.Length > 8)
+                                                    throw new NotSupportedException($"Actions with less than 9 args supported '{parameter.Name}'");
+
+                                                var methodName = $"GetAction{types.Length}";
+
+                                                var method = typeof(DefaultDelegateFactory).GetMethod(methodName);
+                                                var genericMethod = method.MakeGenericMethod(types);
+                                                var action = genericMethod.Invoke(delegateFactory, null);
+                                                fakeParameters[index] = action;
+                                            }
+                                            else
+                                            {
+                                                fakeParameters[index] = delegateFactory.GetAction0();
+                                            }
+                                        }
+                                        else if (ReflectionUtils.IsFuncType(parameterType))
+                                        {
+                                            var types = parameterType.GetGenericArguments();
+                                            if (types.Length > 9)
+                                                throw new NotSupportedException($"Func with less than 10 args supported '{parameter.Name}'");
+
+                                            var methodName = $"GetFunc{types.Length}";
+
+                                            var method = typeof(DefaultDelegateFactory).GetMethod(methodName);
+                                            var genericMethod = method.MakeGenericMethod(types);
+                                            var func = genericMethod.Invoke(delegateFactory, null);
+                                            fakeParameters[index] = func;
+                                        }
+                                        else
+                                            throw new NotSupportedException($"Unsupported delegate '{parameter.Name}' '{parameterType}' {Environment.StackTrace}");
+                                    }
+                                }
+                                else
+                                {
+                                    fakeParameters[index] = CreateInstance(parameterType);
+                                }
+                            }
+                            index++;
+                        }
+                        var instance = constructor.Invoke(fakeParameters);
+                        return instance;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Debug.WriteLine($"Failed to create instance of type '{type.Name}'. Exception'{ex.Message}' '{ex}'");
+            }
+            return null;
+        }
+
+        private bool ConvertToBool(object value)
+        {
+            if (bool.TryParse(value.ToString(), out bool result))
+            {
+                return result;
+            }
+            throw new Exception();
         }
 
         private object CreateInstanceFast(Type type)
@@ -172,50 +305,69 @@ namespace MvvmLib.Mvvm
             return result;
         }
 
-        private object CloneObject(object instance)
+        private object CloneObject(object originalInstance)
         {
-            if (instance == null)
+            if (originalInstance == null)
                 return null;
 
-            var type = instance.GetType();
+            var type = originalInstance.GetType();
             // circular
-            var clonedInstanceRegistered = circularReferenceManager.TryGetInstance(instance);
+            var clonedInstanceRegistered = circularReferenceManager.TryGetInstance(originalInstance);
             if (clonedInstanceRegistered != null)
                 return clonedInstanceRegistered;
 
             var clonedInstance = CreateInstance(type);
-            // circular
-            circularReferenceManager.AddInstance(instance, clonedInstance);
-
-            // properties
-            var properties = ReflectionUtils.GetProperties(type, NonPublicProperties);
-            foreach (var property in properties)
+            if (clonedInstance != null)
             {
-                if (property.CanRead && property.CanWrite)
+                // circular
+                circularReferenceManager.AddInstance(originalInstance, clonedInstance);
+
+                // fields
+                if (includeFields)
                 {
-                    var propertyValue = property.GetValue(instance);
-                    if (propertyValue != null)
+                    var fields = ReflectionUtils.GetFields(type, true);
+                    foreach (var field in fields)
                     {
-                        var clonedPropertyValue = DoDeepClone(propertyValue);
-                        property.SetValue(clonedInstance, clonedPropertyValue);
+                        if (!blackList.Contains(field.Name))
+                        {
+                            var fieldValue = field.GetValue(originalInstance);
+                            var clonedFieldValue = DoDeepClone(fieldValue);
+                            field.SetValue(clonedInstance, clonedFieldValue);
+                        }
                     }
                 }
-            }
 
-            // fields
-            if (includeFields)
-            {
-                var fields = ReflectionUtils.GetFields(type, NonPublicFields);
-                foreach (var field in fields)
+                // properties
+                var properties = ReflectionUtils.GetProperties(type, NonPublicProperties);
+                foreach (var property in properties)
                 {
-                    var fieldValue = field.GetValue(instance);
-                    var clonedFieldValue = DoDeepClone(fieldValue);
-
-                    field.SetValue(clonedInstance, clonedFieldValue);
+                    if (property.CanRead && property.CanWrite)
+                    {
+                        var propertyValue = property.GetValue(originalInstance);
+                        if (propertyValue != null && !blackList.Contains(property.Name))
+                        {
+                            var clonedPropertyValue = DoDeepClone(propertyValue);
+                            property.SetValue(clonedInstance, clonedPropertyValue);
+                        }
+                    }
                 }
+
+                return clonedInstance;
             }
 
-            return clonedInstance;
+            switch (errorHandling)
+            {
+                case ClonerErrorHandling.Continue:
+                    //Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and continue cloning with \"ObjectNonClonableHandling.Continue\"");
+                    break;
+                case ClonerErrorHandling.Throw:
+                    throw new NotSupportedException($"Unable to clone '{type.Name}' '{Environment.StackTrace}'");
+                case ClonerErrorHandling.UseOriginalValue:
+                    //Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and return original value with \"ObjectNonClonableHandling.UseOriginalValue\"");
+                    return originalInstance;
+            }
+
+            return null;
         }
 
         private bool IsValueTypeExtended(Type type)
@@ -269,7 +421,15 @@ namespace MvvmLib.Mvvm
             }
             else
             {
-                return CloneObject(value);
+                if (value is Delegate)
+                {
+                    if (includeDelegates)
+                        return CloneDelegate((Delegate)value);
+                    else
+                        return value;
+                }
+                else
+                    return CloneObject(value);
             }
             throw new NotSupportedException($"Unable to clone type {value.GetType().Name}");
         }
@@ -291,4 +451,22 @@ namespace MvvmLib.Mvvm
         }
     }
 
+    /// <summary>
+    /// The <see cref="Cloner"/> error handling.
+    /// </summary>
+    public enum ClonerErrorHandling
+    {
+        /// <summary>
+        /// Continue.
+        /// </summary>
+        Continue,
+        /// <summary>
+        /// Throw a <see cref="NotSupportedException"/>.
+        /// </summary>
+        Throw,
+        /// <summary>
+        /// Use the original value.
+        /// </summary>
+        UseOriginalValue
+    }
 }

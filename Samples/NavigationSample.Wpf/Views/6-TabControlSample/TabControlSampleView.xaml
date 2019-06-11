@@ -34,7 +34,7 @@
                         <Button x:Name="CloseButton" Content="X" 
                                 Command="{Binding CloseCommand}" 
                                 CommandParameter="{Binding}"
-                                HorizontalAlignment="Right" Height="20" Width="20" 
+                                HorizontalAlignment="Right" Height="20" Width="20" Padding="0"
                                 VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     </StackPanel>
                 </DataTemplate>

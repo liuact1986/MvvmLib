@@ -11,11 +11,14 @@ namespace MvvmLib.Mvvm
     /// </summary>
     public abstract class RelayCommandBase : IRelayCommand
     {
+        private readonly Dictionary<string, INotifyPropertyChangedObserver> observedProperties;
         /// <summary>
-        /// The observed properties.
+        /// The observed properties registered with the method ObserveProperty.
         /// </summary>
-        protected readonly Dictionary<string, INotifyPropertyChangedObserver> observedProperties 
-            = new Dictionary<string, INotifyPropertyChangedObserver>();
+        public Dictionary<string, INotifyPropertyChangedObserver> ObservedProperties
+        {
+            get { return observedProperties; }
+        }
 
         /// <summary>
         /// Can execute changed event.
@@ -23,24 +26,32 @@ namespace MvvmLib.Mvvm
         public event EventHandler CanExecuteChanged;
 
         /// <summary>
-        /// Checks if commands have to be executed.
+        /// Use the canExecuteMethod to check if the executeMethod can be invoked.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True if all commands can execute</returns>
+        /// <returns>True if command have to be executed</returns>
         public abstract bool CanExecute(object parameter);
 
         /// <summary>
-        /// Invokes the execute command.
+        /// Invokes the executeMethod.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         public abstract void Execute(object parameter);
 
         /// <summary>
-        /// Notify that the can execute method have to be executed.
+        /// Raises the <see cref="CanExecuteChanged"/> event.
         /// </summary>
         public virtual void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Creates the <see cref="RelayCommandBase"/>.
+        /// </summary>
+        public RelayCommandBase()
+        {
+            observedProperties = new Dictionary<string, INotifyPropertyChangedObserver>();
         }
 
         /// <summary>
@@ -91,5 +102,4 @@ namespace MvvmLib.Mvvm
             return this;
         }
     }
-
 }
