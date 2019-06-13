@@ -111,7 +111,7 @@
 <li><strong>NavigationSource</strong>: Source for <strong>Views</strong> and <strong>ViewModels</strong>. It has an History, a collection of &quot;Sources&quot; (a source is a View or a ViewModel), a <strong>Current</strong> source that can be binded to the content of the <strong>ContentControls</strong>. There is two other NavigationSource Types: <strong>KeyedNavigationSource</strong> (a navigation source with a key) and <strong>ContentControlNavigationSource</strong> that updates directly the content of the ContentControl provided. The <strong>SourceName Attached Property</strong> of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with <strong>NavigationSourceContainers</strong>. It allows to <strong>navigate simultaneously</strong> for all NavigationSources registered for a SourceName and/or open new Shells.</li>
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
 <li><strong>NavigationBrowser</strong>: allows to browse an items source (the &quot;Sources&quot; collection of NavigationSources or the collection of &quot;Items&quot; of the SharedSources for example) with a CollectionView.</li>
-<li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNewItem) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
+<li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
 <li><strong>INavigationAware</strong>: allows <em>view models</em> to be notified on navigate</li>
@@ -316,7 +316,7 @@ navigationSources.NavigateAsync(typeof(ViewA), &quot;My parameter&quot;);
 </tr>
 <tr>
 	<td>ClearFast</td>
-	<td>Removes all items. ICanDeactive and INavigationAware are not invoked</td>
+	<td>Removes all items. ICanDeactive and INavigationAware methods are not invoked</td>
 </tr>
 </tbody>
 </table>
@@ -444,7 +444,7 @@ await s.Items.InsertAsync(1, new MyViewModel(), &quot;My parameter to pass to vi
 
 <p>Or with short cuts</p>
 <pre><code class="cs">var s = NavigationManager.GetSharedSource&lt;MyViewModel&gt;();
-await s.AddNewAsync(1, &quot;My parameter to pass to view model&quot;);
+await s.AddNewAsync(&quot;My parameter to pass to view model&quot;);
 await s.InsertNewAsync(1, &quot;My parameter to pass to view model&quot;);
 </code></pre>
 
@@ -453,7 +453,7 @@ await s.InsertNewAsync(1, &quot;My parameter to pass to view model&quot;);
 await s.Items.RemoveAtAsync(1);
 
 var vieModel = new MyViewModel();
-await s.Items.RemoveAsync(1, viewModel);
+await s.Items.RemoveAsync(viewModel);
 </code></pre>
 
 <p>Clear</p>
