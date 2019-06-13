@@ -76,7 +76,7 @@
                 <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
                 <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
                 <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
-                <Button Content="Redirect D" Command="{Binding Navigation.RedirectCommand}" CommandParameter="{x:Type views:ViewD}" Margin="5" />
+                <Button Content="Redirect" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewE}" Margin="5" />
                 <Button Content="ViewModel A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}" Margin="5" />
             </WrapPanel>
 

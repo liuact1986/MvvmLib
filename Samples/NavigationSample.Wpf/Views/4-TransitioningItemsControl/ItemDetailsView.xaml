@@ -19,7 +19,7 @@
             <TextBlock Text="{Binding Item.Name}" />
 
             <Button Content="X"  Command="{Binding DeleteItemCommand}"
-                HorizontalAlignment="Right" Height="20" Width="20" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 

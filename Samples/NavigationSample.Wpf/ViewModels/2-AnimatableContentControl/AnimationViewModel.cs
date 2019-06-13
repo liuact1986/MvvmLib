@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel: BindableBase
+    public class AnimationViewModel : BindableBase
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -22,6 +22,14 @@ namespace NavigationSample.Wpf.ViewModels
         public NavigationSource Navigation { get; }
 
         public ObservableCollection<Duration> Durations { get; set; }
+
+        private Duration selectedDuration;
+        public Duration SelectedDuration
+        {
+            get { return selectedDuration; }
+            set { SetProperty(ref selectedDuration, value); }
+        }
+
 
         public ICommand NavigateCommand { get; }
         public ICommand CancelAnimationsCommand { get; }
@@ -35,8 +43,9 @@ namespace NavigationSample.Wpf.ViewModels
             this.Durations = new ObservableCollection<Duration>
             {
                 new Duration(TimeSpan.FromMilliseconds(400)),
-                new Duration(TimeSpan.FromSeconds(4)),
+                new Duration(TimeSpan.FromSeconds(4))
             };
+            this.selectedDuration = this.Durations[0];
 
             NavigateCommand = new RelayCommand<Type>(async (sourceType) =>
             {

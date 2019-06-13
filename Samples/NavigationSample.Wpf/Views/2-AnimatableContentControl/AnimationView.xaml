@@ -4,12 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mvvmLib="http://mvvmlib.com/"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
              xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
              xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"
+             xmlns:converters="clr-namespace:NavigationSample.Wpf.Converters"
              mc:Ignorable="d" 
              x:Name="ThisControl"
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <converters:DurationToStringConverter x:Key="DurationToStringConverter"/>
+    </UserControl.Resources>
+    
     <Grid Background="{StaticResource PageBackground}">
         <Grid.Effect>
            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
@@ -20,8 +26,11 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <controls:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+                <TextBlock Text="The back and forward buttons have a context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
+            </StackPanel>
             <WrapPanel Orientation="Horizontal" Margin="5">
-                <Label>Navigate to:</Label>
                 <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
                 <Button Content="View B" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
                 <Button Content="ViewModel A (+ DataTemplate)" Command="{Binding NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}" Margin="5" />
@@ -29,13 +38,13 @@
             </WrapPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
                 <Label>Duration</Label>
-                <ComboBox x:Name="DuractionComboBox" ItemsSource="{Binding Durations}" SelectedIndex="0" Width="120" Margin="5 0"/>
+                <ComboBox x:Name="DurationComboBox" 
+                          ItemsSource="{Binding Durations,Converter={StaticResource DurationToStringConverter}}" 
+                          SelectedItem="{Binding SelectedDuration, Converter={StaticResource DurationToStringConverter}}"
+                          SelectedIndex="0" Width="120" Margin="5,0"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Spam navigation to observe the queue" FontSize="14" FontStyle="Italic" Margin="5"/>
-                <Button Content="Cancel animations" FontWeight="Bold"  Command="{Binding CancelAnimationsCommand}" Margin="5" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5">
+            <Button Content="Cancel animations" FontWeight="Bold"  Command="{Binding CancelAnimationsCommand}" HorizontalAlignment="Left" Margin="5,0" />
+            <StackPanel Orientation="Horizontal" Margin="5,0">
                 <Label>Is Animating:</Label>
                 <TextBlock Text="{Binding ElementName=AnimatableContentControl1,Path=IsAnimating}" VerticalAlignment="Center"/>
             </StackPanel>
@@ -53,7 +62,7 @@
                     <!--<DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                                       From="0" To="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" 
-                                      Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
+                                      Duration="{Binding SelectedDuration}">
                         <DoubleAnimation.EasingFunction>
                             <SineEase EasingMode="EaseInOut" />
                         </DoubleAnimation.EasingFunction>
@@ -65,13 +74,13 @@
                                      To="0.5,0.5" Duration="0"/>
                     <DoubleAnimation Storyboard.TargetName="PreviousContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" 
-                                     From="1" To="0.5" Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}"/>
+                                     From="1" To="0.5" Duration="{Binding SelectedDuration}"/>
                     <DoubleAnimation Storyboard.TargetName="PreviousContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" 
-                                     From="1" To="0.5" Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}"/>
+                                     From="1" To="0.5" Duration="{Binding SelectedDuration}"/>
                     <DoubleAnimation Storyboard.TargetName="PreviousContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.Opacity)" 
-                                     From="1" To="0" Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}"/>
+                                     From="1" To="0" Duration="{Binding SelectedDuration}"/>
                 </Storyboard>
             </mvvmLib:AnimatableContentControl.ExitAnimation>
             <mvvmLib:AnimatableContentControl.EntranceAnimation>
@@ -80,7 +89,7 @@
                     <!--<DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                                       From="{Binding ElementName=ThisControl,Path=ActualWidth,FallbackValue=400}" To="0" 
-                                      Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}">
+                                      Duration="{Binding SelectedDuration}">
                         <DoubleAnimation.EasingFunction>
                             <SineEase EasingMode="EaseInOut" />
                         </DoubleAnimation.EasingFunction>
@@ -89,7 +98,7 @@
                     <!-- 2. FxFall -->
                     <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" 
-                                     From="300" To="0" Duration="{Binding ElementName=DuractionComboBox,Path=SelectedItem}"/>
+                                     From="300" To="0" Duration="{Binding SelectedDuration}"/>
                 </Storyboard>
             </mvvmLib:AnimatableContentControl.EntranceAnimation>
         </mvvmLib:AnimatableContentControl>

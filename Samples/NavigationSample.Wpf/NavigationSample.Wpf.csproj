@@ -59,6 +59,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\MaterialDesignIcon.cs" />
+    <Compile Include="Converters\DurationToStringConverter.cs" />
     <Compile Include="Events\TitleChangedEvent.cs" />
     <Compile Include="Models\FakePeopleService.cs" />
     <Compile Include="Models\IFakePeopleService.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="ViewModels\7-ListView\ItemsRegionSampleViewModel.cs" />
     <Compile Include="ViewModels\8-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\ViewEViewModel.cs" />
     <Compile Include="Views\1-MasterDetail\MasterDetailView.xaml.cs">
       <DependentUpon>MasterDetailView.xaml</DependentUpon>
     </Compile>
@@ -127,6 +129,9 @@
     <Compile Include="Views\8-SharedSource\SharedSourceSampleView.xaml.cs">
       <DependentUpon>SharedSourceSampleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MenuItem.cs" />
     <Compile Include="Views\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
@@ -142,6 +147,9 @@
     </Compile>
     <Compile Include="Views\ViewD.xaml.cs">
       <DependentUpon>ViewD.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewE.xaml.cs">
+      <DependentUpon>ViewE.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -234,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Shell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -253,6 +265,10 @@
     <Page Include="Views\ViewD.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewE.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Window1.xaml">
       <Generator>MSBuild:Compile</Generator>
