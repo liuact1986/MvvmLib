@@ -24,8 +24,8 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 
-* **NavigationSource**: source for _ContentControl_
-* **SharedSource**: source for _ItemsControl_, _Selectors_ (ListBox, TabControl, etc.)
+* **NavigationSource**: source for _ContentControls_
+* **SharedSource**: source for _ItemsControls_, _Selectors_ (ListBox, TabControl, etc.)
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **NavigationBrowser**: allows to browse items sources.
