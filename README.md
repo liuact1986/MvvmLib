@@ -31,8 +31,8 @@ ___
 
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 
-* **NavigationSource**: navigation for _ContentControl_
-* **SharedSource**: for _ItemsControl_, _Selector_, etc.
+* **NavigationSource**: source for _ContentControl_
+* **SharedSource**: source for _ItemsControl_, _Selectors_ (ListBox, TabControl, etc.)
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **INavigatable**: allows views and _view models_ to be notified on navigate

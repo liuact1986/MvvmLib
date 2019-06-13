@@ -111,24 +111,21 @@
 <li><strong>NavigationSource</strong>: Source for <strong>Views</strong> and <strong>ViewModels</strong>. It has an History, a collection of &quot;Sources&quot; (a source is a View or a ViewModel), a <strong>Current</strong> source that can be binded to the content of the <strong>ContentControls</strong>. There is two other NavigationSource Types: <strong>KeyedNavigationSource</strong> (a navigation source with a key) and <strong>ContentControlNavigationSource</strong> that updates directly the content of the ContentControl provided. The <strong>SourceName Attached Property</strong> of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with <strong>NavigationSourceContainers</strong>. It allows to <strong>navigate simultaneously</strong> for all NavigationSources registered for a SourceName and/or open new Shells.</li>
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
 <li><strong>NavigationBrowser</strong>: allows to browse an items source (the &quot;Sources&quot; collection of NavigationSources or the collection of &quot;Items&quot; of the SharedSources for example) with a CollectionView.</li>
-<li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNewItem) to resolve the ViewModels for the Views. The default factory can be overridden and use a IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
+<li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNewItem) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
 <li><strong>INavigationAware</strong>: allows <em>view models</em> to be notified on navigate</li>
 <li><strong>ICanActivate</strong>, <strong>ICanDeactivate</strong>: allow to cancel navigation</li>
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
 <li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
-<li><strong>NavigationSource</strong>: navigation for <em>ContentControl</em></li>
-<li><strong>SharedSource</strong>: for <em>ItemsControl</em>, <em>Selector</em>, etc.</li>
 <li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
 <li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
 </ul>
 <h2 id="create-a-bootstrapper">Create a Bootstrapper<a class="headerlink" href="#create-a-bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Create a new Wpf application.</p>
-<p>Remove the MainWindow. Create a Views directory a create a Window named &quot;Shell&quot;.</p>
+<p>Create a new Wpf application. Remove the MainWindow. Create a &quot;Views&quot; directory and a Window named &quot;Shell&quot;.</p>
 <p>Install the packages:</p>
 <ul>
-<li><strong>MvvmLibWpf</strong>: <strong>MvvmLib.Core</strong> dependency is automatically installed.</li>
+<li><strong>MvvmLibWpf</strong> (<strong>MvvmLib.Core</strong> dependency is automatically installed)</li>
 <li><strong>MvvmLib.IoC</strong> or another IoC container (Unity, Autofac, etc.)</li>
 </ul>
 <p>Create a Bootstrapper Base Class</p>

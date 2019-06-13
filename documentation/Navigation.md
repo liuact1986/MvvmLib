@@ -11,20 +11,16 @@
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
-* **NavigationSource**: navigation for _ContentControl_
-* **SharedSource**: for _ItemsControl_, _Selector_, etc.
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
 
 ## Create a Bootstrapper
 
-Create a new Wpf application.
-
-Remove the MainWindow. Create a Views directory a create a Window named "Shell".
+Create a new Wpf application. Remove the MainWindow. Create a "Views" directory and a Window named "Shell".
 
 Install the packages:
 
-* **MvvmLibWpf**: **MvvmLib.Core** dependency is automatically installed.
+* **MvvmLibWpf** (**MvvmLib.Core** dependency is automatically installed)
 * **MvvmLib.IoC** or another IoC container (Unity, Autofac, etc.)
 
 Create a Bootstrapper Base Class
