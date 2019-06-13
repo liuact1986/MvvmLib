@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
+using MvvmLib.IoC.Factories;
+using MvvmLib.IoC.Registrations;
 using MvvmLib.IoC.Tests;
 using MvvmLib.IoC.Tests.Scanned;
+using MvvmLib.IoC.TypeInfo;
 
 namespace MvvmLib.Tests.IoC
 {
@@ -19,7 +22,7 @@ namespace MvvmLib.Tests.IoC
         [TestMethod]
         public void Change_DelegateFactoryType()
         {
-            var o = new ObjectCreationManager();
+            var o = new FactoryManager();
             //var service = new Injector(new TypeInformationManager(), o, new SingletonCache());
             var service = Activator.CreateInstance(typeof(Injector),
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { new TypeInformationManager(), o, new SingletonCache(), new ScannedTypeManager() }, null)

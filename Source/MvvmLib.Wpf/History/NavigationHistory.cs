@@ -2,40 +2,85 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace MvvmLib.Navigation
+namespace MvvmLib.History
 {
+    /// <summary>
+    /// The history for NavigationSources.
+    /// </summary>
     public sealed class NavigationHistory : INavigationHistory
     {
         internal readonly NavigationEntryCollection entries;
+        /// <summary>
+        /// The entry collection.
+        /// </summary>
         public IReadOnlyCollection<NavigationEntry> Entries
         {
             get { return entries; }
         }
 
-        private int currentIndex;
+        internal int currentIndex;
+        /// <summary>
+        /// The current index.
+        /// </summary>
         public int CurrentIndex
         {
             get { return currentIndex; }
         }
 
+        /// <summary>
+        /// The first entry.
+        /// </summary>
         public NavigationEntry Root
         {
-            get { return this.currentIndex >= 0 ? this.entries[0] : null; }
+            get
+            {
+                if (this.currentIndex >= 0)
+                    return this.entries[0];
+
+                return null;
+            }
         }
 
+        /// <summary>
+        /// The previous entry.
+        /// </summary>
         public NavigationEntry Previous
         {
-            get { return this.currentIndex > 0 ? this.entries[this.currentIndex - 1] : null; }
+            get
+            {
+                if (this.currentIndex > 0)
+                    return this.entries[this.currentIndex - 1];
+
+                return null;
+            }
         }
 
+        /// <summary>
+        /// The current entry.
+        /// </summary>
         public NavigationEntry Current
         {
-            get { return this.currentIndex >= 0 ? this.entries[this.currentIndex] : null; }
+            get
+            {
+                if (this.currentIndex >= 0)
+                    return this.entries[this.currentIndex];
+
+                return null;
+            }
         }
 
+        /// <summary>
+        /// The next entry.
+        /// </summary>
         public NavigationEntry Next
         {
-            get { return this.currentIndex < this.entries.Count - 1 ? this.entries[this.currentIndex + 1] : null; }
+            get
+            {
+                if (this.currentIndex < this.entries.Count - 1)
+                    return this.entries[this.currentIndex + 1];
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -74,6 +119,9 @@ namespace MvvmLib.Navigation
         /// </summary>
         public event EventHandler<CurrentEntryChangedEventArgs> CurrentChanged;
 
+        /// <summary>
+        /// Creates the <see cref="NavigationHistory"/>.
+        /// </summary>
         public NavigationHistory()
         {
             this.entries = new NavigationEntryCollection();
@@ -100,6 +148,10 @@ namespace MvvmLib.Navigation
             CurrentChanged?.Invoke(this, new CurrentEntryChangedEventArgs(Current));
         }
 
+        /// <summary>
+        /// Navigates to the entry. 
+        /// </summary>
+        /// <param name="entry">The entry</param>
         public void Navigate(NavigationEntry entry)
         {
             if (entry == null)
@@ -208,6 +260,10 @@ namespace MvvmLib.Navigation
                 OnCanGoForwardChanged(false);
         }
 
+        /// <summary>
+        /// Moves to the entry.
+        /// </summary>
+        /// <param name="entry">The entry</param>
         public void MoveTo(NavigationEntry entry)
         {
             var newIndex = this.entries.IndexOf(entry);
@@ -217,6 +273,10 @@ namespace MvvmLib.Navigation
             this.MoveTo(newIndex);
         }
 
+        /// <summary>
+        /// Moves to the index.
+        /// </summary>
+        /// <param name="index">The index</param>
         public void MoveTo(int index)
         {
             if (index < 0 || index > this.entries.Count)
@@ -235,6 +295,9 @@ namespace MvvmLib.Navigation
                 OnCanGoForwardChanged(false);
         }
 
+        /// <summary>
+        /// Clear the entries.
+        /// </summary>
         public void Clear()
         {
             this.entries.Clear();

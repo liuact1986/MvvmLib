@@ -1,5 +1,6 @@
 ﻿using CompositeCommandSample.Common;
 using CompositeCommandSample.Views;
+using MvvmLib.Commands;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using System.Collections.Generic;

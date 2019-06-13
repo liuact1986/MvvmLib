@@ -7,55 +7,84 @@ using System.Windows.Media.Animation;
 
 namespace MvvmLib.Animation
 {
-
+    /// <summary>
+    /// Storyboard used by <see cref="TransitioningItemsControl"/>.
+    /// </summary>
     [ContentProperty("Animations")]
     public class ParallelAnimation : DependencyObject
     {
         private Storyboard storyboard;
 
+        /// <summary>
+        /// The animation collection.
+        /// </summary>
         public ObservableCollection<ControlledAnimation> Animations
         {
             get { return (ObservableCollection<ControlledAnimation>)GetValue(AnimationsProperty); }
             set { SetValue(AnimationsProperty, value); }
         }
 
+        /// <summary>
+        /// The animation collection.
+        /// </summary>
         public static readonly DependencyProperty AnimationsProperty =
             DependencyProperty.Register("Animations", typeof(ObservableCollection<ControlledAnimation>), typeof(ParallelAnimation), new PropertyMetadata(null));
 
+        /// <summary>
+        /// The render transform origin.
+        /// </summary>
         public Point? RenderTransformOrigin
         {
             get { return (Point?)GetValue(RenderTransformOriginProperty); }
             set { SetValue(RenderTransformOriginProperty, value); }
         }
 
+        /// <summary>
+        /// The render transform origin.
+        /// </summary>
         public static readonly DependencyProperty RenderTransformOriginProperty =
             DependencyProperty.Register("RenderTransformOrigin", typeof(Point?), typeof(ParallelAnimation), new PropertyMetadata(null));
 
         private ScaleTransform scaleTransform;
+        /// <summary>
+        /// The scale transform.
+        /// </summary>
         public ScaleTransform ScaleTransform
         {
             get { return scaleTransform; }
         }
 
         private SkewTransform skewTransform;
+        /// <summary>
+        /// The skew transform.
+        /// </summary>
         public SkewTransform SkewTransform
         {
             get { return skewTransform; }
         }
 
         private RotateTransform rotateTransform;
+        /// <summary>
+        /// The rotate transform.
+        /// </summary>
         public RotateTransform RotateTransform
         {
             get { return rotateTransform; }
         }
 
         private TranslateTransform translateTransform;
+        /// <summary>
+        /// The translate transform.
+        /// </summary>
         public TranslateTransform TranslateTransform
         {
             get { return translateTransform; }
         }
 
         private Action onCompleted;
+        /// <summary>
+        /// Invoked on animations completed.
+        /// </summary>
         public Action OnCompleted
         {
             get { return onCompleted; }
@@ -63,16 +92,27 @@ namespace MvvmLib.Animation
         }
 
         private bool isAnimating = false;
+        /// <summary>
+        /// Checks the current animation state.
+        /// </summary>
         public bool IsAnimating
         {
             get { return isAnimating; }
         }
 
+        /// <summary>
+        /// Creates the <see cref="ParallelAnimation"/>.
+        /// </summary>
         public ParallelAnimation()
         {
             this.Animations = new ObservableCollection<ControlledAnimation>();
         }
 
+        /// <summary>
+        /// Begins the animation.
+        /// </summary>
+        /// <param name="targetElement">The traget element</param>
+        /// <param name="onCompleted">The action invoked on complete</param>
         public void BeginAnimation(FrameworkElement targetElement, Action onCompleted)
         {
             isAnimating = true;
@@ -103,6 +143,9 @@ namespace MvvmLib.Animation
             storyboard.Begin();
         }
 
+        /// <summary>
+        /// Allows to stop the animation.
+        /// </summary>
         public void StopAnimation()
         {
             if (storyboard != null)
@@ -113,11 +156,17 @@ namespace MvvmLib.Animation
             isAnimating = false;
         }
 
+        /// <summary>
+        /// Handles the completed event of the Storyboard.
+        /// </summary>
         public void HandleStoryboardCompleted()
         {
             storyboard.Completed += OnStoryboardCompleted;
         }
 
+        /// <summary>
+        /// Unhandles the completed event of the Storyboard.
+        /// </summary>
         public void UnhandleStoryboardCompleted()
         {
             storyboard.Completed += OnStoryboardCompleted;

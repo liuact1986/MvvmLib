@@ -1,45 +1,50 @@
-﻿
-using MvvmLib.IoC;
+﻿using MvvmLib.IoC;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Models;
 using NavigationSample.Wpf.ViewModels;
 using NavigationSample.Wpf.Views;
 using System.Windows;
-using System.Windows.Controls;
 
-namespace NavigationSample
+namespace NavigationSample.Wpf.Startup
 {
-
     public class Bootstrapper : MvvmLibBootstrapper
     {
         public Bootstrapper(IInjector container)
             : base(container)
         { }
 
-        protected override Window CreateShell()
-        {
-            return container.GetInstance<Shell>();
-        }
-
         protected override void RegisterTypes()
         {
-            container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
+            //container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
         }
 
         protected override void PreloadApplicationData()
         {
-            NavigationManager.CreateNavigationSource("MainContent");
-            // 1. Master Details
-            NavigationManager.CreateNavigationSource("Details");
-            // 2. AnimatableContentControl
-            NavigationManager.CreateNavigationSource("AnimationSample");
+            // Main content
+            NavigationManager.CreateDefaultNavigationSource("Main");
+            NavigationManager.CreateSharedSource<MenuItem>();
+            // 1. MasterDetails Sample
+            NavigationManager.CreateDefaultNavigationSource("MasterDetails");
+            NavigationManager.CreateSharedSource<Person>("MasterDetails");
+            // 2. AnimatableContentControl Sample
+            NavigationManager.CreateDefaultNavigationSource("AnimationSample");
             // 5. History Sample
-            NavigationManager.CreateNavigationSource("HistorySample");
-
+            NavigationManager.CreateDefaultNavigationSource("HistorySample");
             // 6. TabControl and ListView
-            NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
-            NavigationManager.GetOrCreateSharedSource<Person>();
-            NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
+            NavigationManager.CreateSharedSource<IDetailViewModel>();
+            NavigationManager.CreateSharedSource<Person>();
+            NavigationManager.CreateSharedSource<MyItemDetailsViewModel>();
+            
+        }
+
+        //protected override object CreateShellViewModel()
+        //{
+        //    return container.GetInstance<ShellViewModel>();
+        //}
+
+        protected override Window CreateShell()
+        {
+            return container.GetInstance<Shell>();
         }
     }
 

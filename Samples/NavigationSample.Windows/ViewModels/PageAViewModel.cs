@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using System.Linq;
 using MvvmLib.Navigation;
 using JsonLib;
+using MvvmLib.Commands;
 
 namespace NavigationSample.Windows.ViewModels
 {

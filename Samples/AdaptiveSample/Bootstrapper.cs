@@ -25,7 +25,7 @@ namespace AdaptiveSample
 
         protected override void SetViewFactory()
         {
-            ViewResolver.SetViewFactory((viewType) => container.GetNewInstance(viewType));
+            SourceResolver.SetFactory((sourceType) => container.GetNewInstance(sourceType));
         }
 
         protected override void SetViewModelFactory()

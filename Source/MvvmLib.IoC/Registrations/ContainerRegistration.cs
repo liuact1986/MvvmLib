@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.Registrations
 {
     /// <summary>
     /// Container registration base class.

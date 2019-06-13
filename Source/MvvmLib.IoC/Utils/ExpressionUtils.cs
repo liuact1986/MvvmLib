@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.Utils
 {
     /// <summary>
     /// Linq Expressions utils.

@@ -1,9 +1,8 @@
 ﻿using MvvmLib.IoC;
 using MvvmLib.Message;
-using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 
-namespace NavigationSample
+namespace NavigationSample.Wpf.Startup
 {
     public abstract class MvvmLibBootstrapper : BootstrapperBase
     {
@@ -11,6 +10,9 @@ namespace NavigationSample
 
         public MvvmLibBootstrapper(IInjector container)
         {
+            if (container == null)
+                throw new System.ArgumentNullException(nameof(container));
+
             this.container = container;
         }
 
@@ -22,7 +24,7 @@ namespace NavigationSample
 
         protected override void SetViewFactory()
         {
-            SourceResolver.SetFactory((viewType) => container.GetNewInstance(viewType));
+            SourceResolver.SetFactory((sourceType) => container.GetNewInstance(sourceType));
         }
 
         protected override void SetViewModelFactory()

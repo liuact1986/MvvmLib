@@ -8,7 +8,9 @@
         mc:Ignorable="d"
         Title="Shell" Height="450" Width="800">
     <Grid>
-        <!--<ContentControl Content="{Binding Navigation.Current}" />-->
-        <ContentControl mvvmLib:NavigationManager.SourceName="Main"/>
+        <!-- 1  -->
+        <ContentControl Content="{Binding Navigation.Current}" />
+        <!-- 2 -->
+        <!--<ContentControl mvvmLib:NavigationManager.SourceName="Main"/>-->
     </Grid>
 </Window>

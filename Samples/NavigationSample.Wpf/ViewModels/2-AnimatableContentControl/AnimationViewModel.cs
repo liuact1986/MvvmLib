@@ -1,4 +1,5 @@
-﻿using MvvmLib.Message;
+﻿using MvvmLib.Commands;
+using MvvmLib.Message;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
@@ -9,7 +10,7 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel : SyncTitleViewModel
+    public class AnimationViewModel: BindableBase
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -26,11 +27,10 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand CancelAnimationsCommand { get; }
 
         public AnimationViewModel(IEventAggregator eventAggregator)
-              : base(eventAggregator)
         {
-            this.Title = "ContentControl animation with AnimatableContentControl";
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("ContentControl animation with AnimatableContentControl");
 
-            Navigation = NavigationManager.GetNavigationSource("AnimationSample");
+            Navigation = NavigationManager.GetDefaultNavigationSource("AnimationSample");
 
             this.Durations = new ObservableCollection<Duration>
             {

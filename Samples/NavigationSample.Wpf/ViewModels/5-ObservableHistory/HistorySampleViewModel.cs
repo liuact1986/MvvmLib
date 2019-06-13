@@ -1,12 +1,13 @@
 ﻿using MvvmLib.Message;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using NavigationSample.Wpf.Events;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class HistorySampleViewModel : SyncTitleViewModel
+    public class HistorySampleViewModel 
     {
         public NavigationSource Navigation { get; }
         public NavigationBrowser NavigationBrowser { get; }
@@ -15,14 +16,13 @@ namespace NavigationSample.Wpf.ViewModels
         public ObservableCollection<SourceMenuItem> ForwardStack { get; set; }
 
         public HistorySampleViewModel(IEventAggregator eventAggregator)
-              : base(eventAggregator)
         {
-            this.Title = "Observable History";
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Observable History");
 
             this.BackStack = new ObservableCollection<SourceMenuItem>();
             this.ForwardStack = new ObservableCollection<SourceMenuItem>();
 
-            Navigation = NavigationManager.GetNavigationSource("HistorySample");
+            Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
             Navigation.CurrentChanged += OnCurrentSourceChanged;
 
             NavigationBrowser = new NavigationBrowser(Navigation.Sources);

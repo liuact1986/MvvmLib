@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
              xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"
-             xmlns:local="clr-namespace:NavigationSample.Wpf"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
              x:Name="ThisControl"
              xmlns:mvvmLib="http://mvvmlib.com/"
              mc:Ignorable="d" 
@@ -27,12 +27,12 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal">
-                <local:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
-                <TextBlock Text="The back and forward buttons have context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
+                <controls:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+                <TextBlock Text="The back and forward buttons have a context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                <local:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+                <controls:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
                 <TextBlock Text="NavigationBrowser" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right"  />
             </StackPanel>
         </Grid>
@@ -45,10 +45,10 @@
 
             <WrapPanel Orientation="Horizontal">
                 <Button Command="{Binding Navigation.NavigateToRootCommand}" Margin="5" ToolTip="Root">
-                    <local:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <controls:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
                 </Button>
                 <Button Command="{Binding Navigation.GoBackCommand}" Margin="5" ToolTip="Back">
-                    <local:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <controls:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
                     <Button.ContextMenu>
                         <ContextMenu ItemsSource="{Binding BackStack}" IsOpen="True">
                             <ContextMenu.ItemTemplate>
@@ -60,7 +60,7 @@
                     </Button.ContextMenu>
                 </Button>
                 <Button Command="{Binding Navigation.GoForwardCommand}" Margin="5" ToolTip="Forward">
-                    <local:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <controls:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
                     <Button.ContextMenu>
                         <ContextMenu ItemsSource="{Binding ForwardStack}" IsOpen="True">
                             <ContextMenu.ItemTemplate>
@@ -76,6 +76,7 @@
                 <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
                 <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5" />
                 <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5" />
+                <Button Content="Redirect D" Command="{Binding Navigation.RedirectCommand}" CommandParameter="{x:Type views:ViewD}" Margin="5" />
                 <Button Content="ViewModel A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}" Margin="5" />
             </WrapPanel>
 

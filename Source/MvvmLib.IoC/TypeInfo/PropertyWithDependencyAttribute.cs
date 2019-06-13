@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.TypeInfo
 {
     /// <summary>
     /// Property with <see cref="DependencyAttribute"/>.

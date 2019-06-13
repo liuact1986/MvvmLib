@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{05599420-E32F-43EA-8CB3-70167026ACAC}</ProjectGuid>
+    <ProjectGuid>{E22B3C3A-0813-4759-9B13-72ECD8DF5AE2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>NavigationSample.Wpf</RootNamespace>
     <AssemblyName>NavigationSample.Wpf</AssemblyName>
@@ -35,8 +35,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,79 +54,82 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Events\DeleteItemEvent.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\MaterialDesignIcon.cs" />
+    <Compile Include="Events\TitleChangedEvent.cs" />
+    <Compile Include="Models\FakePeopleService.cs" />
+    <Compile Include="Models\IFakePeopleService.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmLibBootstrapper.cs" />
-    <Compile Include="ViewModels\11-MultipleSubscribers\MultipleSubscribersSampleViewModel.cs" />
-    <Compile Include="ViewModels\12-SharedSourceNavigationAndEdition\SharedSourceNavigationAndEditionSampleViewModel.cs" />
-    <Compile Include="ViewModels\SyncTitleViewModel.cs" />
-    <Compile Include="ViewModels\4-TransitioningItemsControl\AnimationQueueViewModel.cs" />
-    <Compile Include="ViewModels\2-AnimatableContentControl\AnimationViewModel.cs" />
-    <Compile Include="ViewModels\6-TabControlSample\IDetailViewModel.cs" />
-    <Compile Include="ViewModels\5-ObservableHistory\HistorySampleViewModel.cs" />
-    <Compile Include="ViewModels\7-ListView\ItemsRegionSampleViewModel.cs" />
     <Compile Include="ViewModels\1-MasterDetail\MasterDetailViewModel.cs" />
-    <Compile Include="ViewModels\1-MasterDetail\PeopleViewModel.cs" />
     <Compile Include="ViewModels\1-MasterDetail\PersonDetailsViewModel.cs" />
-    <Compile Include="ViewModels\9-SharedSource\SharedSourceSampleViewModel.cs" />
-    <Compile Include="ViewModels\10-NavigationBehaviors\NavigationBehaviorsSampleViewModel.cs" />
-    <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\6-TabControlSample\TabControlSampleViewModel.cs" />
-    <Compile Include="ViewModels\3-TransitioningContentControl\TransitioningContentControlSampleViewModel.cs" />
-    <Compile Include="ViewModels\3-TransitioningContentControl\TransitoningControlViewModel.cs" />
+    <Compile Include="ViewModels\11-SharedSourceNavigationAndEdition\SharedSourceNavigationAndEditionSampleViewModel.cs" />
+    <Compile Include="ViewModels\9-NavigationBehaviors\NavigationBehaviorsSampleViewModel.cs" />
+    <Compile Include="ViewModels\10-MultipleSubscribers\MultipleSubscribersSampleViewModel.cs" />
+    <Compile Include="ViewModels\2-AnimatableContentControl\AnimationViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\ViewAViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\ViewBViewModel.cs" />
+    <Compile Include="ViewModels\3-TransitioningContentControl\TransitioningContentControlSampleViewModel.cs" />
+    <Compile Include="ViewModels\3-TransitioningContentControl\TransitoningControlViewModel.cs" />
+    <Compile Include="ViewModels\4-TransitioningItemsControl\AnimationQueueViewModel.cs" />
+    <Compile Include="ViewModels\5-ObservableHistory\HistorySampleViewModel.cs" />
+    <Compile Include="ViewModels\6-TabControlSample\IDetailViewModel.cs" />
+    <Compile Include="ViewModels\6-TabControlSample\TabControlSampleViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\ViewCViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\ViewDViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\ViewModelBase.cs" />
-    <Compile Include="Views\4-TransitioningItemsControl\AnimationQueueView.xaml.cs">
-      <DependentUpon>AnimationQueueView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\2-AnimatableContentControl\AnimationView.xaml.cs">
-      <DependentUpon>AnimationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\7-ListView\ItemsRegionSampleView.xaml.cs">
-      <DependentUpon>ItemsRegionSampleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\5-ObservableHistory\HistorySampleView.xaml.cs">
-      <DependentUpon>HistorySampleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\4-TransitioningItemsControl\ItemDetailsView.xaml.cs">
-      <DependentUpon>ItemDetailsView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModels\7-ListView\ItemsRegionSampleViewModel.cs" />
+    <Compile Include="ViewModels\8-SharedSource\SharedSourceSampleViewModel.cs" />
+    <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\1-MasterDetail\MasterDetailView.xaml.cs">
       <DependentUpon>MasterDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\1-MasterDetail\PeopleView.xaml.cs">
-      <DependentUpon>PeopleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\1-MasterDetail\PersonDetailsView.xaml.cs">
       <DependentUpon>PersonDetailsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\9-SharedSource\SharedSourceSampleView.xaml.cs">
-      <DependentUpon>SharedSourceSampleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\9-SharedSource\MyItemDetailsView.xaml.cs">
-      <DependentUpon>MyItemDetailsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\10-NavigationBehaviors\NavigationBehaviorsSampleView.xaml.cs">
-      <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\11-MultipleSubscribers\MultipleSubscribersSampleView.xaml.cs">
-      <DependentUpon>MultipleSubscribersSampleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\12-SharedSourceNavigationAndEditionSample\SharedSourceNavigationAndEditionSampleView.xaml.cs">
+    <Compile Include="Views\11-SharedSourceNavigationAndEditionSample\SharedSourceNavigationAndEditionSampleView.xaml.cs">
       <DependentUpon>SharedSourceNavigationAndEditionSampleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Shell.xaml.cs">
-      <DependentUpon>Shell.xaml</DependentUpon>
+    <Compile Include="Views\9-NavigationBehaviors\NavigationBehaviorsSampleView.xaml.cs">
+      <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\10-MultipleSubscribers\MultipleSubscribersSampleView.xaml.cs">
+      <DependentUpon>MultipleSubscribersSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\2-AnimatableContentControl\AnimationView.xaml.cs">
+      <DependentUpon>AnimationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\3-TransitioningContentControl\TransitioningContentControlSampleView.xaml.cs">
+      <DependentUpon>TransitioningContentControlSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\4-TransitioningItemsControl\AnimationQueueView.xaml.cs">
+      <DependentUpon>AnimationQueueView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\4-TransitioningItemsControl\ItemDetailsView.xaml.cs">
+      <DependentUpon>ItemDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\5-ObservableHistory\HistorySampleView.xaml.cs">
+      <DependentUpon>HistorySampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\6-TabControlSample\TabControlSampleView.xaml.cs">
       <DependentUpon>TabControlSampleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\3-TransitioningContentControl\TransitioningContentControlSampleView.xaml.cs">
-      <DependentUpon>TransitioningContentControlSampleView.xaml</DependentUpon>
+    <Compile Include="Views\7-ListView\ItemsRegionSampleView.xaml.cs">
+      <DependentUpon>ItemsRegionSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\8-SharedSource\MyItemDetailsView.xaml.cs">
+      <DependentUpon>MyItemDetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\8-SharedSource\SharedSourceSampleView.xaml.cs">
+      <DependentUpon>SharedSourceSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MenuItem.cs" />
+    <Compile Include="Views\Shell.xaml.cs">
+      <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ViewA.xaml.cs">
       <DependentUpon>ViewA.xaml</DependentUpon>
@@ -142,107 +143,11 @@
     <Compile Include="Views\ViewD.xaml.cs">
       <DependentUpon>ViewD.xaml</DependentUpon>
     </Compile>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Views\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\4-TransitioningItemsControl\AnimationQueueView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\2-AnimatableContentControl\AnimationView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\7-ListView\ItemsRegionSampleView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\5-ObservableHistory\HistorySampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\4-TransitioningItemsControl\ItemDetailsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\1-MasterDetail\MasterDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\1-MasterDetail\PeopleView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\1-MasterDetail\PersonDetailsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\9-SharedSource\SharedSourceSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\9-SharedSource\MyItemDetailsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\10-NavigationBehaviors\NavigationBehaviorsSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\11-MultipleSubscribers\MultipleSubscribersSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\12-SharedSourceNavigationAndEditionSample\SharedSourceNavigationAndEditionSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Shell.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\6-TabControlSample\TabControlSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\3-TransitioningContentControl\TransitioningContentControlSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ViewA.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ViewB.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ViewC.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ViewD.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Window1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\FakePeopleService.cs" />
-    <Compile Include="Models\IFakePeopleService.cs" />
-    <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -260,7 +165,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -270,16 +174,102 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\1-MasterDetail\MasterDetailView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\1-MasterDetail\PersonDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\11-SharedSourceNavigationAndEditionSample\SharedSourceNavigationAndEditionSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\9-NavigationBehaviors\NavigationBehaviorsSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\10-MultipleSubscribers\MultipleSubscribersSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\2-AnimatableContentControl\AnimationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\3-TransitioningContentControl\TransitioningContentControlSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\4-TransitioningItemsControl\AnimationQueueView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\4-TransitioningItemsControl\ItemDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\5-ObservableHistory\HistorySampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\6-TabControlSample\TabControlSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\7-ListView\ItemsRegionSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\8-SharedSource\MyItemDetailsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\8-SharedSource\SharedSourceSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Shell.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ViewA.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewB.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewD.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Window1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Source\MvvmLib.Core\MvvmLib.Core.csproj">
-      <Project>{204995e8-e36b-4fef-9d4e-f2fb3de28c71}</Project>
+      <Project>{8adafeea-ff6e-4888-9d07-01e5cf6b21da}</Project>
       <Name>MvvmLib.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Source\MvvmLib.IoC\MvvmLib.IoC.csproj">
-      <Project>{1c0f33d0-6868-4d47-a990-2b8ed91d547e}</Project>
+      <Project>{b5db3f58-1cd2-421d-9762-2e371d8a168e}</Project>
       <Name>MvvmLib.IoC</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Source\MvvmLib.Wpf\MvvmLib.Wpf.csproj">
-      <Project>{42a0ee09-1f4e-495b-ba10-950e51db6dee}</Project>
+      <Project>{99912ea1-46fc-4d13-8295-ba786582ca74}</Project>
       <Name>MvvmLib.Wpf</Name>
     </ProjectReference>
   </ItemGroup>

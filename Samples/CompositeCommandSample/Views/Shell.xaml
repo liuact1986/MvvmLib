@@ -30,7 +30,7 @@
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel x:Name="SP" Orientation="Horizontal">
-                        <TextBlock Text="{Binding Title}" Margin="10,0"/>
+                        <TextBlock Text="{Binding Item.Title}" Margin="10,0"/>
                         <TextBlock Text="*" Margin="5,0,0,0" VerticalAlignment="Top"
                                    Visibility="{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </StackPanel>

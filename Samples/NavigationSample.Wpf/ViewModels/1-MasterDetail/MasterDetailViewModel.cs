@@ -1,19 +1,64 @@
 ﻿using MvvmLib.Message;
 using MvvmLib.Navigation;
+using NavigationSample.Wpf.Events;
+using NavigationSample.Wpf.Models;
+using NavigationSample.Wpf.Views;
 
 namespace NavigationSample.Wpf.ViewModels
 {
 
-    public class MasterDetailViewModel : SyncTitleViewModel
+    public class MasterDetailViewModel: INavigationAware
     {
         public NavigationSource Navigation { get; }
+        public SharedSource<Person> DetailsSource { get; }
 
-        public MasterDetailViewModel(IEventAggregator eventAggregator)
-            : base(eventAggregator)
+        private IFakePeopleService fakePeopleService;
+
+        public MasterDetailViewModel(IEventAggregator eventAggregator, IFakePeopleService fakePeopleService)
         {
-            this.Title = "Master Detail with ISelectable (PersonDetailsViewModel)";
-            Navigation = NavigationManager.GetNavigationSource("Details");
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Master Detail with ISelectable (PersonDetailsViewModel)");
+            
+             Navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
+             DetailsSource = NavigationManager.GetSharedSource<Person>("MasterDetails");
+
+            this.fakePeopleService = fakePeopleService;
+
+            Navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
+            DetailsSource = NavigationManager.GetSharedSource<Person>("MasterDetails");
+
+            DetailsSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
         }
 
+        private async void OnDetailsSourceSelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
+        {
+            var person = e.SelectedItem as Person;
+            if (person != null)
+            {
+                await Navigation.NavigateAsync(typeof(PersonDetailsView), person.Id);
+                // ViewModel
+                //await Navigation.NavigateAsync(typeof(PersonDetailsViewModel), person.Id);
+            }
+        }
+
+        private void Load()
+        {
+            var peopleList = fakePeopleService.GetPeople();
+            DetailsSource.Load(peopleList);
+        }
+
+        public void OnNavigatingFrom()
+        {
+            
+        }
+
+        public void OnNavigatingTo(object parameter)
+        {
+            Load();
+        }
+
+        public void OnNavigatedTo(object parameter)
+        {
+           
+        }
     }
 }

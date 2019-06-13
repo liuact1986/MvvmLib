@@ -33,13 +33,13 @@
             <TextBox Text="{Binding Person.EmailAddress}" Grid.Row="2" Grid.Column="1" Margin="5" />
 
             <TextBlock Text="Comment (no binding):" Grid.Row="3" Margin="5"></TextBlock>
-            <TextBox AcceptsReturn="True" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Stretch" 
+            <TextBox x:Name="CommentTextBox" AcceptsReturn="True" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Stretch" 
                      HorizontalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto" Margin="5" />
 
             <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right">
                 <TextBlock Text="{Binding SaveMessage}" FontStyle="Italic" HorizontalAlignment="Left" Margin="5" />
                 <Button Content="Save" Command="{Binding SaveCommand}" 
-                        CommandParameter="{Binding ElementName=TextBox,Path=Text}" Width="100" Margin="5"/>
+                        CommandParameter="{Binding ElementName=CommentTextBox,Path=Text}" Width="100" Margin="5"/>
             </StackPanel>
         </Grid>
     </Grid>

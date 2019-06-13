@@ -555,7 +555,7 @@
             Invoked on instance resolution.
             </summary>
         </member>
-        <member name="M:MvvmLib.IoC.Injector.#ctor(MvvmLib.IoC.TypeInformationManager,MvvmLib.IoC.ObjectCreationManager,MvvmLib.IoC.SingletonCache)">
+        <member name="M:MvvmLib.IoC.Injector.#ctor(MvvmLib.IoC.TypeInformationManager,MvvmLib.IoC.FactoriesManager,MvvmLib.IoC.SingletonCache)">
             <summary>
             Creates the injector class.
             </summary>
@@ -852,42 +852,42 @@
             Clears the cache.
             </summary>
         </member>
-        <member name="T:MvvmLib.IoC.ObjectCreationManager">
+        <member name="T:MvvmLib.IoC.FactoriesManager">
             <summary>
             Allows to manage instance creation with caches.
             </summary>
         </member>
-        <member name="P:MvvmLib.IoC.ObjectCreationManager.FactoryCache">
+        <member name="P:MvvmLib.IoC.FactoriesManager.FactoryCache">
             <summary>
             The factory cache.
             </summary>
         </member>
-        <member name="P:MvvmLib.IoC.ObjectCreationManager.ParameterizedFactoryCache">
+        <member name="P:MvvmLib.IoC.FactoriesManager.ParameterizedFactoryCache">
             <summary>
             The parameterized factory cache.
             </summary>
         </member>
-        <member name="P:MvvmLib.IoC.ObjectCreationManager.DelegateFactory">
+        <member name="P:MvvmLib.IoC.FactoriesManager.DelegateFactory">
             <summary>
             The delegate factory.
             </summary>
         </member>
-        <member name="P:MvvmLib.IoC.ObjectCreationManager.DelegateFactoryType">
+        <member name="P:MvvmLib.IoC.FactoriesManager.DelegateFactoryType">
             <summary>
             The delegate factory type.
             </summary>
         </member>
-        <member name="M:MvvmLib.IoC.ObjectCreationManager.#ctor">
+        <member name="M:MvvmLib.IoC.FactoriesManager.#ctor">
             <summary>
             Creates the object creation manager class.
             </summary>
         </member>
-        <member name="M:MvvmLib.IoC.ObjectCreationManager.ClearCachesAndResetFactory">
+        <member name="M:MvvmLib.IoC.FactoriesManager.ClearCachesAndResetFactory">
             <summary>
             Clears the caches and resets the delegate factory.
             </summary>
         </member>
-        <member name="M:MvvmLib.IoC.ObjectCreationManager.CreateInstanceWithEmptyConstructor(System.Type,System.Reflection.ConstructorInfo)">
+        <member name="M:MvvmLib.IoC.FactoriesManager.CreateInstanceWithEmptyConstructor(System.Type,System.Reflection.ConstructorInfo)">
             <summary>
             Creates an instance with an empty constructor.
             </summary>
@@ -895,7 +895,7 @@
             <param name="constructor">The constructor info</param>
             <returns>The instance created</returns>
         </member>
-        <member name="M:MvvmLib.IoC.ObjectCreationManager.CreateInstanceWithParameterizedConstructor(System.Type,System.Reflection.ConstructorInfo,System.Object[])">
+        <member name="M:MvvmLib.IoC.FactoriesManager.CreateInstanceWithParameterizedConstructor(System.Type,System.Reflection.ConstructorInfo,System.Object[])">
             <summary>
             Creates an instance with a parameterized constructor.
             </summary>
@@ -904,7 +904,7 @@
             <param name="parameters">The parameters to inject</param>
             <returns>The instance created</returns>
         </member>
-        <member name="M:MvvmLib.IoC.ObjectCreationManager.ClearCaches">
+        <member name="M:MvvmLib.IoC.FactoriesManager.ClearCaches">
             <summary>
             Clears the cache.
             </summary>

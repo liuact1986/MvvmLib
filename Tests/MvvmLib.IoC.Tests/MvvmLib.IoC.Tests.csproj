@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\MvvmLib.IoC\MvvmLib.IoC.csproj" />
-    <ProjectReference Include="..\MyTestLibrary\MyIoCTestLibrary\MyIoCTestLibrary.csproj" />
+    <ProjectReference Include="..\..\Source\MvvmLib.IoC\MvvmLib.IoC.csproj" />    
+    <ProjectReference Include="..\MyIoCTestLibrary\MyIoCTestLibrary.csproj" />
   </ItemGroup>
 
 </Project>

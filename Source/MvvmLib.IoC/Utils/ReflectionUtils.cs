@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.Utils
 {
     internal class ReflectionUtils
     {

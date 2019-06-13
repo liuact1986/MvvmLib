@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -16,17 +16,17 @@
 * SharedSource: for ItemsControl, Selector, etc.
 * AnimatableContentControl, TransitioningContentControl, TransitioningItemsControl: allow to animate content
 * NavigationManager: allows to manage NavigationSources and SharedSources
-* INavigatable: allows views and view models to be notified on navigate
+* INavigationAware: allows views and view models to be notified on navigate
 * ICanActivate, ICanDeactivate: allow to cancel navigation
 * IIsSelected, ISelectable, SelectionSyncBehavior: allow to select a view
 * Navigation Behaviors: SelectionSyncBehavior and EventToCommandBehavior 
 * ViewModelLocator: allows to resolve ViewModel for views
 * BootstrapperBase: base class for Bootstrapper</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
-    <copyright>Copyright 2019</copyright>
-    <tags>mvvm library wpf uwp validation commands eventaggregator</tags>
+    <copyright>Romagny13 - Copyright 2019</copyright>
+    <tags>navigation, composition, mvvm</tags>
     <dependencies>
-      <dependency id="MvvmLib.Core" version="0.3.0" />
+      <dependency id="MvvmLib.Core" version="0.4.0" />
     </dependencies>
   </metadata>
   <files>

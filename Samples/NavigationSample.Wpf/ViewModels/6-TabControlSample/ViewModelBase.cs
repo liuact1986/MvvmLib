@@ -1,5 +1,7 @@
-﻿using MvvmLib.Mvvm;
+﻿using MvvmLib.Commands;
+using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using System;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -20,11 +22,12 @@ namespace NavigationSample.Wpf.ViewModels
         public ViewModelBase()
         {
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
+            CloseCommand = new RelayCommand<IDetailViewModel>(OnCloseItem);
+        }
 
-            CloseCommand = new RelayCommand<IDetailViewModel>(async (item) =>
-            {
-                await DetailsSource.Items.RemoveAsync(item);
-            });
+        private async void OnCloseItem(IDetailViewModel item)
+        {
+            await DetailsSource.Items.RemoveAsync(item);
         }
     }
 }

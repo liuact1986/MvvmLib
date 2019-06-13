@@ -1,37 +1,26 @@
 ﻿using CompositeCommandSample.Common;
+using MvvmLib.Commands;
 using MvvmLib.Mvvm;
-using MvvmLib.Navigation;
 using System;
 using System.ComponentModel;
 using System.Windows;
 
 namespace CompositeCommandSample.ViewModels
 {
-    // isolate model for Tracking changes (avoid infinite loop on cloning)
-    //public class MyItem : BindableBase
-    //{
-    //    private string title;
-    //    public string Title
-    //    {
-    //        get { return title; }
-    //        set { SetProperty(ref title, value); }
-    //    }
-    //}
-
-    public class TabViewModel : BindableBase //, INavigatable
+    // isolate model for Tracking changes
+    public class MyItem : BindableBase
     {
         private string title;
         public string Title
         {
             get { return title; }
-            set
-            {
-                if (SetProperty(ref title, value) && Tracker != null)
-                    Tracker.CheckChanges();
-            }
+            set { SetProperty(ref title, value); }
         }
+    }
 
-        //public MyItem Item { get; set; }
+    public class TabViewModel : BindableBase 
+    {
+        public MyItem Item { get; set; }
 
         private string saveMessage;
         public string SaveMessage
@@ -70,12 +59,10 @@ namespace CompositeCommandSample.ViewModels
 
             applicationCommands.SaveAllCommand.Add(SaveCommand);
 
-            this.Title = title;
-            this.Tracker = new ChangeTracker(this);
-            // this.Item = new MyItem { Title = title };
-            //this.Tracker = new ChangeTracker(this.Item);
+            this.Item = new MyItem { Title = title };
+            this.Tracker = new ChangeTracker(this.Item);
 
-            // this.Item.PropertyChanged += OnItemPropertyChanged;
+            this.Item.PropertyChanged += OnItemPropertyChanged;
         }
 
         private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,7 +72,7 @@ namespace CompositeCommandSample.ViewModels
 
         private void OnSave()
         {
-            var message = $"Save TabView {Title}! {DateTime.Now.ToLongTimeString()}";
+            var message = $"Save TabView {Item.Title}! {DateTime.Now.ToLongTimeString()}";
             MessageBox.Show(message);
             SaveMessage = message;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MvvmLib.Navigation
+namespace MvvmLib.History
 {
     /// <summary>
     /// The navigation entry class.
@@ -40,7 +40,6 @@ namespace MvvmLib.Navigation
         /// <param name="sourceType">The source type</param>
         /// <param name="source">The source</param>
         /// <param name="parameter">The parameter</param>
-        /// <param name="context">The context</param>
         public NavigationEntry(Type sourceType, object source, object parameter)
         {
             this.sourceType = sourceType;

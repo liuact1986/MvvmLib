@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmLib.IoC.Registrations;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

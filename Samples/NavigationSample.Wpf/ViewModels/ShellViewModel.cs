@@ -1,17 +1,20 @@
 ﻿using MvvmLib.Message;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
+using NavigationSample.Wpf.Controls;
 using NavigationSample.Wpf.Events;
 using NavigationSample.Wpf.Views;
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
+using System.Linq;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-
-    public class ShellViewModel : BindableBase
+    public class ShellViewModel : BindableBase, IIsLoaded
     {
+        private readonly IEventAggregator eventAggregator;
+        private bool handleSelectionChanged;
+
         private string title;
         public string Title
         {
@@ -19,57 +22,84 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref title, value); }
         }
 
-        public List<MenuItem> MenuItems { get; }
+        public NavigationSource Navigation { get; }
+        public SharedSource<MenuItem> MenuItemsSource { get; }
 
-        public NavigationSource Navigation { get; private set; }
-
-        //public ICommand NavigateCommand { get; }
-
-        public ICommand WhenAvailableCommand { get; }
- 
         public ShellViewModel(IEventAggregator eventAggregator)
         {
-            Title = "Navigation Sample [WPF]";
+            this.eventAggregator = eventAggregator;
+            OnTitleChanged("Navigation Sample [WPF]");
+            handleSelectionChanged = true;
 
-            Navigation = NavigationManager.GetNavigationSource("MainContent");
+            this.Navigation = NavigationManager.GetDefaultNavigationSource("Main");
+            this.MenuItemsSource = NavigationManager.GetSharedSource<MenuItem>();
 
-            // RegisterAllSourcesForApplication();
+            this.Navigation.Navigated += OnNavigated;
+            this.MenuItemsSource.SelectedItemChanged += OnMenuItemsSelectionChanged;
+            eventAggregator.GetEvent<TitleChangedEvent>().Subscribe(OnTitleChanged);
 
-            //NavigateCommand = new RelayCommand<Type>(Navigate);
-
-            eventAggregator.GetEvent<ChangeTitleEvent>().Subscribe(OnChangeTitle);
-            eventAggregator.GetEvent<NavigateEvent>().Subscribe(OnNavigate);
+            //Load();
         }
 
-        private void RegisterAllSourcesForApplication()
+        private void Load()
         {
-            //Navigation = NavigationManager.CreateNavigationSource("MainContent");
-            //// 1. Master Details
-            //NavigationManager.CreateNavigationSource("Details");
-            //// 2. AnimatableContentControl
-            //NavigationManager.CreateNavigationSource("AnimationSample");
-            //// 5. History Sample
-            //NavigationManager.CreateNavigationSource("HistorySample");
-
-            //// 6. TabControl and ListView
-            //NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
+            this.MenuItemsSource.Load(new List<MenuItem>
+            {
+                 new MenuItem(nameof(MasterDetailView), "Master Detail (ISelectable)", IconKind.TableEdit, () => Navigate(typeof(MasterDetailView))),
+                 new MenuItem(nameof(AnimationView), "Animatable Content Control", IconKind.Gamepad, () => Navigate(typeof(AnimationView))),
+                 new MenuItem(nameof(TransitioningContentControlSampleView), "Transitioning Content Control", IconKind.Tennis, () => Navigate(typeof(TransitioningContentControlSampleView))),
+                 new MenuItem(nameof(AnimationQueueView), "Transitioning Items Control", IconKind.Football, () => Navigate(typeof(AnimationQueueView))),
+                 new MenuItem(nameof(HistorySampleView),"Observable History", IconKind.History, () => Navigate(typeof(HistorySampleView))),
+                 new MenuItem(nameof(TabControlSampleView),"TabControl", IconKind.Tab, () => Navigate(typeof(TabControlSampleView))),
+                 new MenuItem(nameof(ItemsRegionSampleView), "ListView", IconKind.LibraryBooks, () => Navigate(typeof(ItemsRegionSampleView))),
+                 new MenuItem(nameof(SharedSourceSampleView), "Shared Source", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView))),
+                 new MenuItem(nameof(NavigationBehaviorsSampleView), "Navigation Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView))),
+                 new MenuItem(nameof(MultipleSubscribersSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(MultipleSubscribersSampleView))),
+                 new MenuItem(nameof(SharedSourceNavigationAndEditionSampleView), "Navigation and Edition", IconKind.Pencil, () => Navigate(typeof(SharedSourceNavigationAndEditionSampleView)))
+            });
         }
 
-        private void OnChangeTitle(string newTitle)
+        private void OnMenuItemsSelectionChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
         {
-            Title = newTitle;
+            if (handleSelectionChanged)
+            {
+                var selectedMenuItem = e.SelectedItem as MenuItem;
+                if (selectedMenuItem != null && selectedMenuItem.Action != null)
+                {
+                    selectedMenuItem.Action.Invoke();
+                }
+            }
         }
 
-        //public async void Navigate(Type sourceType)
-        //{
-        //    await Navigation.NavigateAsync(sourceType);
-        //}
-
-        private async void OnNavigate(NavigateEventArgs args)
+        private async void Navigate(Type sourceType)
         {
-            await Navigation.NavigateAsync(args.SourceType, args.Parameter);
+            await Navigation.NavigateAsync(sourceType);
         }
 
+        private void OnTitleChanged(string title)
+        {
+            this.Title = title;
+        }
+
+        private void OnNavigated(object sender, NavigatedEventArgs e)
+        {
+            // sync menu item selection
+            if (e.NavigationType == NavigationType.Back)
+            {
+                var pageName = e.SourceType.Name;
+                var menuItem = MenuItemsSource.Items.FirstOrDefault(m => m.Tag == pageName);
+                if (menuItem != null)
+                {
+                    handleSelectionChanged = false;
+                    MenuItemsSource.SelectedItem = menuItem;
+                    handleSelectionChanged = true;
+                }
+            }
+        }
+
+        public void OnLoaded()
+        {
+            Load();
+        }
     }
-
 }

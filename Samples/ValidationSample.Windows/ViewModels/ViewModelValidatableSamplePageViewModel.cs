@@ -1,4 +1,5 @@
-﻿using MvvmLib.Mvvm;
+﻿using MvvmLib.Commands;
+using MvvmLib.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

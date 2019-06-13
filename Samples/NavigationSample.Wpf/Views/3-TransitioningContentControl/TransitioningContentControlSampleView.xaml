@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:NavigationSample.Wpf"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
              xmlns:mvvmLib="http://mvvmlib.com/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,25 +19,25 @@
         <StackPanel Orientation="Horizontal">
             <Button Click="OnReplayClick" Margin="10">
                 <StackPanel Orientation="Horizontal">
-                    <local:MaterialDesignIcon Icon="Replay" Brush="Black" Margin="10"/>
+                    <controls:MaterialDesignIcon Icon="Replay" Brush="Black" Margin="10"/>
                     <TextBlock Text="Replay" VerticalAlignment="Center" Margin="10"/>
                 </StackPanel>
             </Button>
             <Button Click="OnLeaveClick" Margin="10">
                 <StackPanel Orientation="Horizontal">
-                    <local:MaterialDesignIcon Icon="Play" Brush="Black" Margin="10"/>
+                    <controls:MaterialDesignIcon Icon="Play" Brush="Black" Margin="10"/>
                     <TextBlock Text="Leave Animation" VerticalAlignment="Center" Margin="10"/>
                 </StackPanel>
             </Button>
             <Button Click="OnCancelClick" Margin="10">
                 <StackPanel Orientation="Horizontal">
-                    <local:MaterialDesignIcon Icon="Stop" Brush="Black" Margin="10"/>
+                    <controls:MaterialDesignIcon Icon="Stop" Brush="Black" Margin="10"/>
                     <TextBlock Text="Cancel" VerticalAlignment="Center" Margin="10"/>
                 </StackPanel>
             </Button>
             <Button Click="OnResetClick" Margin="10">
                 <StackPanel Orientation="Horizontal">
-                    <local:MaterialDesignIcon Icon="Refresh" Brush="Black" Margin="10"/>
+                    <controls:MaterialDesignIcon Icon="Refresh" Brush="Black" Margin="10"/>
                     <TextBlock Text="Reset" VerticalAlignment="Center" Margin="10"/>
                 </StackPanel>
             </Button>

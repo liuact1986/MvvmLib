@@ -3,7 +3,7 @@ using MvvmLib.Navigation;
 
 namespace HelloWorld.ViewModels
 {
-    public class HomeViewModel : BindableBase, INavigatable
+    public class HomeViewModel : BindableBase, INavigationAware
     {
         private string message;
         public string Message

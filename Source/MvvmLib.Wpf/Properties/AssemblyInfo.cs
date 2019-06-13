@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Markup;
@@ -32,13 +30,13 @@ using System.Windows.Markup;
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
 
 
-[assembly:ThemeInfo(
+[assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //où se trouvent les dictionnaires de ressources spécifiques à un thème
-                             //(utilisé si une ressource est introuvable dans la page,
-                             // ou dictionnaires de ressources de l'application)
+                                     //(utilisé si une ressource est introuvable dans la page,
+                                     // ou dictionnaires de ressources de l'application)
     ResourceDictionaryLocation.SourceAssembly //où se trouve le dictionnaire de ressources générique
-                                      //(utilisé si une ressource est introuvable dans la page,
-                                      // dans l'application ou dans l'un des dictionnaires de ressources spécifiques à un thème)
+                                              //(utilisé si une ressource est introuvable dans la page,
+                                              // dans l'application ou dans l'un des dictionnaires de ressources spécifiques à un thème)
 )]
 
 
@@ -52,8 +50,9 @@ using System.Windows.Markup;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de build et de révision par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.2.3")]
-[assembly: AssemblyFileVersion("0.5.2.3")]
+[assembly: AssemblyVersion("0.7.0.0")]
+[assembly: AssemblyFileVersion("0.7.0.0")]
 
 [assembly: XmlnsDefinition("http://mvvmlib.com/", "MvvmLib.Navigation")]
 [assembly: XmlnsDefinition("http://mvvmlib.com/", "MvvmLib.Animation")]
+[assembly: XmlnsDefinition("http://mvvmlib.com/", "MvvmLib.Interactivity")]

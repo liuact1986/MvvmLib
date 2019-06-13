@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NavigationSample.Wpf"
+        xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
         xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
-        xmlns:converters="clr-namespace:NavigationSample.Wpf.Converters"
         xmlns:mvvmLib="http://mvvmlib.com/"
         mvvmLib:ViewModelLocator.ResolveViewModel="True"
         x:Name="MainWindow"
@@ -15,14 +14,12 @@
         Title="Navigation Sample" Height="640" Width="800">
 
     <Window.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
         <Storyboard x:Key="CloseMenu">
             <DoubleAnimation  Storyboard.TargetName="Panel" Storyboard.TargetProperty="(Grid.Width)" Duration="0:0:0.4" To="48"/>
         </Storyboard>
         <Storyboard x:Key="OpenMenu">
             <DoubleAnimation  Storyboard.TargetName="Panel" Storyboard.TargetProperty="(Grid.Width)" Duration="0:0:0.4" To="260"/>
-        </Storyboard>        
+        </Storyboard>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -54,9 +51,9 @@
                     <Button Command="{Binding Navigation.GoBackCommand}"
                             Visibility="{Binding Navigation.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Width="60" Style="{StaticResource MaterialDesignFlatButton}">
-                        <local:MaterialDesignIcon Width="24" Height="24" Brush="{StaticResource MenuForeground}" Icon="ArrowLeft" />
+                        <controls:MaterialDesignIcon Width="24" Height="24" Brush="{StaticResource MenuForeground}" Icon="ArrowLeft" />
                     </Button>
-                    
+
                     <TextBlock Text="{Binding Title, FallbackValue='Navigation Sample [WPF]'}" 
                                Foreground="{StaticResource PageHeaderTitleForeground}" 
                                HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Grid.Column="1" />
@@ -81,18 +78,20 @@
                 <Button x:Name="HamburgerButton" Background="{DynamicResource HamburgerButtonBackground}" Width="48" Height="48" Style="{StaticResource MaterialDesignFlatButton}" 
                         HorizontalAlignment="Left" 
                         Click="OnHamburgerButtonClick">
-                    <local:MaterialDesignIcon Width="24" Height="24" Brush="White" Icon="Menu" />
+                    <controls:MaterialDesignIcon Width="24" Height="24" Brush="White" Icon="Menu" />
                 </Button>
 
-                <ListView x:Name="ListView1" Foreground="{StaticResource MenuForeground}" 
-                          SelectionChanged="ListView1_SelectionChanged"
+                <ListView x:Name="ListView1" 
+                          ItemsSource="{Binding MenuItemsSource.Items}"
+                          SelectedItem="{Binding MenuItemsSource.SelectedItem}"
+                          Foreground="{StaticResource MenuForeground}" 
                           ItemContainerStyle="{StaticResource ListViewItemStyle}"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0" Background="Transparent" Grid.Row="1">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type ListViewItem}">
                             <Border x:Name="Border">
                                 <StackPanel Orientation="Horizontal" Height="48">
-                                    <local:MaterialDesignIcon Width="24" Height="24"
+                                    <controls:MaterialDesignIcon Width="24" Height="24"
                                                               Brush="{StaticResource MenuForeground}" Icon="{Binding Icon}" Margin="6 0 0 0"/>
                                     <TextBlock Text="{Binding Name}" Margin="20 0" FontSize="12" VerticalAlignment="Center"/>
                                 </StackPanel>
@@ -110,5 +109,4 @@
             </StatusBarItem>
         </StackPanel>
     </Grid>
-   
 </Window>

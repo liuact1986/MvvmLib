@@ -1,4 +1,5 @@
 ﻿using MvvmLib.IoC;
+using NavigationSample.Wpf.Startup;
 using System.Windows;
 
 namespace NavigationSample.Wpf

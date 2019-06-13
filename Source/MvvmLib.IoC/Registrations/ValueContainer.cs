@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.Registrations
 {
     /// <summary>
     /// Dictionary for Value Type, Nullable, Array, enumerable or Uri.

@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace MvvmLib.Navigation
+namespace MvvmLib.History
 {
     /// <summary>
     /// The can go forward event args class.
     /// </summary>
     public class CanGoForwardEventArgs : EventArgs
     {
-        private bool canGoForward;
+        private readonly bool canGoForward;
         /// <summary>
         /// Checks if can go forward.
         /// </summary>

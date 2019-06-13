@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 
-namespace MvvmLib.Core.Mvvm
+namespace MvvmLib.Mvvm
 {
     /// <summary>
     /// Allows to bind a value or object to Value dependency property and be notified on value changed.

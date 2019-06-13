@@ -3,12 +3,13 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
+using MvvmLib.IoC.Factories;
 using MvvmLib.IoC.Tests;
 
 namespace MvvmLib.Tests.IoC.ObjectCreation
 {
     [TestClass]
-    public class ObjectCreationManagerTests
+    public class FactoryManagerTests
     {
 
         private ConstructorInfo GetFirstConstructor(Type type)
@@ -20,7 +21,7 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         [TestMethod]
         public void Cache_Factory()
         {
-            var service = new ObjectCreationManager();
+            var service = new FactoryManager();
 
             Assert.AreEqual(typeof(ExpressionDelegateFactory), service.DelegateFactory.GetType());
             Assert.AreEqual(DelegateFactoryType.Expression, service.DelegateFactoryType);
@@ -36,7 +37,7 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         [TestMethod]
         public void Cache_Parametrized_Factory()
         {
-            var service = new ObjectCreationManager();
+            var service = new FactoryManager();
 
             Assert.AreEqual(typeof(ExpressionDelegateFactory), service.DelegateFactory.GetType());
             Assert.AreEqual(DelegateFactoryType.Expression, service.DelegateFactoryType);
@@ -53,7 +54,7 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         [TestMethod]
         public void Clear_Factories_Caches_On_Delegate_Factory_Type_Changed()
         {
-            var service = new ObjectCreationManager();
+            var service = new FactoryManager();
 
             Assert.AreEqual(typeof(ExpressionDelegateFactory), service.DelegateFactory.GetType());
             Assert.AreEqual(DelegateFactoryType.Expression, service.DelegateFactoryType);
@@ -76,7 +77,7 @@ namespace MvvmLib.Tests.IoC.ObjectCreation
         [TestMethod]
         public void Get_Instances_With_Reflection_Factories()
         {
-            var service = new ObjectCreationManager();
+            var service = new FactoryManager();
 
             service.DelegateFactoryType = DelegateFactoryType.Reflection;
 

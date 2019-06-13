@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmLib.History;
 using MvvmLib.Navigation;
 
 namespace MvvmLib.Wpf.Tests.History

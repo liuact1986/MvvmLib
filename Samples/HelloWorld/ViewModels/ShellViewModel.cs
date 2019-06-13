@@ -10,10 +10,10 @@ namespace HelloWorld.ViewModels
         public ShellViewModel()
         {
             // 1. With <ContentControl Content="{Binding Navigation.Current}" />
-            // this.Navigation = NavigationManager.GetOrCreateNavigationSource("Main");
+             this.Navigation = NavigationManager.GetOrCreateDefaultNavigationSource("Main");
 
             // 2 ... or with <ContentControl mvvmLib:NavigationManager.SourceName="Main"/>
-            this.Navigation = NavigationManager.GetNavigationSource("Main");
+            //this.Navigation = NavigationManager.GetNavigationSources("Main")[0];
 
 
             this.NavigateToHome();

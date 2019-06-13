@@ -4,6 +4,7 @@ using System;
 using System.Windows.Input;
 using MvvmLib.Navigation;
 using NavigationSample.Windows.Services;
+using MvvmLib.Commands;
 
 namespace NavigationSample.Windows.ViewModels
 {

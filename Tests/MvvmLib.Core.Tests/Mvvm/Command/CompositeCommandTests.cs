@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmLib.Commands;
 using MvvmLib.Mvvm;
 
 namespace MvvmLib.Core.Tests.Mvvm

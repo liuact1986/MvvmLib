@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MvvmLib.IoC.Exceptions;
+using MvvmLib.IoC.Utils;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.TypeInfo
 {
     /// <summary>
     /// Allwos to manage <see cref="TypeInformation"/> and <see cref="PropertyWithDependencyAttribute"/>.

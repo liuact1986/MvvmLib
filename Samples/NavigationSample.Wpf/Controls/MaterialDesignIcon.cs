@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace NavigationSample.Wpf
+namespace NavigationSample.Wpf.Controls
 {
     public class MaterialDesignIcon : Control
     {

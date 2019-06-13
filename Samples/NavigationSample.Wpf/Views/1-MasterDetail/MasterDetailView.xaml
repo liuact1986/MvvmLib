@@ -6,6 +6,7 @@
              xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
              xmlns:mvvmLib="http://mvvmlib.com/"
              mc:Ignorable="d" 
+             FontSize="16"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
@@ -17,7 +18,8 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <views:PeopleView />
+        <ListView ItemsSource="{Binding DetailsSource.Items}" 
+                  SelectedItem="{Binding DetailsSource.SelectedItem}" />
 
         <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Column="1" Simultaneous="True">
             <mvvmLib:AnimatableContentControl.EntranceAnimation>

@@ -1,32 +1,31 @@
-﻿using MvvmLib.IoC;
+﻿using MvvmLib.Commands;
 using MvvmLib.Message;
-using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
 using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class TabControlSampleViewModel : SyncTitleViewModel
+    public class TabControlSampleViewModel
     {
         public SharedSource<IDetailViewModel> DetailsSource { get; }
 
         public IRelayCommand AddCommand { get; }
         public IRelayCommand AddViewModelCommand { get; }
 
-        public TabControlSampleViewModel(IEventAggregator eventAggregator, IInjector injector)
-              : base(eventAggregator)
+        public TabControlSampleViewModel(IEventAggregator eventAggregator)
         {
-            this.Title = "TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)";
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
 
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
-            AddCommand = new RelayCommand<Type>(async (sourceType) =>
-            {
-                var instance = injector.GetNewInstance(sourceType);
+            AddCommand = new RelayCommand<Type>(AddItem);
+        }
 
-                await DetailsSource.Items.AddAsync((IDetailViewModel)instance);
-            });
+        private async void AddItem(Type sourceType)
+        {
+            var instance = DetailsSource.CreateNew(sourceType);
+            await DetailsSource.Items.AddAsync((IDetailViewModel)instance);
         }
     }
 }

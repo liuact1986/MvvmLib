@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using MvvmLib.Commands;
 using MvvmLib.Mvvm;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;

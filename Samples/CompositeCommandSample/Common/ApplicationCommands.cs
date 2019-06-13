@@ -1,4 +1,5 @@
-﻿using MvvmLib.Mvvm;
+﻿using MvvmLib.Commands;
+using MvvmLib.Mvvm;
 
 namespace CompositeCommandSample.Common
 {

@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace MvvmLib.Navigation
+namespace MvvmLib.History
 {
     /// <summary>
     /// The can go back event args class.
     /// </summary>
     public class CanGoBackEventArgs : EventArgs
     {
-        private bool canGoBack;
+        private readonly bool canGoBack;
         /// <summary>
         /// Checks if can go back.
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
+using MvvmLib.IoC.Factories;
 using MvvmLib.IoC.Tests;
 using System;
 using System.Linq;

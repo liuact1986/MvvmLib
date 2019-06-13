@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
+using MvvmLib.IoC.Factories;
 using MvvmLib.IoC.Tests;
 
 namespace MvvmLib.Tests.IoC.ObjectCreation

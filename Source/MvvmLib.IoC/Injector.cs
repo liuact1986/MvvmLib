@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MvvmLib.IoC.Exceptions;
+using MvvmLib.IoC.Factories;
+using MvvmLib.IoC.Registrations;
+using MvvmLib.IoC.TypeInfo;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +20,7 @@ namespace MvvmLib.IoC
         private const string DefaultName = "___Default___";
         private readonly ConcurrentDictionary<Type, Dictionary<string, ContainerRegistration>> registrations;
         private readonly TypeInformationManager typeInformationManager;
-        private readonly ObjectCreationManager objectCreationManager;
+        private readonly FactoryManager objectCreationManager;
         private readonly ScannedTypeManager scannedTypeManager;
         private readonly SingletonCache singletonCache;
 
@@ -97,7 +101,7 @@ namespace MvvmLib.IoC
         /// <param name="objectCreationManager">The object creation manager</param>
         /// <param name="singletonCache">The cache for singletons</param>
         /// <param name="scannedTypeManager">The scanned type manager</param>
-        protected internal Injector(TypeInformationManager typeInformationManager, ObjectCreationManager objectCreationManager, SingletonCache singletonCache, ScannedTypeManager scannedTypeManager)
+        protected internal Injector(TypeInformationManager typeInformationManager, FactoryManager objectCreationManager, SingletonCache singletonCache, ScannedTypeManager scannedTypeManager)
         {
             if (typeInformationManager == null)
                 throw new ArgumentNullException(nameof(typeInformationManager));
@@ -125,7 +129,7 @@ namespace MvvmLib.IoC
         /// Creates the injector class.
         /// </summary>
         public Injector()
-            : this(new TypeInformationManager(), new ObjectCreationManager(), new SingletonCache(), new ScannedTypeManager())
+            : this(new TypeInformationManager(), new FactoryManager(), new SingletonCache(), new ScannedTypeManager())
         { }
 
         #region Registration

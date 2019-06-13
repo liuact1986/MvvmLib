@@ -17,9 +17,9 @@ namespace NavigationSample.Wpf.ViewModels
             {
                 SetProperty(ref isSelected, value);
                 if (isSelected)
-                    Message = "ACTIVE";
+                    Message = "SELECTED";
                 else
-                    Message = "NOT Active";
+                    Message = "NOT Selected";
             }
         }
 

@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace MvvmLib.Navigation
+namespace MvvmLib.History
 {
     /// <summary>
     /// The navigation entry collection. Allows to notify changes. Implements <see cref="INotifyCollectionChanged"/> and <see cref="INotifyPropertyChanged"/>.

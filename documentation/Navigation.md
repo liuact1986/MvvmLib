@@ -1,17 +1,377 @@
 ## MvvmLib.Wpf (Navigation) [net 4.5]
 
-* **NavigationSource**: navigation for _ContentControl_
-* **SharedSource**: for _ItemsControl_, _Selector_, etc.
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **BootstrapperBase**: allows to manage the startup of the application. Configure an IoC Container, the view and ViewModel factories, register dependencies, preload data, create the Shell ViewModel and the Shell.
+* **NavigationSource**: Source for **Views** and **ViewModels**. It has an History, a collection of "Sources" (a source is a View or a ViewModel), a **Current** source that can be binded to the content of the **ContentControls**. There is two other NavigationSource Types: **KeyedNavigationSource** (a navigation source with a key) and **ContentControlNavigationSource** that updates directly the content of the ContentControl provided. The **SourceName Attached Property** of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with **NavigationSourceContainers**. It allows to **navigate simultaneously** for all NavigationSources registered for a SourceName and/or open new Shells.
+* **SharedSource**: Source for **Models** and **ViewModels** with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
+* **NavigationBrowser**: allows to browse an items source (the "Sources" collection of NavigationSources or the collection of "Items" of the SharedSources for example) with a CollectionView.
+* **ViewModelLocator**: is used by **NavigationSources** and **SharedSources** (With CreateNewItem) to resolve the ViewModels for the Views. The default factory can be overridden and use a IoC Container to resolve dependencies. The **ResolveViewModel** attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.
+* **SourceResolver** is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
-* **NavigationBrowser**: allows to browse items sources.
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
-* **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
-* **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
-* **BootstrapperBase**: base class for Bootstrapper
+* **NavigationSource**: navigation for _ContentControl_
+* **SharedSource**: for _ItemsControl_, _Selector_, etc.
+* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
+
+## Create a Bootstrapper
+
+Create a new Wpf application.
+
+Remove the MainWindow. Create a Views directory a create a Window named "Shell".
+
+Install the packages:
+
+* **MvvmLibWpf**: **MvvmLib.Core** dependency is automatically installed.
+* **MvvmLib.IoC** or another IoC container (Unity, Autofac, etc.)
+
+Create a Bootstrapper Base Class
+
+With **MvvmLib.IoC**
+
+```cs
+using MvvmLib.IoC;
+using MvvmLib.Message;
+using MvvmLib.Navigation;
+
+namespace NavigationSample.Wpf.Startup
+{
+    public abstract class MvvmLibBootstrapper : BootstrapperBase
+    {
+        protected IInjector container;
+
+        public MvvmLibBootstrapper(IInjector container)
+        {
+            if (container == null)
+                throw new System.ArgumentNullException(nameof(container));
+
+            this.container = container;
+        }
+
+        protected override void RegisterRequiredTypes()
+        {
+            container.RegisterInstance<IInjector>(container);
+            container.RegisterSingleton<IEventAggregator, EventAggregator>();
+        }
+
+        protected override void SetViewFactory()
+        {
+            SourceResolver.SetFactory((sourceType) => container.GetNewInstance(sourceType));
+        }
+
+        protected override void SetViewModelFactory()
+        {
+            ViewModelLocationProvider.SetViewModelFactory((viewModelType) => container.GetInstance(viewModelType));
+        }
+    }
+}
+```
+
+Create the Bootstrapper
+
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        : base(container)
+    { }
+
+    protected override void RegisterTypes()
+    {
+        container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
+    }
+
+    protected override void PreloadApplicationData()
+    {
+        NavigationManager.CreateDefaultNavigationSource("Main");
+        NavigationManager.CreateDefaultNavigationSource("MasterDetails");
+
+        NavigationManager.CreateSharedSource<MenuItem>();
+        NavigationManager.CreateSharedSource<IDetailViewModel>();
+        NavigationManager.CreateSharedSource<Person>("MasterDetails");
+    }
+
+    // its possible to define the ShellViewModel
+    //protected override object CreateShellViewModel()
+    //{
+    //    return container.GetInstance<ShellViewModel>();
+    //}
+
+    protected override Window CreateShell()
+    {
+        return container.GetInstance<Shell>();
+    }
+}
+```
+
+App.Xaml: Remove "StartupUri="MainWindow.xaml" and add a startup event (Startup="Application_Startup")
+
+```cs
+public partial class App : Application
+{
+    private void Application_Startup(object sender, StartupEventArgs e)
+    {
+        var bootstrapper = new Bootstrapper(new Injector());
+        bootstrapper.Run();
+    }
+}
+```
+
+## NavigationSource, KeyedNavigationSource and ContentControlNavigationSource
+
+The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.
+
+The method CreateNavigationSource creates a container (for navigation sources with source name provided) and a first Navigation Source (returned by the function). The first naigation source created is a KeyedNavigationSource with the default key.
+
+
+Create the default navigation source.
+
+```cs
+this.Navigation = NavigationManager.CreateDefaultNavigationSource("Main");
+```
+
+Get the default navigation source
+
+```cs
+this.Navigation = NavigationManager.GetDefaultNavigationSource("Main");
+```
+
+Or ...
+
+```cs
+this.Navigation = NavigationManager.GetOrCreateDefaultNavigationSource("Main");
+```
+
+Add navigation sources for the same source name:
+
+```cs
+NavigationManager.AddNavigationSource("Main", new KeyedNavigationSource("MyKeyA"));
+NavigationManager.AddNavigationSource("Main", new KeyedNavigationSource("MyKeyB"));
+```
+
+Navigate simultaneously with all sources of a container
+
+```cs
+var navigationSources = NavigationManager.GetNavigationSources("Main");
+navigationSources.NavigateAsync(typeof(ViewA), "My parameter");
+```
+
+The container provides some quick commands (these commands not check can go back / forward)
+
+* NavigateCommand with source type
+* NavigateToRootCommand
+* GoBackCommand
+* GoForwardCommand
+* RedirectCommand
+
+Bind the NavigationSource **Current** property to a **ContentControl**
+
+```xml
+<ContentControl Content="{Binding Navigation.Current}" />
+```
+
+The NavigationSource provides some quick Commands
+
+```xml
+<!--Navigate command -->
+<Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
+
+<!--GoBack command -->
+<Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" />
+
+<!--GoForward command -->
+<Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" />
+
+<!--NavigateToRoot command -->
+<Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" />
+```
+
+### ContentControlNavigationSource
+
+Inherits from NavigationSource and updates directly the content of the ContentControl.
+
+
+```xml
+<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
+```
+
+Registering navigation sources for the same source name :
+
+```xml
+<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
+<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
+<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
+```
+
+The namespace:
+
+```xml
+<UserControl ...
+            xmlns:mvvmLib="http://mvvmlib.com/">
+```
+
+## SharedSource
+
+SharedSourceItemCollection methods
+
+| Method | Description |
+| --- | --- |
+| InsertAsync | Allows to insert item at index. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
+| AddAsync | Adds and item. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
+| Move | Moves the item from the old index to the new index. Navigation guards and INavigationAware are not invoked |
+| RemoveAtAsync | Removes the item at the index. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
+| RemoveAsync | Removes the item. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
+| ClearAsync | Removes all items. ICanDeactive and INavigationAware OnNavigatingFrom methods are invoked for each item before deletion |
+| ClearFast | Removes all items. ICanDeactive and INavigationAware are not invoked |
+
+SharedSourceItemCollection events
+
+| Event | Description |
+| --- | --- |
+| PropertyChanged | Invoked on property changed (count, indexer) |
+| CollectionChanged | Invoked on collection changed (Add, Move, Remove, Replace, Reset) |
+
+
+SharedSource provides methods that allow to create and insert quickly. Theses methods use use the SourceResolver to resolve injected dependencies. The SourceResolver factory method can be overridden and use a IoC Container.
+
+| Method | Description |
+| --- | --- |
+| CreateNew | Returns an item instance created with the SourceResolver |
+| InsertNewAsync | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
+| AddNewAsync | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
+
+
+SharedSource properties
+
+| Property | Description |
+| --- | --- |
+| SelectedItem | The selected item. Allows to bind quickly for Selectors (ListBox, TabControl, etc.) |
+| SelectedIndex | The index of selected item |
+| SelectionHandling | Allows to select automatically items after insertion, etc. (SelectedItem) |
+
+SharedSource events
+
+| Event | Description |
+| --- | --- |
+| SelectedItemChanged | Invoked on selected item changed |
+| PropertyChanged | Invoked on selected index and selected item changed |
+| SelectionHandling | Allows to select automatically items after insertion, etc. (SelectedItem) |
+
+### Creating SharedSources
+
+```cs
+var s = NavigationManager.CreateSharedSource<MySharedItem>();
+```
+
+Get a SharedSource already created
+
+```cs
+var s = NavigationManager.GetSharedSource<MySharedItem>();
+```
+
+Or use GetOrCreateSharedSource method
+
+```cs
+var s = NavigationManager.GetOrCreateSharedSource<MySharedItem>();
+```
+
+Creating SharedSources with keys. Allows to use the same type for multiple SharedSource.
+
+```cs
+var s1 = NavigationManager.CreateSharedSource<MySharedItem>("key1");
+var s2 = NavigationManager.CreateSharedSource<MySharedItem>("key2");
+```
+
+GetSharedSource, GetOrCreateSharedSource, etc. methods are available with keys.
+
+Remove a SharedSource
+
+```cs
+NavigationManager.RemoveSharedSource<MySharedItem>();
+NavigationManager.RemoveSharedSource<MySharedItem>("key1");
+```
+
+Always get a new SharedSource for the type
+
+```cs
+var s = NavigationManager.GetNewSharedSource<MySharedItem>();
+```
+
+### Add items to a Shared source
+
+Adding items
+
+```cs
+var s = NavigationManager.GetSharedSource<MyViewModel>();
+await s.Items.AddAsync(1, new MyViewModel(), "My parameter to pass to view model");
+await s.Items.InsertAsync(1, new MyViewModel(), "My parameter to pass to view model");
+```
+
+Or with short cuts
+
+```cs
+var s = NavigationManager.GetSharedSource<MyViewModel>();
+await s.AddNewAsync(1, "My parameter to pass to view model");
+await s.InsertNewAsync(1, "My parameter to pass to view model");
+```
+
+Remove
+
+```cs
+var s = NavigationManager.GetSharedSource<MyViewModel>();
+await s.Items.RemoveAtAsync(1);
+
+var vieModel = new MyViewModel();
+await s.Items.RemoveAsync(1, viewModel);
+```
+
+Clear
+
+```cs
+await s.Items.ClearAsync();
+
+s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
+```
+
+Move
+
+```cs
+s.Items.Move(1, 2); // moves the item at index 1 to index 2
+```
+
+Replace Item
+
+```cs
+s.Items[1] = new MyViewModel();
+```
+
+Or use the NavigationHelper to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.
+
+```cs
+int index = 1;
+var oldItem = s.Items[index];
+var newItem = new MyViewModel();
+await NavigationHelper.ReplaceAsync(oldItem, newItem, "My new parameter", () => s.Items[index] = newItem);
+```
+
+### Select an item
+
+```cs
+s.SelectedIndex = 1;
+
+// or
+var item = s.Items[1];
+s.SelectedItem = item;
+```
+
+Note: The selected item is automatically set on insertion, deletion, etc. with **SelectionHandling** "Select" (default). Set the SelectionHandling to _None_ to remove this behavior.
+
+```cs
+s.SelectionHandling = SelectionHandling.None;
+s.SelectionHandling = SelectionHandling.Select;
+```
 
 ## ViewModelLocator
 
@@ -66,7 +426,8 @@ Allows to resolve the view model of the Views. Example:
 
 **Note**: NavigationSources and Shared Sources resolve automatically the ViewModel with the ViewModelLocator. So, using "ResolveViewModel" attached property is rarely required.
 
-**IIsLoaded** allows to notify view model that the view is loaded for a view that use resolve view model attached property
+
+**IIsLoaded** allows to notify view model that the view is loaded for a view that use resolve view model attached property or defined in Bootstrapper.
 
 ```cs
 public class AuthorsViewModel : IIsLoaded
@@ -91,155 +452,6 @@ public class AuthorsViewModel : IIsLoaded
         LoadAsync();
     }
 }
-```
-
-## NavigationSource, KeyedNavigationSource and ContentControlNavigationSource
-
-### NavigationSource
-
-The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.
-
-
-Example: Creating some Navigation sources in ShellViewModel
-
-```cs
-public class ShellViewModel
-{
-    public NavigationSource Navigation { get; }
-
-    public ShellViewModel()
-    {     
-        Navigation = NavigationManager.CreateNavigationSource("Main");
-        NavigationManager.CreateNavigationSource("Details");
-        NavigationManager.CreateNavigationSource("AnimationSample");
-        NavigationManager.CreateNavigationSource("HistorySample");
-    }
-}
-```
-
-... or with the Bootstrapper with the PreloadApplicationData
-
-```cs
-public class Bootstrapper : MvvmLibBootstrapper
-{
-    public Bootstrapper(IInjector container)
-        : base(container)
-    { }
-
-    protected override Window CreateShell()
-    {
-        return container.GetInstance<Shell>();
-    }
-
-    protected override void RegisterTypes()
-    {
-        container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
-    }
-
-    protected override void PreloadApplicationData()
-    {
-        NavigationManager.CreateNavigationSource("Main");
-        NavigationManager.CreateNavigationSource("Details");
-        NavigationManager.CreateNavigationSource("AnimationSample");
-        NavigationManager.CreateNavigationSource("HistorySample");
-
-        NavigationManager.GetOrCreateSharedSource<IDetailViewModel>();
-        NavigationManager.GetOrCreateSharedSource<Person>();
-        NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
-    }
-}
-```
-
-The method CreateNavigationSource creates a container (for navigation sources with source name provided) and a first Navigation Source (returned by the function). The first naigation source created is a KeyedNavigationSource with the default key.
-
-Its possible to register navigation sources for the same source name:
-
-```cs
-var n2 = new NavigationSource();
-NavigationManager.CreateNavigationSource("Main", n2);
-
-var n3 = new NavigationSource();
-NavigationManager.CreateNavigationSource("Main", n3);
-```
-
-Navigate simultaneously with all sources of a container
-
-```cs
-var navigationSources = NavigationManager.GetNavigationSources("Main");
-navigationSources.NavigateAsync(typeof(ViewA), "My parameter");
-```
-
-The container provided some quick commands (these commands not check can go back / forward)
-
-* NavigateCommand with source type
-* NavigateToRootCommand
-* GoBackCommand
-* GoForwardCommand
-
-Get the first NavigationSource created:
-
-```cs
-var navigation = NavigationManager.GetNavigationSource("Main");
-```
-
-Get a navigation source
-
-```cs
-var navigation = NavigationManager.AllNavigationSources["Main"][1];
-// or
-var navigation = NavigationManager.GetNavigationSources("Main")[1];
-```
-
-Or 
-
-```cs
-var navigation = NavigationManager.GetOrCreateNavigationSource("Main");
-```
-
-Bind the NavigationSource **Current** property to a **ContentControl**
-
-```xml
-<ContentControl Content="{Binding Navigation.Current}" />
-```
-
-The NavigationSource provides some quick Commands
-
-```xml
-<!--Navigate command -->
-<Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
-
-<!--GoBack command -->
-<Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" />
-
-<!--GoForward command -->
-<Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" />
-
-<!--NavigateToRoot command -->
-<Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" />
-```
-
-### ContentControlNavigationSource
-
-Inherits from NavigationSource and updates directly the content of the ContentControl.
-
-
-```xml
-<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
-```
-
-Registering navigation sources for the same source name :
-
-```xml
-<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
-<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
-<ContentControl mvvmLib:NavigationManager.SourceName="Main" />
-```
-
-The namespace:
-
-```xml
-<UserControl ...
-            xmlns:mvvmLib="http://mvvmlib.com/">
 ```
 
 ## INavigationAware

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -198,15 +199,6 @@ namespace MvvmLib.Mvvm
                 //Debug.WriteLine($"Failed to create instance of type '{type.Name}'. Exception'{ex.Message}' '{ex}'");
             }
             return null;
-        }
-
-        private bool ConvertToBool(object value)
-        {
-            if (bool.TryParse(value.ToString(), out bool result))
-            {
-                return result;
-            }
-            throw new Exception();
         }
 
         private object CreateInstanceFast(Type type)

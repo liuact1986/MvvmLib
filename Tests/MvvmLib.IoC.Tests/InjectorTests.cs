@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.IoC;
+using MvvmLib.IoC.Factories;
+using MvvmLib.IoC.Registrations;
 using MvvmLib.IoC.Tests;
 using MvvmLib.IoC.Tests.Scanned;
+using MvvmLib.IoC.TypeInfo;
 
 namespace MvvmLib.Tests.IoC
 {
@@ -572,7 +575,7 @@ namespace MvvmLib.Tests.IoC
         public void UnregisterType()
         {
             var t = new TypeInformationManager();
-            var o = new ObjectCreationManager();
+            var o = new FactoryManager();
             var c = new SingletonCache();
 
             var injector = Activator.CreateInstance(typeof(Injector),
@@ -597,7 +600,7 @@ namespace MvvmLib.Tests.IoC
         public void UnregisterInstance()
         {
             var t = new TypeInformationManager();
-            var o = new ObjectCreationManager();
+            var o = new FactoryManager();
             var c = new SingletonCache();
             var injector = Activator.CreateInstance(typeof(Injector),
               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { t, o, c, new ScannedTypeManager() }, null)

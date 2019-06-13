@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.IoC.Registrations;
+using System;
 using System.Collections.Generic;
 
 namespace MvvmLib.IoC

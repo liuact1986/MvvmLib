@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{42A0EE09-1F4E-495B-BA10-950E51DB6DEE}</ProjectGuid>
+    <ProjectGuid>{99912EA1-46FC-4D13-8295-BA786582CA74}</ProjectGuid>
     <OutputType>library</OutputType>
     <RootNamespace>MvvmLib.Wpf</RootNamespace>
     <AssemblyName>MvvmLib.Wpf</AssemblyName>
@@ -53,46 +53,50 @@
     <Compile Include="Animation\ControlledAnimation.cs" />
     <Compile Include="Animation\ParallelAnimation.cs" />
     <Compile Include="Animation\StoryboardAccessor.cs" />
-    <Compile Include="Behavior\AttachableCollection.cs" />
-    <Compile Include="Behavior\EventToCommandBehavior.cs" />
-    <Compile Include="Behavior\IAssociatedObject.cs" />
-    <Compile Include="Behavior\NavigationBehavior.cs" />
-    <Compile Include="Behavior\NavigationBehaviorCollection.cs" />
-    <Compile Include="Behavior\NavigationInteraction.cs" />
-    <Compile Include="Behavior\SelectionSyncBehavior.cs" />
-    <Compile Include="BootstrapperBase.cs" />
-    <Compile Include="Controls\AnimatableContentControl.cs" />
-    <Compile Include="Controls\TransitioningContentControl.cs" />
-    <Compile Include="Controls\TransitioningItemsControl.cs" />
+    <Compile Include="Animation\AnimatableContentControl.cs" />
+    <Compile Include="Animation\TransitioningContentControl.cs" />
+    <Compile Include="Animation\TransitioningItemsControl.cs" />
+    <Compile Include="Interactivity\AttachableCollection.cs" />
+    <Compile Include="Interactivity\EventToCommandBehavior.cs" />
+    <Compile Include="Interactivity\IAssociatedObject.cs" />
+    <Compile Include="Interactivity\NavigationBehavior.cs" />
+    <Compile Include="Interactivity\NavigationBehaviorCollection.cs" />
+    <Compile Include="Interactivity\NavigationInteraction.cs" />
+    <Compile Include="Interactivity\SelectionSyncBehavior.cs" />
     <Compile Include="History\CanGoBackEventArgs.cs" />
     <Compile Include="History\CanGoForwardEventArgs.cs" />
     <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
+    <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
     <Compile Include="History\INavigationHistory.cs" />
     <Compile Include="History\NavigationEntry.cs" />
     <Compile Include="History\NavigationEntryCollection.cs" />
     <Compile Include="History\NavigationHistory.cs" />
-    <Compile Include="Interfaces\ICanActivate.cs" />
-    <Compile Include="Interfaces\ICanDeactivate.cs" />
-    <Compile Include="Interfaces\IIsLoaded.cs" />
-    <Compile Include="Interfaces\IIsSelected.cs" />
-    <Compile Include="Interfaces\INavigatable.cs" />
-    <Compile Include="Interfaces\ISelectable.cs" />
+    <Compile Include="Mvvm\BindableObject.cs" />
+    <Compile Include="Navigation\ISharedSource.cs" />
+    <Compile Include="Navigation\NavigationBrowser.cs" />
+    <Compile Include="Navigation\NavigationEventBaseArgs.cs" />
+    <Compile Include="Navigation\NavigationFailedEventArgs.cs" />
+    <Compile Include="Navigation\NavigationFailedException.cs" />
+    <Compile Include="Navigation\NavigationHelper.cs" />
+    <Compile Include="Navigation\BootstrapperBase.cs" />
+    <Compile Include="Navigation\ICanActivate.cs" />
+    <Compile Include="Navigation\ICanDeactivate.cs" />
+    <Compile Include="Navigation\IIsLoaded.cs" />
+    <Compile Include="Navigation\IIsSelected.cs" />
+    <Compile Include="Navigation\INavigationAware.cs" />
+    <Compile Include="Navigation\ISelectable.cs" />
     <Compile Include="Logger\Category.cs" />
     <Compile Include="Logger\DebugLogger.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\Priority.cs" />
-    <Compile Include="Mvvm\BindableObject.cs" />
-    <Compile Include="NavigationBrowser.cs" />
-    <Compile Include="NavigationEventArgs.cs" />
-    <Compile Include="NavigationFailedEventArgs.cs" />
-    <Compile Include="NavigationFailedException.cs" />
-    <Compile Include="NavigationHelper.cs" />
-    <Compile Include="NavigationManager.cs" />
-    <Compile Include="NavigationSource\ContentControlNavigationSource.cs" />
-    <Compile Include="NavigationSource\KeyedNavigationSource.cs" />
-    <Compile Include="NavigationSource\NavigationSource.cs" />
-    <Compile Include="NavigationSource\NavigationSourceContainer.cs" />
-    <Compile Include="NavigationType.cs" />
+    <Compile Include="Navigation\ContentControlNavigationSource.cs" />
+    <Compile Include="Navigation\KeyedNavigationSource.cs" />
+    <Compile Include="Navigation\NavigationManager.cs" />
+    <Compile Include="Navigation\NavigationSource.cs" />
+    <Compile Include="Navigation\NavigationSourceContainer.cs" />
+    <Compile Include="Navigation\NavigationType.cs" />
+    <Compile Include="Navigation\SharedSource.cs" />
+    <Compile Include="Navigation\SharedSourceItemCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -106,15 +110,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ReadOnlyCollection.cs" />
-    <Compile Include="SharedSource\ISharedSource.cs" />
-    <Compile Include="SharedSource\SharedSource.cs" />
-    <Compile Include="SharedSource\SharedSourceItemCollection.cs" />
+    <Compile Include="Navigation\ViewModelLocationProvider.cs" />
+    <Compile Include="Navigation\ViewModelLocator.cs" />
+    <Compile Include="Navigation\SourceResolver.cs" />
+    <Compile Include="Mvvm\ReadOnlyCollection.cs" />
     <Compile Include="Utils\EnumerableUtils.cs" />
     <Compile Include="Utils\XamlHelper.cs" />
-    <Compile Include="ViewModelResolution\ViewModelLocationProvider.cs" />
-    <Compile Include="ViewModelResolution\ViewModelLocator.cs" />
-    <Compile Include="ViewResolution\SourceResolver.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -123,12 +124,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MvvmLib.Core\MvvmLib.Core.csproj">
-      <Project>{204995e8-e36b-4fef-9d4e-f2fb3de28c71}</Project>
-      <Name>MvvmLib.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\AnimatableContentControl.xaml">
@@ -147,6 +142,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MvvmLib.Core\MvvmLib.Core.csproj">
+      <Project>{8adafeea-ff6e-4888-9d07-01e5cf6b21da}</Project>
+      <Name>MvvmLib.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

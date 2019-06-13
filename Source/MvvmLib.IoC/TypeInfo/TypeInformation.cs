@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MvvmLib.IoC
+namespace MvvmLib.IoC.TypeInfo
 {
     /// <summary>
     /// Type information class.

@@ -26,7 +26,7 @@ namespace AdaptiveSample.Views
         {
             InitializeComponent();
 
-            this.Navigation = NavigationManager.GetNavigationSource("Main");
+            this.Navigation = NavigationManager.GetNavigationSources("Main")[0];
         }
 
         public NavigationSource Navigation { get; }

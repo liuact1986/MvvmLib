@@ -2,7 +2,6 @@
 
 namespace NavigationSample.Wpf.ViewModels
 {
-
     public class ViewAViewModel : BindableBase
     {
         private string message;

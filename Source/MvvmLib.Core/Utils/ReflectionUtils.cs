@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MvvmLib
+namespace MvvmLib.Utils
 {
-    public sealed class ReflectionUtils
+    public class ReflectionUtils
     {
 
         private static Type[] actionTypes = new Type[]

@@ -1,15 +1,13 @@
 ﻿using MvvmLib.Message;
-using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class TransitioningContentControlSampleViewModel :SyncTitleViewModel
+    public class TransitioningContentControlSampleViewModel
     {
         public TransitioningContentControlSampleViewModel(IEventAggregator eventAggregator)
-              : base(eventAggregator)
         {
-            this.Title = "Animation with TransitioningContentControl";
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Animation with TransitioningContentControl");
         }
     }
 }

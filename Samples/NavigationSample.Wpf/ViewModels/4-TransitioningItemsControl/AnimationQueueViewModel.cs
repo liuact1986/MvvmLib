@@ -1,12 +1,14 @@
-﻿using MvvmLib.Message;
+﻿using MvvmLib.Commands;
+using MvvmLib.Message;
 using MvvmLib.Mvvm;
+using NavigationSample.Wpf.Events;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
 
-    public class AnimationQueueViewModel : SyncTitleViewModel
+    public class AnimationQueueViewModel : BindableBase
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -23,9 +25,8 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand CancelCommand { get; set; }
 
         public AnimationQueueViewModel(IEventAggregator eventAggregator)
-              : base(eventAggregator)
         {
-            this.Title = "Animation with TransitioningItemsControl + ControlledAnimation ";
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
 
             this.MyItems = new ObservableCollection<ItemDetailsViewModel>();
 
