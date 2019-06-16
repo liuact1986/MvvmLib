@@ -219,6 +219,116 @@ namespace NavigationSample.Wpf.Startup
 <h2 id="navigationsource-keyednavigationsource-and-contentcontrolnavigationsource">NavigationSource, KeyedNavigationSource and ContentControlNavigationSource<a class="headerlink" href="#navigationsource-keyednavigationsource-and-contentcontrolnavigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>The NavigationSource is not linked to the UI. So its possible to create all the navigation sources required by the application at Startup.</p>
 <p>The method CreateNavigationSource creates a container (for navigation sources with source name provided) and a first Navigation Source (returned by the function). The first naigation source created is a KeyedNavigationSource with the default key.</p>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Method</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>NavigateAsync</td>
+	<td>Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation)</td>
+</tr>
+<tr>
+	<td>redirectAsync</td>
+	<td>Redirects and remove the previous entry from the history</td>
+</tr>
+<tr>
+	<td>GoBackAsync</td>
+	<td>Navigates to the previous source</td>
+</tr>
+<tr>
+	<td>GoForwardAsync</td>
+	<td>Navigates to the next source</td>
+</tr>
+<tr>
+	<td>NavigateToRootAsync</td>
+	<td>Navigates to root and clears the history</td>
+</tr>
+<tr>
+	<td>Sync</td>
+	<td>Synchronizes the history and sources with the history provided</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Property</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>Sources</td>
+	<td>The collection of sources</td>
+</tr>
+<tr>
+	<td>Current</td>
+	<td>the current source. Can be binded to Content property of ContentControls</td>
+</tr>
+<tr>
+	<td>CurrentIndex</td>
+	<td>the index of the current source</td>
+</tr>
+<tr>
+	<td>History</td>
+	<td>The navigation history</td>
+</tr>
+<tr>
+	<td>CanGoBack</td>
+	<td>Checks if can go back</td>
+</tr>
+<tr>
+	<td>CanGoForward</td>
+	<td>Checks if can go forward</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Events</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>PropertyChanged</td>
+	<td>Invoked on property changed (Current, CurrentIndex, etc.)</td>
+</tr>
+<tr>
+	<td>CollecitonChanged</td>
+	<td>Invoked on collection changed (Sources)</td>
+</tr>
+<tr>
+	<td>CurrentChanged</td>
+	<td>Invoked on Current changed</td>
+</tr>
+<tr>
+	<td>CanGoBackChanged</td>
+	<td>Invoked on CanGoBack changed</td>
+</tr>
+<tr>
+	<td>CanGoForwardChanged</td>
+	<td>Invoked on CanGoForward changed</td>
+</tr>
+<tr>
+	<td>Navigating</td>
+	<td>Invoked before navigation starts</td>
+</tr>
+<tr>
+	<td>Navigated</td>
+	<td>Invoked after navigation ends</td>
+</tr>
+<tr>
+	<td>NavigationFailed</td>
+	<td>Invoked on navigation cancelled</td>
+</tr>
+</tbody>
+</table>
 <p>Create the default navigation source.</p>
 <pre><code class="cs">this.Navigation = NavigationManager.CreateDefaultNavigationSource(&quot;Main&quot;);
 </code></pre>

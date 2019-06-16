@@ -122,6 +122,35 @@ The NavigationSource is not linked to the UI. So its possible to create all the 
 
 The method CreateNavigationSource creates a container (for navigation sources with source name provided) and a first Navigation Source (returned by the function). The first naigation source created is a KeyedNavigationSource with the default key.
 
+| Method | Description |
+| --- | --- |
+| NavigateAsync | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
+| redirectAsync | Redirects and remove the previous entry from the history |
+| GoBackAsync | Navigates to the previous source |
+| GoForwardAsync | Navigates to the next source |
+| NavigateToRootAsync | Navigates to root and clears the history |
+| Sync | Synchronizes the history and sources with the history provided |
+
+
+| Property | Description |
+| --- | --- |
+| Sources | The collection of sources |
+| Current | the current source. Can be binded to Content property of ContentControls |
+| CurrentIndex | the index of the current source |
+| History | The navigation history |
+| CanGoBack | Checks if can go back |
+| CanGoForward | Checks if can go forward |
+
+| Events | Description |
+| --- | --- |
+| PropertyChanged | Invoked on property changed (Current, CurrentIndex, etc.) |
+| CollecitonChanged| Invoked on collection changed (Sources) |
+| CurrentChanged | Invoked on Current changed |
+| CanGoBackChanged | Invoked on CanGoBack changed |
+| CanGoForwardChanged | Invoked on CanGoForward changed |
+| Navigating | Invoked before navigation starts |
+| Navigated | Invoked after navigation ends |
+| NavigationFailed | Invoked on navigation cancelled |
 
 Create the default navigation source.
 
