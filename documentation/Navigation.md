@@ -1048,8 +1048,8 @@ namespace ModuleA
     {
         public void Initialize()
         {
-            SourceResolver.RegisterTypeForNavigation<ViewA>();
-            SourceResolver.RegisterTypeForNavigation<ViewBViewModel>("ViewB"); // define a DataTemplate
+            SourceResolver.RegisterTypeForNavigation<ViewA>(); // with View
+            SourceResolver.RegisterTypeForNavigation<ViewBViewModel>("ViewB"); // View ViewModel (+ DataTemplate)
         }
     }
 }
