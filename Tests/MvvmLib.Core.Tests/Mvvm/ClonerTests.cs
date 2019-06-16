@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmLib.Mvvm;
@@ -354,6 +355,26 @@ namespace MvvmLib.Core.Tests.Mvvm
             Assert.AreEqual("My value", r1.Item.MyString);
             Assert.AreEqual("My value", r1.Item.Item.MyString);
         }
+
+        //[TestMethod]
+        //public void Clone_Class_With_Event()
+        //{
+
+        //    var cloner = GetService();
+
+        //    var i1 = new MyClassWithEvent();
+
+        //    var c1 = cloner.DeepClone(i1);
+
+
+        //    var members = typeof(MyClassWithEvent).GetMembers();
+        //    var x = 10;
+        //    foreach (var member in members)
+        //    {
+        //        var t = member.MemberType;
+        //    }
+
+        //}
     }
 
     public class CircularItem
@@ -643,4 +664,9 @@ namespace MvvmLib.Core.Tests.Mvvm
 
     }
 
+
+    public class MyClassWithEvent : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+    }
 }

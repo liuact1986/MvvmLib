@@ -1,0 +1,21 @@
+﻿<Window x:Class="ModuleSample.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ModuleSample.Views"
+        mc:Ignorable="d"
+        Title="Shell" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="ViewA" Margin="5"/>
+            <Button Content="ViewModel B" Command="{Binding NavigateCommand}" CommandParameter="ViewB" Margin="5"/>
+        </StackPanel>
+
+        <ContentControl x:Name="C1" Content="{Binding Navigation.Current}" Grid.Row="1"/>
+    </Grid>
+</Window>

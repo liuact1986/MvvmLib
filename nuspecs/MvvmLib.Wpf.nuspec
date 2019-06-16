@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -12,19 +12,25 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MvvmLib Navigation, UI Composition and Mvvm classes.
 
-* NavigationSource: navigation for ContentControl
-* SharedSource: for ItemsControl, Selector, etc.
+* NavigationSource: source for ContentControls
+* SharedSource: source for ItemsControls, Selectors (ListBox, TabControl, etc.)
 * AnimatableContentControl, TransitioningContentControl, TransitioningItemsControl: allow to animate content
 * NavigationManager: allows to manage NavigationSources and SharedSources
-* INavigationAware: allows views and view models to be notified on navigate
+* NavigationBrowser: allows to browse items sources.
+* INavigationAware: allows view models to be notified on navigate
 * ICanActivate, ICanDeactivate: allow to cancel navigation
-* IIsSelected, ISelectable, SelectionSyncBehavior: allow to select a view
-* Navigation Behaviors: SelectionSyncBehavior and EventToCommandBehavior 
+* IIsSelected, ISelectable, SelectionSyncBehavior: allow to select a view 
+* Navigation Behaviors: SelectionSyncBehavior and EventToCommandBehavior
 * ViewModelLocator: allows to resolve ViewModel for views
-* BootstrapperBase: base class for Bootstrapper</description>
+* IIsLoaded: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
+* BootstrapperBase: base class for Bootstrapper
+* ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Configuration" />
+    </frameworkAssemblies>
     <dependencies>
       <dependency id="MvvmLib.Core" version="0.4.0" />
     </dependencies>

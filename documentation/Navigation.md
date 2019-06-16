@@ -13,6 +13,7 @@
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
+* **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
 ## Create a Bootstrapper
 
@@ -996,4 +997,82 @@ public class ViewAViewModel : BindableBase
         Message = $"Hello {value}! {DateTime.Now.ToLongTimeString()}";
     }
 }
+```
+
+## Modules
+
+> allows to manage modules/assemblies loaded "on demand"
+
+For example:
+
+* Create a library "ModuleA"
+* Add Views, ViewModels, etc.
+* Create a module configuration file
+
+```cs
+using ModuleA.ViewModels;
+using ModuleA.Views;
+using MvvmLib.Modules;
+using MvvmLib.Navigation;
+
+namespace ModuleA
+{
+    public class ModuleAConfig : IModuleConfig
+    {
+        public void Initialize()
+        {
+            SourceResolver.RegisterTypeForNavigation<ViewA>();
+            SourceResolver.RegisterTypeForNavigation<ViewBViewModel>("ViewB"); // define a DataTemplate
+        }
+    }
+}
+```
+
+* Do not add a reference to this assembly from main project
+* In main project. Register the module infos:
+
+With Bootstrapper
+
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    //  etc.
+
+    protected override void RegisterModules()
+    {
+        // 1. The module name (an id)
+        // 2. The location of the dll
+        // 3. The module config class full name
+        ModuleManager.RegisterModule("ModuleA", @"C:\MyProject\Modules\ModuleA.dll", "ModuleA.ModuleAConfig");
+    }
+}
+```
+
+Or in App.Config file
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="modules" type="MvvmLib.Modules.ModulesConfigurationSection, MvvmLib.Wpf"/>
+  </configSections>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
+  </startup>
+  <modules>
+    <module name="ModuleA" file="C:\MyProject\Modules\ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
+  </modules>
+</configuration>
+```
+
+* Load the assembly/ module
+
+```cs
+ModuleManager.LoadModule("ModuleA");
+```
+
+Navigate by source name. Example
+
+```cs
+await this.Navigation.NavigateAsync("ViewA");
 ```

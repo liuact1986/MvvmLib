@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,6 +67,14 @@
     <Compile Include="History\CanGoBackEventArgs.cs" />
     <Compile Include="History\CanGoForwardEventArgs.cs" />
     <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
+    <Compile Include="Modules\AssemblyLoader.cs" />
+    <Compile Include="Modules\IModuleConfig.cs" />
+    <Compile Include="Modules\ModuleConfigurationElement.cs" />
+    <Compile Include="Modules\ModuleConfigurationElementCollection.cs" />
+    <Compile Include="Modules\ModuleInfo.cs" />
+    <Compile Include="Modules\ModuleLoadingFailException.cs" />
+    <Compile Include="Modules\ModuleManager.cs" />
+    <Compile Include="Modules\ModulesConfigurationSection.cs" />
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
     <Compile Include="History\INavigationHistory.cs" />
     <Compile Include="History\NavigationEntry.cs" />

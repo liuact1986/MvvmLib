@@ -69,6 +69,8 @@
 
 <li class="tocentry"><a href="#eventtocommandbehavior">EventToCommandBehavior</a></li>
 
+<li class="tocentry"><a href="#modules">Modules</a></li>
+
 </ul>
 <li class="tocentry"><a href="Navigation_Uwp.htm">MvvmLib.Windows</a>
 </li>
@@ -120,6 +122,7 @@
 <li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
 <li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
 <li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
+<li><strong>ModuleManager</strong>: allows to manage modules/assemblies loaded &quot;on demand&quot;</li>
 </ul>
 <h2 id="create-a-bootstrapper">Create a Bootstrapper<a class="headerlink" href="#create-a-bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Create a new Wpf application. Remove the MainWindow. Create a &quot;Views&quot; directory and a Window named &quot;Shell&quot;.</p>
@@ -1110,6 +1113,78 @@ this.Browser = new NavigationBrowser(this.PeopleSource.Items);
         Message = $&quot;Hello {value}! {DateTime.Now.ToLongTimeString()}&quot;;
     }
 }
+</code></pre>
+
+<h2 id="modules">Modules<a class="headerlink" href="#modules" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>allows to manage modules/assemblies loaded &quot;on demand&quot;</p>
+</blockquote>
+<p>For example:</p>
+<ul>
+<li>Create a library &quot;ModuleA&quot;</li>
+<li>Add Views, ViewModels, etc.</li>
+<li>Create a module configuration file</li>
+</ul>
+<pre><code class="cs">using ModuleA.ViewModels;
+using ModuleA.Views;
+using MvvmLib.Modules;
+using MvvmLib.Navigation;
+
+namespace ModuleA
+{
+    public class ModuleAConfig : IModuleConfig
+    {
+        public void Initialize()
+        {
+            SourceResolver.RegisterTypeForNavigation&lt;ViewA&gt;();
+            SourceResolver.RegisterTypeForNavigation&lt;ViewBViewModel&gt;(&quot;ViewB&quot;); // define a DataTemplate
+        }
+    }
+}
+</code></pre>
+
+<ul>
+<li>Do not add a reference to this assembly from main project</li>
+<li>In main project. Register the module infos:</li>
+</ul>
+<p>With Bootstrapper</p>
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    //  etc.
+
+    protected override void RegisterModules()
+    {
+        // 1. The module name (an id)
+        // 2. The location of the dll
+        // 3. The module config class full name
+        ModuleManager.RegisterModule(&quot;ModuleA&quot;, @&quot;C:\MyProject\Modules\ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
+    }
+}
+</code></pre>
+
+<p>Or in App.Config file</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;configuration&gt;
+  &lt;configSections&gt;
+    &lt;section name=&quot;modules&quot; type=&quot;MvvmLib.Modules.ModulesConfigurationSection, MvvmLib.Wpf&quot;/&gt;
+  &lt;/configSections&gt;
+  &lt;startup&gt;
+    &lt;supportedRuntime version=&quot;v4.0&quot; sku=&quot;.NETFramework,Version=v4.5&quot; /&gt;
+  &lt;/startup&gt;
+  &lt;modules&gt;
+    &lt;module name=&quot;ModuleA&quot; file=&quot;C:\MyProject\Modules\ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
+  &lt;/modules&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<ul>
+<li>Load the assembly/ module</li>
+</ul>
+<pre><code class="cs">ModuleManager.LoadModule(&quot;ModuleA&quot;);
+</code></pre>
+
+<p>Navigate by source name. Example</p>
+<pre><code class="cs">await this.Navigation.NavigateAsync(&quot;ViewA&quot;);
 </code></pre>
 
 

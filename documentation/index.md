@@ -36,6 +36,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **BootstrapperBase**: base class for Bootstrapper
+* **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
 ## MvvmLib.Windows (Navigation) [uwp]
   

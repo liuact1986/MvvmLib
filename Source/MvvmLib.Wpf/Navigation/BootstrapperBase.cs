@@ -36,6 +36,14 @@ namespace MvvmLib.Navigation
         protected abstract void RegisterTypes();
 
         /// <summary>
+        /// Registers modules.
+        /// </summary>
+        protected virtual void RegisterModules()
+        {
+
+        }
+
+        /// <summary>
         /// Creates the main <see cref="Window"/> of the application.
         /// </summary>
         /// <returns></returns>
@@ -123,6 +131,9 @@ namespace MvvmLib.Navigation
 
             this.logger.Log("Registering types.", Category.Debug, Priority.Low);
             RegisterTypes();
+
+            this.logger.Log("Registering modules.", Category.Debug, Priority.Low);
+            RegisterModules();
 
             this.logger.Log("Setting the View Factory.", Category.Debug, Priority.Low);
             SetViewFactory();

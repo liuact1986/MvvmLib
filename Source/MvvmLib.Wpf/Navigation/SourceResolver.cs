@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace MvvmLib.Navigation
 {
     /// <summary>
@@ -6,10 +8,20 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class SourceResolver
     {
+        private static Dictionary<string, Type> typesForNavigation;
+        /// <summary>
+        /// Types for navigation.
+        /// </summary>
+        public static IReadOnlyDictionary<string, Type> TypesForNavigation
+        {
+            get { return typesForNavigation; }
+        }
+
         private static Func<Type, object> factory;
 
         static SourceResolver()
         {
+            typesForNavigation = new Dictionary<string, Type>();
             SetFactoryToDefault();
         }
 
@@ -38,6 +50,27 @@ namespace MvvmLib.Navigation
         public static void SetFactoryToDefault()
         {
             factory = sourceType => Activator.CreateInstance(sourceType);
+        }
+
+        /// <summary>
+        /// Registers the type (View or ViewModel Type) for Navigation. Required only for navigation by name with Modules.
+        /// </summary>
+        /// <typeparam name="T">The type</typeparam>
+        /// <param name="sourceName">The sourceName</param>
+        public static void RegisterTypeForNavigation<T>(string sourceName = null)
+        {
+            if (sourceName == null)
+                sourceName = typeof(T).Name;
+
+            typesForNavigation[sourceName] = typeof(T);
+        }
+
+        /// <summary>
+        /// Clears the <see cref="TypesForNavigation"/>.
+        /// </summary>
+        public static void ClearTypesForNavigation()
+        {
+            typesForNavigation.Clear();
         }
     }
 }

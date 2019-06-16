@@ -165,10 +165,10 @@ namespace MvvmLib.History
             SetCurrent(newIndex);
 
             // clear forward
-            if (this.entries.Count - 1 > this.currentIndex)
+            if (this.entries.Count - 1 > newIndex)
             {
                 // remove from current index to count
-                int removeIndex = this.currentIndex + 1;
+                int removeIndex = newIndex + 1;
                 while (entries.Count > removeIndex)
                     this.entries.RemoveAt(removeIndex);
             }

@@ -17,7 +17,6 @@ namespace MvvmLib.Navigation
     {
         private const string CountString = "Count";
         private const string IndexerName = "Item[]";
-
         private readonly ILogger DefaultLogger = new DebugLogger();
 
         private ILogger logger;

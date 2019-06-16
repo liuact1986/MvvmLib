@@ -37,8 +37,6 @@ namespace NavigationSample.Wpf.ViewModels
             this.Navigation.Navigated += OnNavigated;
             this.MenuItemsSource.SelectedItemChanged += OnMenuItemsSelectionChanged;
             eventAggregator.GetEvent<TitleChangedEvent>().Subscribe(OnTitleChanged);
-
-            //Load();
         }
 
         private void Load()

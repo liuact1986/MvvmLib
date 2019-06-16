@@ -350,6 +350,31 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <param name="parameter">The parameter</param>
+        /// <returns>True on navigation success</returns>
+        public async Task<bool> NavigateAsync(string sourceName, object parameter)
+        {
+            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
+            {
+                return await NavigateAsync(sourceType, parameter);
+            }
+            throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+        }
+
+        /// <summary>
+        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <returns>True on navigation success</returns>
+        public async Task<bool> NavigateAsync(string sourceName)
+        {
+            return await NavigateAsync(sourceName, null);
+        }
+
+        /// <summary>
+        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
+        /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
         /// <returns>True on navigation success</returns>
@@ -420,6 +445,31 @@ namespace MvvmLib.Navigation
         public async Task<bool> RedirectAsync(Type sourceType)
         {
             return await RedirectAsync(sourceType, null);
+        }
+
+        /// <summary>
+        /// Redirects and remove the previous entry from the history.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <param name="parameter">The parameter</param>
+        /// <returns>True on navigation success</returns>
+        public async Task<bool> RedirectAsync(string sourceName, object parameter)
+        {
+            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
+            {
+                return await RedirectAsync(sourceType, parameter);
+            }
+            throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+        }
+
+        /// <summary>
+        /// Redirects and remove the previous entry from the history.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <returns>True on navigation success</returns>
+        public async Task<bool> RedirectAsync(string sourceName)
+        {
+            return await RedirectAsync(sourceName, null);
         }
 
         /// <summary>

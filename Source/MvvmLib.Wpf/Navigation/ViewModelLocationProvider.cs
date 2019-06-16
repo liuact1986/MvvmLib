@@ -35,16 +35,15 @@ namespace MvvmLib.Navigation
             SetViewModelFactoryToDefault();
             defaultViewTypeToViewModelTypeResolver = new Func<Type, Type>(viewType =>
             {
-                var assemblyName = viewType.GetTypeInfo().Assembly.FullName;
 
-                 var viewFullName = viewType.FullName;
-                 viewFullName = viewFullName.Replace(".Views.", ".ViewModels.");
-                 var suffix = viewFullName.EndsWith("View") ? "Model" : "ViewModel";
-                 var viewModelAssemblyQualifiedName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewFullName, suffix, assemblyName);
+                var viewFullName = viewType.FullName;
+                viewFullName = viewFullName.Replace(".Views.", ".ViewModels.");
+                var suffix = viewFullName.EndsWith("View") ? "Model" : "ViewModel";
+                var viewModelFullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", viewFullName, suffix);
+                var viewModelType = viewType.Assembly.GetType(viewModelFullName);
 
-                 var viewModelType = Type.GetType(viewModelAssemblyQualifiedName);
-                 return viewModelType;
-             });
+                return viewModelType;
+            });
         }
 
         /// <summary>

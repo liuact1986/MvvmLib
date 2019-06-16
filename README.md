@@ -41,6 +41,7 @@ ___
 * **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior** 
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **BootstrapperBase**: base class for Bootstrapper
+* **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
 ## MvvmLib.Windows (Navigation) [uwp]
   
