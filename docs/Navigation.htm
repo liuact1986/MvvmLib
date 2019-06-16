@@ -344,6 +344,24 @@ namespace NavigationSample.Wpf.Startup
 <pre><code class="cs">this.Navigation = new NavigationSource();
 </code></pre>
 
+<p>Navigation</p>
+<pre><code class="cs">var  navigation = NavigationManager.CreateNavigationSource(&quot;Main&quot;);
+
+await navigation.NavigateAsync(typeof(ViewA));
+
+// with parameter
+await navigation.NavigateAsync(typeof(ViewA), &quot;My parameter&quot;);
+
+// GoBack
+await navigation.GoBackAsync();
+
+// GoForward
+await navigation.GoForwardAsync();
+
+// Navigate to root
+await navigation.NavigateToRootAsync();
+</code></pre>
+
 <p>Add navigation sources for the same source name:</p>
 <pre><code class="cs">NavigationManager.AddNavigationSource(&quot;Main&quot;, new KeyedNavigationSource(&quot;MyKeyA&quot;));
 NavigationManager.AddNavigationSource(&quot;Main&quot;, new KeyedNavigationSource(&quot;MyKeyB&quot;));
@@ -688,7 +706,7 @@ View model name:
 {
     public void OnNavigatingTo(object parameter)
     {
-
+        // Usefull to preload data 
     }
 
     public void OnNavigatedTo(object parameter)
@@ -703,106 +721,6 @@ View model name:
 }
 </code></pre>
 
-<p><strong>NavigationSource methods</strong></p>
-<table class="table table-bordered-all table-responsive">
-<thead>
-<tr>
-	<th>Method</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<td>NavigateAsync</td>
-	<td>Allows to navigate to a view or view model (with DataTemplate) (parameters: source type, parameter)</td>
-</tr>
-<tr>
-	<td>GoBackAsync</td>
-	<td>Allows to go to the previous view</td>
-</tr>
-<tr>
-	<td>GoForwardAsync</td>
-	<td>Allows to go the next view</td>
-</tr>
-<tr>
-	<td>NavigateToRootAsync</td>
-	<td>Allows to navigate to the first view/ root view</td>
-</tr>
-<tr>
-	<td>RedirectAsync</td>
-	<td>allows to redirect to a view and do not add/remove current page from history</td>
-</tr>
-</tbody>
-</table>
-<pre><code class="cs">var  navigation = NavigationManager.CreateNavigationSource(&quot;Main&quot;);
-
-await navigation.NavigateAsync(typeof(ViewA));
-
-// with parameter
-await navigation.NavigateAsync(typeof(ViewA), &quot;My parameter&quot;);
-
-// GoBack
-await navigation.GoBackAsync();
-
-// GoForward
-await navigation.GoForwardAsync();
-
-// Navigate to root
-await navigation.NavigateToRootAsync();
-</code></pre>
-
-<table class="table table-bordered-all table-responsive">
-<thead>
-<tr>
-	<th>Property</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<td>History</td>
-	<td>Navigation History with notification on add and remove entry</td>
-</tr>
-<tr>
-	<td>CanGoBack</td>
-	<td>Returns true if back stack history have more then one entry</td>
-</tr>
-<tr>
-	<td>CanGoForward</td>
-	<td>Returns true if forward stack history have one or more entries</td>
-</tr>
-</tbody>
-</table>
-<table class="table table-bordered-all table-responsive">
-<thead>
-<tr>
-	<th>Event</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<td>CanGoBackChanged</td>
-	<td>Invoked after can go back changed</td>
-</tr>
-<tr>
-	<td>CanGoForwardChanged</td>
-	<td>Invoked after can go forward changed</td>
-</tr>
-<tr>
-	<td>Navigating</td>
-	<td>Invoked before navigation starts</td>
-</tr>
-<tr>
-	<td>Navigated</td>
-	<td>Invoked after navigation ends</td>
-</tr>
-<tr>
-	<td>NavigatingFailed</td>
-	<td>Invoked after navigation was cancelled</td>
-</tr>
-</tbody>
-</table>
 <h2 id="navigation-guards-icanactivate-icandeactivate">Navigation Guards (ICanActivate, ICanDeactivate)<a class="headerlink" href="#navigation-guards-icanactivate-icandeactivate" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Useful when the user want to leave a page or close a tabitem for example.</p>
 <pre><code class="cs">public class ViewAViewModel : ICanActivate, ICanDeactivate

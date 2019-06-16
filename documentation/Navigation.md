@@ -144,7 +144,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Events | Description |
 | --- | --- |
 | PropertyChanged | Invoked on property changed (Current, CurrentIndex, etc.) |
-| CollecitonChanged| Invoked on collection changed (Sources) |
+| CollecitonChanged | Invoked on collection changed (Sources) |
 | CurrentChanged | Invoked on Current changed |
 | CanGoBackChanged | Invoked on CanGoBack changed |
 | CanGoForwardChanged | Invoked on CanGoForward changed |
@@ -174,6 +174,26 @@ this.Navigation = NavigationManager.GetOrCreateDefaultNavigationSource("Main");
 this.Navigation = new NavigationSource();
 ```
 
+Navigation
+
+```cs
+var  navigation = NavigationManager.CreateNavigationSource("Main");
+
+await navigation.NavigateAsync(typeof(ViewA));
+
+// with parameter
+await navigation.NavigateAsync(typeof(ViewA), "My parameter");
+
+// GoBack
+await navigation.GoBackAsync();
+
+// GoForward
+await navigation.GoForwardAsync();
+
+// Navigate to root
+await navigation.NavigateToRootAsync();
+```
+
 Add navigation sources for the same source name:
 
 ```cs
@@ -187,6 +207,7 @@ Navigate simultaneously with all sources of a container
 var navigationSources = NavigationManager.GetNavigationSources("Main");
 navigationSources.NavigateAsync(typeof(ViewA), "My parameter");
 ```
+
 
 The container provides some quick commands (these commands not check can go back / forward)
 
@@ -495,7 +516,7 @@ public class ViewAViewModel : INavigationAware
 {
     public void OnNavigatingTo(object parameter)
     {
-
+        // Usefull to preload data 
     }
 
     public void OnNavigatedTo(object parameter)
@@ -509,51 +530,6 @@ public class ViewAViewModel : INavigationAware
     }
 }
 ```
-
-**NavigationSource methods**
-
-| Method | Description |
-| --- | --- |
-| NavigateAsync | Allows to navigate to a view or view model (with DataTemplate) (parameters: source type, parameter) |
-| GoBackAsync | Allows to go to the previous view |
-| GoForwardAsync | Allows to go the next view |
-| NavigateToRootAsync | Allows to navigate to the first view/ root view |
-| RedirectAsync | allows to redirect to a view and do not add/remove current page from history |
-
-
-```cs
-var  navigation = NavigationManager.CreateNavigationSource("Main");
-
-await navigation.NavigateAsync(typeof(ViewA));
-
-// with parameter
-await navigation.NavigateAsync(typeof(ViewA), "My parameter");
-
-// GoBack
-await navigation.GoBackAsync();
-
-// GoForward
-await navigation.GoForwardAsync();
-
-// Navigate to root
-await navigation.NavigateToRootAsync();
-```
-
-| Property | Description |
-| --- | --- |
-| History | Navigation History with notification on add and remove entry |
-| CanGoBack | Returns true if back stack history have more then one entry |
-| CanGoForward | Returns true if forward stack history have one or more entries |
-
-
-| Event | Description |
-| --- | --- |
-| CanGoBackChanged | Invoked after can go back changed |
-| CanGoForwardChanged | Invoked after can go forward changed |
-| Navigating | Invoked before navigation starts |
-| Navigated | Invoked after navigation ends |
-| NavigatingFailed | Invoked after navigation was cancelled |
-
 
 ## Navigation Guards (ICanActivate, ICanDeactivate)
 
