@@ -21,7 +21,7 @@ Create a new Wpf application. Remove the MainWindow. Create a "Views" directory 
 
 Install the packages:
 
-* **MvvmLibWpf** (**MvvmLib.Core** dependency is automatically installed)
+* **MvvmLib.Wpf** (**MvvmLib.Core** dependency is automatically installed)
 * **MvvmLib.IoC** or another IoC container (Unity, Autofac, etc.)
 
 Create a Bootstrapper Base Class
