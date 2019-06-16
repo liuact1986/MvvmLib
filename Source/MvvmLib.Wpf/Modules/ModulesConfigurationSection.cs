@@ -16,13 +16,6 @@ namespace MvvmLib.Modules
             get { return (ModuleConfigurationElementCollection)base[""]; }
             set { base[""] = value; }
         }
-
-        //[ConfigurationProperty("", IsDefaultCollection = true, IsKey = false)]
-        //public ModuleConfigurationElementCollection Modules
-        //{
-        //    get { return (ModuleConfigurationElementCollection)base["modules"]; }
-        //    set { base["modules"] = value; }
-        //}
     }
 
 }
