@@ -125,18 +125,18 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Method | Description |
 | --- | --- |
 | NavigateAsync | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
-| redirectAsync | Redirects and remove the previous entry from the history |
+| redirectAsync | Redirects and removes the previous entry from the history |
 | GoBackAsync | Navigates to the previous source |
 | GoForwardAsync | Navigates to the next source |
-| NavigateToRootAsync | Navigates to root and clears the history |
+| NavigateToRootAsync | Navigates to the first source and clears the history |
 | Sync | Synchronizes the history and sources with the history provided |
 
 
 | Property | Description |
 | --- | --- |
 | Sources | The collection of sources |
-| Current | the current source. Can be binded to Content property of ContentControls |
-| CurrentIndex | the index of the current source |
+| Current | The current source. Can be binded to Content property of ContentControls |
+| CurrentIndex | The index of the current source |
 | History | The navigation history |
 | CanGoBack | Checks if can go back |
 | CanGoForward | Checks if can go forward |
