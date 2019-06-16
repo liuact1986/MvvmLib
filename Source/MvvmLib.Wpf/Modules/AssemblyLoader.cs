@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvvmLib.Navigation;
+using System;
 using System.Reflection;
 
 namespace MvvmLib.Modules
@@ -31,7 +32,7 @@ namespace MvvmLib.Modules
             if (type == null)
                 throw new ModuleLoadingFailException($"Unable to find the module config '{moduleConfigFullName}' for assembly '{assembly.FullName}'");
 
-            var moduleConfig = Activator.CreateInstance(type) as IModuleConfig;
+            var moduleConfig = SourceResolver.CreateInstance(type) as IModuleConfig;
             moduleConfig.Initialize();
         }
     }
