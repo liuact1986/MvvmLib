@@ -660,7 +660,8 @@ View model name:
 </code></pre>
 
 <h3 id="resolveviewmodel-attached-property-window-usercontrol">ResolveViewModel Attached property (Window, UserControl)<a class="headerlink" href="#resolveviewmodel-attached-property-window-usercontrol" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
-<p>Allows to resolve the view model of the Views. Example:</p>
+<p>Allows to resolve the ViewModel (and inject dependencies) for the View. Usefull only for Views not used by the Navigation.</p>
+<p>Example:</p>
 <pre><code class="xml">&lt;Window x:Class=&quot;Sample.Views.Shell&quot;
         ...
          xmlns:nav=&quot;http://mvvmlib.com/&quot;

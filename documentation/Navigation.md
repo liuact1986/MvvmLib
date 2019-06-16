@@ -463,7 +463,9 @@ ViewModelLocationProvider.RegisterCustom(typeof(ViewA), typeof(MyCustomViewAView
 
 ### ResolveViewModel Attached property (Window, UserControl)
 
-Allows to resolve the view model of the Views. Example:
+Allows to resolve the ViewModel (and inject dependencies) for the View. Usefull only for Views not used by the Navigation.
+
+Example:
 
 
 ```xml
