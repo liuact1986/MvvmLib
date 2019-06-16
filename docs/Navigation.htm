@@ -341,6 +341,9 @@ namespace NavigationSample.Wpf.Startup
 <pre><code class="cs">this.Navigation = NavigationManager.GetOrCreateDefaultNavigationSource(&quot;Main&quot;);
 </code></pre>
 
+<pre><code class="cs">this.Navigation = new NavigationSource();
+</code></pre>
+
 <p>Add navigation sources for the same source name:</p>
 <pre><code class="cs">NavigationManager.AddNavigationSource(&quot;Main&quot;, new KeyedNavigationSource(&quot;MyKeyA&quot;));
 NavigationManager.AddNavigationSource(&quot;Main&quot;, new KeyedNavigationSource(&quot;MyKeyB&quot;));

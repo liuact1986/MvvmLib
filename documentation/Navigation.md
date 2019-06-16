@@ -170,6 +170,10 @@ Or ...
 this.Navigation = NavigationManager.GetOrCreateDefaultNavigationSource("Main");
 ```
 
+```cs
+this.Navigation = new NavigationSource();
+```
+
 Add navigation sources for the same source name:
 
 ```cs
