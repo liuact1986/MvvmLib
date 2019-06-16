@@ -418,15 +418,13 @@ Example with "View" and "ViewModel" namespaces
 ```cs
 ViewModelLocationProvider.ChangeConvention((viewType) =>
 {
-    var viewAssemblyName = viewType.GetTypeInfo().Assembly.FullName;
+  var viewFullName = viewType.FullName;
+  viewFullName = viewFullName.Replace(".View.", ".ViewModel."); // <= 
+  var suffix = viewFullName.EndsWith("View") ? "Model" : "ViewModel";
+  var viewModelFullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", viewFullName, suffix);
+  var viewModelType = viewType.Assembly.GetType(viewModelFullName);
 
-    var viewName = viewType.FullName;
-    viewName = viewName.Replace(".View.", ".ViewModel.");
-    var suffix = viewName.EndsWith("View") ? "Model" : "ViewModel";
-    var viewModelName = string.Format(CultureInfo.InvariantCulture, "{0}{1}, {2}", viewName, suffix, viewAssemblyName);
-
-    var viewModelType = Type.GetType(viewModelName);
-    return viewModelType;
+  return viewModelType;
 });
 ```
 
