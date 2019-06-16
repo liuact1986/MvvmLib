@@ -9,37 +9,6 @@ namespace MvvmLib.Modules
     /// </summary>
     public class ModuleConfigurationElementCollection : ConfigurationElementCollection
     {
-        public ModuleConfigurationElementCollection()
-        {
-
-        }
-
-        public ModuleConfigurationElementCollection(ModuleConfigurationElement[] modules)
-        {
-            if (modules == null)
-                throw new ArgumentNullException(nameof(modules));
-
-            foreach (ModuleConfigurationElement module in modules)
-            {
-                BaseAdd(module);
-            }
-        }
-
-        public IList<ModuleConfigurationElement> FindAll(Predicate<ModuleConfigurationElement> match)
-        {
-            if (match == null)
-                throw new ArgumentNullException(nameof(match));
-
-            IList<ModuleConfigurationElement> found = new List<ModuleConfigurationElement>();
-            foreach (ModuleConfigurationElement moduleElement in this)
-            {
-                if (match(moduleElement))
-                {
-                    found.Add(moduleElement);
-                }
-            }
-            return found;
-        }
 
         /// <summary>
         /// Throws an exception on duplicate.
