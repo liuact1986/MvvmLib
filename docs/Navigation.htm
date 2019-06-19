@@ -43,7 +43,7 @@
 
 <li class="tocentry"><a href="#navigationsource-keyednavigationsource-and-contentcontrolnavigationsource">NavigationSource, KeyedNavigationSource and ContentControlNavigationSource</a></li>
 
-<li class="tocentry"><a href="#sharedsource">SharedSource</a></li>
+<li class="tocentry"><a href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.</a></li>
 
 <li class="tocentry"><a href="#viewmodellocator">ViewModelLocator</a></li>
 
@@ -52,8 +52,6 @@
 <li class="tocentry"><a href="#navigation-guards-icanactivate-icandeactivate">Navigation Guards (ICanActivate, ICanDeactivate)</a></li>
 
 <li class="tocentry"><a href="#iselectable-with-navigationsource">ISelectable with NavigationSource</a></li>
-
-<li class="tocentry"><a href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.</a></li>
 
 <li class="tocentry"><a href="#navigationbrowser">NavigationBrowser</a></li>
 
@@ -230,7 +228,7 @@ namespace NavigationSample.Wpf.Startup
 	<td>Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation)</td>
 </tr>
 <tr>
-	<td>redirect</td>
+	<td>Redirect</td>
 	<td>Redirects and removes the previous entry from the history</td>
 </tr>
 <tr>
@@ -416,7 +414,8 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
             xmlns:mvvmLib=&quot;http://mvvmlib.com/&quot;&gt;
 </code></pre>
 
-<h2 id="sharedsource">SharedSource<a class="headerlink" href="#sharedsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.<a class="headerlink" href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc." title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Provides an Items collection that implements INotifyCollectionChanged, a SelectedItem and more to quickly bind sources... add, remove, replace, move items, select an item by SelectedIndex or SelectedItem, etc. INotifyCollectionChanged and INotifyPropertyChanged do the work for the UI.</p>
 <p>SharedSourceItemCollection methods</p>
 <table class="table table-bordered-all table-responsive">
 <thead>
@@ -630,6 +629,101 @@ s.SelectedItem = item;
 s.SelectionHandling = SelectionHandling.Select;
 </code></pre>
 
+<p>ViewModel Sample</p>
+<pre><code class="cs">public class ViewAViewModel: INavigationAware
+{
+    public SharedSource&lt;MyItemDetailsViewModel&gt; DetailsSource { get; }
+
+    public SharedSourceSampleViewModel()
+    {
+        DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;MyItemDetailsViewModel&gt;();
+    }
+
+    public void Load()
+    {   
+        // load data
+        DetailsSource.Load(new List&lt;MyItemDetailsViewModel&gt;
+        {
+            new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.1&quot; }),
+            new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.2&quot; })
+        });
+    }
+
+    public void OnNavigatingFrom()
+    {
+
+    }
+
+    public void OnNavigatingTo(object parameter)
+    {
+        Load();
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+
+    }
+}
+</code></pre>
+
+<p>Bind the source to controls:</p>
+<p>ItemsControl</p>
+<pre><code class="xml">&lt;ItemsControl ItemsSource=&quot;{Binding DetailsSource.Items}&quot; /&gt;
+</code></pre>
+
+<p>Selector (ListBox, TabControl, etc.) :</p>
+<pre><code class="xml">&lt;ListView ItemsSource=&quot;{Binding DetailsSource.Items}&quot; SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot; /&gt;
+</code></pre>
+
+<pre><code class="xml">&lt;TabControl ItemsSource=&quot;{Binding DetailsSource.Items}&quot;  
+            SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;&gt;
+    &lt;TabControl.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                &lt;TextBlock Text=&quot;{Binding Item.Name}&quot; Margin=&quot;20,0&quot;/&gt;
+                &lt;Button Content=&quot;X&quot; 
+                        Command=&quot;{Binding CloseCommand}&quot; 
+                        HorizontalAlignment=&quot;Right&quot; Height=&quot;20&quot; Width=&quot;20&quot; 
+                        VerticalAlignment=&quot;Top&quot; /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/TabControl.ItemTemplate&gt;
+&lt;/TabControl&gt;
+</code></pre>
+
+<p><strong>Tip</strong>: Use an interface (IDetailViewModel for example) for TabControls that can display multiple views.</p>
+<pre><code class="cs">public interface IDetailsViewModel
+{
+    string Title { get; set; }
+}
+
+public abstract class DetailsViewModelBase : BindableBase, IDetailsViewModel
+{
+    protected string title;
+    public string Title
+    {
+        get { return title; }
+        set { SetProperty(ref title, value); }
+    }
+
+    public SharedSource&lt;IDetailsViewModel&gt; DetailsSource { get; }
+
+    public DetailsViewModelBase()
+    {
+        DetailsSource = SharedSourceManager.GetOrCreate&lt;IDetailsViewModel&gt;();
+    }
+}
+
+public class ViewAViewModel : DetailsViewModelBase, ICanDeactivate
+{
+    // ...
+}
+public class ViewBViewModel : DetailsViewModelBase
+{
+    // ...
+}
+</code></pre>
+
 <h2 id="viewmodellocator">ViewModelLocator<a class="headerlink" href="#viewmodellocator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
 <p>Allows to resolve ViewModels for Views with <strong>ResolveViewModel</strong>. </p>
@@ -767,94 +861,6 @@ View model name:
         
         return false;
     }
-}
-</code></pre>
-
-<h2 id="sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.<a class="headerlink" href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc." title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Provides an Items collection that implements INotifyCollectionChanged, a SelectedItem and more to quickly bind sources... add, remove, replace, move items, select an item by SelectedIndex or SelectedItem, etc. INotifyCollectionChanged and INotifyPropertyChanged do the work for the UI.</p>
-<pre><code class="cs">public class ViewAViewModel
-{
-    public SharedSource&lt;ItemDetailsViewModel&gt; DetailsSource { get; }
-
-    public ICommand AddCommand { get; }
-
-    public  ViewAViewModel()
-    {
-
-        // empty
-        // DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;ItemDetailsViewModel&gt;();
-
-        // or with data at initialization
-        DetailsSource = NavigationManager.GetOrCreateSharedSource&lt;ItemDetailsViewModel&gt;().With(new List&lt;ItemDetailsViewModel&gt;
-        {
-            new ItemDetailsViewModel(new Item { Name = &quot;Item.1&quot; }),
-            new ItemDetailsViewModel(new Item { Name = &quot;Item.2&quot; })
-        });
-
-        AddCommand = new RelayCommand(Add);
-    }
-
-    private async void Add()
-    {
-        await DetailsSource.Items.AddAsync(new ItemDetailsViewModel(new Item { Name = $&quot;Item.{DetailsSource.Items.Count + 1}&quot; }));
-    }
-}
-</code></pre>
-
-<p>Bind the source to controls:</p>
-<p>ItemsControl</p>
-<pre><code class="xml">&lt;ItemsControl ItemsSource=&quot;{Binding DetailsSource.Items}&quot; /&gt;
-</code></pre>
-
-<p>Selector (ListBox, TabControl, etc.) :</p>
-<pre><code class="xml">&lt;ListView ItemsSource=&quot;{Binding DetailsSource.Items}&quot; SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot; /&gt;
-</code></pre>
-
-<pre><code class="xml">&lt;TabControl ItemsSource=&quot;{Binding DetailsSource.Items}&quot;  SelectedItem=&quot;{Binding DetailsSource.SelectedItem}&quot;&gt;
-    &lt;TabControl.ItemTemplate&gt;
-        &lt;DataTemplate&gt;
-            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
-                &lt;TextBlock Text=&quot;{Binding Item.Name}&quot; Margin=&quot;20,0&quot;/&gt;
-                &lt;Button Content=&quot;X&quot; 
-                        Command=&quot;{Binding CloseCommand}&quot; 
-                        HorizontalAlignment=&quot;Right&quot; Height=&quot;20&quot; Width=&quot;20&quot; 
-                        VerticalAlignment=&quot;Top&quot; /&gt;
-            &lt;/StackPanel&gt;
-        &lt;/DataTemplate&gt;
-    &lt;/TabControl.ItemTemplate&gt;
-&lt;/TabControl&gt;
-</code></pre>
-
-<p><strong>Tip</strong>: Use an interface (IDetailViewModel for example) for TabControls that can display multiple views.</p>
-<pre><code class="cs">public interface IDetailsViewModel
-{
-    string Title { get; set; }
-}
-
-public abstract class DetailsViewModelBase : BindableBase, IDetailsViewModel
-{
-    protected string title;
-    public string Title
-    {
-        get { return title; }
-        set { SetProperty(ref title, value); }
-    }
-
-    public SharedSource&lt;IDetailsViewModel&gt; DetailsSource { get; }
-
-    public DetailsViewModelBase()
-    {
-        DetailsSource = SharedSourceManager.GetOrCreate&lt;IDetailsViewModel&gt;();
-    }
-}
-
-public class ViewAViewModel : DetailsViewModelBase, ICanDeactivate
-{
-    // ...
-}
-public class ViewBViewModel : DetailsViewModelBase
-{
-    // ...
 }
 </code></pre>
 
