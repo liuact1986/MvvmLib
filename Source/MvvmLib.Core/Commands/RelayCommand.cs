@@ -7,21 +7,23 @@ namespace MvvmLib.Commands
     /// </summary>
     public class RelayCommand : RelayCommandBase
     {
-        private readonly Action executeMethod;
-        private readonly Func<bool> canExecuteMethod;
+        private readonly Action execute;
+        private readonly Func<bool> canExecute;
 
         /// <summary>
         /// Creates the <see cref="RelayCommand"/>.
         /// </summary>
-        /// <param name="executeMethod">The method to execute</param>
-        /// <param name="canExecuteMethod">The method used to check if the <see cref="executeMethod"/> can be invoked</param>
-        public RelayCommand(Action executeMethod, Func<bool> canExecuteMethod)
+        /// <param name="execute">The method to execute</param>
+        /// <param name="canExecute">The method used to check if the <see cref="execute"/> can be invoked</param>
+        public RelayCommand(Action execute, Func<bool> canExecute)
         {
-            if (executeMethod == null)
-                throw new ArgumentNullException(nameof(executeMethod));
+            if (execute == null)
+                throw new ArgumentNullException(nameof(execute));
+            if (canExecute == null)
+                throw new ArgumentNullException(nameof(canExecute));
 
-            this.executeMethod = executeMethod;
-            this.canExecuteMethod = canExecuteMethod;
+            this.execute = execute;
+            this.canExecute = canExecute;
         }
 
         /// <summary>
@@ -33,23 +35,23 @@ namespace MvvmLib.Commands
         { }
 
         /// <summary>
-        /// Use the <see cref="canExecuteMethod"/> to check if the <see cref="executeMethod"/> can be invoked.
+        /// Use the <see cref="canExecute"/> to check if the <see cref="execute"/> can be invoked.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         /// <returns>True if command have to be executed</returns>
         public override bool CanExecute(object parameter)
         {
-            var canExecute = canExecuteMethod.Invoke();
+            var canExecute = this.canExecute.Invoke();
             return canExecute;
         }
 
         /// <summary>
-        /// Invokes the <see cref="executeMethod"/>.
+        /// Invokes the <see cref="execute"/>.
         /// </summary>
         /// <param name="parameter">The parameter</param>
         public override void Execute(object parameter)
         {
-            executeMethod.Invoke();
+            execute.Invoke();
         }
 
     }

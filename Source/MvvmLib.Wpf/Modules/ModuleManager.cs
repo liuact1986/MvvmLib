@@ -59,12 +59,20 @@ namespace MvvmLib.Modules
                 {
                     var assembly = AssemblyLoader.Load(module.File);
                     if (assembly == null)
-                        throw new ModuleLoadingFailException($"No assembly found for the file '{module.File}'");
+                        throw new ModuleLoadingFailException($"No assembly found for the file '{module.File}', module name '{module.Name}'");
 
                     AssemblyLoader.InitializeModule(assembly, module.ModuleConfigFullName);
                     module.isLoaded = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// Clears the <see cref="Modules"/>.
+        /// </summary>
+        public static void ClearModules()
+        {
+            modules.Clear();
         }
     }
 

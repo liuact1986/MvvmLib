@@ -61,12 +61,16 @@
         <Grid.Effect>
             <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
         </Grid.Effect>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="5">
+        <StackPanel Orientation="Horizontal" Margin="5" Grid.ColumnSpan="2">
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
                     <Setter Property="IsEnabled" Value="False" />
@@ -81,10 +85,10 @@
                 <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
             </Button>
             <Button Command="{Binding Browser.MoveCurrentToPreviousCommand}">
-                <controls:MaterialDesignIcon Icon="SkipBackward" Brush="#2980b9"/>
+                <controls:MaterialDesignIcon Icon="MenuLeft" Height="30" Brush="#2980b9"/>
             </Button>
             <Button Command="{Binding Browser.MoveCurrentToNextCommand}">
-                <controls:MaterialDesignIcon Icon="SkipForward" Brush="#2980b9"/>
+                <controls:MaterialDesignIcon Icon="MenuRight" Height="30" Brush="#2980b9"/>
             </Button>
             <Button Command="{Binding Browser.MoveCurrentToLastCommand}">
                 <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
@@ -137,5 +141,14 @@
             </ContentControl>
         </Grid>
 
+        <DataGrid ItemsSource="{Binding PeopleSource.Items}" 
+                  SelectedItem="{Binding PeopleSource.SelectedItem}"
+                  AutoGenerateColumns="False"
+                  Grid.Column="1" Grid.Row="1" Margin="5" FontSize="16">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="First Name" Binding="{Binding Person.FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto"/>
+                <DataGridTextColumn Header="Last Name" Binding="{Binding Person.LastName, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

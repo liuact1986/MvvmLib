@@ -9,7 +9,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
     public class ContentControlNavigationSourceTests
     {
         [TestMethod]
-        public async Task Navigate_Sets_The_Content_Of_The_Content_Control()
+        public void Navigate_Sets_The_Content_Of_The_Content_Control()
         {
             MyNavViewModelA.Reset();
 
@@ -20,7 +20,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
 
-            await navigationSource.NavigateAsync(typeof(MyNavViewModelA), "p1");
+            navigationSource.Navigate(typeof(MyNavViewModelA), "p1");
 
             Assert.AreEqual(typeof(MyNavViewModelA), navigationSource.Current.GetType());
             Assert.IsNotNull(contentControl.Content);

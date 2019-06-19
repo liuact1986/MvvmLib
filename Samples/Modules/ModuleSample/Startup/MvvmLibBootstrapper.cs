@@ -1,6 +1,7 @@
 ﻿using MvvmLib.IoC;
 using MvvmLib.Message;
 using MvvmLib.Navigation;
+using System;
 
 namespace ModuleSample.Startup
 {
@@ -11,7 +12,7 @@ namespace ModuleSample.Startup
         public MvvmLibBootstrapper(IInjector container)
         {
             if (container == null)
-                throw new System.ArgumentNullException(nameof(container));
+                throw new ArgumentNullException(nameof(container));
 
             this.container = container;
         }

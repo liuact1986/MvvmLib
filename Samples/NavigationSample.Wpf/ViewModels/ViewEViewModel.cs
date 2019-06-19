@@ -30,23 +30,6 @@ namespace NavigationSample.Wpf.ViewModels
            this.Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
         }
 
-        public async Task<bool> CanActivateAsync(object parameter)
-        {
-            if (!IsLoggedIn())
-            {
-                var navigationParameters = new Dictionary<string, object>
-                {
-                    { "redirectTo",typeof(ViewE) },
-                    { "parameter", parameter }
-                };
-                await Navigation.NavigateAsync(typeof(LoginView), navigationParameters);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
 
         private bool IsLoggedIn()
         {
@@ -67,6 +50,24 @@ namespace NavigationSample.Wpf.ViewModels
         {
 
         }
+
+        public void CanActivate(object parameter, Action<bool> continuationCallback)
+        {
+            if (!IsLoggedIn())
+            {
+                continuationCallback(false);
+                var navigationParameters = new Dictionary<string, object>
+                {
+                    { "redirectTo",typeof(ViewE) },
+                    { "parameter", parameter }
+                };
+                Navigation.EndWith(typeof(LoginView), navigationParameters);
+            }
+            else
+            {
+                continuationCallback(true);
+            }
+        }
     }
 
     public class LoginViewModel : INavigationAware
@@ -83,11 +84,11 @@ namespace NavigationSample.Wpf.ViewModels
             LoginCommand = new RelayCommand(Login);
         }
 
-        private async void Login()
+        private void Login()
         {
             User.IsLoggedIn = true;
             // redirect (removes the login view from the history)
-            await Navigation.RedirectAsync(redirectTo, parameter);
+            Navigation.Redirect(redirectTo, parameter);
         }
 
         public void OnNavigatingFrom()

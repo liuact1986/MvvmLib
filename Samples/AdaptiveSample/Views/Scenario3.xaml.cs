@@ -31,9 +31,9 @@ namespace AdaptiveSample.Views
 
         public NavigationSource Navigation { get; }
 
-        private async void OnGoBack(object sender, RoutedEventArgs e)
+        private void OnGoBack(object sender, RoutedEventArgs e)
         {
-            await Navigation.GoBackAsync();
+            Navigation.GoBack();
         }
     }
 }

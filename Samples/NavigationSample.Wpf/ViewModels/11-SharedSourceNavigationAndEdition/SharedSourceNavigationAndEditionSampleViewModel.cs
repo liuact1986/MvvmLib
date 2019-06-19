@@ -11,8 +11,12 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    class SharedSourceNavigationAndEditionSampleViewModel : BindableBase, INavigationAware
+    public class SharedSourceNavigationAndEditionSampleViewModel : BindableBase, INavigationAware
     {
+        private readonly ISubscriberOptions personSavedSubscriberOptions;
+        private readonly ISubscriberOptions cancelAddingPersonSubscriberOptions;
+        private readonly ISubscriberOptions cancelUpdatingPersonSubscriberOptions;
+
         public SharedSource<PersonViewModel> PeopleSource { get; }
 
         public NavigationBrowser Browser { get; }
@@ -28,24 +32,42 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand UpdateCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
 
+        private readonly IEventAggregator eventAggregator;
+
         public SharedSourceNavigationAndEditionSampleViewModel(IEventAggregator eventAggregator)
         {
+            this.eventAggregator = eventAggregator;
+
             eventAggregator.GetEvent<TitleChangedEvent>().Publish("Navigation and Edition with SharedSource");
 
             State = DataFormState.IsShowingDetails;
 
-            eventAggregator.GetEvent<PersonSavedEvent>().Subscribe(OnPersonSaved);
-            eventAggregator.GetEvent<CancelAddingPersonEvent>().Subscribe(OnCancelAddingPerson);
-            eventAggregator.GetEvent<CancelUpdatingPersonEvent>().Subscribe(OnCancelUpdatingPerson);
+            personSavedSubscriberOptions = eventAggregator.GetEvent<PersonSavedEvent>().Subscribe(OnPersonSaved);
+            cancelAddingPersonSubscriberOptions = eventAggregator.GetEvent<CancelAddingPersonEvent>().Subscribe(OnCancelAddingPerson);
+            cancelUpdatingPersonSubscriberOptions = eventAggregator.GetEvent<CancelUpdatingPersonEvent>().Subscribe(OnCancelUpdatingPerson);
 
             this.PeopleSource = NavigationManager.GetOrCreateSharedSource<PersonViewModel>();
 
             this.Browser = new NavigationBrowser(this.PeopleSource.Items);
             this.Browser.CollectionView.CurrentChanged += OnCollectionViewCurrentChanged;
+            this.PeopleSource.SelectedItemChanged += OnPeopleSourceSelectedItemChanged;
 
             AddCommand = new RelayCommand(Add);
             UpdateCommand = new RelayCommand(Update);
             DeleteCommand = new RelayCommand(Delete);
+        }
+
+        // only if synchronization is required (edition)
+        private void OnCollectionViewCurrentChanged(object sender, EventArgs e)
+        {
+            var position = this.Browser.CollectionView.CurrentPosition;
+            this.PeopleSource.SelectedIndex = position;
+        }
+
+        // only if synchronization is required (edition)
+        private void OnPeopleSourceSelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
+        {
+            this.Browser.MoveCurrentTo(e.SelectedItem);
         }
 
         private void Load()
@@ -67,18 +89,12 @@ namespace NavigationSample.Wpf.ViewModels
             this.PeopleSource.Load(people);
         }
 
-        private void OnCollectionViewCurrentChanged(object sender, EventArgs e)
-        {
-            var position = this.Browser.CollectionView.CurrentPosition;
-            this.PeopleSource.SelectedIndex = position;
-        }
-
-        private async void Add()
+        private void Add()
         {
             State = DataFormState.IsAdding;
             var viewModel = this.PeopleSource.CreateNew();
-            viewModel.Person = new PersonModel(); 
-            await this.PeopleSource.Items.AddAsync(viewModel, -1);
+            viewModel.Person = new PersonModel();
+            this.PeopleSource.Items.Add(viewModel, -1);
             Browser.MoveCurrentToLast();
         }
 
@@ -87,13 +103,13 @@ namespace NavigationSample.Wpf.ViewModels
             State = DataFormState.IsEditing;
         }
 
-        private async void Delete()
+        private void Delete()
         {
             if (PeopleSource.SelectedIndex >= 0)
             {
                 if (MessageBox.Show($"Delete {PeopleSource.SelectedItem.Person.FirstName}?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
-                    await PeopleSource.Items.RemoveAtAsync(PeopleSource.SelectedIndex);
+                    PeopleSource.Items.RemoveAt(PeopleSource.SelectedIndex);
                 }
             }
         }
@@ -103,10 +119,10 @@ namespace NavigationSample.Wpf.ViewModels
             State = DataFormState.IsShowingDetails;
         }
 
-        private async void OnCancelAddingPerson()
+        private void OnCancelAddingPerson()
         {
             var last = this.PeopleSource.SelectedItem;
-            await this.PeopleSource.Items.RemoveAsync(last);
+            this.PeopleSource.Items.Remove(last);
             State = DataFormState.IsShowingDetails;
         }
 
@@ -117,7 +133,9 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatingFrom()
         {
-          
+            personSavedSubscriberOptions.Unsubscribe();
+            cancelAddingPersonSubscriberOptions.Unsubscribe();
+            cancelUpdatingPersonSubscriberOptions.Unsubscribe();
         }
 
         public void OnNavigatingTo(object parameter)
@@ -127,7 +145,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatedTo(object parameter)
         {
-            
+
         }
     }
 
@@ -249,7 +267,6 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatingTo(object parameter)
         {
-            // in rela app load person with a data service
             person.Id = (int)parameter;
             this.person.BeginEdit();
         }

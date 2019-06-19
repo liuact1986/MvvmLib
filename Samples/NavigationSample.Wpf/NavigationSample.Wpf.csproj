@@ -87,6 +87,7 @@
     <Compile Include="ViewModels\8-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewEViewModel.cs" />
+    <Compile Include="ViewModels\ViewGViewModel.cs" />
     <Compile Include="Views\1-MasterDetail\MasterDetailView.xaml.cs">
       <DependentUpon>MasterDetailView.xaml</DependentUpon>
     </Compile>
@@ -150,6 +151,9 @@
     </Compile>
     <Compile Include="Views\ViewE.xaml.cs">
       <DependentUpon>ViewE.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewG.xaml.cs">
+      <DependentUpon>ViewG.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -267,6 +271,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ViewE.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ViewG.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

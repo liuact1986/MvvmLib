@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MvvmLib.Navigation
 {
@@ -187,19 +185,19 @@ namespace MvvmLib.Navigation
 
         #region Commands
 
-        private async void ExecuteNavigateCommand(Type sourceType)
+        private void ExecuteNavigateCommand(Type sourceType)
         {
-            await this.NavigateAsync(sourceType, null);
+            this.Navigate(sourceType, null);
         }
 
-        private async void ExecuteGoBackCommand()
+        private void ExecuteGoBackCommand()
         {
-            await this.GoBackAsync();
+            this.GoBack();
         }
 
-        private async void ExecuteRedirectCommand(Type sourceType)
+        private void ExecuteRedirectCommand(Type sourceType)
         {
-            await this.RedirectAsync(sourceType, null);
+            this.Redirect(sourceType, null);
         }
 
         private bool CanExecuteGoBackCommand()
@@ -207,9 +205,9 @@ namespace MvvmLib.Navigation
             return this.CanGoBack;
         }
 
-        private async void ExecuteGoForwardCommand()
+        private void ExecuteGoForwardCommand()
         {
-            await this.GoForwardAsync();
+            this.GoForward();
         }
 
         private bool CanExecuteGoForwardCommand()
@@ -217,9 +215,9 @@ namespace MvvmLib.Navigation
             return this.CanGoForward;
         }
 
-        private async void ExecuteNavigateToRootCommand()
+        private void ExecuteNavigateToRootCommand()
         {
-            await this.NavigateToRootAsync();
+            this.NavigateToRoot();
         }
 
         private bool CanExecuteNavigateToRootCommand()
@@ -347,74 +345,127 @@ namespace MvvmLib.Navigation
 
         #endregion
 
-        /// <summary>
-        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
-        /// </summary>
-        /// <param name="sourceName">The source name</param>
-        /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(string sourceName, object parameter)
-        {
-            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
-            {
-                return await NavigateAsync(sourceType, parameter);
-            }
-            throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
-        }
-
-        /// <summary>
-        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
-        /// </summary>
-        /// <param name="sourceName">The source name</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(string sourceName)
-        {
-            return await NavigateAsync(sourceName, null);
-        }
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(Type sourceType, object parameter)
+        public void Navigate(Type sourceType, object parameter)
         {
             if (this.history.Current != null)
                 this.OnNavigating(this.history.Current, NavigationType.New);
 
-            if (await NavigationHelper.NavigateAsync(current, sources, sourceType, parameter, (source) =>
+            NavigationHelper.CheckGuardsAndNavigate(current, sources, sourceType, parameter, (source) =>
             {
                 // insert at current index + 1
                 var newIndex = this.currentIndex + 1;
                 this.sources.Insert(newIndex, source);
-                SetCurrent(newIndex, source);
                 OnCollectionChanged(NotifyCollectionChangedAction.Add, source, newIndex);
-            }))
-            {
-                // clear all sources after index + 1
-                ClearSourcesAfterCurrentIndex();
 
-                history.Navigate(new NavigationEntry(sourceType, this.current, parameter));
-
-                this.OnNavigated(sourceType, parameter, NavigationType.New);
-                return true;
-            }
-            else
+                SetCurrent(newIndex, source);
+            }, (success) =>
             {
-                this.OnNavigationFailed(new NavigationFailedException(this.current, this));
-                return false;
-            }
+                if (success)
+                {
+                    // clear all sources after index + 1
+                    ClearSourcesAfterCurrentIndex();
+
+                    history.Navigate(new NavigationEntry(sourceType, this.current, parameter));
+
+                    this.OnNavigated(sourceType, parameter, NavigationType.New);
+                }
+                else
+                    this.OnNavigationFailed(new NavigationFailedException(this.current, this));
+            });
         }
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(Type sourceType)
+        public void Navigate(Type sourceType)
         {
-            return await this.NavigateAsync(sourceType, null);
+            this.Navigate(sourceType, null);
+        }
+
+        /// <summary>
+        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <param name="parameter">The parameter</param>
+        public void Navigate(string sourceName, object parameter)
+        {
+            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
+                this.Navigate(sourceType, parameter);
+            else
+                throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+        }
+
+        /// <summary>
+        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <returns>True on navigation success</returns>
+        public void Navigate(string sourceName)
+        {
+            this.Navigate(sourceName, null);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        public void EndWith(Type sourceType, object parameter)
+        {
+            NavigationHelper.EndNavigate(current, sources, sourceType, parameter, (source) =>
+            {
+                // insert at current index + 1
+                var newIndex = this.currentIndex + 1;
+                this.sources.Insert(newIndex, source);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add, source, newIndex);
+
+                SetCurrent(newIndex, source);
+            });
+
+            // clear all sources after index + 1
+            ClearSourcesAfterCurrentIndex();
+
+            history.Navigate(new NavigationEntry(sourceType, this.current, parameter));
+
+            this.OnNavigated(sourceType, parameter, NavigationType.New);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        public void EndWith(Type sourceType)
+        {
+            this.EndWith(sourceType, null);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <param name="parameter">The parameter</param>
+        public void EndWith(string sourceName, object parameter)
+        {
+            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
+                this.EndWith(sourceType, parameter);
+            else
+                throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        public void EndWith(string sourceName)
+        {
+            this.EndWith(sourceName, null);
         }
 
         /// <summary>
@@ -422,8 +473,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(Type sourceType, object parameter)
+        public void Redirect(Type sourceType, object parameter)
         {
             // remove current
             var index = this.history.CurrentIndex;
@@ -434,17 +484,16 @@ namespace MvvmLib.Navigation
                 this.sources.RemoveAt(index);
                 this.currentIndex = index - 1;
             }
-            return await this.NavigateAsync(sourceType, parameter);
+            this.Navigate(sourceType, parameter);
         }
 
         /// <summary>
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(Type sourceType)
+        public void Redirect(Type sourceType)
         {
-            return await RedirectAsync(sourceType, null);
+            this.Redirect(sourceType, null);
         }
 
         /// <summary>
@@ -452,31 +501,27 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(string sourceName, object parameter)
+        public void Redirect(string sourceName, object parameter)
         {
             if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
-            {
-                return await RedirectAsync(sourceType, parameter);
-            }
-            throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+                this.Redirect(sourceType, parameter);
+            else
+                throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
         }
 
         /// <summary>
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceName">The source name</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(string sourceName)
+        public void Redirect(string sourceName)
         {
-            return await RedirectAsync(sourceName, null);
+            this.Redirect(sourceName, null);
         }
 
         /// <summary>
         /// Navigates to the previous source.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> GoBackAsync()
+        public void GoBack()
         {
             if (this.CanGoBack)
             {
@@ -486,26 +531,24 @@ namespace MvvmLib.Navigation
                 var sourceType = history.Previous.SourceType;
                 var source = history.Previous.Source;
                 var parameter = history.Previous.Parameter;
-                if (await NavigationHelper.ReplaceAsync(this.current, source, parameter, () => SetCurrent(newIndex, source)))
+
+                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
                 {
-                    history.GoBack();
-                    this.OnNavigated(sourceType, parameter, NavigationType.Back);
-                    return true;
-                }
-                else
-                {
-                    this.OnNavigationFailed(new NavigationFailedException(source, this));
-                    return false;
-                }
+                    if (success)
+                    {
+                        history.GoBack();
+                        this.OnNavigated(sourceType, parameter, NavigationType.Back);
+                    }
+                    else
+                        this.OnNavigationFailed(new NavigationFailedException(source, this));
+                });
             }
-            return false;
         }
 
         /// <summary>
         /// Navigates to the next source.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> GoForwardAsync()
+        public void GoForward()
         {
             if (this.CanGoForward)
             {
@@ -515,26 +558,23 @@ namespace MvvmLib.Navigation
                 var sourceType = history.Next.SourceType;
                 var source = history.Next.Source;
                 var parameter = history.Next.Parameter;
-                if (await NavigationHelper.ReplaceAsync(this.current, source, parameter, () => SetCurrent(newIndex, source)))
+                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
                 {
-                    history.GoForward();
-                    this.OnNavigated(sourceType, parameter, NavigationType.Forward);
-                    return true;
-                }
-                else
-                {
-                    this.OnNavigationFailed(new NavigationFailedException(source, this));
-                    return false;
-                }
+                    if (success)
+                    {
+                        history.GoForward();
+                        this.OnNavigated(sourceType, parameter, NavigationType.Forward);
+                    }
+                    else
+                        this.OnNavigationFailed(new NavigationFailedException(source, this));
+                });
             }
-            return false;
         }
 
         /// <summary>
         /// Navigates to the first source.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateToRootAsync()
+        public void NavigateToRoot()
         {
             if (this.sources.Count > 0)
             {
@@ -544,29 +584,25 @@ namespace MvvmLib.Navigation
                 var sourceType = history.Root.SourceType;
                 var source = history.Root.Source;
                 var parameter = history.Root.Parameter;
-                if (await NavigationHelper.ReplaceAsync(this.current, source, parameter, () => SetCurrent(newIndex, source)))
+                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
                 {
-                    ClearSourcesAfterCurrentIndex();
-                    history.NavigateToRoot();
-                    this.OnNavigated(sourceType, parameter, NavigationType.Root);
-                    return true;
-                }
-                else
-                {
-                    this.OnNavigationFailed(new NavigationFailedException(source, this));
-                    return false;
-                }
+                    if (success)
+                    {
+                        ClearSourcesAfterCurrentIndex();
+                        history.NavigateToRoot();
+                        this.OnNavigated(sourceType, parameter, NavigationType.Root);
+                    }
+                    else
+                        this.OnNavigationFailed(new NavigationFailedException(source, this));
+                });
             }
-
-            return false;
         }
 
         /// <summary>
         /// Navigates to the source at the index.
         /// </summary>
         /// <param name="index">The index</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> MoveToAsync(int index)
+        public void MoveTo(int index)
         {
             if (index < 0 || index > this.sources.Count - 1)
                 throw new IndexOutOfRangeException();
@@ -574,7 +610,7 @@ namespace MvvmLib.Navigation
             int oldIndex = this.currentIndex;
 
             if (oldIndex == index)
-                return false; // do not change
+                return; // do not change
 
             var entry = this.history.entries[index];
             var sourceType = entry.SourceType;
@@ -584,25 +620,23 @@ namespace MvvmLib.Navigation
 
             this.OnNavigating(this.history.Current, navigationType);
 
-            if (await NavigationHelper.ReplaceAsync(this.current, source, parameter, () => SetCurrent(index, source)))
+            NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(index, source), (success) =>
             {
-                history.MoveTo(entry);
-                this.OnNavigated(sourceType, parameter, navigationType);
-                return true;
-            }
-            else
-            {
-                this.OnNavigationFailed(new NavigationFailedException(source, this));
-                return false;
-            }
+                if (success)
+                {
+                    history.MoveTo(entry);
+                    this.OnNavigated(sourceType, parameter, navigationType);
+                }
+                else
+                    this.OnNavigationFailed(new NavigationFailedException(source, this));
+            });
         }
 
         /// <summary>
         /// Navigates to the specified source.
         /// </summary>
         /// <param name="source">The source</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> MoveToAsync(object source)
+        public void MoveTo(object source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -611,7 +645,7 @@ namespace MvvmLib.Navigation
             if (newIndex == -1)
                 throw new ArgumentException("Unable to find the source provided");
 
-            return await this.MoveToAsync(newIndex);
+            this.MoveTo(newIndex);
         }
 
         /// <summary>
@@ -638,7 +672,7 @@ namespace MvvmLib.Navigation
             int index = 0;
             foreach (var entry in history.Entries)
             {
-                var source = NavigationHelper.EnsureNew(entry.Source);
+                var source = NavigationHelper.EnsureNewView(entry.Source);
                 this.history.entries.Add(new NavigationEntry(entry.SourceType, source, entry.Parameter));
                 this.sources.Add(source);
 

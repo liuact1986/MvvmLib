@@ -141,7 +141,7 @@ namespace MvvmLib.Navigation
             // sync
             foreach (var item in ItemsSource)
             {
-                var source = NavigationHelper.EnsureNew(item);
+                var source = NavigationHelper.EnsureNewView(item);
                 this.itemsSourceForTheView.Add(source);
             }
 
@@ -197,7 +197,7 @@ namespace MvvmLib.Navigation
                     index = e.NewStartingIndex;
                     foreach (var item in e.NewItems)
                     {
-                        this.itemsSourceForTheView.Insert(index, NavigationHelper.EnsureNew(item));
+                        this.itemsSourceForTheView.Insert(index, NavigationHelper.EnsureNewView(item));
                         index++;
                     }
                     if (oldCount == 0)
@@ -215,7 +215,7 @@ namespace MvvmLib.Navigation
                     index = e.NewStartingIndex;
                     foreach (var item in e.NewItems)
                     {
-                        this.itemsSourceForTheView[index] = NavigationHelper.EnsureNew(item);
+                        this.itemsSourceForTheView[index] = NavigationHelper.EnsureNewView(item);
                         index++;
                     }
                     break;

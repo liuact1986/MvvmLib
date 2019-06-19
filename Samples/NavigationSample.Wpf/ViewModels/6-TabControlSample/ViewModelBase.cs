@@ -25,9 +25,9 @@ namespace NavigationSample.Wpf.ViewModels
             CloseCommand = new RelayCommand<IDetailViewModel>(OnCloseItem);
         }
 
-        private async void OnCloseItem(IDetailViewModel item)
+        private void OnCloseItem(IDetailViewModel item)
         {
-            await DetailsSource.Items.RemoveAsync(item);
+            DetailsSource.Items.Remove(item);
         }
     }
 }

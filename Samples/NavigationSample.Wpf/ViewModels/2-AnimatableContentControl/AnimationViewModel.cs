@@ -47,9 +47,9 @@ namespace NavigationSample.Wpf.ViewModels
             };
             this.selectedDuration = this.Durations[0];
 
-            NavigateCommand = new RelayCommand<Type>(async (sourceType) =>
+            NavigateCommand = new RelayCommand<Type>((sourceType) =>
             {
-                await Navigation.NavigateAsync(sourceType);
+                Navigation.Navigate(sourceType);
             });
 
             CancelAnimationsCommand = new RelayCommand(() =>

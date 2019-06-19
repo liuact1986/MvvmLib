@@ -34,9 +34,9 @@ namespace AdaptiveSample.Views
             List.Items.Add($"Active breakpoint: {e.Width}px");
         }
 
-        private async void OnGoBack(object sender, RoutedEventArgs e)
+        private void OnGoBack(object sender, RoutedEventArgs e)
         {
-            await Navigation.GoBackAsync();
+            Navigation.GoBack();
         }
     }
 }

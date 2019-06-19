@@ -3,6 +3,7 @@ using MvvmLib.Message;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,14 +21,14 @@ namespace NavigationSample.Wpf.ViewModels
         {
             eventAggregator.GetEvent<TitleChangedEvent>().Publish("SharedSource for ItemsControls, Selectors, etc.");
 
-            DetailsSource = NavigationManager.GetSharedSource<MyItemDetailsViewModel>();
+            DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
 
             AddCommand = new RelayCommand(Add);
         }
 
-        private async void Add()
+        private void Add()
         {
-            await DetailsSource.Items.AddAsync(new MyItemDetailsViewModel(new MyItem { Name = $"Item.{DetailsSource.Items.Count + 1}" }));
+            DetailsSource.Items.Add(new MyItemDetailsViewModel(new MyItem { Name = $"Item.{DetailsSource.Items.Count + 1}" }));
         }
 
         public void OnNavigatingFrom()
@@ -86,15 +87,15 @@ namespace NavigationSample.Wpf.ViewModels
             CloseCommand = new RelayCommand(Close);
         }
 
-        private async void Close()
+        private void Close()
         {
-            await detailsSource.Items.RemoveAsync(this);
+            detailsSource.Items.Remove(this);
         }
 
-        public Task<bool> CanDeactivateAsync()
+        public void CanDeactivate(Action<bool> continuationCallback)
         {
             var result = MessageBox.Show($"Close {baseName}?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            return Task.FromResult(result);
+            continuationCallback(result);
         }
     }
 

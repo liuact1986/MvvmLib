@@ -2,10 +2,11 @@
 
 namespace MvvmLib.Message
 {
+
     /// <summary>
     /// Subscriber options class.
     /// </summary>
-    public class SubscriberOptions<TPayload>
+    public class SubscriberOptions<TPayload> : IParameterizedEventSubscriberOptions<TPayload>
     {
         private readonly Subscriber<TPayload> subscriber;
 
@@ -34,7 +35,7 @@ namespace MvvmLib.Message
         public SubscriberOptions<TPayload> WithFilter(Func<TPayload, bool> filter)
         {
             if (filter == null)
-                throw new ArgumentNullException(nameof(filter)); 
+                throw new ArgumentNullException(nameof(filter));
 
             var weakFilter = new WeakDelegate(filter, false);
             subscriber.weakFilter = weakFilter;
@@ -51,6 +52,15 @@ namespace MvvmLib.Message
         {
             subscriber.ExecutionStrategy = executionStrategy;
             return this;
+        }
+
+        /// <summary>
+        /// Allows to unsubscribe to event.
+        /// </summary>
+        /// <returns>True if unsubscribed</returns>
+        public bool Unsubscribe()
+        {
+            return Token.Unsubscribe();
         }
     }
 }

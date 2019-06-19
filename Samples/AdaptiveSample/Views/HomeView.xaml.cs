@@ -15,19 +15,19 @@ namespace AdaptiveSample.Views
             this.Navigation = NavigationManager.GetNavigationSources("Main")[0];
         }
 
-        private async void OnGoBreakpoint(object sender, RoutedEventArgs e)
+        private  void OnGoBreakpoint(object sender, RoutedEventArgs e)
         {
-            await Navigation.NavigateAsync(typeof(Scenario1));
+             Navigation.Navigate(typeof(Scenario1));
         }
 
-        private async void OnGoDataContext(object sender, RoutedEventArgs e)
+        private  void OnGoDataContext(object sender, RoutedEventArgs e)
         {
-            await Navigation.NavigateAsync(typeof(Scenario2));
+             Navigation.Navigate(typeof(Scenario2));
         }
 
-        private async void OnGoAsControl(object sender, RoutedEventArgs e)
+        private  void OnGoAsControl(object sender, RoutedEventArgs e)
         {
-            await Navigation.NavigateAsync(typeof(Scenario3));
+             Navigation.Navigate(typeof(Scenario3));
         }
     }
 }

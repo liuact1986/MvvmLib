@@ -106,6 +106,18 @@ namespace MvvmLib.Message
             return false;
         }
 
+
+        /// <summary>
+        /// Clears all subscribers.
+        /// </summary>
+        public void UnsubscribeAll()
+        {
+            lock (subscribers)
+            {
+                subscribers.Clear();
+            }
+        }
+
         /// <summary>
         /// Notifies all subscribers.
         /// </summary>

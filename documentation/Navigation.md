@@ -124,13 +124,13 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 
 | Method | Description |
 | --- | --- |
-| NavigateAsync | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
-| redirectAsync | Redirects and removes the previous entry from the history |
-| GoBackAsync | Navigates to the previous source |
-| GoForwardAsync | Navigates to the next source |
-| NavigateToRootAsync | Navigates to the first source and clears the history |
+| Navigate | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
+| redirect | Redirects and removes the previous entry from the history |
+| GoBack | Navigates to the previous source |
+| GoForward | Navigates to the next source |
+| NavigateToRoot | Navigates to the first source and clears the history |
+| EndWith | Useful for navigation cancellation and not recheck guards |
 | Sync | Synchronizes the history and sources with the history provided |
-
 
 | Property | Description |
 | --- | --- |
@@ -179,19 +179,19 @@ Navigation
 ```cs
 var  navigation = NavigationManager.CreateNavigationSource("Main");
 
-await navigation.NavigateAsync(typeof(ViewA));
+navigation.Navigate(typeof(ViewA));
 
 // with parameter
-await navigation.NavigateAsync(typeof(ViewA), "My parameter");
+navigation.Navigate(typeof(ViewA), "My parameter");
 
 // GoBack
-await navigation.GoBackAsync();
+navigation.GoBack();
 
 // GoForward
-await navigation.GoForwardAsync();
+navigation.GoForward();
 
 // Navigate to root
-await navigation.NavigateToRootAsync();
+navigation.NavigateToRoot();
 ```
 
 Add navigation sources for the same source name:
@@ -205,7 +205,7 @@ Navigate simultaneously with all sources of a container
 
 ```cs
 var navigationSources = NavigationManager.GetNavigationSources("Main");
-navigationSources.NavigateAsync(typeof(ViewA), "My parameter");
+navigationSources.Navigate(typeof(ViewA), "My parameter");
 ```
 
 
@@ -269,12 +269,12 @@ SharedSourceItemCollection methods
 
 | Method | Description |
 | --- | --- |
-| InsertAsync | Allows to insert item at index. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
-| AddAsync | Adds and item. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
+| Insert | Allows to insert item at index. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
+| Add | Adds and item. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
 | Move | Moves the item from the old index to the new index. Navigation guards and INavigationAware are not invoked |
-| RemoveAtAsync | Removes the item at the index. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
-| RemoveAsync | Removes the item. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
-| ClearAsync | Removes all items. ICanDeactive and INavigationAware OnNavigatingFrom methods are invoked for each item before deletion |
+| RemoveAt | Removes the item at the index. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
+| Remove | Removes the item. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
+| Clear | Removes all items. ICanDeactive and INavigationAware OnNavigatingFrom methods are invoked for each item before deletion |
 | ClearFast | Removes all items. ICanDeactive and INavigationAware methods are not invoked |
 
 SharedSourceItemCollection events
@@ -290,8 +290,8 @@ SharedSource provides methods that allow to create and insert quickly. Theses me
 | Method | Description |
 | --- | --- |
 | CreateNew | Returns an item instance created with the SourceResolver |
-| InsertNewAsync | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
-| AddNewAsync | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
+| InsertNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
+| AddNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
 
 
 SharedSource properties
@@ -314,6 +314,11 @@ SharedSource events
 
 ```cs
 var s = NavigationManager.CreateSharedSource<MySharedItem>();
+```
+... or locally
+
+```cs
+var s = new SharedSource<MySharedItem>();
 ```
 
 Get a SharedSource already created
@@ -356,32 +361,32 @@ Adding items
 
 ```cs
 var s = NavigationManager.GetSharedSource<MyViewModel>();
-await s.Items.AddAsync(1, new MyViewModel(), "My parameter to pass to view model");
-await s.Items.InsertAsync(1, new MyViewModel(), "My parameter to pass to view model");
+s.Items.Add(1, new MyViewModel(), "My parameter to pass to view model");
+s.Items.Insert(1, new MyViewModel(), "My parameter to pass to view model");
 ```
 
 Or with short cuts
 
 ```cs
 var s = NavigationManager.GetSharedSource<MyViewModel>();
-await s.AddNewAsync("My parameter to pass to view model");
-await s.InsertNewAsync(1, "My parameter to pass to view model");
+s.AddNew("My parameter to pass to view model");
+s.InsertNew(1, "My parameter to pass to view model");
 ```
 
 Remove
 
 ```cs
 var s = NavigationManager.GetSharedSource<MyViewModel>();
-await s.Items.RemoveAtAsync(1);
+s.Items.RemoveAt(1);
 
 var vieModel = new MyViewModel();
-await s.Items.RemoveAsync(viewModel);
+s.Items.Remove(viewModel);
 ```
 
 Clear
 
 ```cs
-await s.Items.ClearAsync();
+s.Items.Clear();
 
 s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
 ```
@@ -404,7 +409,7 @@ Or use the NavigationHelper to check ICanDeactivate, ICanActivate and invoke INa
 int index = 1;
 var oldItem = s.Items[index];
 var newItem = new MyViewModel();
-await NavigationHelper.ReplaceAsync(oldItem, newItem, "My new parameter", () => s.Items[index] = newItem);
+NavigationHelper.Replace(oldItem, newItem, "My new parameter", () => s.Items[index] = newItem);
 ```
 
 ### Select an item
@@ -541,16 +546,16 @@ Useful when the user want to leave a page or close a tabitem for example.
 public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
 
-    public Task<bool> CanActivateAsync(object parameter)
+    public void CanActivate(object parameter, Action<bool> continuationCallback)
     {
-        var result = MessageBox.Show("Can activate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        return Task.FromResult(result);
+        var canActivate = MessageBox.Show("Can activate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        continuationCallback(canActivate);
     }
 
-    public Task<bool> CanDeactivateAsync()
+    public void CanDeactivate(Action<bool> continuationCallback)
     {
-        var result = MessageBox.Show("Can deactivate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        return Task.FromResult(result);
+        var canDeactivate = MessageBox.Show("Can deactivate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        continuationCallback(canDeactivate);
     }
 }
 ```
@@ -758,83 +763,6 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
     </mvvmLib:NavigationInteraction.Behaviors>
 </ListView>
 ```
-
-## Create a Bootsrapper
-
-
-Example: using MvvmLib.IoC Container (or Unity, StructureMap, etc.)
-
-```cs
-public abstract class MvvmLibBootstrapper : BootstrapperBase
-{
-    protected IInjector container;
-
-    public MvvmLibBootstrapper(IInjector container)
-    {
-        this.container = container;
-    }
-
-    protected override void RegisterRequiredTypes()
-    {
-        container.RegisterInstance<IInjector>(container);
-        container.RegisterSingleton<IEventAggregator, EventAggregator>();
-    }
-
-    protected override void SetViewFactory()
-    {
-        SourceResolver.SetFactory((viewType) => container.GetNewInstance(viewType));
-    }
-
-    protected override void SetViewModelFactory()
-    {
-        ViewModelLocationProvider.SetViewModelFactory((viewModelType) => container.GetInstance(viewModelType));
-    }
-}
-```
-
-The implementation class
-
-```cs
-public class Bootstrapper : MvvmLibBootstrapper
-{
-    public Bootstrapper(IInjector container) 
-        : base(container)
-    {  }
-
-    protected override Window CreateShell()
-    {
-        return container.GetInstance<Shell>();
-    }
-
-    protected override void RegisterTypes()
-    {
-        container.RegisterSingleton<IFakePeopleService, FakePeopleService>();
-    }
-}
-```
-
-(App)
-
-**Replace StartupUri** by the **Startup event**
-
-```xml
-<Application ...
-             Startup="Application_Startup">
-
-</Application>
-```
-
-```cs
-public partial class App : Application
-{
-    private void Application_Startup(object sender, StartupEventArgs e)
-    {
-        var bootstrapper = new Bootstrapper(new Injector());
-        bootstrapper.Run();
-    }
-}
-```
-
 
 ## AnimatableContentControl
 

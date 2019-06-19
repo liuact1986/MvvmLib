@@ -20,6 +20,11 @@ namespace MvvmLib.Message
             this.unsubscribe = unsubscribe;
         }
 
+        internal bool Unsubscribe()
+        {
+            return this.unsubscribe(this);
+        }
+
         /// <summary>
         /// Checks if the guid equals to the othe guid.
         /// </summary>

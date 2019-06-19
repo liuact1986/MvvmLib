@@ -89,7 +89,8 @@ namespace MvvmLib.Message
         /// <returns>True if unsubscribed</returns>
         public bool Unsubscribe(SubscriptionToken token)
         {
-            if (token == null) { throw new ArgumentNullException(nameof(token)); }
+            if (token == null)
+                throw new ArgumentNullException(nameof(token)); 
 
             lock (subscribers)
             {
@@ -98,6 +99,17 @@ namespace MvvmLib.Message
                    return subscribers.Remove(subscriber);
             }
             return false;
+        }
+
+        /// <summary>
+        /// Clears all subscribers.
+        /// </summary>
+        public void UnsubscribeAll()
+        {
+            lock (subscribers)
+            {
+                subscribers.Clear();
+            }
         }
 
         /// <summary>

@@ -1,9 +1,6 @@
 ﻿using CompositeCommandSample.Common;
-using CompositeCommandSample.Views;
 using MvvmLib.Commands;
-using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
-using System.Collections.Generic;
 
 namespace CompositeCommandSample.ViewModels
 {
@@ -23,11 +20,11 @@ namespace CompositeCommandSample.ViewModels
             this.Load();
         }
 
-        public async void Load()
+        public void Load()
         {
-            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabA"));
-            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabB"));
-            await this.TabItemsSource.Items.AddAsync(new TabViewModel(applicationCommands, "TabC"));
+            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabA"));
+            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabB"));
+            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabC"));
         }
     }
 

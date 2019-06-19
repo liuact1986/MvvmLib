@@ -69,9 +69,9 @@ namespace NavigationSample.Wpf.ViewModels
             }
         }
 
-        private async void Navigate(Type sourceType)
+        private void Navigate(Type sourceType)
         {
-            await Navigation.NavigateAsync(sourceType);
+            Navigation.Navigate(sourceType);
         }
 
         private void OnTitleChanged(string title)

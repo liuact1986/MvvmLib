@@ -1,103 +1,119 @@
 ﻿using System;
 using System.Collections;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
     /// Helper class for <see cref="NavigationSource"/> and <see cref="SharedSource{T}"/>.
     /// </summary>
     public class NavigationHelper
     {
-        /// <summary>
-        /// Checks if the type is <see cref="FrameworkElement"/> type.
-        /// </summary>
-        /// <param name="type">The type to check</param>
-        /// <returns>True or false</returns>
-        public static bool IsFrameworkElementType(Type type)
+        private static void CanActivateStep2(object item, object parameter, Action<bool> continuationCallback)
         {
-            var isFrameworkELementType = typeof(FrameworkElement).IsAssignableFrom(type);
-            return isFrameworkELementType;
+            if (item is ICanActivate)
+                ((ICanActivate)item).CanActivate(parameter, continuationCallback);
+            else
+                continuationCallback(true);
         }
 
         /// <summary>
         /// Checks activation for views and view models that implement <see cref="ICanActivate"/>.
         /// </summary>
         /// <param name="view">The view</param>
-        /// <param name="viewModel">The view model</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True if can activate</returns>
-        public static async Task<bool> CanActivateAsync(FrameworkElement view, object viewModel, object parameter)
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CanActivate(FrameworkElement view, object parameter, Action<bool> continuationCallback)
         {
+            if (view == null)
+                throw new ArgumentNullException(nameof(view));
+            if (continuationCallback == null)
+                throw new ArgumentNullException(nameof(continuationCallback));
+
             if (view is ICanActivate)
-                if (!await ((ICanActivate)view).CanActivateAsync(parameter))
-                    return false;
-
-            if (viewModel is ICanActivate)
-                if (!await ((ICanActivate)viewModel).CanActivateAsync(parameter))
-                    return false;
-
-            return true;
+                ((ICanActivate)view).CanActivate(parameter, canActivate =>
+                {
+                    if (canActivate)
+                        CanActivateStep2(view.DataContext, parameter, continuationCallback);
+                    else
+                        continuationCallback(false);
+                });
+            else
+                CanActivateStep2(view.DataContext, parameter, continuationCallback);
         }
 
         /// <summary>
-        /// Checks activation for view models that implement <see cref="ICanActivate"/>.
+        /// Checks activation for views and view models that implement <see cref="ICanActivate"/>.
         /// </summary>
-        /// <param name="viewModel">The view model</param>
+        /// <param name="source">The source</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True if can activate</returns>
-        public static async Task<bool> CanActivateAsync(object viewModel, object parameter)
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CanActivate(object source, object parameter, Action<bool> continuationCallback)
         {
-            if (viewModel is ICanActivate)
-                if (!await ((ICanActivate)viewModel).CanActivateAsync(parameter))
-                    return false;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (continuationCallback == null)
+                throw new ArgumentNullException(nameof(continuationCallback));
 
-            return true;
+            var view = source as FrameworkElement;
+            if (view != null)
+                CanActivate(view, parameter, continuationCallback);
+            else
+                CanActivateStep2(source, parameter, continuationCallback);
+        }
+
+
+        private static void CanDeactivateStep2(object item, Action<bool> continuationCallback)
+        {
+            if (item is ICanDeactivate)
+                ((ICanDeactivate)item).CanDeactivate(continuationCallback);
+            else
+                continuationCallback(true);
         }
 
         /// <summary>
-        /// Checks deactivation for views and view models that implement <see cref="ICanDeactivate"/>. The view is checked before the ViewModel.
+        /// Checks deactivation for views and view models that implement <see cref="ICanDeactivate"/>.
         /// </summary>
-        /// <param name="current">The current source</param>
-        /// <returns>True if can deactivate</returns>
-        public static async Task<bool> CanDeactivateAsync(object current)
+        /// <param name="source">The source</param>
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CanDeactivate(object source, Action<bool> continuationCallback)
         {
-            if (current == null)
-                return true;
-            // 1. View => 2. ViewModel
-            // Source is View or ViewModel
-            if (current is ICanDeactivate)
-                if (!await ((ICanDeactivate)current).CanDeactivateAsync())
-                    return false;
+            if (continuationCallback == null)
+                throw new ArgumentNullException(nameof(continuationCallback));
 
-            // Check CanDeactivate for the viewModel of a View
-            if (current is FrameworkElement)
-            {
-                var view = current as FrameworkElement;
-                if (view.DataContext is ICanDeactivate)
-                    if (!await ((ICanDeactivate)view.DataContext).CanDeactivateAsync())
-                        return false;
-            }
-
-            return true;
+            var view = source as FrameworkElement;
+            if (view != null)
+                CanDeactivate(view, continuationCallback);
+            else
+                CanDeactivateStep2(source, continuationCallback);
         }
 
         /// <summary>
-        /// Resolves the view model with <see cref="ViewModelLocator"/>.
+        /// Checks deactivation for views and view models that implement <see cref="ICanDeactivate"/>.
         /// </summary>
-        /// <param name="viewType">The view type</param>
-        /// <returns>The view model resolved or null</returns>
-        public static object ResolveViewModelWithViewModelLocator(Type viewType)
+        /// <param name="view">The view</param>
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CanDeactivate(FrameworkElement view, Action<bool> continuationCallback)
         {
-            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType); // singleton or new instance
-            if (viewModelType != null)
-            {
-                var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
-                return context;
-            }
-            return null;
+            if (view == null)
+                throw new ArgumentNullException(nameof(view));
+            if (continuationCallback == null)
+                throw new ArgumentNullException(nameof(continuationCallback));
+
+            if (view is ICanDeactivate)
+                ((ICanDeactivate)view).CanDeactivate(canDeactivate =>
+                {
+                    if (canDeactivate)
+                        CanDeactivateStep2(view.DataContext, continuationCallback);
+                    else
+                        continuationCallback(false);
+                });
+            else
+                CanDeactivateStep2(view.DataContext, continuationCallback);
         }
+
+        #region INavigationAware
 
         /// <summary>
         /// Notifies ViewModels <see cref="OnNavigatingFrom(object)"/> that implement <see cref="INavigationAware"/>.
@@ -140,6 +156,8 @@ namespace MvvmLib.Navigation
                 ((INavigationAware)viewModel).OnNavigatedTo(parameter);
         }
 
+        #endregion // INavigationAware
+
         /// <summary>
         /// Creates an instance with the <see cref="SourceResolver"/>. 
         /// Allows to resolve dependencies if the factory is overridden with an IoC Container.
@@ -150,6 +168,22 @@ namespace MvvmLib.Navigation
         {
             var source = SourceResolver.CreateInstance(sourceType);
             return source;
+        }
+
+        /// <summary>
+        /// Resolves the view model with <see cref="ViewModelLocator"/>.
+        /// </summary>
+        /// <param name="viewType">The view type</param>
+        /// <returns>The view model resolved or null</returns>
+        public static object ResolveViewModelWithViewModelLocator(Type viewType)
+        {
+            var viewModelType = ViewModelLocationProvider.ResolveViewModelType(viewType); // singleton or new instance
+            if (viewModelType != null)
+            {
+                var context = ViewModelLocationProvider.CreateViewModelInstance(viewModelType);
+                return context;
+            }
+            return null;
         }
 
         /// <summary>
@@ -165,17 +199,20 @@ namespace MvvmLib.Navigation
             {
                 if (source.GetType() == sourceType)
                 {
-                    if (source is ISelectable)
-                    {
-                        if (((ISelectable)source).IsTarget(sourceType, parameter))
-                            return source;
-                    }
                     if (source is FrameworkElement)
                     {
                         var frameworkElement = source as FrameworkElement;
                         if (frameworkElement.DataContext is ISelectable)
                         {
                             if (((ISelectable)frameworkElement.DataContext).IsTarget(sourceType, parameter))
+                                return source;
+                        }
+                    }
+                    else
+                    {
+                        if (source is ISelectable)
+                        {
+                            if (((ISelectable)source).IsTarget(sourceType, parameter))
                                 return source;
                         }
                     }
@@ -192,24 +229,47 @@ namespace MvvmLib.Navigation
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="setCurrent">The method invoked to change current source</param>
-        /// <returns>True if success</returns>
-        public static async Task<bool> NavigateAsync(object current, IEnumerable sources, Type sourceType, object parameter, Action<object> setCurrent)
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CheckGuardsAndNavigate(object current, IEnumerable sources, Type sourceType, object parameter, Action<object> setCurrent, Action<bool> continuationCallback)
         {
             if (sources == null)
                 throw new ArgumentNullException(nameof(sources));
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
 
-            if (await CanDeactivateAsync(current))
+            CanDeactivate(current, canDeactivate =>
             {
-                var selectable = FindSelectable(sources, sourceType, parameter);
-                if (selectable != null)
-                    return await EndNavigateWithSelectableAsync(current, selectable, parameter, setCurrent);
+                if (canDeactivate)
+                {
+                    var selectable = FindSelectable(sources, sourceType, parameter);
+                    if (selectable != null)
+                        CheckCanActivateAndNavigateWithSelectable(current, selectable, parameter, setCurrent, continuationCallback);
+                    else
+                        CheckCanActivateAndNavigate(current, sourceType, parameter, setCurrent, continuationCallback);
+                }
+                else
+                    continuationCallback(false);
+            });
+        }
 
-                return await EndNavigateAsync(current, sourceType, parameter, setCurrent);
-            }
 
-            return false;
+        /// <summary>
+        /// Processes navigation with selectable. <see cref="ICanDeactivate"/> is not checked.
+        /// </summary>
+        /// <param name="current">The current source</param>
+        /// <param name="selectable">The selectable</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="setCurrent">The method invoked to change current source</param>
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CheckCanActivateAndNavigateWithSelectable(object current, object selectable, object parameter, Action<object> setCurrent, Action<bool> continuationCallback)
+        {
+            CanActivate(selectable, parameter, canActivate =>
+            {
+                if (canActivate)
+                    EndNavigate(current, selectable, setCurrent);
+
+                continuationCallback(canActivate);
+            });
         }
 
         /// <summary>
@@ -219,8 +279,8 @@ namespace MvvmLib.Navigation
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="setCurrent">The method invoked to change current source</param>
-        /// <returns>True if success</returns>
-        public static async Task<bool> EndNavigateAsync(object current, Type sourceType, object parameter, Action<object> setCurrent)
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void CheckCanActivateAndNavigate(object current, Type sourceType, object parameter, Action<object> setCurrent, Action<bool> continuationCallback)
         {
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
@@ -234,73 +294,87 @@ namespace MvvmLib.Navigation
                 if (view.DataContext == null)
                     view.DataContext = ResolveViewModelWithViewModelLocator(view.GetType());
 
-                object context = view.DataContext;
+                var context = view.DataContext;
 
-                if (await CanActivateAsync(view, context, parameter))
+                CanActivate(view, parameter, canActivate =>
                 {
-                    OnNavigatingFrom(current);
+                    if (canActivate)
+                        EndNavigate(current, source, context, parameter, setCurrent);
 
-                    OnNavigatingTo(context, parameter);
-
-                    setCurrent(view);
-
-                    OnNavigatedTo(context, parameter);
-
-                    return true;
-                }
+                    continuationCallback(canActivate);
+                });
             }
             else
             {
-                if (await CanActivateAsync(source, parameter))
+                CanActivateStep2(source, parameter, canActivate =>
                 {
-                    OnNavigatingFrom(current);
+                    if (canActivate)
+                        EndNavigate(current, source, source, parameter, setCurrent);
 
-                    OnNavigatingTo(source, parameter);
-
-                    setCurrent(source);
-
-                    OnNavigatedTo(source, parameter);
-
-                    return true;
-                }
+                    continuationCallback(canActivate);
+                });
             }
-            return false;
+        }
+
+        private static void EndNavigate(object current, object selectable, Action<object> setCurrent)
+        {
+            OnNavigatingFrom(current);
+            setCurrent(selectable);
+        }
+
+        private static void EndNavigate(object current, object source, object context, object parameter, Action<object> setCurrent)
+        {
+            OnNavigatingFrom(current);
+
+            OnNavigatingTo(context, parameter);
+
+            setCurrent(source);
+
+            OnNavigatedTo(context, parameter);
+        }
+
+        private static void EndNavigate(object current, object context, object parameter, Action setCurrent)
+        {
+            OnNavigatingFrom(current);
+
+            OnNavigatingTo(context, parameter);
+
+            setCurrent();
+
+            OnNavigatedTo(context, parameter);
         }
 
         /// <summary>
-        /// Processes navigation with selectable. <see cref="ICanDeactivate"/> is not checked.
+        /// Processes navigation for <see cref="NavigationSource"/> without guards.
         /// </summary>
         /// <param name="current">The current source</param>
-        /// <param name="selectable">The selectable</param>
+        /// <param name="sources">The sources</param>
+        /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="setCurrent">The method invoked to change current source</param>
-        /// <returns>True if success</returns>
-        public static async Task<bool> EndNavigateWithSelectableAsync(object current, object selectable, object parameter, Action<object> setCurrent)
+        public static void EndNavigate(object current, IEnumerable sources, Type sourceType, object parameter, Action<object> setCurrent)
         {
-            if (selectable is FrameworkElement)
-            {
-                var frameworkElement = selectable as FrameworkElement;
-                if (await CanActivateAsync(frameworkElement, frameworkElement.DataContext, parameter))
-                {
-                    OnNavigatingFrom(current);
+            if (sourceType == null)
+                throw new ArgumentNullException(nameof(sourceType));
 
-                    setCurrent(selectable);
-
-                    return true;
-                }
-            }
+            var selectable = FindSelectable(sources, sourceType, parameter);
+            if (selectable != null)
+                EndNavigate(current, selectable, setCurrent);
             else
             {
-                if (await CanActivateAsync(selectable, parameter))
+                var source = CreateNew(sourceType);
+                var view = source as FrameworkElement;
+                if (view != null)
                 {
-                    OnNavigatingFrom(current);
+                    if (view.DataContext == null)
+                        view.DataContext = ResolveViewModelWithViewModelLocator(view.GetType());
 
-                    setCurrent(selectable);
-
-                    return true;
+                    var context = view.DataContext;
+                    EndNavigate(current, source, context, parameter, setCurrent);
                 }
+                else
+                    EndNavigate(current, source, source, parameter, setCurrent);
             }
-            return false;
         }
 
         /// <summary>
@@ -310,61 +384,52 @@ namespace MvvmLib.Navigation
         /// <param name="source">The new source</param>
         /// <param name="parameter">The parameter</param>
         /// <param name="setCurrent">The method invoked to change current source</param>
-        /// <returns>True if success</returns>
-        public static async Task<bool> ReplaceAsync(object current, object source, object parameter, Action setCurrent)
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void Replace(object current, object source, object parameter, Action setCurrent, Action<bool> continuationCallback)
         {
-            if (await CanDeactivateAsync(current))
+            CanDeactivate(current, canDeactivate =>
             {
-                var view = source as FrameworkElement;
-                if (view != null)
+                if (canDeactivate)
                 {
-                    object context = view.DataContext;
-
-                    if (await CanActivateAsync(view, context, parameter))
+                    var view = source as FrameworkElement;
+                    if (view != null)
                     {
-                        OnNavigatingFrom(current);
+                        CanActivate(view, parameter, canActivate =>
+                        {
+                            if (canActivate)
+                                EndNavigate(current, view.DataContext, parameter, setCurrent);
 
-                        OnNavigatingTo(context, parameter);
+                            continuationCallback(canActivate);
+                        });
+                    }
+                    else
+                    {
+                        CanActivate(source, parameter, canActivate =>
+                        {
+                            if (canActivate)
+                                EndNavigate(current, source, parameter, setCurrent);
 
-                        setCurrent();
-
-                        OnNavigatedTo(context, parameter);
-
-                        return true;
+                            continuationCallback(canActivate);
+                        });
                     }
                 }
                 else
-                {
-                    if (await CanActivateAsync(source, parameter))
-                    {
-                        OnNavigatingFrom(current);
-
-                        OnNavigatingTo(source, parameter);
-
-                        setCurrent();
-
-                        OnNavigatedTo(source, parameter);
-
-                        return true;
-                    }
-                }
-            }
-            return false;
+                    continuationCallback(false);
+            });
         }
 
         /// <summary>
-        /// Ensures that source is new instance for <see cref="FrameworkElement"/>. Avoid binding problem for UI.
+        /// Ensures creates a new instance for <see cref="FrameworkElement"/>. Avoid binding troubles.
         /// </summary>
         /// <param name="source">The source</param>
-        /// <returns>The new source or the original source</returns>
-        public static object EnsureNew(object source)
+        /// <returns>The new view or the original source</returns>
+        public static object EnsureNewView(object source)
         {
             if (source is FrameworkElement)
             {
-                // create view instance
                 var frameworkElement = source as FrameworkElement;
                 // create view instance
-                var view = SourceResolver.CreateInstance(source.GetType()) as FrameworkElement;
+                var view = CreateNew(source.GetType()) as FrameworkElement;
                 // set data context
                 view.DataContext = frameworkElement.DataContext;
                 return view;

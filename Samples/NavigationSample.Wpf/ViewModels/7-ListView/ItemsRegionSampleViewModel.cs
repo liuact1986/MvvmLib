@@ -22,10 +22,10 @@ namespace NavigationSample.Wpf.ViewModels
             AddCommand = new RelayCommand<Type>(AddItem);
         }
 
-        private async void AddItem(Type sourceType)
+        private void AddItem(Type sourceType)
         {
             var instance = DetailsSource.CreateNew(sourceType);
-            await DetailsSource.Items.AddAsync(instance);
+            DetailsSource.Items.Add(instance);
         }
     }
 }

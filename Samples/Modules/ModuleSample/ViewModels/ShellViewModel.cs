@@ -20,9 +20,9 @@ namespace ModuleSample.ViewModels
             NavigateCommand = new RelayCommand<string>(Navigate);
         }
 
-        private async void Navigate(string sourceName)
+        private void Navigate(string sourceName)
         {
-            await this.Navigation.NavigateAsync(sourceName, null);
+            this.Navigation.Navigate(sourceName, null);
         }
     }
 }

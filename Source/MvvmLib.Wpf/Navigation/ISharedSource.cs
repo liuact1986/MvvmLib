@@ -8,7 +8,7 @@ namespace MvvmLib.Navigation
     /// It supports Views but its not the target. 
     /// This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
     /// </summary>
-    public interface ISharedSource: INotifyPropertyChanged
+    public interface ISharedSource : INotifyPropertyChanged
     {
         /// <summary>
         /// Allows to select inserted item (Select by default).
@@ -28,4 +28,5 @@ namespace MvvmLib.Navigation
         /// </summary>
         event EventHandler<SharedSourceSelectedItemChangedEventArgs> SelectedItemChanged;
     }
+
 }

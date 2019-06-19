@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="NavigationSample.Wpf.Views.ViewG"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NavigationSample.Wpf.Views"
+             Background="#BDC581"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="View G (Guards)" FontSize="40" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding Message, FallbackValue='No value provided'}" FontSize="24" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

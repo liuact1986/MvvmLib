@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MvvmLib.Navigation
@@ -42,16 +39,7 @@ namespace MvvmLib.Navigation
         public T SelectedItem
         {
             get { return selectedItem; }
-            set
-            {
-                this.selectedIndex = this.items.IndexOf(value);
-                selectedItem = value;
-
-                OnPropertyChanged(nameof(SelectedIndex));
-                OnPropertyChanged(nameof(SelectedItem));
-                OnSelectedItemChanged(selectedIndex, selectedItem);
-                UpdateIsSelected();
-            }
+            set { SetSelectedItem(value); }
         }
 
         private int selectedIndex;
@@ -61,27 +49,7 @@ namespace MvvmLib.Navigation
         public int SelectedIndex
         {
             get { return selectedIndex; }
-            set
-            {
-                if (value < -1 || value > items.Count - 1)
-                    throw new IndexOutOfRangeException();
-
-                if (value == -1)
-                {
-                    selectedIndex = -1;
-                    selectedItem = default(T);
-                }
-                else
-                {
-                    selectedIndex = value;
-                    selectedItem = items[selectedIndex];
-                }
-
-                OnPropertyChanged(nameof(SelectedIndex));
-                OnPropertyChanged(nameof(SelectedItem));
-                OnSelectedItemChanged(selectedIndex, selectedItem);
-                UpdateIsSelected();
-            }
+            set { SetSelectedIndex(value); }
         }
 
         private SelectionHandling selectionHandling;
@@ -109,11 +77,9 @@ namespace MvvmLib.Navigation
         /// </summary>
         public SharedSource()
         {
-            this.items = new SharedSourceItemCollection<T>();
+            this.items = new SharedSourceItemCollection<T>(this);
             this.selectionHandling = SelectionHandling.Select;
-            this.items.findAndSelectSelectable = new Func<Type, object, bool>((type, parameter) => FindAndSelectSelectable(type, parameter));
             this.handleSelectionChanged = true;
-            this.items.CollectionChanged += OnItemsCollectionChanged;
             this.selectedIndex = -1;
         }
 
@@ -145,64 +111,54 @@ namespace MvvmLib.Navigation
             return this;
         }
 
-        private bool FindAndSelectSelectable(Type newItemType, object parameter)
+        internal bool FindAndSelectSelectable(Type newItemType, object parameter)
         {
-            foreach (var item in items)
+            var selectable = NavigationHelper.FindSelectable(this.items, newItemType, parameter);
+            if (selectable != null)
             {
-                if (item is FrameworkElement)
-                {
-                    var frameworkElement = item as FrameworkElement;
-                    if (frameworkElement.DataContext is ISelectable)
-                    {
-                        if (((ISelectable)frameworkElement.DataContext).IsTarget(newItemType, parameter))
-                        {
-                            SelectedItem = item;
-                            return true;
-                        }
-                    }
-                }
-                else
-                {
-                    if (item is ISelectable)
-                    {
-                        if (((ISelectable)item).IsTarget(newItemType, parameter))
-                        {
-                            SelectedItem = item;
-                            return true;
-                        }
-                    }
-                }
+                SelectedItem = (T)selectable;
+                return true;
             }
-
             return false;
         }
 
-        private void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void SetSelectedItem(T value)
         {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    TrySelectingItem(e.NewStartingIndex);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    SelectItemAfterDeletion(e.OldStartingIndex);
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    TrySelectingItem(e.NewStartingIndex);
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    TrySelectingItem(e.NewStartingIndex);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    SelectItemAfterDeletion(-1);
-                    break;
-            }
+            this.selectedIndex = this.items.IndexOf(value);
+            selectedItem = value;
+
+            OnPropertyChanged(nameof(SelectedIndex));
+            OnPropertyChanged(nameof(SelectedItem));
+            OnSelectedItemChanged(selectedIndex, selectedItem);
+            UpdateIsSelected();
         }
 
-        private void TrySelectingItem(int index)
+        private void SetSelectedIndex(int value)
+        {
+            if (value < -1 || value > items.Count - 1)
+                throw new IndexOutOfRangeException();
+
+            if (value == -1)
+            {
+                selectedIndex = -1;
+                selectedItem = default(T);
+            }
+            else
+            {
+                selectedIndex = value;
+                selectedItem = items[selectedIndex];
+            }
+
+            OnPropertyChanged(nameof(SelectedIndex));
+            OnPropertyChanged(nameof(SelectedItem));
+            OnSelectedItemChanged(selectedIndex, selectedItem);
+            UpdateIsSelected();
+        }
+
+        internal void TrySelectingItem(int index)
         {
             if (handleSelectionChanged && selectionHandling == SelectionHandling.Select)
-                SelectedItem = items[index];
+                SetSelectedIndex(index);
         }
 
         private void UpdateIsSelected()
@@ -216,43 +172,45 @@ namespace MvvmLib.Navigation
                 if (index == selectedIndex)
                 {
                     if (item is IIsSelected)
-                    {
                         ((IIsSelected)item).IsSelected = true;
-                    }
                 }
                 else
                 {
                     if (item is IIsSelected)
-                    {
                         ((IIsSelected)item).IsSelected = false;
-                    }
                 }
                 index++;
             }
         }
 
-        private void SelectItemAfterDeletion(int index)
+        internal void SelectItemAfterDeletion(int index)
         {
-            // index:       0...1...2...3
-            // count        1   2   3   4
-            // delete index 
-            //              0                 => select index 
-            //                  1             => select index 
-            //                           3    => select index -1
-            //              0 (count 0 after) => select index -1
             if (this.items.Count == 0)
             {
-                this.SelectedIndex = -1;
+                this.SetSelectedIndex(-1);
                 return;
             }
 
-            if (this.items.Count > index)
+            // remove selected
+            // [A] B [C] => [A] C (old 1, new 1)
+            // [A] B => A         (old 1, new 0)
+            //  A => -1
+            var oldIndex = this.selectedIndex;
+            if (oldIndex == index)
             {
-                this.SelectedItem = this.items[index];
+                if (this.items.Count > index)
+                    this.SetSelectedIndex(oldIndex);
+                else
+                    this.SetSelectedIndex(oldIndex - 1);
             }
             else
             {
-                this.SelectedItem = this.items[index - 1];
+                // [x B] C [D] => selectedindex - 1
+                // [A B] C [x] => selected index
+                if (index < oldIndex)
+                    this.SetSelectedIndex(oldIndex - 1);
+                else
+                    this.SetSelectedIndex(oldIndex);
             }
         }
 
@@ -272,7 +230,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <typeparam name="TImplementation">The implementation type</typeparam>
         /// <returns>The instance created</returns>
-        public T CreateNew<TImplementation>() where TImplementation: T
+        public T CreateNew<TImplementation>() where TImplementation : T
         {
             var item = SourceResolver.CreateInstance(typeof(T));
             return (T)item;
@@ -295,13 +253,11 @@ namespace MvvmLib.Navigation
         /// <param name="index">The index</param>
         /// <param name="parameter">The parameter</param>
         /// <returns>The item added</returns>
-        public async Task<T> InsertNewAsync(int index, object parameter)
+        public T InsertNew(int index, object parameter)
         {
             var item = CreateNew();
-            if (await this.items.InsertAsync(index, (T)item, parameter))
-                return item;
-
-            return default(T);
+            this.items.Insert(index, (T)item, parameter);
+            return item;
         }
 
         /// <summary>
@@ -309,9 +265,9 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="index">The index</param>
         /// <returns>The item added</returns>
-        public async Task<T> InsertNewAsync(int index)
+        public T InsertNew(int index)
         {
-            return await this.InsertNewAsync(index, null);
+            return this.InsertNew(index, null);
         }
 
         /// <summary>
@@ -319,18 +275,18 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="parameter">The parameter</param>
         /// <returns>The item inserted</returns>
-        public async Task<T> AddNewAsync(object parameter)
+        public T AddNew(object parameter)
         {
-            return await this.InsertNewAsync(this.items.Count, parameter);
+            return this.InsertNew(this.items.Count, parameter);
         }
 
         /// <summary>
         /// Creates a new instance with the <see cref="SourceResolver"/> factory and adds the item created.
         /// </summary>
         /// <returns>The item added</returns>
-        public async Task<T> AddNewAsync()
+        public T AddNew()
         {
-            return await this.InsertNewAsync(this.items.Count, null);
+            return this.InsertNew(this.items.Count, null);
         }
 
         /// <summary>
@@ -338,9 +294,8 @@ namespace MvvmLib.Navigation
         /// </summary>
         internal void Clear()
         {
-            //this.items.ClearWithoutCheckingCanDeactivate();
-            this.items.ClearFast(); // ??
-            this.SelectedIndex = -1;
+            this.items.ClearFast(); 
+            this.SetSelectedIndex(-1);
         }
 
         #region Events

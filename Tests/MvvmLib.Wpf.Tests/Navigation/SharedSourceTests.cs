@@ -56,13 +56,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Insert_Item()
+        public void Insert_Item()
         {
-            var collection = new SharedSourceItemCollection<MySharedItem>();
+            var s = new SharedSource<MySharedItem>();
             var item1 = new MySharedItem { Id = 1, Name = "A" };
 
-            item1.CanActivate = false;
-            Assert.AreEqual(false, await collection.InsertAsync(0, item1, 1));
+            item1.CActivate = false;
+            s.Items.Insert(0, item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingToInvoked);
@@ -70,8 +70,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(false, item1.IsOnNavigatedToInvoked);
             Assert.AreEqual(null, item1.POnNavigatedTo);
 
-            item1.CanActivate = true;
-            Assert.AreEqual(true, await collection.InsertAsync(0, item1, 1));
+            item1.CActivate = true;
+            s.Items.Insert(0, item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -79,18 +79,18 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(true, item1.IsOnNavigatedToInvoked);
             Assert.AreEqual(1, item1.POnNavigatedTo);
 
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual(item1, collection[0]);
+            Assert.AreEqual(1, s.Items.Count);
+            Assert.AreEqual(item1, s.Items[0]);
         }
 
         [TestMethod]
-        public async Task Add_Item()
+        public void Add_Item()
         {
-            var collection = new SharedSourceItemCollection<MySharedItem>();
+            var s = new SharedSource<MySharedItem>();
             var item1 = new MySharedItem { Id = 1, Name = "A" };
 
-            item1.CanActivate = false;
-            Assert.AreEqual(false, await collection.AddAsync(item1, 1));
+            item1.CActivate = false;
+            s.Items.Add(item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingToInvoked);
@@ -98,8 +98,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(false, item1.IsOnNavigatedToInvoked);
             Assert.AreEqual(null, item1.POnNavigatedTo);
 
-            item1.CanActivate = true;
-            Assert.AreEqual(true, await collection.AddAsync(item1, 1));
+            item1.CActivate = true;
+            s.Items.Add(item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -107,12 +107,12 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(true, item1.IsOnNavigatedToInvoked);
             Assert.AreEqual(1, item1.POnNavigatedTo);
 
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual(item1, collection[0]);
+            Assert.AreEqual(1, s.Items.Count);
+            Assert.AreEqual(item1, s.Items[0]);
         }
 
         [TestMethod]
-        public async Task FindSelectable()
+        public void FindSelectable()
         {
             var item1 = new MySelectableViewModel { Id = 2 };
             var sources = new List<object>
@@ -127,20 +127,42 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(5, sharedSource.Items.Count);
             Assert.AreEqual(0, sharedSource.SelectedIndex);
 
-            Assert.AreEqual(false, await sharedSource.Items.AddAsync(new MySelectableViewModel { Id = 2 }, 2));
+            sharedSource.Items.Add(new MySelectableViewModel { Id = 2 }, 2);
 
             Assert.AreEqual(3, sharedSource.SelectedIndex);
             Assert.AreEqual(item1, sharedSource.SelectedItem);
         }
 
         [TestMethod]
-        public async Task AddNewItem()
+        public void FindSelectable_With_Interface()
+        {
+            var item1 = new MySelectableViewModel { Id = 2 };
+            var sources = new List<IMyViewModel>
+           {
+               new MyViewModelCanDeactivate(),
+               new MySelectableViewModel{ Id = 1 },
+               new MyViewModelCanActivate(),
+               item1,
+               new MySelectableViewModel{ Id = 3 }
+           };
+            var sharedSource = new SharedSource<IMyViewModel>().Load(sources);
+            Assert.AreEqual(5, sharedSource.Items.Count);
+            Assert.AreEqual(0, sharedSource.SelectedIndex);
+
+            sharedSource.Items.Add(new MySelectableViewModel { Id = 2 }, 2);
+
+            Assert.AreEqual(3, sharedSource.SelectedIndex);
+            Assert.AreEqual(item1, sharedSource.SelectedItem);
+        }
+
+        [TestMethod]
+        public void AddNewItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync(2);
+            var item1 = sharedSource.AddNew(2);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -153,7 +175,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
 
-            var item2 = await sharedSource.AddNewAsync(10);
+            var item2 = sharedSource.AddNew(10);
             Assert.AreEqual(true, item2.IsCanActivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsOnNavigatingToInvoked);
@@ -167,13 +189,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task InsertNewItem()
+        public void InsertNewItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.InsertNewAsync(0, 5);
+            var item1 = sharedSource.InsertNew(0, 5);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -186,7 +208,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
 
-            var item2 = await sharedSource.InsertNewAsync(0, 10);
+            var item2 = sharedSource.InsertNew(0, 10);
             Assert.AreEqual(true, item2.IsCanActivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsOnNavigatingToInvoked);
@@ -200,15 +222,15 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task MoveItem()
+        public void MoveItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -244,15 +266,15 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task SetItem()
+        public void SetItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -289,15 +311,15 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task ReplaceItem_With_NavigationHelper()
+        public void ReplaceItem_With_NavigationHelper()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -317,8 +339,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             item2.Reset();
             item4.Reset();
-            item2.CanDeactivate = false;
-            Assert.AreEqual(false, await NavigationHelper.ReplaceAsync(item2, item4, "D", setCurrent));
+            item2.CDeactivate = false;
+            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
             Assert.AreEqual(false, isSetCurrentInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
@@ -332,8 +354,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             item2.Reset();
             item4.Reset();
-            item4.CanActivate = false;
-            Assert.AreEqual(false, await NavigationHelper.ReplaceAsync(item2, item4, "D", setCurrent));
+            item4.CActivate = false;
+            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
             Assert.AreEqual(false, isSetCurrentInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
@@ -348,7 +370,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             // with parameter
             item2.Reset();
             item4.Reset();
-            Assert.AreEqual(true, await NavigationHelper.ReplaceAsync(item2, item4, "D", setCurrent));
+            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
             Assert.AreEqual(true, isSetCurrentInvoked);
             // A C B
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -372,71 +394,77 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Remove_At()
+        public void Remove_At()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync(2);
-            var item2 = await sharedSource.AddNewAsync(10);
-            var item3 = await sharedSource.AddNewAsync(100);
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
             Assert.AreEqual(item2, sharedSource.Items[1]);
             Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(2, sharedSource.SelectedIndex);
+            Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            item1.CanDeactivate = false;
-            Assert.AreEqual(false, await sharedSource.Items.RemoveAtAsync(0));
+            item1.CDeactivate = false;
+            sharedSource.Items.RemoveAt(0);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
 
-            item1.CanDeactivate = true;
-            Assert.AreEqual(true, await sharedSource.Items.RemoveAtAsync(0));
+            item1.CDeactivate = true;
+            sharedSource.Items.RemoveAt(0);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
             Assert.AreEqual(item2, sharedSource.Items[0]);
             Assert.AreEqual(item3, sharedSource.Items[1]);
-            Assert.AreEqual(item2, sharedSource.SelectedItem);
+            Assert.AreEqual(1, sharedSource.SelectedIndex);
+            Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
 
         [TestMethod]
-        public async Task Remove()
+        public void Remove()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync(2);
-            var item2 = await sharedSource.AddNewAsync(10);
-            var item3 = await sharedSource.AddNewAsync(100);
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
             Assert.AreEqual(item2, sharedSource.Items[1]);
             Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(2, sharedSource.SelectedIndex);
+            Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            item1.CanDeactivate = false;
-            Assert.AreEqual(false, await sharedSource.Items.RemoveAsync(item1));
+            item1.CDeactivate = false;
+            sharedSource.Items.Remove(item1);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
 
-            item1.CanDeactivate = true;
-            Assert.AreEqual(true, await sharedSource.Items.RemoveAsync(item1));
+            item1.CDeactivate = true;
+            sharedSource.Items.Remove(item1);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
             Assert.AreEqual(item2, sharedSource.Items[0]);
             Assert.AreEqual(item3, sharedSource.Items[1]);
-            Assert.AreEqual(item2, sharedSource.SelectedItem);
+            Assert.AreEqual(1, sharedSource.SelectedIndex);
+            Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
 
         [TestMethod]
-        public async Task SelectedIndex_After_Insertion()
+        public void SelectedIndex_After_Insertion()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
@@ -449,9 +477,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
                 selections.Add(e.SelectedIndex, e.SelectedItem);
             };
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -470,7 +498,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Selection_With_SelectionHandling()
+        public void Selection_With_SelectionHandling()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             sharedSource.SelectionHandling = SelectionHandling.None;
@@ -478,8 +506,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
 
             Assert.AreEqual(2, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -488,7 +516,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, sharedSource.SelectedItem);
 
             sharedSource.SelectionHandling = SelectionHandling.Select;
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -499,15 +527,15 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task SelectedIndex_After_Deletion()
+        public void SelectedIndex_After_Deletion()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -517,7 +545,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
             // remove last
-            Assert.AreEqual(true, await sharedSource.Items.RemoveAtAsync(2));
+            sharedSource.Items.RemoveAt(2);
             Assert.AreEqual(2, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
             Assert.AreEqual(item2, sharedSource.Items[1]);
@@ -525,29 +553,29 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(item2, sharedSource.SelectedItem);
 
             // remove first
-            Assert.AreEqual(true, await sharedSource.Items.RemoveAtAsync(0));
+            sharedSource.Items.RemoveAt(0);
             Assert.AreEqual(1, sharedSource.Items.Count);
             Assert.AreEqual(item2, sharedSource.Items[0]);
             Assert.AreEqual(0, sharedSource.SelectedIndex);
             Assert.AreEqual(item2, sharedSource.SelectedItem);
 
             // 
-            Assert.AreEqual(true, await sharedSource.Items.RemoveAtAsync(0));
+            sharedSource.Items.RemoveAt(0);
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
             Assert.AreEqual(null, sharedSource.SelectedItem);
         }
 
         [TestMethod]
-        public async Task ClearAsync()
+        public void ClearAsync()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -564,7 +592,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
                 selections.Add(e.SelectedIndex, e.SelectedItem);
             };
 
-            Assert.AreEqual(true, await sharedSource.Items.ClearAsync());
+            sharedSource.Items.Clear();
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
@@ -588,15 +616,15 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
 
         [TestMethod]
-        public async Task ClearAsync_With_One_Item_CannotDeactivate()
+        public void ClearAsync_With_One_Item_CannotDeactivate()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -613,9 +641,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
                 selections.Add(e.SelectedIndex, e.SelectedItem);
             };
 
-            item2.CanDeactivate = false;
+            item2.CDeactivate = false;
 
-            Assert.AreEqual(false, await sharedSource.Items.ClearAsync());
+            sharedSource.Items.Clear();
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
@@ -634,46 +662,16 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(2, selections.Count);
         }
 
-        //[TestMethod]
-        //public async Task ClearWithoutCanDeactivate()
-        //{
-        //    var sharedSource = new SharedSource<MySharedItem>();
-        //    Assert.AreEqual(0, sharedSource.Items.Count);
-        //    Assert.AreEqual(-1, sharedSource.SelectedIndex);
-
-        //    var item1 = await sharedSource.AddNewAsync("A");
-        //    var item2 = await sharedSource.AddNewAsync("B");
-        //    var item3 = await sharedSource.AddNewAsync("C");
-
-        //    Assert.AreEqual(3, sharedSource.Items.Count);
-        //    Assert.AreEqual(item1, sharedSource.Items[0]);
-        //    Assert.AreEqual(item2, sharedSource.Items[1]);
-        //    Assert.AreEqual(item3, sharedSource.Items[2]);
-        //    Assert.AreEqual(2, sharedSource.SelectedIndex);
-        //    Assert.AreEqual(item3, sharedSource.SelectedItem);
-
-        //    sharedSource.Items.ClearWithoutCheckingCanDeactivate();
-        //    Assert.AreEqual(false, item1.IsCanDeactivateInvoked);
-        //    Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
-        //    Assert.AreEqual(false, item2.IsCanDeactivateInvoked);
-        //    Assert.AreEqual(true, item2.IsOnNavigatingFromInvoked);
-        //    Assert.AreEqual(false, item3.IsCanDeactivateInvoked);
-        //    Assert.AreEqual(true, item3.IsOnNavigatingFromInvoked);
-        //    Assert.AreEqual(0, sharedSource.Items.Count);
-        //    Assert.AreEqual(-1, sharedSource.SelectedIndex);
-        //    Assert.AreEqual(null, sharedSource.SelectedItem);
-        //}
-
         [TestMethod]
-        public async Task ClearFast()
+        public void ClearFast()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
             Assert.AreEqual(item1, sharedSource.Items[0]);
@@ -695,7 +693,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Call_OneTime_SelectionChanged_On_Insertion()
+        public void Call_OneTime_SelectionChanged_On_Insertion()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
@@ -709,26 +707,26 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             Assert.AreEqual(0, count);
 
-            var item1 = await sharedSource.AddNewAsync("A");
+            var item1 = sharedSource.AddNew("A");
             Assert.AreEqual(1, count);
 
-            var item2 = await sharedSource.AddNewAsync("B");
+            var item2 = sharedSource.AddNew("B");
             Assert.AreEqual(2, count);
 
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item3 = sharedSource.AddNew("C");
             Assert.AreEqual(3, count);
         }
 
         [TestMethod]
-        public async Task Call_OneTime_SelectionChanged_On_SelectedItem()
+        public void Call_OneTime_SelectionChanged_On_SelectedItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = await sharedSource.AddNewAsync("A");
-            var item2 = await sharedSource.AddNewAsync("B");
-            var item3 = await sharedSource.AddNewAsync("C");
+            var item1 = sharedSource.AddNew("A");
+            var item2 = sharedSource.AddNew("B");
+            var item3 = sharedSource.AddNew("C");
 
             int count = 0;
             sharedSource.SelectedItemChanged += (s, e) =>
@@ -763,8 +761,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         public string Name { get; set; }
 
-        public bool CanActivate { get; set; }
-        public bool CanDeactivate { get; set; }
+        public bool CActivate { get; set; }
+        public bool CDeactivate { get; set; }
         public bool IsCanActivateInvoked { get; private set; }
         public object PCanActivate { get; set; }
         public bool IsOnNavigatedToInvoked { get; private set; }
@@ -776,14 +774,14 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         public MySharedItem()
         {
-            CanActivate = true;
-            CanDeactivate = true;
+            CActivate = true;
+            CDeactivate = true;
         }
 
         public void Reset()
         {
-            CanActivate = true;
-            CanDeactivate = true;
+            CActivate = true;
+            CDeactivate = true;
             IsCanActivateInvoked = false;
             IsCanDeactivateInvoked = false;
             PCanActivate = null;
@@ -796,17 +794,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public Task<bool> CanActivateAsync(object parameter)
+        public void CanActivate(object parameter, Action<bool> c)
         {
             IsCanActivateInvoked = true;
             PCanActivate = parameter;
-            return Task.FromResult(CanActivate);
+            c(CActivate);
         }
 
-        public Task<bool> CanDeactivateAsync()
+        public void CanDeactivate(Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
-            return Task.FromResult(CanDeactivate);
+            c(CDeactivate);
         }
 
         public void OnNavigatedTo(object parameter)

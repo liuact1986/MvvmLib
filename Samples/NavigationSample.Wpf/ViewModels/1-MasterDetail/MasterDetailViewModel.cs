@@ -29,14 +29,14 @@ namespace NavigationSample.Wpf.ViewModels
             DetailsSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
         }
 
-        private async void OnDetailsSourceSelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
+        private void OnDetailsSourceSelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
         {
             var person = e.SelectedItem as Person;
             if (person != null)
             {
-                await Navigation.NavigateAsync(typeof(PersonDetailsView), person.Id);
+                Navigation.Navigate(typeof(PersonDetailsView), person.Id);
                 // ViewModel
-                //await Navigation.NavigateAsync(typeof(PersonDetailsViewModel), person.Id);
+                //Navigation.Navigate(typeof(PersonDetailsViewModel), person.Id);
             }
         }
 

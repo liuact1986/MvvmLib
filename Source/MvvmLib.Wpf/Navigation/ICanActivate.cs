@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace MvvmLib.Navigation
 {
@@ -11,7 +12,7 @@ namespace MvvmLib.Navigation
         /// Checks if can activate the view or view model.
         /// </summary>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True or false</returns>
-        Task<bool> CanActivateAsync(object parameter);
+        /// <param name="continuationCallback">The continuation callback</param>
+        void CanActivate(object parameter, Action<bool> continuationCallback);
     }
 }

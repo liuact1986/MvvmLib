@@ -4,8 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -13,11 +15,13 @@ namespace MvvmLib.Navigation
     /// Collection for Models and ViewModels. Implements <see cref="INotifyCollectionChanged"/> and <see cref="INotifyPropertyChanged"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SharedSourceItemCollection<T> : INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<T>
+    public class SharedSourceItemCollection<T> : IList, IList<T>, INotifyPropertyChanged, INotifyCollectionChanged
     {
         private const string CountString = "Count";
         private const string IndexerName = "Item[]";
         private readonly ILogger DefaultLogger = new DebugLogger();
+        private SharedSource<T> sharedSource;
+        private Object syncRoot;
 
         private ILogger logger;
         /// <summary>
@@ -38,14 +42,14 @@ namespace MvvmLib.Navigation
         /// <returns></returns>
         public T this[int index]
         {
-            get
-            {
-                if (index < 0 || index >= this.items.Count)
-                    throw new IndexOutOfRangeException();
-
-                return this.items[index];
-            }
+            get { return this.items[index]; }
             set { SetItem(index, value); }
+        }
+
+        object IList.this[int index]
+        {
+            get { return items[index]; }
+            set { SetItem(index, (T)value); }
         }
 
         /// <summary>
@@ -56,13 +60,47 @@ namespace MvvmLib.Navigation
             get { return this.items.Count; }
         }
 
-        internal Func<Type, object, bool> findAndSelectSelectable;
         /// <summary>
-        /// The function used to find items that implement <see cref="ISelectable"/>.
+        /// Checks if collection is readonly.
         /// </summary>
-        public Func<Type, object, bool> FindAndSelectSelectable
+        public bool IsReadOnly
         {
-            get { return findAndSelectSelectable; }
+            get { return items.IsReadOnly; }
+        }
+
+        /// <summary>
+        /// Checks if the collection has a  fixed size.
+        /// </summary>
+        public bool IsFixedSize
+        {
+            get { return ((IList)items).IsFixedSize; }
+        }
+
+        /// <summary>
+        /// The syncroot object.
+        /// </summary>
+        public object SyncRoot
+        {
+            get
+            {
+                if (syncRoot == null)
+                {
+                    ICollection c = items as ICollection;
+                    if (c != null)
+                        syncRoot = c.SyncRoot;
+                    else
+                        Interlocked.CompareExchange<Object>(ref syncRoot, new Object(), null);
+                }
+                return syncRoot;
+            }
+        }
+
+        /// <summary>
+        /// Checks if collection is synchronized (false).
+        /// </summary>
+        public bool IsSynchronized
+        {
+            get { return false; }
         }
 
         /// <summary>
@@ -78,9 +116,14 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Initializes the <see cref="SharedSourceItemCollection{T}"/>.
         /// </summary>
-        public SharedSourceItemCollection()
+        public SharedSourceItemCollection(SharedSource<T> sharedSource)
         {
+            if (sharedSource == null)
+                throw new ArgumentNullException(nameof(sharedSource));
+
             this.items = new List<T>();
+            this.PropertyChanged = null;
+            this.sharedSource = sharedSource;
         }
 
         internal void Load(IList<T> initItems)
@@ -89,7 +132,7 @@ namespace MvvmLib.Navigation
             for (int i = 0; i < initItems.Count; i++)
             {
                 var itemItem = initItems[i];
-                this.InsertInternal(i, itemItem, null);
+                this.InsertItem(i, itemItem, null);
             }
         }
 
@@ -99,7 +142,7 @@ namespace MvvmLib.Navigation
             int i = 0;
             foreach (var item in initItems)
             {
-                this.InsertInternal(i, item.Key, item.Value);
+                this.InsertItem(i, item.Key, item.Value);
                 i++;
             }
         }
@@ -133,6 +176,12 @@ namespace MvvmLib.Navigation
 
         #endregion // Events
 
+        private void CheckIsReadOnly()
+        {
+            if (items.IsReadOnly)
+                throw new NotSupportedException("The collection is readonly");
+        }
+
         /// <summary>
         /// Checks if the item is in collection.
         /// </summary>
@@ -153,46 +202,7 @@ namespace MvvmLib.Navigation
             return items.IndexOf(item);
         }
 
-        /// <summary>
-        /// Inserts an item at the index. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
-        /// </summary>
-        /// <param name="index">The index</param>
-        /// <param name="item">The item</param>
-        /// <param name="parameter">The parameter to pass to ViewModel</param>
-        /// <returns>True if added</returns>
-        public async Task<bool> InsertAsync(int index, T item, object parameter)
-        {
-            if (index < 0 || index > this.items.Count)
-                throw new IndexOutOfRangeException();
-
-            if (findAndSelectSelectable != null && findAndSelectSelectable(item.GetType(), parameter))
-            {
-                return false;
-            }
-
-            if (item is FrameworkElement)
-            {
-                var frameworkElement = item as FrameworkElement;
-                if (await NavigationHelper.CanActivateAsync(frameworkElement, frameworkElement.DataContext, parameter))
-                {
-                    InsertInternal(index, item, parameter);
-
-                    return true;
-                }
-            }
-            else
-            {
-                if (await NavigationHelper.CanActivateAsync(item, parameter))
-                {
-                    InsertInternal(index, item, parameter);
-
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void InsertInternal(int index, T item, object parameter)
+        private void InsertItem(int index, T item, object parameter)
         {
             NavigationHelper.OnNavigatingTo(item, parameter);
 
@@ -203,42 +213,15 @@ namespace MvvmLib.Navigation
             OnPropertyChanged(CountString);
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
-        }
 
-        /// <summary>
-        /// Inserts an item at the index. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
-        /// </summary>
-        /// <param name="index">The index</param>
-        /// <param name="item">The item</param>
-        /// <returns>True if added</returns>
-        public async Task<bool> InsertAsync(int index, T item)
-        {
-            return await InsertAsync(index, item, null);
-        }
-
-        /// <summary>
-        /// Adds an item. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
-        /// </summary>
-        /// <param name="item">The item</param>
-        /// <param name="parameter">The parameter to pass to ViewModel</param>
-        /// <returns>True if added</returns>
-        public async Task<bool> AddAsync(T item, object parameter)
-        {
-            return await InsertAsync(this.items.Count, item, parameter);
-        }
-
-        /// <summary>
-        /// Adds an item. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
-        /// </summary>
-        /// <param name="item">The item</param>
-        /// <returns>True if added</returns>
-        public async Task<bool> AddAsync(T item)
-        {
-            return await InsertAsync(this.items.Count, item, null);
+            // after UI notification
+            sharedSource.TrySelectingItem(index);
         }
 
         private void SetItem(int index, T item)
         {
+            CheckIsReadOnly();
+
             if (index < 0 || index > this.items.Count)
                 throw new IndexOutOfRangeException();
 
@@ -248,51 +231,76 @@ namespace MvvmLib.Navigation
 
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, originalItem, item, index);
+
+            sharedSource.TrySelectingItem(index);
+        }
+
+        private void RemoveItem(int index, T item)
+        {
+            NavigationHelper.OnNavigatingFrom(item);
+
+            this.items.RemoveAt(index);
+
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerName);
+            OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
+
+            sharedSource.SelectItemAfterDeletion(index);
         }
 
         /// <summary>
-        /// Removes the item at the index.
+        /// Inserts an item at the index. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
         /// </summary>
         /// <param name="index">The index</param>
-        /// <returns>True if removed</returns>
-        public async Task<bool> RemoveAtAsync(int index)
+        /// <param name="item">The item</param>
+        /// <param name="parameter">The parameter to pass to ViewModel</param>
+        public void Insert(int index, T item, object parameter)
         {
-            if (index < 0 && index > this.items.Count - 1)
+            CheckIsReadOnly();
+
+            if (index < 0 || index > this.items.Count)
                 throw new IndexOutOfRangeException();
 
-            var item = this.items[index];
-
-            if (await NavigationHelper.CanDeactivateAsync(item))
+            if (sharedSource.FindAndSelectSelectable(item.GetType(), parameter))
             {
-                NavigationHelper.OnNavigatingFrom(item);
-
-                this.items.RemoveAt(index);
-
-                OnPropertyChanged(CountString);
-                OnPropertyChanged(IndexerName);
-                OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
-
-                return true;
+                return;
             }
 
-            return false;
+            NavigationHelper.CanActivate(item, parameter, canActivate =>
+            {
+                if (canActivate)
+                    InsertItem(index, item, parameter);
+                // log / notify fail ?
+            });
         }
 
         /// <summary>
-        /// Removes the item.
+        /// Inserts an item at the index. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="item">The item</param>
+        public void Insert(int index, T item)
+        {
+            this.Insert(index, item, null);
+        }
+
+        /// <summary>
+        /// Adds an item. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
         /// </summary>
         /// <param name="item">The item</param>
-        /// <returns>True if removed</returns>
-        public async Task<bool> RemoveAsync(T item)
+        /// <param name="parameter">The parameter to pass to ViewModel</param>
+        public void Add(T item, object parameter)
         {
-            int index = IndexOf(item);
-            if (index == -1)
-            {
-                Logger.Log($"Unable to find the index for the item \"{item}\"", Category.Warn, Priority.High);
-                return false;
-            }
-            else
-                return await RemoveAtAsync(index);
+            this.Insert(this.items.Count, item, parameter);
+        }
+
+        /// <summary>
+        /// Adds an item. <see cref="ICanActivate"/> guard is checked and if the item is a ViewModel that implement <see cref="INavigationAware"/>, the ViewModel is notified.
+        /// </summary>
+        /// <param name="item">The item</param>
+        public void Add(T item)
+        {
+            this.Insert(this.items.Count, item, null);
         }
 
         /// <summary>
@@ -302,6 +310,8 @@ namespace MvvmLib.Navigation
         /// <param name="newIndex">The new index</param>
         public void Move(int oldIndex, int newIndex)
         {
+            CheckIsReadOnly();
+
             var removedItem = items[oldIndex];
 
             items.RemoveAt(oldIndex);
@@ -309,36 +319,68 @@ namespace MvvmLib.Navigation
 
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Move, removedItem, newIndex, oldIndex);
+
+            sharedSource.TrySelectingItem(newIndex);
+        }
+
+        /// <summary>
+        /// Removes the item at the index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        public void RemoveAt(int index)
+        {
+            CheckIsReadOnly();
+
+            if (index < 0 && index > this.items.Count - 1)
+                throw new IndexOutOfRangeException();
+
+            var item = this.items[index];
+
+            NavigationHelper.CanDeactivate(item, canDeactivate =>
+            {
+                if (canDeactivate)
+                    RemoveItem(index, item);
+            });
+        }
+
+        /// <summary>
+        /// Removes the item.
+        /// </summary>
+        /// <param name="item">The item</param>
+        public bool Remove(T item)
+        {
+            int index = IndexOf(item);
+            if (index == -1)
+            {
+                Logger.Log($"Unable to find the index for the item \"{item}\"", Category.Warn, Priority.High);
+                return false;
+            }
+            else
+            {
+                RemoveAt(index);
+                return true; // caution
+            }
         }
 
         /// <summary>
         /// Clears all items.
         /// </summary>
-        /// <returns>True if all items removed</returns>
-        public async Task<bool> ClearAsync()
+        public void Clear()
         {
-            bool success = true;
+            CheckIsReadOnly();
+
             int count = items.Count;
             // 3 ... 2 ... 1 ... 0 
             for (int index = count - 1; index >= 0; index--)
             {
                 var item = this.items[index];
 
-                if (await NavigationHelper.CanDeactivateAsync(item))
+                NavigationHelper.CanDeactivate(item, canDeactivate =>
                 {
-                    NavigationHelper.OnNavigatingFrom(item);
-                    this.items.RemoveAt(index);
-                    OnPropertyChanged(CountString);
-                    OnPropertyChanged(IndexerName);
-                    OnCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
-                }
-                else
-                {
-                    success = false;
-                }
+                    if (canDeactivate)
+                        RemoveItem(index, item);
+                });
             }
-
-            return success;
         }
 
         /// <summary>
@@ -346,10 +388,14 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void ClearFast()
         {
+            CheckIsReadOnly();
+
             this.items.Clear();
             OnPropertyChanged(CountString);
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            sharedSource.SelectItemAfterDeletion(-1);
         }
 
         /// <summary>
@@ -378,6 +424,73 @@ namespace MvvmLib.Navigation
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.items.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value</param>
+        public int Add(object value)
+        {
+            try
+            {
+                this.Add((T)value);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"Unable to add value '{value}'");
+            }
+
+            return this.Count - 1;
+        }
+
+        /// <summary>
+        /// Checks if the value is in collection.
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <returns>True if found</returns>
+        public bool Contains(object value)
+        {
+            return this.Contains((T)value);
+        }
+
+        /// <summary>
+        /// Gets the index of the value.
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <returns>The index or -1</returns>
+        public int IndexOf(object value)
+        {
+            return this.IndexOf((T)value);
+        }
+
+        /// <summary>
+        /// Inserts the value at the index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="value">The value</param>
+        public void Insert(int index, object value)
+        {
+            this.Insert(index, (T)value);
+        }
+
+        /// <summary>
+        /// Removes the value.
+        /// </summary>
+        /// <param name="value">The value</param>
+        public void Remove(object value)
+        {
+            this.Remove((T)value);
+        }
+
+        /// <summary>
+        /// Copy the items to the array.
+        /// </summary>
+        /// <param name="array">The array</param>
+        /// <param name="index">The index</param>
+        public void CopyTo(Array array, int index)
+        {
+            this.CopyTo((T[])array, index);
         }
     }
 }

@@ -793,24 +793,27 @@ Bind the command in the view
 Create the shell and the ShellViewModel (Sample with Wpf)
 
 ```cs
-public class ShellViewModel : ILoadedEventListener
+public class ShellViewModel
 {
+    private readonly IApplicationCommands applicationCommands;
+
     public CompositeCommand SaveAllCommand { get; }
+    public SharedSource<TabViewModel> TabItemsSource { get; }
 
-    private IRegionManager regionManager;
-
-    public ShellViewModel(IApplicationCommands applicationCommands, IRegionManager regionManager)
+    public ShellViewModel(IApplicationCommands applicationCommands)
     {
+        this.applicationCommands = applicationCommands;
         SaveAllCommand = applicationCommands.SaveAllCommand;
-        this.regionManager = regionManager;
+
+        this.TabItemsSource = NavigationManager.GetOrCreateSharedSource<TabViewModel>();
+        this.Load();
     }
 
-    public async void OnLoaded(object parameter)
+    public void Load()
     {
-        // create 3 tabs for a tab control
-        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabA");
-        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabB");
-        await regionManager.GetItemsRegion("TabRegion").AddAsync(typeof(TabView), "TabC");
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabA"));
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabB"));
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabC"));
     }
 }
 ```
@@ -1029,4 +1032,6 @@ eventAggregator.GetEvent<DataSavedEvent>().Subscribe(_ => { }).WithExecutionStra
 var subscriberOptions = eventAggregator.GetEvent<DataSavedEvent>().Subscribe(_ => { });
 
 var success = eventAggregator.GetEvent<DataSavedEvent>().Unsubscribe(subscriberOptions.Token);
+// or
+subscriberOptions.Unsubscribe();
 ```

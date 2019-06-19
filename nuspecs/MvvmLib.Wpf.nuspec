@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.7.1</version>
+    <version>0.8.0.0</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -28,9 +28,6 @@
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Configuration" />
-    </frameworkAssemblies>
     <dependencies>
       <dependency id="MvvmLib.Core" version="0.4.0" />
     </dependencies>

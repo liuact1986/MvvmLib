@@ -37,13 +37,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Create_New_SharedSource()
+        public void Create_New_SharedSource()
         {
             Assert.AreEqual(false, NavigationManager.ContainsSharedSource<MySharedItem>());
             var s1 = NavigationManager.CreateSharedSource<MySharedItem>();
             Assert.AreEqual(true, NavigationManager.ContainsSharedSource<MySharedItem>());
 
-            await s1.AddNewAsync("A");
+            s1.AddNew("A");
 
             Assert.AreEqual(1, s1.Items.Count);
 
@@ -106,13 +106,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public async Task Create_New_KeyedSharedSource()
+        public void Create_New_KeyedSharedSource()
         {
             Assert.AreEqual(false, NavigationManager.ContainsSharedSource<MySharedItem>("k1"));
             var s1 = NavigationManager.CreateSharedSource<MySharedItem>("k1");
             Assert.AreEqual(true, NavigationManager.ContainsSharedSource<MySharedItem>("k1"));
 
-            await s1.AddNewAsync("A");
+            s1.AddNew("A");
 
             Assert.AreEqual(1, s1.Items.Count);
 

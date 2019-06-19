@@ -42,8 +42,11 @@ namespace MvvmLib.Message
         /// <param name="synchronizationContext">The synchronization context</param>
         public SubscriberBase(SubscriptionToken subscriptionToken, SynchronizationContext synchronizationContext)
         {
+            if (subscriptionToken == null)
+                throw new System.ArgumentNullException(nameof(subscriptionToken));
+
             this.executionStrategy = ExecutionStrategyType.PublisherThread;
-            this.subscriptionToken = subscriptionToken ?? throw new System.ArgumentNullException(nameof(subscriptionToken));
+            this.subscriptionToken = subscriptionToken;
             this.synchronizationContext = synchronizationContext;
         }
     }

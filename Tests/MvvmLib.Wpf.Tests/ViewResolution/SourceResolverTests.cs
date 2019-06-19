@@ -41,6 +41,24 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         }
 
+        [TestMethod]
+        public void Registers_Type_For_Navigation()
+        {
+            Assert.AreEqual(0, SourceResolver.TypesForNavigation.Count);
+
+            SourceResolver.RegisterTypeForNavigation<MyNavViewA>("A");
+
+            Assert.AreEqual(1, SourceResolver.TypesForNavigation.Count);
+            Assert.AreEqual(typeof(MyNavViewA), SourceResolver.TypesForNavigation["A"]);
+
+            SourceResolver.RegisterTypeForNavigation<MyNavViewB>("B");
+
+            Assert.AreEqual(2, SourceResolver.TypesForNavigation.Count);
+            Assert.AreEqual(typeof(MyNavViewA), SourceResolver.TypesForNavigation["A"]);
+            Assert.AreEqual(typeof(MyNavViewB), SourceResolver.TypesForNavigation["B"]);
+
+            SourceResolver.ClearTypesForNavigation();
+        }
     }
 
     public class MySourceFactory

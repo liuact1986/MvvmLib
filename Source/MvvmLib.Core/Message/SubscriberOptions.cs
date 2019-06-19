@@ -1,10 +1,12 @@
-﻿namespace MvvmLib.Message
+﻿using System;
+
+namespace MvvmLib.Message
 {
 
     /// <summary>
     /// Subscriber options class.
     /// </summary>
-    public class SubscriberOptions
+    public class SubscriberOptions : ISubscriberOptions
     {
         private readonly Subscriber subscriber;
 
@@ -34,6 +36,15 @@
         {
             subscriber.ExecutionStrategy = executionStrategy;
             return this;
+        }
+
+        /// <summary>
+        /// Allows to unsubscribe to event.
+        /// </summary>
+        /// <returns>True if unsubscribed</returns>
+        public bool Unsubscribe()
+        {
+            return Token.Unsubscribe();
         }
     }
 }

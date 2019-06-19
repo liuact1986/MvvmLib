@@ -120,29 +120,29 @@ namespace MvvmLib.Navigation
 
         #region Commands
 
-        private async void ExecuteNavigateCommand(Type sourceType)
+        private void ExecuteNavigateCommand(Type sourceType)
         {
-            await this.NavigateAsync(sourceType, null);
+            this.Navigate(sourceType, null);
         }
 
-        private async void ExecuteGoBackCommand()
+        private void ExecuteGoBackCommand()
         {
-            await this.GoBackAsync();
+            this.GoBack();
         }
 
-        private async void ExecuteRedirectCommand(Type sourceType)
+        private void ExecuteRedirectCommand(Type sourceType)
         {
-            await this.RedirectAsync(sourceType, null);
+            this.Redirect(sourceType, null);
         }
 
-        private async void ExecuteGoForwardCommand()
+        private void ExecuteGoForwardCommand()
         {
-            await this.GoForwardAsync();
+             this.GoForward();
         }
 
-        private async void ExecuteNavigateToRootCommand()
+        private void ExecuteNavigateToRootCommand()
         {
-            await this.NavigateToRootAsync();
+            this.NavigateToRoot();
         }
 
         #endregion // Commands
@@ -212,29 +212,24 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(Type sourceType, object parameter)
+        public void Navigate(Type sourceType, object parameter)
         {
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
 
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.NavigateAsync(sourceType, parameter))
-                    success = false;
+                navigationSource.Navigate(sourceType, parameter);
             }
-            return success;
         }
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/> for all <see cref="NavigationSources"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateAsync(Type sourceType)
+        public void Navigate(Type sourceType)
         {
-            return await NavigateAsync(sourceType, null);
+            this.Navigate(sourceType, null);
         }
 
         /// <summary>
@@ -242,109 +237,84 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(Type sourceType, object parameter)
+        public void Redirect(Type sourceType, object parameter)
         {
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
 
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.RedirectAsync(sourceType, parameter))
-                    success = false;
+                navigationSource.Redirect(sourceType, parameter);
             }
-            return success;
         }
 
         /// <summary>
         /// Redirects and remove the previous entry from the history for all <see cref="NavigationSources"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> RedirectAsync(Type sourceType)
+        public void Redirect(Type sourceType)
         {
-            return await RedirectAsync(sourceType, null);
+            this.Redirect(sourceType, null);
         }
 
         /// <summary>
         /// Navigates to the previous source for all <see cref="NavigationSources"/>.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> GoBackAsync()
+        public void GoBack()
         {
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.GoBackAsync())
-                    success = false;
+                navigationSource.GoBack();
             }
-            return success;
         }
 
         /// <summary>
         /// Navigates to the next source for all <see cref="NavigationSources"/>.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> GoForwardAsync()
+        public void GoForward()
         {
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.GoForwardAsync())
-                    success = false;
+                navigationSource.GoForward();
             }
-            return success;
         }
 
         /// <summary>
         /// Navigates to the first source for all <see cref="NavigationSources"/>.
         /// </summary>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> NavigateToRootAsync()
+        public void NavigateToRoot()
         {
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.NavigateToRootAsync())
-                    success = false;
+                navigationSource.NavigateToRoot();
             }
-            return success;
         }
 
         /// <summary>
         /// Navigates to the source at the index for all <see cref="NavigationSources"/>.
         /// </summary>
         /// <param name="index">The index</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> MoveToAsync(int index)
+        public void MoveTo(int index)
         {
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.MoveToAsync(index))
-                    success = false;
+                navigationSource.MoveTo(index);
             }
-            return success;
         }
 
         /// <summary>
         /// Navigates to the specified source for all <see cref="NavigationSources"/>.
         /// </summary>
         /// <param name="source">The source</param>
-        /// <returns>True on navigation success</returns>
-        public async Task<bool> MoveToAsync(object source)
+        public void MoveTo(object source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            bool success = true;
             foreach (var navigationSource in navigationSources)
             {
-                if (!await navigationSource.MoveToAsync(source))
-                    success = false;
+                navigationSource.MoveTo(source);
             }
-            return success;
         }
 
         /// <summary>

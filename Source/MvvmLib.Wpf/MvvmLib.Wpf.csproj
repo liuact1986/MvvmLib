@@ -50,13 +50,20 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimatableContentControl.cs" />
     <Compile Include="Animation\AnimationTargetPropertyType.cs" />
     <Compile Include="Animation\ControlledAnimation.cs" />
     <Compile Include="Animation\ParallelAnimation.cs" />
     <Compile Include="Animation\StoryboardAccessor.cs" />
-    <Compile Include="Animation\AnimatableContentControl.cs" />
     <Compile Include="Animation\TransitioningContentControl.cs" />
     <Compile Include="Animation\TransitioningItemsControl.cs" />
+    <Compile Include="History\CanGoBackEventArgs.cs" />
+    <Compile Include="History\CanGoForwardEventArgs.cs" />
+    <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
+    <Compile Include="History\INavigationHistory.cs" />
+    <Compile Include="History\NavigationEntry.cs" />
+    <Compile Include="History\NavigationEntryCollection.cs" />
+    <Compile Include="History\NavigationHistory.cs" />
     <Compile Include="Interactivity\AttachableCollection.cs" />
     <Compile Include="Interactivity\EventToCommandBehavior.cs" />
     <Compile Include="Interactivity\IAssociatedObject.cs" />
@@ -64,9 +71,10 @@
     <Compile Include="Interactivity\NavigationBehaviorCollection.cs" />
     <Compile Include="Interactivity\NavigationInteraction.cs" />
     <Compile Include="Interactivity\SelectionSyncBehavior.cs" />
-    <Compile Include="History\CanGoBackEventArgs.cs" />
-    <Compile Include="History\CanGoForwardEventArgs.cs" />
-    <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
+    <Compile Include="Logger\Category.cs" />
+    <Compile Include="Logger\DebugLogger.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\Priority.cs" />
     <Compile Include="Modules\AssemblyLoader.cs" />
     <Compile Include="Modules\IModuleConfig.cs" />
     <Compile Include="Modules\ModuleConfigurationElement.cs" />
@@ -75,37 +83,33 @@
     <Compile Include="Modules\ModuleLoadingFailException.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="Modules\ModulesConfigurationSection.cs" />
-    <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
-    <Compile Include="History\INavigationHistory.cs" />
-    <Compile Include="History\NavigationEntry.cs" />
-    <Compile Include="History\NavigationEntryCollection.cs" />
-    <Compile Include="History\NavigationHistory.cs" />
     <Compile Include="Mvvm\BindableObject.cs" />
-    <Compile Include="Navigation\ISharedSource.cs" />
-    <Compile Include="Navigation\NavigationBrowser.cs" />
-    <Compile Include="Navigation\NavigationEventBaseArgs.cs" />
-    <Compile Include="Navigation\NavigationFailedEventArgs.cs" />
-    <Compile Include="Navigation\NavigationFailedException.cs" />
-    <Compile Include="Navigation\NavigationHelper.cs" />
+    <Compile Include="Mvvm\ReadOnlyCollection.cs" />
     <Compile Include="Navigation\BootstrapperBase.cs" />
+    <Compile Include="Navigation\ContentControlNavigationSource.cs" />
+    <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
     <Compile Include="Navigation\IIsSelected.cs" />
     <Compile Include="Navigation\INavigationAware.cs" />
     <Compile Include="Navigation\ISelectable.cs" />
-    <Compile Include="Logger\Category.cs" />
-    <Compile Include="Logger\DebugLogger.cs" />
-    <Compile Include="Logger\ILogger.cs" />
-    <Compile Include="Logger\Priority.cs" />
-    <Compile Include="Navigation\ContentControlNavigationSource.cs" />
+    <Compile Include="Navigation\ISharedSource.cs" />
     <Compile Include="Navigation\KeyedNavigationSource.cs" />
+    <Compile Include="Navigation\NavigationBrowser.cs" />
+    <Compile Include="Navigation\NavigationEventBaseArgs.cs" />
+    <Compile Include="Navigation\NavigationFailedEventArgs.cs" />
+    <Compile Include="Navigation\NavigationFailedException.cs" />
+    <Compile Include="Navigation\NavigationHelper.cs" />
     <Compile Include="Navigation\NavigationManager.cs" />
     <Compile Include="Navigation\NavigationSource.cs" />
     <Compile Include="Navigation\NavigationSourceContainer.cs" />
     <Compile Include="Navigation\NavigationType.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceItemCollection.cs" />
+    <Compile Include="Navigation\SourceResolver.cs" />
+    <Compile Include="Navigation\ViewModelLocationProvider.cs" />
+    <Compile Include="Navigation\ViewModelLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -119,10 +123,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Navigation\ViewModelLocationProvider.cs" />
-    <Compile Include="Navigation\ViewModelLocator.cs" />
-    <Compile Include="Navigation\SourceResolver.cs" />
-    <Compile Include="Mvvm\ReadOnlyCollection.cs" />
     <Compile Include="Utils\EnumerableUtils.cs" />
     <Compile Include="Utils\XamlHelper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -133,6 +133,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MvvmLib.Core\MvvmLib.Core.csproj">
+      <Project>{8adafeea-ff6e-4888-9d07-01e5cf6b21da}</Project>
+      <Name>MvvmLib.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\AnimatableContentControl.xaml">
@@ -151,12 +157,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MvvmLib.Core\MvvmLib.Core.csproj">
-      <Project>{8adafeea-ff6e-4888-9d07-01e5cf6b21da}</Project>
-      <Name>MvvmLib.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

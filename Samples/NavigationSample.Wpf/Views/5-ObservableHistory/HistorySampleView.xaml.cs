@@ -18,7 +18,7 @@ namespace NavigationSample.Wpf.Views
             var item = frameworkElement.DataContext as SourceMenuItem;
 
             var vm = this.DataContext as HistorySampleViewModel;
-            await vm.Navigation.MoveToAsync(item.Index);
+            vm.Navigation.MoveTo(item.Index);
         }
     }
 }

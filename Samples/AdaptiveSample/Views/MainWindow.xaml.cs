@@ -18,9 +18,9 @@ namespace AdaptiveSample.Views
         }
 
 
-        private async  void NavigateToHome()
+        private void NavigateToHome()
         {
-           await Navigation.NavigateAsync(typeof(HomeView));
+           Navigation.Navigate(typeof(HomeView));
         }
     }
 }

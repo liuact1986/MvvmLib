@@ -880,24 +880,27 @@ public class ApplicationCommands : IApplicationCommands
 </code></pre>
 
 <p>Create the shell and the ShellViewModel (Sample with Wpf)</p>
-<pre><code class="cs">public class ShellViewModel : ILoadedEventListener
+<pre><code class="cs">public class ShellViewModel
 {
+    private readonly IApplicationCommands applicationCommands;
+
     public CompositeCommand SaveAllCommand { get; }
+    public SharedSource&lt;TabViewModel&gt; TabItemsSource { get; }
 
-    private IRegionManager regionManager;
-
-    public ShellViewModel(IApplicationCommands applicationCommands, IRegionManager regionManager)
+    public ShellViewModel(IApplicationCommands applicationCommands)
     {
+        this.applicationCommands = applicationCommands;
         SaveAllCommand = applicationCommands.SaveAllCommand;
-        this.regionManager = regionManager;
+
+        this.TabItemsSource = NavigationManager.GetOrCreateSharedSource&lt;TabViewModel&gt;();
+        this.Load();
     }
 
-    public async void OnLoaded(object parameter)
+    public void Load()
     {
-        // create 3 tabs for a tab control
-        await regionManager.GetItemsRegion(&quot;TabRegion&quot;).AddAsync(typeof(TabView), &quot;TabA&quot;);
-        await regionManager.GetItemsRegion(&quot;TabRegion&quot;).AddAsync(typeof(TabView), &quot;TabB&quot;);
-        await regionManager.GetItemsRegion(&quot;TabRegion&quot;).AddAsync(typeof(TabView), &quot;TabC&quot;);
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, &quot;TabA&quot;));
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, &quot;TabB&quot;));
+        this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, &quot;TabC&quot;));
     }
 }
 </code></pre>
@@ -1087,6 +1090,8 @@ messenger.GetEvent&lt;MyUserEvent&gt;().Publish(new User { Id = 2, UserName = &q
 <pre><code class="cs">var subscriberOptions = eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Subscribe(_ =&gt; { });
 
 var success = eventAggregator.GetEvent&lt;DataSavedEvent&gt;().Unsubscribe(subscriberOptions.Token);
+// or
+subscriberOptions.Unsubscribe();
 </code></pre>
 
 

@@ -1,5 +1,4 @@
 ﻿using MvvmLib.Navigation;
-using System;
 using System.Reflection;
 
 namespace MvvmLib.Modules
