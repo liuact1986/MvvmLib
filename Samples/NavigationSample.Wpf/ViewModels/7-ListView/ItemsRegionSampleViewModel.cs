@@ -8,14 +8,16 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class ItemsRegionSampleViewModel
+    public class ItemsRegionSampleViewModel : INavigationAware
     {
+        private IEventAggregator eventAggregator;
+
         public SharedSource<IDetailViewModel> DetailsSource { get; }
         public IRelayCommand AddCommand { get; }
 
         public ItemsRegionSampleViewModel(IEventAggregator eventAggregator, IInjector injector)
         {
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("ListView with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+            this.eventAggregator = eventAggregator;
 
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
@@ -26,6 +28,26 @@ namespace NavigationSample.Wpf.ViewModels
         {
             var instance = DetailsSource.CreateNew(sourceType);
             DetailsSource.Items.Add(instance);
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("ListView with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            SetTitle();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+
         }
     }
 }

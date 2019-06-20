@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class AnimationViewModel : BindableBase
+    public class AnimationViewModel : BindableBase, INavigationAware
     {
         private bool isCancelled;
         public bool IsCancelled
@@ -24,6 +24,8 @@ namespace NavigationSample.Wpf.ViewModels
         public ObservableCollection<Duration> Durations { get; set; }
 
         private Duration selectedDuration;
+        private readonly IEventAggregator eventAggregator;
+
         public Duration SelectedDuration
         {
             get { return selectedDuration; }
@@ -36,7 +38,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public AnimationViewModel(IEventAggregator eventAggregator)
         {
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("ContentControl animation with AnimatableContentControl");
+            this.eventAggregator = eventAggregator;
 
             Navigation = NavigationManager.GetDefaultNavigationSource("AnimationSample");
 
@@ -57,6 +59,26 @@ namespace NavigationSample.Wpf.ViewModels
                 IsCancelled = true;
                 IsCancelled = false;
             });
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("ContentControl animation with AnimatableContentControl");
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+          
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            SetTitle();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+           
         }
     }
 }

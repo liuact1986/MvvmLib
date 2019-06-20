@@ -13,30 +13,22 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class SharedSourceSampleViewModel : INavigationAware
     {
+        private readonly IEventAggregator eventAggregator;
+
         public SharedSource<MyItemDetailsViewModel> DetailsSource { get; }
 
         public ICommand AddCommand { get; }
 
         public SharedSourceSampleViewModel(IEventAggregator eventAggregator)
         {
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("SharedSource for ItemsControls, Selectors, etc.");
+            this.eventAggregator = eventAggregator;
 
             DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
 
             AddCommand = new RelayCommand(Add);
         }
 
-        private void Add()
-        {
-            DetailsSource.Items.Add(new MyItemDetailsViewModel(new MyItem { Name = $"Item.{DetailsSource.Items.Count + 1}" }));
-        }
-
-        public void OnNavigatingFrom()
-        {
-
-        }
-
-        public void OnNavigatingTo(object parameter)
+        private void Load()
         {
             DetailsSource.Load(new List<MyItemDetailsViewModel>
             {
@@ -45,10 +37,33 @@ namespace NavigationSample.Wpf.ViewModels
             });
         }
 
-        public void OnNavigatedTo(object parameter)
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("SharedSource for ItemsControls, Selectors, etc.");
+        }
+
+        private void Add()
+        {
+            DetailsSource.Items.Add(new MyItemDetailsViewModel(new MyItem { Name = $"Item.{DetailsSource.Items.Count + 1}" }));
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            SetTitle();
+            Load();
+        }
+
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+
+        }
+
     }
 
     public class MyItemDetailsViewModel : BindableBase, ICanDeactivate, IIsSelected
@@ -92,7 +107,7 @@ namespace NavigationSample.Wpf.ViewModels
             detailsSource.Items.Remove(this);
         }
 
-        public void CanDeactivate(Action<bool> continuationCallback)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
             var result = MessageBox.Show($"Close {baseName}?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
             continuationCallback(result);

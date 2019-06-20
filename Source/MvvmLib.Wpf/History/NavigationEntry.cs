@@ -25,13 +25,14 @@ namespace MvvmLib.History
             get { return source; }
         }
 
-        private readonly object parameter;
+        private object parameter;
         /// <summary>
         /// The parameter.
         /// </summary>
         public object Parameter
         {
             get { return parameter; }
+            internal set { parameter = value; }
         }
 
         /// <summary>

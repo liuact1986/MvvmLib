@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
              xmlns:mvvmLib="http://mvvmlib.com/"
              mc:Ignorable="d" 
              FontSize="16"
@@ -13,15 +14,32 @@
         <Grid.Effect>
            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
         </Grid.Effect>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ListView ItemsSource="{Binding DetailsSource.Items}" 
-                  SelectedItem="{Binding DetailsSource.SelectedItem}" />
+        <WrapPanel Orientation="Horizontal" Background="#eee" Grid.ColumnSpan="2">
+            <Button Command="{Binding Navigation.NavigateToRootCommand}" Margin="5" ToolTip="Root">
+                <controls:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Command="{Binding Navigation.GoBackCommand}" Margin="5" ToolTip="Back">
+                <controls:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Command="{Binding Navigation.GoForwardCommand}" Margin="5" ToolTip="Forward">
+                <controls:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+        </WrapPanel>
 
-        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Column="1" Simultaneous="True">
+        <ListView ItemsSource="{Binding PeopleListSource.Items}" 
+                  SelectedItem="{Binding PeopleListSource.SelectedItem}" Grid.Row="1"/>
+
+        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Row="1" Grid.Column="1" Simultaneous="True">
             <mvvmLib:AnimatableContentControl.EntranceAnimation>
                 <Storyboard>
                     <PointAnimation Storyboard.TargetName="PreviousContentPresenter" 
@@ -46,5 +64,49 @@
                 </Storyboard>
             </mvvmLib:AnimatableContentControl.ExitAnimation>
         </mvvmLib:AnimatableContentControl>
+
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="2" Grid.ColumnSpan="2" Background="#fff" VerticalAlignment="Bottom" Height="260">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label FontWeight="SemiBold">HISTORY</Label>
+                <ListView ItemsSource="{Binding Navigation.History.Entries}" 
+                          SelectedItem="{Binding Navigation.History.Current, Mode=OneWay}"
+                          ItemTemplate="{StaticResource StackTemplate}"
+                          ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
+                          Margin="5" Grid.Row="1" BorderThickness="0" />
+
+                <Label FontWeight="SemiBold" Grid.Column="1">SOURCES</Label>
+                <ListView ItemsSource="{Binding Navigation.Sources}" 
+                          SelectedItem="{Binding Navigation.Current, Mode=OneWay}"
+                          ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
+                          Margin="5" BorderThickness="0" Grid.Column="1" Grid.Row="1">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="5"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Label FontWeight="SemiBold" Grid.Row="2">CURRENT ENTRY</Label>
+                <StackPanel Grid.Row="3">
+                    <TextBlock Text="{Binding Navigation.History.Current.SourceType.Name}"  Margin="5"/>
+                </StackPanel>
+
+                <Label FontWeight="SemiBold" Grid.Column="1" Grid.Row="2">CURRENT INDEX</Label>
+                <StackPanel  Grid.Column="1" Grid.Row="3">
+                    <TextBlock Text="{Binding Navigation.CurrentIndex}"  Margin="5" />
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

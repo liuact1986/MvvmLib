@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -23,11 +22,11 @@ namespace MvvmLib.Navigation
             get { return typeof(T); }
         }
 
-        private SharedSourceItemCollection<T> items;
+        private NavigationCollection<T> items;
         /// <summary>
         /// The items collection.
         /// </summary>
-        public SharedSourceItemCollection<T> Items
+        public NavigationCollection<T> Items
         {
             get { return items; }
         }
@@ -77,7 +76,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         public SharedSource()
         {
-            this.items = new SharedSourceItemCollection<T>(this);
+            this.items = new NavigationCollection<T>(this);
             this.selectionHandling = SelectionHandling.Select;
             this.handleSelectionChanged = true;
             this.selectedIndex = -1;

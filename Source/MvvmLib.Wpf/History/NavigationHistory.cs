@@ -182,12 +182,13 @@ namespace MvvmLib.History
         /// <summary>
         /// Moves to the root entry.
         /// </summary>
-        public void NavigateToRoot()
+        public void NavigateToRoot(object parameter)
         {
             if (!CanGoBack && currentIndex == -1)
                 throw new InvalidOperationException("Cannot process navigate to root. The history is empty");
 
             SetCurrent(0);
+            Current.Parameter = parameter;
             if (this.entries.Count > 1)
             {
                 while (this.entries.Count > 1)
@@ -209,7 +210,7 @@ namespace MvvmLib.History
         /// <summary>
         /// Moves to the previous entry.
         /// </summary>
-        public void GoBack()
+        public void GoBack(object parameter)
         {
             if (!CanGoBack)
                 throw new InvalidOperationException("Cannot process go back");
@@ -218,6 +219,7 @@ namespace MvvmLib.History
             int newIndex = this.currentIndex - 1;
 
             SetCurrent(newIndex);
+            Current.Parameter = parameter;
 
             CheckCanGoBack(oldIndex);
             CheckCanGoForward(oldIndex);
@@ -226,7 +228,7 @@ namespace MvvmLib.History
         /// <summary>
         /// Moves to the next entry.
         /// </summary>
-        public void GoForward()
+        public void GoForward(object parameter)
         {
             if (!CanGoForward)
                 throw new InvalidOperationException("Cannot process go forward");
@@ -235,6 +237,7 @@ namespace MvvmLib.History
             int newIndex = this.currentIndex + 1;
 
             SetCurrent(newIndex);
+            Current.Parameter = parameter;
 
             CheckCanGoBack(oldIndex);
             CheckCanGoForward(oldIndex);
@@ -264,25 +267,28 @@ namespace MvvmLib.History
         /// Moves to the entry.
         /// </summary>
         /// <param name="entry">The entry</param>
-        public void MoveTo(NavigationEntry entry)
+        /// <param name="parameter">The parameter</param>
+        public void MoveTo(NavigationEntry entry, object parameter)
         {
             var newIndex = this.entries.IndexOf(entry);
             if (newIndex == -1)
                 throw new ArgumentException("Unable to find the index of the entry");
 
-            this.MoveTo(newIndex);
+            this.MoveTo(newIndex, parameter);
         }
 
         /// <summary>
         /// Moves to the index.
         /// </summary>
         /// <param name="index">The index</param>
-        public void MoveTo(int index)
+        /// <param name="parameter">The parameter</param>
+        public void MoveTo(int index, object parameter)
         {
             if (index < 0 || index > this.entries.Count)
                 throw new IndexOutOfRangeException();
 
             SetCurrent(index);
+            Current.Parameter = parameter;
 
             if (index > 1)
                 OnCanGobackChanged(true);

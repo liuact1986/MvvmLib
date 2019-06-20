@@ -244,7 +244,7 @@ namespace NavigationSample.Wpf.Startup
 	<td>Navigates to the first source and clears the history</td>
 </tr>
 <tr>
-	<td>EndWith</td>
+	<td>NavigateFast</td>
 	<td>Useful for navigation cancellation and not recheck guards</td>
 </tr>
 <tr>
@@ -438,6 +438,10 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 	<td>Moves the item from the old index to the new index. Navigation guards and INavigationAware are not invoked</td>
 </tr>
 <tr>
+	<td>Replace</td>
+	<td>Replaces the old item at thhe index by the new item</td>
+</tr>
+<tr>
 	<td>RemoveAt</td>
 	<td>Removes the item at the index. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware</td>
 </tr>
@@ -609,11 +613,9 @@ s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
 <pre><code class="cs">s.Items[1] = new MyViewModel();
 </code></pre>
 
-<p>Or use the NavigationHelper to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.</p>
-<pre><code class="cs">int index = 1;
-var oldItem = s.Items[index];
-var newItem = new MyViewModel();
-NavigationHelper.Replace(oldItem, newItem, &quot;My new parameter&quot;, () =&gt; s.Items[index] = newItem);
+<p>Or use to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.</p>
+<pre><code class="cs">var newItem = new MyViewModel();
+NavigationHelper.Replace(1, newItem);
 </code></pre>
 
 <h3 id="select-an-item">Select an item<a class="headerlink" href="#select-an-item" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
@@ -649,17 +651,17 @@ s.SelectionHandling = SelectionHandling.Select;
         });
     }
 
-    public void OnNavigatingFrom()
+    public void OnNavigatingFrom(NavigationContext navigationContext)
     {
 
     }
 
-    public void OnNavigatingTo(object parameter)
+    public void OnNavigatingTo(NavigationContext navigationContext)
     {
         Load();
     }
 
-    public void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(NavigationContext navigationContext)
     {
 
     }
@@ -805,21 +807,30 @@ View model name:
 </ul>
 <pre><code class="cs">public class ViewAViewModel : INavigationAware
 {
-    public void OnNavigatingTo(object parameter)
-    {
-        // Usefull to preload data 
-    }
-
-    public void OnNavigatedTo(object parameter)
+    public void OnNavigatingFrom(NavigationContext navigationContext)
     {
 
     }
 
-    public void OnNavigatingFrom()
+    public void OnNavigatingTo(NavigationContext navigationContext)
+    {
+       // Usefull to preload data 
+    }
+
+    public void OnNavigatedTo(NavigationContext navigationContext)
     {
 
     }
 }
+</code></pre>
+
+<p>The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). Use a dictionary for multiple parameters.</p>
+<pre><code class="cs">var navigationParameters = new Dictionary&lt;string, object&gt;
+{
+    { &quot;redirectTo&quot;,typeof(ViewE) },
+    { &quot;parameter&quot;, navigationContext.Parameter }
+};
+Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 </code></pre>
 
 <h2 id="navigation-guards-icanactivate-icandeactivate">Navigation Guards (ICanActivate, ICanDeactivate)<a class="headerlink" href="#navigation-guards-icanactivate-icandeactivate" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -827,13 +838,13 @@ View model name:
 <pre><code class="cs">public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
 
-    public void CanActivate(object parameter, Action&lt;bool&gt; continuationCallback)
+    public void CanActivate(NavigationContext navigationContext, Action&lt;bool&gt; continuationCallback)
     {
         var canActivate = MessageBox.Show(&quot;Can activate?&quot;, &quot;Question&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
         continuationCallback(canActivate);
     }
 
-    public void CanDeactivate(Action&lt;bool&gt; continuationCallback)
+    public void CanDeactivate(NavigationContext navigationContext, Action&lt;bool&gt; continuationCallback)
     {
         var canDeactivate = MessageBox.Show(&quot;Can deactivate?&quot;, &quot;Question&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
         continuationCallback(canDeactivate);

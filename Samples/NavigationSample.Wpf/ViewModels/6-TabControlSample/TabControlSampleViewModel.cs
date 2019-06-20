@@ -6,8 +6,10 @@ using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
-    public class TabControlSampleViewModel
+    public class TabControlSampleViewModel : INavigationAware
     {
+        private IEventAggregator eventAggregator;
+
         public SharedSource<IDetailViewModel> DetailsSource { get; }
 
         public IRelayCommand AddCommand { get; }
@@ -15,7 +17,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public TabControlSampleViewModel(IEventAggregator eventAggregator)
         {
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+            this.eventAggregator = eventAggregator;
 
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
@@ -26,6 +28,26 @@ namespace NavigationSample.Wpf.ViewModels
         {
             var instance = DetailsSource.CreateNew(sourceType);
             DetailsSource.Items.Add((IDetailViewModel)instance);
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("TabControl with IIsSelected (ViewCViewModel) and ISelectable (ViewDViewModel)");
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            SetTitle();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+
         }
     }
 }

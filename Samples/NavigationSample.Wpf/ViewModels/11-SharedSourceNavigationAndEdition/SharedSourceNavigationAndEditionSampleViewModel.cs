@@ -38,8 +38,6 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.eventAggregator = eventAggregator;
 
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Navigation and Edition with SharedSource");
-
             State = DataFormState.IsShowingDetails;
 
             personSavedSubscriberOptions = eventAggregator.GetEvent<PersonSavedEvent>().Subscribe(OnPersonSaved);
@@ -55,6 +53,11 @@ namespace NavigationSample.Wpf.ViewModels
             AddCommand = new RelayCommand(Add);
             UpdateCommand = new RelayCommand(Update);
             DeleteCommand = new RelayCommand(Delete);
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Navigation and Edition with SharedSource");
         }
 
         // only if synchronization is required (edition)
@@ -131,19 +134,23 @@ namespace NavigationSample.Wpf.ViewModels
             State = DataFormState.IsShowingDetails;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             personSavedSubscriberOptions.Unsubscribe();
             cancelAddingPersonSubscriberOptions.Unsubscribe();
             cancelUpdatingPersonSubscriberOptions.Unsubscribe();
+
+            this.Browser.CollectionView.CurrentChanged -= OnCollectionViewCurrentChanged;
+            this.PeopleSource.SelectedItemChanged -= OnPeopleSourceSelectedItemChanged;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
+            SetTitle();
             Load();
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }
@@ -260,18 +267,18 @@ namespace NavigationSample.Wpf.ViewModels
             this.person.BeginEdit();
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            person.Id = (int)parameter;
+            person.Id = (int)navigationContext.Parameter;
             this.person.BeginEdit();
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }

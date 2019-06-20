@@ -1374,7 +1374,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             history.Navigate(eA);
             history.Navigate(eB);
             history.Navigate(eC);
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
             Assert.AreEqual(eB, history.Entries.ElementAt(1));
@@ -1468,6 +1468,24 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.GoBackCommand.CanExecute(null);
             navigationSource.GoForwardCommand.CanExecute(null);
         }
+
+        [TestMethod]
+        public void Navigate_Updates_Parameter()
+        {
+            var navigationSource = new NavigationSource();
+
+            MyViewModelThatChangeParameter.Parameter = null;
+
+            navigationSource.Navigate(typeof(MyViewThatChangeParameter), "p");
+
+            Assert.AreEqual("p-canactivateview--canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel-", MyViewModelThatChangeParameter.Parameter);
+
+            MyViewModelThatChangeParameter.Parameter = null;
+
+            navigationSource.Navigate(typeof(MySimpleViewModel), "p2");
+
+            Assert.AreEqual("p2-candeactivateview--candeactivateviewmodel--onavigatingfromviewmodel-", MyViewModelThatChangeParameter.Parameter);
+        }
     }
 
     public class MyViewModelRedirect
@@ -1512,34 +1530,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1578,34 +1596,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1643,34 +1661,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1703,34 +1721,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1764,34 +1782,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1825,34 +1843,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1886,34 +1904,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 

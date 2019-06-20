@@ -12,7 +12,7 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// The navigation source base class.
     /// </summary>
-    public class NavigationSource : INotifyPropertyChanged
+    public class NavigationSource : INotifyCollectionChanged, INotifyPropertyChanged
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
 
@@ -24,31 +24,6 @@ namespace MvvmLib.Navigation
         {
             get { return logger ?? DefaultLogger; }
             set { logger = value; }
-        }
-
-        private readonly NavigationHistory history;
-        /// <summary>
-        /// Gets the history.
-        /// </summary>
-        public INavigationHistory History
-        {
-            get { return history; }
-        }
-
-        /// <summary>
-        /// Checks if can go back.
-        /// </summary>
-        public bool CanGoBack
-        {
-            get { return this.history.CanGoBack; }
-        }
-
-        /// <summary>
-        /// Checks if can go forward. 
-        /// </summary>
-        public bool CanGoForward
-        {
-            get { return this.history.CanGoForward; }
         }
 
         private readonly ObservableCollection<object> sources;
@@ -76,6 +51,31 @@ namespace MvvmLib.Navigation
         public int CurrentIndex
         {
             get { return currentIndex; }
+        }
+
+        private readonly NavigationHistory history;
+        /// <summary>
+        /// Gets the history.
+        /// </summary>
+        public INavigationHistory History
+        {
+            get { return history; }
+        }
+
+        /// <summary>
+        /// Checks if can go back.
+        /// </summary>
+        public bool CanGoBack
+        {
+            get { return this.history.CanGoBack; }
+        }
+
+        /// <summary>
+        /// Checks if can go forward. 
+        /// </summary>
+        public bool CanGoForward
+        {
+            get { return this.history.CanGoForward; }
         }
 
         private readonly IRelayCommand navigateCommand;
@@ -124,6 +124,16 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Invoked when the <see cref="Sources"/> collection has changed.
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
+        /// Invoked on property changed.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// Invoked when the can go back value changed.
         /// </summary>
         public event EventHandler<CanGoBackEventArgs> CanGoBackChanged;
@@ -147,16 +157,6 @@ namespace MvvmLib.Navigation
         /// Invoked on navigation failed (cancelled or exception).
         /// </summary>
         public event EventHandler<NavigationFailedEventArgs> NavigationFailed;
-
-        /// <summary>
-        /// Invoked when the <see cref="Sources"/> collection has changed.
-        /// </summary>
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        /// <summary>
-        /// Invoked on property changed.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Invoked on current source changed.
@@ -227,7 +227,22 @@ namespace MvvmLib.Navigation
 
         #endregion // Commands
 
-        #region Events
+        #region  Events
+
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         private void OnCanGoBackChanged(object sender, CanGoBackEventArgs e)
         {
@@ -248,24 +263,9 @@ namespace MvvmLib.Navigation
             this.CanGoForwardChanged?.Invoke(this, e);
         }
 
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-            this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
-        }
-
         private void OnCurrentChanged()
         {
-            CurrentChanged?.Invoke(this, new CurrentSourceChangedEventArgs(this.current));
+            CurrentChanged?.Invoke(this, new CurrentSourceChangedEventArgs(this.currentIndex, this.current));
         }
 
         private void OnNavigating(NavigationEntry entry, NavigationType navigationType)
@@ -283,9 +283,21 @@ namespace MvvmLib.Navigation
             NavigationFailed?.Invoke(this, new NavigationFailedEventArgs(exception));
         }
 
+        private void OnNavigationCompleted(bool success, Type sourceType, object parameter, NavigationType navigationType)
+        {
+            if (success)
+                this.OnNavigated(sourceType, parameter, navigationType);
+            else
+                this.OnNavigationFailed(new NavigationFailedException(this.current, this));
+        }
+
         #endregion // Events
 
-        #region Sources
+        private void InsertSource(int index, object source)
+        {
+            this.sources.Insert(index, source);
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, source, index);
+        }
 
         private void RemoveSourceAt(int index)
         {
@@ -294,18 +306,18 @@ namespace MvvmLib.Navigation
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, source, index);
         }
 
-        private void ClearSourcesAfterCurrentIndex()
+        private void ClearSources(int startIndex)
         {
-            if (this.sources.Count - 1 > this.currentIndex)
+            if (this.sources.Count - 1 > startIndex)
             {
                 // remove from current index to count
-                int removeIndex = this.currentIndex + 1;
+                int removeIndex = startIndex + 1;
                 while (sources.Count > removeIndex)
                     RemoveSourceAt(removeIndex);
             }
         }
 
-        private void ClearSourcesInternal()
+        private void ClearSourcesFast()
         {
             if (this.sources.Count > 0)
             {
@@ -313,10 +325,6 @@ namespace MvvmLib.Navigation
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
-
-        #endregion // Sources
-
-        #region Current Source
 
         /// <summary>
         /// Sets the <see cref="Current"/> value with the new value. Can be override to apply other behaviors.
@@ -333,18 +341,26 @@ namespace MvvmLib.Navigation
             OnCurrentChanged();
         }
 
-        /// <summary>
-        /// Clears the content.
-        /// </summary>
-        public void ClearContent()
+        private void SyncSourcesAndHistoryOnNavigate(Type sourceType, object source, bool isSelectable, NavigationContext navigationContext)
         {
-            this.current = null;
-            OnPropertyChanged(nameof(Current));
-            OnCurrentChanged();
+            if (isSelectable)
+            {
+                int index = sources.IndexOf(source);
+                this.SetCurrent(index, source);
+                history.MoveTo(index, navigationContext.Parameter);
+            }
+            else
+            {
+                // insert source at current index + 1 and clear sources after this index
+                var newIndex = this.currentIndex + 1;
+                this.InsertSource(newIndex, source);
+                this.SetCurrent(newIndex, source);
+                ClearSources(newIndex);
+
+                // history: insert entry at current index + 1 and clear entries after this index ("forward stack")
+                history.Navigate(new NavigationEntry(sourceType, this.current, navigationContext.Parameter));
+            }
         }
-
-        #endregion
-
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
@@ -353,31 +369,16 @@ namespace MvvmLib.Navigation
         /// <param name="parameter">The parameter</param>
         public void Navigate(Type sourceType, object parameter)
         {
+            if (sourceType == null)
+                throw new ArgumentNullException(nameof(sourceType));
+
             if (this.history.Current != null)
                 this.OnNavigating(this.history.Current, NavigationType.New);
 
-            NavigationHelper.CheckGuardsAndNavigate(current, sources, sourceType, parameter, (source) =>
-            {
-                // insert at current index + 1
-                var newIndex = this.currentIndex + 1;
-                this.sources.Insert(newIndex, source);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, source, newIndex);
-
-                SetCurrent(newIndex, source);
-            }, (success) =>
-            {
-                if (success)
-                {
-                    // clear all sources after index + 1
-                    ClearSourcesAfterCurrentIndex();
-
-                    history.Navigate(new NavigationEntry(sourceType, this.current, parameter));
-
-                    this.OnNavigated(sourceType, parameter, NavigationType.New);
-                }
-                else
-                    this.OnNavigationFailed(new NavigationFailedException(this.current, this));
-            });
+            var navigationContext = new NavigationContext(sourceType, parameter);
+            NavigationHelper.Navigate(current, sources, navigationContext,
+                (source, isSelectable) => SyncSourcesAndHistoryOnNavigate(sourceType, source, isSelectable, navigationContext),
+                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.New));
         }
 
         /// <summary>
@@ -410,62 +411,6 @@ namespace MvvmLib.Navigation
         public void Navigate(string sourceName)
         {
             this.Navigate(sourceName, null);
-        }
-
-        /// <summary>
-        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
-        /// </summary>
-        /// <param name="sourceType">The source type</param>
-        /// <param name="parameter">The parameter</param>
-        public void EndWith(Type sourceType, object parameter)
-        {
-            NavigationHelper.EndNavigate(current, sources, sourceType, parameter, (source) =>
-            {
-                // insert at current index + 1
-                var newIndex = this.currentIndex + 1;
-                this.sources.Insert(newIndex, source);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, source, newIndex);
-
-                SetCurrent(newIndex, source);
-            });
-
-            // clear all sources after index + 1
-            ClearSourcesAfterCurrentIndex();
-
-            history.Navigate(new NavigationEntry(sourceType, this.current, parameter));
-
-            this.OnNavigated(sourceType, parameter, NavigationType.New);
-        }
-
-        /// <summary>
-        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
-        /// </summary>
-        /// <param name="sourceType">The source type</param>
-        public void EndWith(Type sourceType)
-        {
-            this.EndWith(sourceType, null);
-        }
-
-        /// <summary>
-        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
-        /// </summary>
-        /// <param name="sourceName">The source name</param>
-        /// <param name="parameter">The parameter</param>
-        public void EndWith(string sourceName, object parameter)
-        {
-            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
-                this.EndWith(sourceType, parameter);
-            else
-                throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
-        }
-
-        /// <summary>
-        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
-        /// </summary>
-        /// <param name="sourceName">The source name</param>
-        public void EndWith(string sourceName)
-        {
-            this.EndWith(sourceName, null);
         }
 
         /// <summary>
@@ -519,6 +464,54 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        public void NavigateFast(Type sourceType, object parameter)
+        {
+            if (this.history.Current != null)
+                this.OnNavigating(this.history.Current, NavigationType.New);
+
+            var navigationContext = new NavigationContext(sourceType, parameter);
+            NavigationHelper.NavigateFast(current, sources, navigationContext,
+                (source, isSelectable) => SyncSourcesAndHistoryOnNavigate(sourceType, source, isSelectable, navigationContext));
+
+            this.OnNavigated(sourceType, parameter, NavigationType.New);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        public void NavigateFast(Type sourceType)
+        {
+            this.NavigateFast(sourceType, null);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <param name="parameter">The parameter</param>
+        public void NavigateFast(string sourceName, object parameter)
+        {
+            if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
+                this.NavigateFast(sourceType, parameter);
+            else
+                throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/> without guards. Useful for navigation cancellation and not recheck guards.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        public void NavigateFast(string sourceName)
+        {
+            this.NavigateFast(sourceName, null);
+        }
+
+        /// <summary>
         /// Navigates to the previous source.
         /// </summary>
         public void GoBack()
@@ -532,16 +525,13 @@ namespace MvvmLib.Navigation
                 var source = history.Previous.Source;
                 var parameter = history.Previous.Parameter;
 
-                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
+                var navigationContext = new NavigationContext(sourceType, parameter);
+                NavigationHelper.Replace(current, source, navigationContext, () =>
                 {
-                    if (success)
-                    {
-                        history.GoBack();
-                        this.OnNavigated(sourceType, parameter, NavigationType.Back);
-                    }
-                    else
-                        this.OnNavigationFailed(new NavigationFailedException(source, this));
-                });
+                    SetCurrent(newIndex, source);
+                    history.GoBack(navigationContext.Parameter);
+                },
+                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.Back));
             }
         }
 
@@ -558,16 +548,14 @@ namespace MvvmLib.Navigation
                 var sourceType = history.Next.SourceType;
                 var source = history.Next.Source;
                 var parameter = history.Next.Parameter;
-                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
+
+                var navigationContext = new NavigationContext(sourceType, parameter);
+                NavigationHelper.Replace(current, source, navigationContext, () =>
                 {
-                    if (success)
-                    {
-                        history.GoForward();
-                        this.OnNavigated(sourceType, parameter, NavigationType.Forward);
-                    }
-                    else
-                        this.OnNavigationFailed(new NavigationFailedException(source, this));
-                });
+                    SetCurrent(newIndex, source);
+                    history.GoForward(navigationContext.Parameter);
+                },
+                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.Forward));
             }
         }
 
@@ -584,17 +572,15 @@ namespace MvvmLib.Navigation
                 var sourceType = history.Root.SourceType;
                 var source = history.Root.Source;
                 var parameter = history.Root.Parameter;
-                NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(newIndex, source), (success) =>
+
+                var navigationContext = new NavigationContext(sourceType, parameter);
+                NavigationHelper.Replace(current, source, navigationContext, () =>
                 {
-                    if (success)
-                    {
-                        ClearSourcesAfterCurrentIndex();
-                        history.NavigateToRoot();
-                        this.OnNavigated(sourceType, parameter, NavigationType.Root);
-                    }
-                    else
-                        this.OnNavigationFailed(new NavigationFailedException(source, this));
-                });
+                    ClearSources(newIndex);
+                    SetCurrent(newIndex, source);
+                    history.NavigateToRoot(navigationContext.Parameter);
+                },
+                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.Root));
             }
         }
 
@@ -620,16 +606,13 @@ namespace MvvmLib.Navigation
 
             this.OnNavigating(this.history.Current, navigationType);
 
-            NavigationHelper.Replace(this.current, source, parameter, () => SetCurrent(index, source), (success) =>
+            var navigationContext = new NavigationContext(sourceType, parameter);
+            NavigationHelper.Replace(current, source, navigationContext, () =>
             {
-                if (success)
-                {
-                    history.MoveTo(entry);
-                    this.OnNavigated(sourceType, parameter, navigationType);
-                }
-                else
-                    this.OnNavigationFailed(new NavigationFailedException(source, this));
-            });
+                SetCurrent(index, source);
+                history.MoveTo(entry, navigationContext.Parameter);
+            },
+            success => OnNavigationCompleted(success, sourceType, parameter, navigationType));
         }
 
         /// <summary>
@@ -655,7 +638,7 @@ namespace MvvmLib.Navigation
         {
             this.history.Clear();
             this.SetCurrent(-1, null);
-            this.ClearSourcesInternal();
+            this.ClearSourcesFast();
         }
 
         /// <summary>

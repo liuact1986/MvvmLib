@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace MvvmLib.Navigation
 {
@@ -11,8 +10,8 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Checks if can activate the view or view model.
         /// </summary>
-        /// <param name="parameter">The parameter</param>
+        /// <param name="navigationContext">The navigation context</param>
         /// <param name="continuationCallback">The continuation callback</param>
-        void CanActivate(object parameter, Action<bool> continuationCallback);
+        void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback);
     }
 }

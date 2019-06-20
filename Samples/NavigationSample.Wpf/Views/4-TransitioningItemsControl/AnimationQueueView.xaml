@@ -26,14 +26,14 @@
         </StackPanel>
 
         <ScrollViewer Grid.Row="1">
-            <ItemsControl x:Name="I" ItemsSource="{Binding MyItems}" Margin="5"/>
+            <ItemsControl x:Name="I" ItemsSource="{Binding MyItemsSource.Items}" Margin="5"/>
         </ScrollViewer>
 
         <ScrollViewer Grid.Row="2">
             <mvvmLib:TransitioningItemsControl x:Name="I2"
-                                           ItemsSource="{Binding MyItems}" 
-                                           TransitionClearHandling="Transition"
-                                           IsCancelled="{Binding IsCancelled}">
+                                               ItemsSource="{Binding MyItemsSource.Items}" 
+                                               TransitionClearHandling="Transition"
+                                               IsCancelled="{Binding IsCancelled}">
                 <mvvmLib:TransitioningItemsControl.EntranceAnimation>
                     <mvvmLib:ParallelAnimation>
 

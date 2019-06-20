@@ -2,6 +2,7 @@
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
     /// Allows to select a view model.
     /// </summary>

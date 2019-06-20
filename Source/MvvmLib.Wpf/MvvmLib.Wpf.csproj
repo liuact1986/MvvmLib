@@ -97,6 +97,8 @@
     <Compile Include="Navigation\ISharedSource.cs" />
     <Compile Include="Navigation\KeyedNavigationSource.cs" />
     <Compile Include="Navigation\NavigationBrowser.cs" />
+    <Compile Include="Navigation\NavigationCollection.cs" />
+    <Compile Include="Navigation\NavigationContext.cs" />
     <Compile Include="Navigation\NavigationEventBaseArgs.cs" />
     <Compile Include="Navigation\NavigationFailedEventArgs.cs" />
     <Compile Include="Navigation\NavigationFailedException.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Navigation\NavigationSourceContainer.cs" />
     <Compile Include="Navigation\NavigationType.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
-    <Compile Include="Navigation\SharedSourceItemCollection.cs" />
     <Compile Include="Navigation\SourceResolver.cs" />
     <Compile Include="Navigation\ViewModelLocationProvider.cs" />
     <Compile Include="Navigation\ViewModelLocator.cs" />

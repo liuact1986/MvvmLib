@@ -311,7 +311,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void ReplaceItem_With_NavigationHelper()
+        public void ReplaceItem()
         {
             var sharedSource = new SharedSource<MySharedItem>();
             Assert.AreEqual(0, sharedSource.Items.Count);
@@ -330,18 +330,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             // replace item2 by item4
             var item4 = sharedSource.CreateNew();
-            bool isSetCurrentInvoked = false;
-            var setCurrent = new Action(() =>
-            {
-                sharedSource.Items[1] = item4;
-                isSetCurrentInvoked = true;
-            });
 
             item2.Reset();
             item4.Reset();
             item2.CDeactivate = false;
-            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
-            Assert.AreEqual(false, isSetCurrentInvoked);
+            sharedSource.Items.Replace(1, item4, "D");
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item4.IsCanActivateInvoked);
@@ -355,8 +348,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             item2.Reset();
             item4.Reset();
             item4.CActivate = false;
-            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
-            Assert.AreEqual(false, isSetCurrentInvoked);
+            sharedSource.Items.Replace(1, item4, "D");
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item4.IsCanActivateInvoked);
@@ -370,8 +362,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             // with parameter
             item2.Reset();
             item4.Reset();
-            NavigationHelper.Replace(item2, item4, "D", setCurrent, (t) => { });
-            Assert.AreEqual(true, isSetCurrentInvoked);
+            sharedSource.Items.Replace(1, item4, "D");
             // A C B
             Assert.AreEqual(item1, sharedSource.Items[0]);
             Assert.AreEqual(item4, sharedSource.Items[1]);
@@ -753,6 +744,24 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
 
+
+        [TestMethod]
+        public void Updates_Parameter()
+        {
+            var sharedSource = new SharedSource<MyViewModelThatChangeParameter>();
+            Assert.AreEqual(0, sharedSource.Items.Count);
+            Assert.AreEqual(-1, sharedSource.SelectedIndex);
+
+            var item1 = sharedSource.AddNew("p");
+
+            Assert.AreEqual("p-canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel-", MyViewModelThatChangeParameter.Parameter);
+
+            MyViewModelThatChangeParameter.Parameter = null;
+
+            sharedSource.Items.RemoveAt(0);
+
+            Assert.AreEqual("p-canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel--candeactivateviewmodel--onavigatingfromviewmodel-", MyViewModelThatChangeParameter.Parameter);
+        }
     }
 
     public class MySharedItem : INavigationAware, ICanActivate, ICanDeactivate
@@ -794,34 +803,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 

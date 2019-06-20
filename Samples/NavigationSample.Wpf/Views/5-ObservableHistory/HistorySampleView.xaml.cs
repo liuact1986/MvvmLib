@@ -12,7 +12,7 @@ namespace NavigationSample.Wpf.Views
             InitializeComponent();
         }
 
-        private async void OnMenuItemClick(object sender, RoutedEventArgs e)
+        private void OnMenuItemClick(object sender, RoutedEventArgs e)
         {
             var frameworkElement = sender as FrameworkElement;
             var item = frameworkElement.DataContext as SourceMenuItem;

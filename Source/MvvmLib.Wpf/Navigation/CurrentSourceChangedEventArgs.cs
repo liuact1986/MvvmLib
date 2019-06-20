@@ -7,6 +7,15 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class CurrentSourceChangedEventArgs : EventArgs
     {
+        private int currentIndex;
+        /// <summary>
+        /// Gets the current index;
+        /// </summary>
+        public int CurrentIndex
+        {
+            get { return currentIndex; }
+        }
+
         private readonly object current;
         /// <summary>
         /// Gets the current source.
@@ -19,9 +28,11 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Creates the <see cref="CurrentSourceChangedEventArgs"/>.
         /// </summary>
+        /// <param name="currentIndex">The current index</param>
         /// <param name="current">The current source</param>
-        public CurrentSourceChangedEventArgs(object current)
+        public CurrentSourceChangedEventArgs(int currentIndex, object current)
         {
+            this.currentIndex = currentIndex;
             this.current = current;
         }
     }

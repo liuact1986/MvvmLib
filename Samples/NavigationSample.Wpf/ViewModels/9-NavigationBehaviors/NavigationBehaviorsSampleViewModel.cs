@@ -12,6 +12,7 @@ namespace NavigationSample.Wpf.ViewModels
 {
     public class NavigationBehaviorsSampleViewModel : BindableBase, INavigationAware
     {
+        private readonly IEventAggregator eventAggregator;
         private readonly IFakePeopleService fakePeopleService;
 
         private string message;
@@ -38,14 +39,18 @@ namespace NavigationSample.Wpf.ViewModels
 
         public NavigationBehaviorsSampleViewModel(IEventAggregator eventAggregator, IFakePeopleService fakePeopleService)
         {
+            this.eventAggregator = eventAggregator;
             this.fakePeopleService = fakePeopleService;
-
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Navigation Behaviors");
 
             Navigation = NavigationManager.GetDefaultNavigationSource("Main");
 
             SayHelloCommand = new RelayCommand<string>(SayHello);
             SelectPersonCommand = new RelayCommand<Person>(ShowPersonDetails);
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Navigation Behaviors");
         }
 
         private void SayHello(string value)
@@ -65,19 +70,21 @@ namespace NavigationSample.Wpf.ViewModels
             Message2 = $"Selected Person: {person.ToString()}";
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
+            SetTitle();
             Load();
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
           
         }
+
     }
 }

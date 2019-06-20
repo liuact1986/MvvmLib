@@ -1,6 +1,7 @@
 ﻿using MvvmLib.Commands;
 using MvvmLib.Message;
 using MvvmLib.Mvvm;
+using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,8 +9,10 @@ using System.Windows.Input;
 namespace NavigationSample.Wpf.ViewModels
 {
 
-    public class AnimationQueueViewModel : BindableBase
+    public class AnimationQueueViewModel : BindableBase, INavigationAware
     {
+        private IEventAggregator eventAggregator;
+
         private bool isCancelled;
         public bool IsCancelled
         {
@@ -17,7 +20,7 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref isCancelled, value); }
         }
 
-        public ObservableCollection<ItemDetailsViewModel> MyItems { get; set; }
+        public SharedSource<ItemDetailsViewModel> MyItemsSource { get; set; }
 
         public ICommand AddCommand { get; set; }
         public ICommand InsertCommand { get; set; }
@@ -26,16 +29,16 @@ namespace NavigationSample.Wpf.ViewModels
 
         public AnimationQueueViewModel(IEventAggregator eventAggregator)
         {
-            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
+            this.eventAggregator = eventAggregator;
 
-            this.MyItems = new ObservableCollection<ItemDetailsViewModel>();
+            this.MyItemsSource = new SharedSource<ItemDetailsViewModel>();
 
             this.AddCommand = new RelayCommand(Add);
             this.InsertCommand = new RelayCommand(Insert);
             this.ClearCommand = new RelayCommand(Clear);
             this.CancelCommand = new RelayCommand(Cancel);
 
-            Singleton<EventAggregator>.Instance.GetEvent<ItemDeletedEvent>().Subscribe(OnDeleteItemEventFired);
+            eventAggregator.GetEvent<ItemDeletedEvent>().Subscribe(OnDeleteItemEventFired);
         }
 
         private void Cancel()
@@ -47,8 +50,7 @@ namespace NavigationSample.Wpf.ViewModels
         private void InsertInternal(int index)
         {
             var item = new Item { Name = $"Item Inserted at index {index}" };
-            var itemDetailsViewModel = new ItemDetailsViewModel(item);
-            MyItems.Insert(index, itemDetailsViewModel);
+            MyItemsSource.InsertNew(index, item);
         }
 
         private void Insert()
@@ -60,14 +62,13 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void OnDeleteItemEventFired(ItemDetailsViewModel itemDetailsViewModel)
         {
-            MyItems.Remove(itemDetailsViewModel);
+            MyItemsSource.Items.Remove(itemDetailsViewModel);
         }
 
         private void AddInternal()
         {
-            var item = new Item { Name = $"Item {MyItems.Count + 1}" };
-            var itemDetailsViewModel = new ItemDetailsViewModel(item);
-            MyItems.Add(itemDetailsViewModel);
+            var item = new Item { Name = $"Item {MyItemsSource.Items.Count + 1}" };
+            MyItemsSource.AddNew(item);
         }
 
         public void Add()
@@ -80,13 +81,35 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void Clear()
         {
-            MyItems.Clear();
+            MyItemsSource.Items.Clear();
+        }
+
+        private void SetTitle()
+        {
+            eventAggregator.GetEvent<TitleChangedEvent>().Publish("Animation with TransitioningItemsControl + ControlledAnimation ");
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            SetTitle();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+
         }
     }
 
 
-    public class ItemDetailsViewModel : BindableBase
+    public class ItemDetailsViewModel : BindableBase, INavigationAware
     {
+        private readonly IEventAggregator eventAggregator;
+
         private Item item;
         public Item Item
         {
@@ -96,19 +119,34 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ICommand DeleteItemCommand { get; set; }
 
-        public ItemDetailsViewModel(Item item)
+        public ItemDetailsViewModel(IEventAggregator eventAggregator)
         {
-            this.Item = item;
             this.DeleteItemCommand = new RelayCommand(Delete);
+            this.eventAggregator = eventAggregator;
         }
 
         private async void Delete()
         {
             //await Task.Delay(4000);
 
-            Singleton<EventAggregator>.Instance.GetEvent<ItemDeletedEvent>().Publish(this);
+            eventAggregator.GetEvent<ItemDeletedEvent>().Publish(this);
 
             //await Task.Delay(4000);
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+           
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            this.Item = navigationContext.Parameter as Item;
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+           
         }
     }
 

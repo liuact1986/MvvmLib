@@ -19,13 +19,13 @@ namespace NavigationSample.Wpf.ViewModels
             Message = "Default ViewG Message";
         }
 
-        public void CanActivate(object parameter, Action<bool> continuationCallback)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
             var canActivate = MessageBox.Show("ACTIVATE ViewG [ViewModel]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
             continuationCallback(canActivate);
         }
 
-        public void CanDeactivate(Action<bool> continuationCallback)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
             var canDeactivate = MessageBox.Show("DEACTIVATE ViewG [ViewModel]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
             continuationCallback(canDeactivate);

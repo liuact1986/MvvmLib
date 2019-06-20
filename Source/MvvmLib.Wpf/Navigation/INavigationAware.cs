@@ -8,18 +8,19 @@
         /// <summary>
         /// Invoked before leaving the view.
         /// </summary>
-        void OnNavigatingFrom();
+        /// <param name="navigationContext">The navigation context</param>
+        void OnNavigatingFrom(NavigationContext navigationContext);
 
         /// <summary>
         /// Allows to preload data before the content of the region has changed. 
         /// </summary>
-        /// <param name="parameter">The parameter</param>
-        void OnNavigatingTo(object parameter);
+        /// <param name="navigationContext">The navigation context</param>
+        void OnNavigatingTo(NavigationContext navigationContext);
 
         /// <summary>
         /// Invoked after the content of the region has changed.
         /// </summary>
-        /// <param name="parameter">The parameter</param>
-        void OnNavigatedTo(object parameter);
+        /// <param name="navigationContext">The navigation context</param>
+        void OnNavigatedTo(NavigationContext navigationContext);
     }
 }

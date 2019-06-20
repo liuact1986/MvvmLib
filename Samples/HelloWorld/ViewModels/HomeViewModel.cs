@@ -12,18 +12,18 @@ namespace HelloWorld.ViewModels
             set { SetProperty(ref message, value); }
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            if (parameter != null)
-                Message = parameter.ToString();
+            if (navigationContext.Parameter != null)
+                Message = navigationContext.Parameter.ToString();
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }

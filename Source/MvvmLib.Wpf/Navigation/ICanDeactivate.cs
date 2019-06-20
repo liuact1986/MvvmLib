@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace MvvmLib.Navigation
 {
@@ -8,11 +7,11 @@ namespace MvvmLib.Navigation
     /// </summary>
     public interface ICanDeactivate
     {
-
         /// <summary>
         /// Checks if can deactivate the view or view model.
         /// </summary>
+        /// <param name="navigationContext">The navigation context</param>
         /// <param name="continuationCallback">The continuation callback</param>
-        void CanDeactivate(Action<bool> continuationCallback);
+        void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback);
     }
 }

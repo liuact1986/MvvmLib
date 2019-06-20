@@ -200,8 +200,6 @@ namespace MvvmLib.Navigation
                         this.itemsSourceForTheView.Insert(index, NavigationHelper.EnsureNewView(item));
                         index++;
                     }
-                    if (oldCount == 0)
-                        MoveCurrentToFirst();
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     index = e.OldStartingIndex;

@@ -39,19 +39,19 @@ namespace NavigationSample.Wpf.ViewModels
             SaveMessage = $"Save:{person.Id} {person.FirstName} {person.LastName} {person.EmailAddress} {value} {DateTime.Now.ToLongTimeString()}";
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            int id = (int)parameter;
+            int id = (int)navigationContext.Parameter;
             var person = fakePeopleService.GetPersonById(id);
             Person = person;
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }

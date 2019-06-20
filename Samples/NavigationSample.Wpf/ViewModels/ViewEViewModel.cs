@@ -4,7 +4,6 @@ using MvvmLib.Navigation;
 using NavigationSample.Wpf.Views;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -27,7 +26,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ViewEViewModel()
         {
-           this.Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
+            this.Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
         }
 
 
@@ -36,22 +35,22 @@ namespace NavigationSample.Wpf.ViewModels
             return User.IsLoggedIn;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            Message = parameter != null ? parameter.ToString() : "Welcome Message";
+            Message = navigationContext.Parameter != null ? navigationContext.Parameter.ToString() : "Welcome Message";
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }
 
-        public void CanActivate(object parameter, Action<bool> continuationCallback)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
             if (!IsLoggedIn())
             {
@@ -59,9 +58,9 @@ namespace NavigationSample.Wpf.ViewModels
                 var navigationParameters = new Dictionary<string, object>
                 {
                     { "redirectTo",typeof(ViewE) },
-                    { "parameter", parameter }
+                    { "parameter", navigationContext.Parameter }
                 };
-                Navigation.EndWith(typeof(LoginView), navigationParameters);
+                Navigation.NavigateFast(typeof(LoginView), navigationParameters);
             }
             else
             {
@@ -91,19 +90,20 @@ namespace NavigationSample.Wpf.ViewModels
             Navigation.Redirect(redirectTo, parameter);
         }
 
-        public void OnNavigatingFrom()
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            var navigationParameters = parameter as Dictionary<string, object>;
+            var navigationParameters = navigationContext.Parameter as Dictionary<string, object>;
             this.redirectTo = (Type)navigationParameters["redirectTo"];
             this.parameter = navigationParameters["parameter"];
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }

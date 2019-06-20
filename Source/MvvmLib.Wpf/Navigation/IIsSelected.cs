@@ -1,7 +1,6 @@
 ﻿namespace MvvmLib.Navigation
 {
 
-
     /// <summary>
     /// Allows to be notified when the source is selected (selection changed event) for Selector (ListBox, TabControl, etc.).
     /// </summary>

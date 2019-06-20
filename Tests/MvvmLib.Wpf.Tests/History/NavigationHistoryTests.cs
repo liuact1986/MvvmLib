@@ -10,6 +10,7 @@ namespace MvvmLib.Wpf.Tests.History
     [TestClass]
     public class NavigationHistoryTests
     {
+
         [TestMethod]
         public void Navigate_Scenario_1()
         {
@@ -96,7 +97,7 @@ namespace MvvmLib.Wpf.Tests.History
 
             // move back
 
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(1, history.CurrentIndex);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
@@ -107,7 +108,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(eC, history.Next);
             Assert.AreEqual(eA, history.Root);
 
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(0, history.CurrentIndex);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
@@ -134,6 +135,126 @@ namespace MvvmLib.Wpf.Tests.History
         }
 
         [TestMethod]
+        public void Change_Parameter_On_GoBack_GoForward_Move_And_NavigateToRoot()
+        {
+            var history = new NavigationHistory();
+
+            Assert.AreEqual(0, history.Entries.Count);
+            Assert.AreEqual(-1, history.CurrentIndex);
+            Assert.AreEqual(null, history.Current);
+            Assert.AreEqual(null, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(null, history.Root);
+
+            var viewA = new ViewA();
+            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            history.Navigate(eA);
+            var viewB = new ViewB();
+            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            history.Navigate(eB);
+            var viewC = new ViewC();
+            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            history.Navigate(eC);
+
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Current); //
+            Assert.AreEqual(eB, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(eA, history.Root);
+            Assert.AreEqual("A", eA.Parameter);
+            Assert.AreEqual("B", eB.Parameter);
+            Assert.AreEqual("A", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual("B", history.Entries.ElementAt(1).Parameter);
+
+            // back
+            history.GoBack("B!");
+            Assert.AreEqual("A", eA.Parameter);
+            Assert.AreEqual("B!", eB.Parameter);
+            Assert.AreEqual("C", eC.Parameter);
+            Assert.AreEqual("A", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual("B!", history.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual("C", history.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(1, history.CurrentIndex);
+            Assert.AreEqual(eB, history.Current);
+            Assert.AreEqual(eA, history.Previous);
+            Assert.AreEqual(eC, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+            // forward
+            history.GoForward("C!");
+            Assert.AreEqual("A", eA.Parameter);
+            Assert.AreEqual("B!", eB.Parameter);
+            Assert.AreEqual("A", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual("B!", history.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual("C!", history.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eC, history.Current);
+            Assert.AreEqual(eB, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+            // move 
+            history.MoveTo(eA, "A!!");
+            Assert.AreEqual("A!!", eA.Parameter);
+            Assert.AreEqual("B!", eB.Parameter);
+            Assert.AreEqual("C!", eC.Parameter);
+            Assert.AreEqual("A!!", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual("B!", history.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual("C!", history.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Current);
+            Assert.AreEqual(null, history.Previous);
+            Assert.AreEqual(eB, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+            // move index
+            history.MoveTo(2, "C!!");
+            Assert.AreEqual("A!!", eA.Parameter);
+            Assert.AreEqual("B!", eB.Parameter);
+            Assert.AreEqual("C!!", eC.Parameter);
+            Assert.AreEqual("A!!", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual("B!", history.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual("C!!", history.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(eB, history.Entries.ElementAt(1));
+            Assert.AreEqual(eC, history.Entries.ElementAt(2));
+            Assert.AreEqual(3, history.Entries.Count);
+            Assert.AreEqual(2, history.CurrentIndex);
+            Assert.AreEqual(eC, history.Current);
+            Assert.AreEqual(eB, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(eA, history.Root);
+
+
+            // root
+            history.NavigateToRoot("A!!!");
+            Assert.AreEqual("A!!!", eA.Parameter);
+            Assert.AreEqual("A!!!", history.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(eA, history.Entries.ElementAt(0));
+            Assert.AreEqual(1, history.Entries.Count);
+            Assert.AreEqual(0, history.CurrentIndex);
+            Assert.AreEqual(eA, history.Current);
+            Assert.AreEqual(null, history.Previous);
+            Assert.AreEqual(null, history.Next);
+            Assert.AreEqual(eA, history.Root);
+        }
+
+        [TestMethod]
         public void GoForward()
         {
             var history = new NavigationHistory();
@@ -155,8 +276,8 @@ namespace MvvmLib.Wpf.Tests.History
             var viewC = new ViewC();
             var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
             history.Navigate(eC);
-            history.GoBack();
-            history.GoBack();
+            history.GoBack(null);
+            history.GoBack(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(0, history.CurrentIndex);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
@@ -169,7 +290,7 @@ namespace MvvmLib.Wpf.Tests.History
 
             // A <= B C
             // ...A => B  C
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(1, history.CurrentIndex);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
@@ -181,7 +302,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(eA, history.Root);
 
             // ...A  B => C
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(3, history.Entries.Count);
             Assert.AreEqual(2, history.CurrentIndex);
             Assert.AreEqual(eA, history.Entries.ElementAt(0));
@@ -226,7 +347,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
 
-            history.NavigateToRoot();
+            history.NavigateToRoot(null);
             Assert.AreEqual(1, history.Entries.Count);
             Assert.AreEqual(0, history.CurrentIndex);
             Assert.AreEqual(eA, history.Current); // 
@@ -279,7 +400,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(null, history.Next);
             Assert.AreEqual(eA, history.Root);
 
-            history.MoveTo(eB);
+            history.MoveTo(eB, null);
             // [A] B [C D E]
             Assert.AreEqual(5, history.Entries.Count);
             Assert.AreEqual(1, history.CurrentIndex);
@@ -293,7 +414,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(eC, history.Next);
             Assert.AreEqual(eA, history.Root);
 
-            history.MoveTo(eD);
+            history.MoveTo(eD, null);
             // [A] B [C D E]
 
             Assert.AreEqual(5, history.Entries.Count);
@@ -352,14 +473,14 @@ namespace MvvmLib.Wpf.Tests.History
             history.Navigate(eC);
             Assert.AreEqual(1, count);
 
-            history.GoBack(); // B (Entries count 1)
+            history.GoBack(null); // B (Entries count 1)
             Assert.AreEqual(1, count);
 
-            history.GoBack(); // A (Entries count 0) cannot go back
+            history.GoBack(null); // A (Entries count 0) cannot go back
             Assert.AreEqual(2, count);
             Assert.AreEqual(false, ev.CanGoBack);
 
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(3, count); // can go back
             Assert.AreEqual(true, ev.CanGoBack);
 
@@ -404,20 +525,20 @@ namespace MvvmLib.Wpf.Tests.History
 
             // [A...B]..C <=
             // [A]..B..[C]
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(1, count);
             Assert.AreEqual(true, ev.CanGoForward);
 
             // A..[B..C]
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(1, count);
 
             // [A]..B..[C]
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(1, count);
 
             // [A...B]..C
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(2, count);
             Assert.AreEqual(false, ev.CanGoForward);
 
@@ -467,17 +588,17 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(2, countPropertyChanged);
             Assert.AreEqual(eB, ev.CurrentEntry);
 
-            history.GoBack();
+            history.GoBack(null);
             Assert.AreEqual(3, count);
             Assert.AreEqual(3, countPropertyChanged);
             Assert.AreEqual(eA, ev.CurrentEntry);
 
-            history.GoForward();
+            history.GoForward(null);
             Assert.AreEqual(4, count);
             Assert.AreEqual(4, countPropertyChanged);
             Assert.AreEqual(eB, ev.CurrentEntry);
 
-            history.NavigateToRoot();
+            history.NavigateToRoot(null);
             Assert.AreEqual(5, count);
             Assert.AreEqual(5, countPropertyChanged);
             Assert.AreEqual(eA, ev.CurrentEntry);
@@ -562,7 +683,7 @@ namespace MvvmLib.Wpf.Tests.History
             bool success = true;
             try
             {
-                history.NavigateToRoot();
+                history.NavigateToRoot(null);
             }
             catch (Exception ex)
             {
@@ -579,7 +700,7 @@ namespace MvvmLib.Wpf.Tests.History
             bool success = true;
             try
             {
-                history.GoBack();
+                history.GoBack(null);
             }
             catch (Exception ex)
             {
@@ -596,7 +717,7 @@ namespace MvvmLib.Wpf.Tests.History
             bool success = true;
             try
             {
-                history.GoForward();
+                history.GoForward(null);
             }
             catch (Exception ex)
             {

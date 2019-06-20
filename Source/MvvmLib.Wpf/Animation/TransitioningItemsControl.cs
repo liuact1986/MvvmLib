@@ -262,8 +262,8 @@ namespace MvvmLib.Animation
                 index++;
             }
 
-            if (source is INotifyCollectionChanged notifyCollectionChanged)
-                notifyCollectionChanged.CollectionChanged += OnSourceCollectionChanged;
+            if (source is INotifyCollectionChanged)
+                ((INotifyCollectionChanged)source).CollectionChanged += OnSourceCollectionChanged;
             else
                 throw new ArgumentException("A collection that implements INotifyCollectionChanged is required for ItemsSource");
         }
@@ -320,14 +320,6 @@ namespace MvvmLib.Animation
             innerItemsControl.Items.RemoveAt(index);
         }
 
-        /// <summary>
-        /// Allows to clear items without animations.
-        /// </summary>
-        public void ClearWithNoAnimation()
-        {
-            innerItemsControl.Items.Clear();
-        }
-
         private void InsertAndAnimate(int index, object item)
         {
             // insert
@@ -366,8 +358,9 @@ namespace MvvmLib.Animation
             {
                 var innerItemsControlItem = innerItemsControl.Items[index];
                 var oldContent = XamlHelper.FindChild<ContentPresenter>(innerItemsControl, index);
-                if (oldContent is FrameworkElement oldElement)
+                if (oldContent is FrameworkElement)
                 {
+                    var oldElement = oldContent as FrameworkElement;
                     ExitAnimation.BeginAnimation(oldElement, () =>
                     {
                         // remove
@@ -390,19 +383,71 @@ namespace MvvmLib.Animation
         }
 
         /// <summary>
+        /// Allows to clear items without animations.
+        /// </summary>
+        public void ClearWithNoAnimation()
+        {
+            innerItemsControl.Items.Clear();
+        }
+
+        private void RemoveRecursive(int index)
+        {
+            if(index >= 0)
+            {
+                if (canAnimate && ExitAnimation != null)
+                {
+                    var innerItemsControlItem = innerItemsControl.Items[index];
+                    var oldContent = XamlHelper.FindChild<ContentPresenter>(innerItemsControl, index);
+                    if (oldContent is FrameworkElement)
+                    {
+                        var oldElement = oldContent as FrameworkElement;
+                        ExitAnimation.BeginAnimation(oldElement, () =>
+                        {
+                            // remove
+                            RemoveItem(index);
+                            RemoveRecursive(index - 1);
+                        });
+                    }
+                    else
+                    {
+                        RemoveItem(index);
+                        RemoveRecursive(index - 1);
+                    }
+                }
+                else
+                {
+                    RemoveItem(index);
+                    RemoveRecursive(index - 1);
+                }
+            }
+            else
+                DequeueActionInternal();
+        }
+
+        private void ClearAndAnimateOrNot()
+        {
+            if (canAnimate && TransitionClearHandling == TransitionClearHandling.Transition)
+            {
+                // 3 ... 2 ... 1 ... 0 
+                int count = innerItemsControl.Items.Count;
+                RemoveRecursive(count - 1);
+            }
+            else
+                this.ClearWithNoAnimation();
+        }
+
+        /// <summary>
         /// Clears all items.
         /// </summary>
         public void ClearItemsOrEnqueue()
         {
-            if (canAnimate && TransitionClearHandling == TransitionClearHandling.Transition)
-            {
-                int count = innerItemsControl.Items.Count;
-                // 3 ... 2 ... 1 ... 0 
-                for (int index = count - 1; index >= 0; index--)
-                    RemoveItemOrEnqueue(index);
-            }
+            if (IsAnimating)
+                actions.Enqueue(new TransitionQueueItem(TransitionQueueItemActionType.Clear));
             else
-                this.ClearWithNoAnimation();
+            {
+                IsAnimating = true;
+                ClearAndAnimateOrNot();
+            }
         }
 
         /// <summary>
@@ -413,9 +458,7 @@ namespace MvvmLib.Animation
         public void SetItemOrEnqueue(int index, object item)
         {
             if (IsAnimating)
-            {
                 actions.Enqueue(new TransitionQueueItem(TransitionQueueItemActionType.Update, index, item));
-            }
             else
                 SetItem(index, item);
         }
@@ -468,10 +511,7 @@ namespace MvvmLib.Animation
                         this.SetItem(queueItem.Index, queueItem.Item);
                         break;
                     case TransitionQueueItemActionType.Clear:
-                        if (TransitionClearHandling == TransitionClearHandling.Transition)
-                            this.ClearItemsOrEnqueue();
-                        else
-                            this.ClearWithNoAnimation();
+                        this.ClearAndAnimateOrNot();
                         break;
                 }
             }

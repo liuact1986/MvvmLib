@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using MvvmLib.Adaptive;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
@@ -20,7 +19,7 @@ namespace AdaptiveSample.ViewModels
             this.Active = e.Active;
         }
 
-        public  async void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             var binder = new BreakpointBinder();
 
@@ -37,12 +36,12 @@ namespace AdaptiveSample.ViewModels
             binder.ActiveChanged += OnActiveChanged;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
            
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             
         }

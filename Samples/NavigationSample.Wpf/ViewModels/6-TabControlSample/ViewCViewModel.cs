@@ -23,18 +23,18 @@ namespace NavigationSample.Wpf.ViewModels
             }
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
 
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            if (parameter != null)
-                Message = (string)parameter;
+            if (navigationContext.Parameter != null)
+                Message = (string)navigationContext.Parameter;
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
 
         }

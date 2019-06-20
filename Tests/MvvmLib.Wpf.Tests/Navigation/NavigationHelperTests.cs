@@ -4,7 +4,6 @@ using MvvmLib.Wpf.Tests.ViewModels;
 using MvvmLib.Wpf.Tests.Views;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -24,7 +23,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             view.CActivate = false;
-            NavigationHelper.CanActivate(view, "p", t => { success = t; }); // false
+            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p"), t => { success = t; }); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p", view.P);
             Assert.AreEqual(false, viewModel.IsCanActivateInvoked);
@@ -35,7 +34,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             viewModel.Reset();
             success = null;
             viewModel.CActivate = false;
-            NavigationHelper.CanActivate(view, "p2", t => { success = t; }); // false
+            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p2"), t => { success = t; }); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p2", view.P);
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
@@ -45,7 +44,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             success = null;
-            NavigationHelper.CanActivate(view, "p3", t => { success = t; }); // true
+            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p3"), t => { success = t; }); // true
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p3", view.P);
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
@@ -61,13 +60,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
             viewModel.CActivate = false;
-            NavigationHelper.CanActivate(viewModel, "p", t => { success = t; }); // false
+            NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p"), t => { success = t; }); // false
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
             Assert.AreEqual("p", viewModel.P);
             Assert.AreEqual(false, success);
 
             viewModel.Reset();
-            NavigationHelper.CanActivate(viewModel, "p2", t => { success = t; }); // true
+            NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p2"), t => { success = t; }); // true
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
             Assert.AreEqual("p2", viewModel.P);
             Assert.AreEqual(true, success);
@@ -81,13 +80,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             view.Reset();
             view.CActivate = false;
-            NavigationHelper.CanActivate(view, "p", t => { success = t; }); // false
+            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p"), t => { success = t; }); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p", view.P);
             Assert.AreEqual(false, success);
 
             view.Reset();
-            NavigationHelper.CanActivate(view, "p2", t => { success = t; }); // true
+            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p2"), t => { success = t; }); // true
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p2", view.P);
             Assert.AreEqual(true, success);
@@ -102,7 +101,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             view.Reset();
             view.CDeactivate = false;
-            NavigationHelper.CanDeactivate(view, t => { success = t; }); // false
+            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p"), t => { success = t; }); // false
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(false, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(false, success);
@@ -111,7 +110,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             viewModel.Reset();
             success = null;
             viewModel.CDeactivate = false;
-            NavigationHelper.CanDeactivate(view, t => { success = t; }); // false
+            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p2"), t => { success = t; }); // false
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(true, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(false, success);
@@ -119,7 +118,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             success = null;
-            NavigationHelper.CanDeactivate(view, t => { success = t; }); ; // true
+            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p3"), t => { success = t; }); ; // true
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(true, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(true, success);
@@ -146,7 +145,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
 
-            NavigationHelper.OnNavigatingFrom(viewModel);
+            NavigationHelper.OnNavigatingFrom(viewModel, new NavigationContext(typeof(MyViewModelNavigationAware), null));
             Assert.AreEqual(true, viewModel.IsOnNavigatingFromInvoked);
         }
 
@@ -158,7 +157,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
 
-            NavigationHelper.OnNavigatingFrom(view);
+            NavigationHelper.OnNavigatingFrom(view, new NavigationContext(typeof(MyViewWithViewModelNavigationAware), null));
             Assert.AreEqual(true, viewModel.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, view.IsOnNavigatingFromInvoked);
         }
@@ -170,7 +169,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
 
-            NavigationHelper.OnNavigatingTo(viewModel, "p");
+            NavigationHelper.OnNavigatingTo(viewModel, new NavigationContext(typeof(MyViewModelNavigationAware), "p"));
             Assert.AreEqual(true, viewModel.IsOnNavigatingToInvoked);
             Assert.AreEqual("p", viewModel.POnNavigatingTo);
         }
@@ -182,7 +181,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
 
-            NavigationHelper.OnNavigatedTo(viewModel, "p");
+            NavigationHelper.OnNavigatedTo(viewModel, new NavigationContext(typeof(MyViewModelNavigationAware), "p"));
             Assert.AreEqual(true, viewModel.IsOnNavigatedToInvoked);
             Assert.AreEqual("p", viewModel.POnNavigatedTo);
         }
@@ -220,13 +219,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
            };
             bool isSetCurrentInvoked = false;
             object setCurrentObject = null;
-            var setCurrent = new Action<object>((source) =>
+            var setCurrent = new Action<object, bool>((source, isSelectable) =>
             {
                 isSetCurrentInvoked = true;
                 setCurrentObject = source;
             });
 
-            NavigationHelper.CheckGuardsAndNavigate(current, sources, typeof(MySelectableViewModel), 2, setCurrent, (t) => { });
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MySelectableViewModel), 2), setCurrent, (t) => { });
 
             Assert.AreEqual(true, isSetCurrentInvoked);
             Assert.IsNotNull(setCurrentObject);
@@ -294,18 +293,20 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var current = new MyViewModelNavigationAware();
             bool isSetCurrentInvoked = false;
             object setCurrentObject = null;
-            var setCurrent = new Action<object>((source) =>
-            {
-                isSetCurrentInvoked = true;
-                setCurrentObject = source;
-            });
+            var setCurrent = new Action<object, bool>((source, i) =>
+             {
+                 isSetCurrentInvoked = true;
+                 setCurrentObject = source;
+             });
 
             bool? success = null;
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.CActivate = false;
 
-            NavigationHelper.CheckCanActivateAndNavigate(current, typeof(MyViewModelNavigationAwareAndGuardsStatic), "p", setCurrent, (t) => { success = t; });
+            var sources = new List<object>();
+
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuardsStatic), "p"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
             Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.PCanActivate);
             Assert.AreEqual(false, current.IsOnNavigatingFromInvoked);
@@ -313,7 +314,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(false, success);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
-            NavigationHelper.CheckCanActivateAndNavigate(current, typeof(MyViewModelNavigationAwareAndGuardsStatic), "p2", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuardsStatic), "p2"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
             Assert.AreEqual("p2", MyViewModelNavigationAwareAndGuardsStatic.PCanActivate);
             Assert.AreEqual(true, current.IsOnNavigatingFromInvoked);
@@ -329,40 +330,122 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
+        public void ProcessNavigateFast_With_ViewModel()
+        {
+            var current = new MyViewModelNavigationAware();
+            bool isSetCurrentInvoked = false;
+            object setCurrentObject = null;
+            bool isSelectable = false;
+            var setCurrent = new Action<object, bool>((source, i) =>
+            {
+                isSetCurrentInvoked = true;
+                setCurrentObject = source;
+                isSelectable = i;
+            });
+
+            MyViewModelNavigationAwareAndGuardsStatic.Reset();
+
+            var sources = new List<object>();
+
+            NavigationHelper.NavigateFast(current, sources, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuardsStatic), "p"), setCurrent);
+            Assert.AreEqual(false, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
+            Assert.AreEqual(null, MyViewModelNavigationAwareAndGuardsStatic.PCanActivate);
+            Assert.AreEqual(true, current.IsOnNavigatingFromInvoked);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatingToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatingTo);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatedToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatedTo);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatingToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatingTo);
+            Assert.AreEqual(true, isSetCurrentInvoked);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), setCurrentObject.GetType());
+            Assert.AreEqual(false, isSelectable);
+        }
+
+        [TestMethod]
+        public void ProcessNavigateFast_With_View()
+        {
+            var current = new MyViewModelNavigationAware();
+            bool isSetCurrentInvoked = false;
+            object setCurrentObject = null;
+            bool isSelectable = false;
+            var setCurrent = new Action<object, bool>((source, i) =>
+            {
+                isSetCurrentInvoked = true;
+                setCurrentObject = source;
+                isSelectable = i;
+            });
+
+            var sources = new List<object>();
+
+            MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
+            MyViewModelNavigationAwareAndGuardsStatic.Reset();
+
+            NavigationHelper.NavigateFast(current, sources, new NavigationContext(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p"), setCurrent);
+            Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsCanActivateInvoked);
+            Assert.AreEqual(null, MYVIEWWITHViewModelNavigationAwareAndGuards.PCanActivate);
+            Assert.AreEqual(false, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
+            Assert.AreEqual(null, MyViewModelNavigationAwareAndGuardsStatic.PCanActivate);
+            Assert.AreEqual(true, current.IsOnNavigatingFromInvoked);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatingToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatingTo);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatedToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatedTo);
+            Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsOnNavigatingToInvoked);
+            Assert.AreEqual("p", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatingTo);
+
+            // do not navigate with view, INavigationAware is for ViewModels
+
+            Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsOnNavigatingToInvoked);
+            Assert.AreEqual(null, MYVIEWWITHViewModelNavigationAwareAndGuards.POnNavigatingTo);
+            Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsOnNavigatedToInvoked);
+            Assert.AreEqual(null, MYVIEWWITHViewModelNavigationAwareAndGuards.POnNavigatedTo);
+            Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsOnNavigatingToInvoked);
+            Assert.AreEqual(null, MYVIEWWITHViewModelNavigationAwareAndGuards.POnNavigatingTo);
+
+            Assert.AreEqual(true, isSetCurrentInvoked);
+            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), setCurrentObject.GetType());
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), ((FrameworkElement)setCurrentObject).DataContext.GetType());
+            Assert.AreEqual(false, isSelectable);
+        }
+        [TestMethod]
         public void ProcessNavigate_With_Selectable()
         {
             var current = new MyViewModelNavigationAware();
             bool isSetCurrentInvoked = false;
             object setCurrentObject = null;
-            var setCurrent = new Action<object>((source) =>
+            bool isSelectable = false;
+            var setCurrent = new Action<object, bool>((source, i) =>
             {
                 isSetCurrentInvoked = true;
                 setCurrentObject = source;
+                isSelectable = i;
             });
             bool? success = null;
 
-            var selectable = new MySelectableViewModelWithGuards();
-            selectable.CActivate = false;
+            var selectable = new MySelectableViewModelWithGuardsStatic { Id = 2 };
+            MySelectableViewModelWithGuardsStatic.CActivate = false;
 
-            NavigationHelper.CheckCanActivateAndNavigateWithSelectable(current, selectable, "p", setCurrent, (t) => { success = t; });
-            Assert.AreEqual(true, selectable.IsCanActivateInvoked);
-            Assert.AreEqual("p", selectable.PCanActivate);
+            NavigationHelper.Navigate(current, new List<object> { selectable }, new NavigationContext(typeof(MySelectableViewModelWithGuardsStatic), 2), setCurrent, (t) => { success = t; });
+            Assert.AreEqual(true, MySelectableViewModelWithGuardsStatic.IsCanActivateInvoked);
+            Assert.AreEqual(2, MySelectableViewModelWithGuardsStatic.PCanActivate);
             Assert.AreEqual(false, current.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, isSetCurrentInvoked);
             Assert.AreEqual(false, success);
 
-            selectable.CActivate = true;
-            NavigationHelper.CheckCanActivateAndNavigateWithSelectable(current, selectable, "p2", setCurrent, (t) => { success = t; });
-            Assert.AreEqual(true, selectable.IsCanActivateInvoked);
-            Assert.AreEqual("p2", selectable.PCanActivate);
+            MySelectableViewModelWithGuardsStatic.CActivate = true;
+            NavigationHelper.Navigate(current, new List<object> { selectable }, new NavigationContext(typeof(MySelectableViewModelWithGuardsStatic), 2), setCurrent, (t) => { success = t; });
+            Assert.AreEqual(true, MySelectableViewModelWithGuardsStatic.IsCanActivateInvoked);
+            Assert.AreEqual(2, MySelectableViewModelWithGuardsStatic.PCanActivate);
             Assert.AreEqual(true, current.IsOnNavigatingFromInvoked);
-            Assert.AreEqual(false, selectable.IsOnNavigatingToInvoked);
-            Assert.AreEqual(null, selectable.POnNavigatingTo);
-            Assert.AreEqual(false, selectable.IsOnNavigatedToInvoked);
-            Assert.AreEqual(null, selectable.POnNavigatedTo);
+            Assert.AreEqual(false, MySelectableViewModelWithGuardsStatic.IsOnNavigatingToInvoked);
+            Assert.AreEqual(null, MySelectableViewModelWithGuardsStatic.POnNavigatingTo);
+            Assert.AreEqual(false, MySelectableViewModelWithGuardsStatic.IsOnNavigatedToInvoked);
+            Assert.AreEqual(null, MySelectableViewModelWithGuardsStatic.POnNavigatedTo);
             Assert.AreEqual(true, isSetCurrentInvoked);
             Assert.AreEqual(selectable, setCurrentObject);
             Assert.AreEqual(true, success);
+            Assert.AreEqual(true, isSelectable);
         }
 
         [TestMethod]
@@ -371,19 +454,23 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var current = new MyViewModelNavigationAware();
             bool isSetCurrentInvoked = false;
             object setCurrentObject = null;
-            var setCurrent = new Action<object>((source) =>
+            bool isSelectable = false;
+            var setCurrent = new Action<object, bool>((source, i) =>
             {
                 isSetCurrentInvoked = true;
                 setCurrentObject = source;
+                isSelectable = i;
             });
             bool? success = null;
+
             var view = new MyViewGuardedWithSelectableViewModelWithGuards();
             MySelectableViewModelWithGuardsStatic.Reset();
             view.CActivate = false;
 
-            NavigationHelper.CheckCanActivateAndNavigateWithSelectable(current, view, "p", setCurrent, (t) => { success = t; });
+            // default vm Id 1
+            NavigationHelper.Navigate(current, new List<object> { view }, new NavigationContext(typeof(MyViewGuardedWithSelectableViewModelWithGuards), 1), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, view.IsCanActivateInvoked);
-            Assert.AreEqual("p", view.PCanActivate);
+            Assert.AreEqual(1, view.PCanActivate);
             Assert.AreEqual(false, MySelectableViewModelWithGuardsStatic.IsCanActivateInvoked);
             Assert.AreEqual(null, MySelectableViewModelWithGuardsStatic.PCanActivate);
             Assert.AreEqual(false, current.IsOnNavigatingFromInvoked);
@@ -394,11 +481,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             success = null;
             view.CActivate = true;
             MySelectableViewModelWithGuardsStatic.CActivate = false;
-            NavigationHelper.CheckCanActivateAndNavigateWithSelectable(current, view, "p2", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, new List<object> { view }, new NavigationContext(typeof(MyViewGuardedWithSelectableViewModelWithGuards), 1), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, view.IsCanActivateInvoked);
-            Assert.AreEqual("p2", view.PCanActivate);
+            Assert.AreEqual(1, view.PCanActivate);
             Assert.AreEqual(true, MySelectableViewModelWithGuardsStatic.IsCanActivateInvoked);
-            Assert.AreEqual("p2", MySelectableViewModelWithGuardsStatic.PCanActivate);
+            Assert.AreEqual(1, MySelectableViewModelWithGuardsStatic.PCanActivate);
             Assert.AreEqual(false, current.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, isSetCurrentInvoked);
             Assert.AreEqual(false, success);
@@ -406,11 +493,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MySelectableViewModelWithGuardsStatic.Reset();
             view.CActivate = true;
             success = null;
-            NavigationHelper.CheckCanActivateAndNavigateWithSelectable(current, view, "p3", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, new List<object> { view }, new NavigationContext(typeof(MyViewGuardedWithSelectableViewModelWithGuards), 1), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, view.IsCanActivateInvoked);
-            Assert.AreEqual("p3", view.PCanActivate);
+            Assert.AreEqual(1, view.PCanActivate);
             Assert.AreEqual(true, MySelectableViewModelWithGuardsStatic.IsCanActivateInvoked);
-            Assert.AreEqual("p3", MySelectableViewModelWithGuardsStatic.PCanActivate);
+            Assert.AreEqual(1, MySelectableViewModelWithGuardsStatic.PCanActivate);
             Assert.AreEqual(true, current.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, view.IsOnNavigatingToInvoked);
             Assert.AreEqual(null, view.POnNavigatingTo);
@@ -419,6 +506,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(true, isSetCurrentInvoked);
             Assert.AreEqual(view, setCurrentObject);
             Assert.AreEqual(true, success);
+            Assert.AreEqual(true, isSelectable);
         }
 
         [TestMethod]
@@ -427,17 +515,19 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var current = new MyViewModelNavigationAware();
             bool isSetCurrentInvoked = false;
             object setCurrentObject = null;
-            var setCurrent = new Action<object>((source) =>
+            var setCurrent = new Action<object, bool>((source, i) =>
             {
                 isSetCurrentInvoked = true;
                 setCurrentObject = source;
             });
             bool? success = null;
 
+            var sources = new List<object>();
+
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             MYVIEWWITHViewModelNavigationAwareAndGuards.CActivate = false;
-            NavigationHelper.CheckCanActivateAndNavigate(current, typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, MYVIEWWITHViewModelNavigationAwareAndGuards.IsCanActivateInvoked);
             Assert.AreEqual("p", MYVIEWWITHViewModelNavigationAwareAndGuards.PCanActivate);
             Assert.AreEqual(false, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
@@ -450,7 +540,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             success = null;
             MyViewModelNavigationAwareAndGuardsStatic.CActivate = false;
-            NavigationHelper.CheckCanActivateAndNavigate(current, typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p2", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p2"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, MYVIEWWITHViewModelNavigationAwareAndGuards.IsCanActivateInvoked);
             Assert.AreEqual("p2", MYVIEWWITHViewModelNavigationAwareAndGuards.PCanActivate);
             Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
@@ -462,7 +552,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             success = null;
-            NavigationHelper.CheckCanActivateAndNavigate(current, typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p3", setCurrent, (t) => { success = t; });
+            NavigationHelper.Navigate(current, sources, new NavigationContext(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), "p3"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, MYVIEWWITHViewModelNavigationAwareAndGuards.IsCanActivateInvoked);
             Assert.AreEqual("p3", MYVIEWWITHViewModelNavigationAwareAndGuards.PCanActivate);
             Assert.AreEqual(true, MyViewModelNavigationAwareAndGuardsStatic.IsCanActivateInvoked);
@@ -476,6 +566,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual("p3", MyViewModelNavigationAwareAndGuardsStatic.POnNavigatingTo);
 
             // do not navigate with view, INavigationAware is for ViewModels
+
             Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsOnNavigatingToInvoked);
             Assert.AreEqual(null, MYVIEWWITHViewModelNavigationAwareAndGuards.POnNavigatingTo);
             Assert.AreEqual(false, MYVIEWWITHViewModelNavigationAwareAndGuards.IsOnNavigatedToInvoked);
@@ -502,7 +593,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var toGo = new MyViewModelNavigationAwareAndGuards();
             current.CDeactivate = false;
 
-            NavigationHelper.Replace(current, toGo, "p", setCurrent, (t) => { success = t; });
+            NavigationHelper.Replace(current, toGo, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuards), "p"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, current.IsCanDeactivateInvoked);
             Assert.AreEqual(false, toGo.IsCanActivateInvoked);
             Assert.AreEqual(null, toGo.PCanActivate);
@@ -515,7 +606,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             current.CDeactivate = true;
             toGo.CActivate = false;
             success = null;
-            NavigationHelper.Replace(current, toGo, "p2", setCurrent, (t) => { success = t; });
+            NavigationHelper.Replace(current, toGo, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuards), "p2"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, current.IsCanDeactivateInvoked);
             Assert.AreEqual(true, toGo.IsCanActivateInvoked);
             Assert.AreEqual("p2", toGo.PCanActivate);
@@ -528,7 +619,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             current.CDeactivate = true;
             toGo.CActivate = true;
             success = null;
-            NavigationHelper.Replace(current, toGo, "p3", setCurrent, (t) => { success = t; });
+            NavigationHelper.Replace(current, toGo, new NavigationContext(typeof(MyViewModelNavigationAwareAndGuards), "p3"), setCurrent, (t) => { success = t; });
             Assert.AreEqual(true, current.IsCanDeactivateInvoked);
             Assert.AreEqual(true, toGo.IsCanActivateInvoked);
             Assert.AreEqual("p3", toGo.PCanActivate);
@@ -540,6 +631,31 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(true, isSetCurrentInvoked);
             Assert.AreEqual(true, success);
         }
+
+        [TestMethod]
+        public void Navigate_Updates_Parameter()
+        {
+            var navigationContext = new NavigationContext(typeof(MyViewThatChangeParameter), "p");
+            NavigationHelper.Navigate(null, new List<object>(), navigationContext, (t, i) => { }, t => { });
+
+            Assert.AreEqual("p-canactivateview--canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel-", navigationContext.Parameter);
+        }
+
+        [TestMethod]
+        public void Navigate_Updates_Parameter_2()
+        {
+            var view = new MyViewThatChangeParameter();
+
+            var navigationContext = new NavigationContext(typeof(MySimpleViewModel), "p");
+            NavigationHelper.Navigate(view, new List<object>(), navigationContext, (t, i) => { }, t => { });
+
+            Assert.AreEqual("p-candeactivateview--candeactivateviewmodel--onavigatingfromviewmodel-", navigationContext.Parameter);
+        }
+    }
+
+    public class MySimpleViewModel
+    {
+
     }
 
     public class MySelectableViewModel : ISelectable, IMyViewModel
@@ -549,6 +665,64 @@ namespace MvvmLib.Wpf.Tests.Navigation
         public bool IsTarget(Type sourceType, object parameter)
         {
             return (int)parameter == Id;
+        }
+    }
+
+    public class MyViewThatChangeParameter : UserControl, ICanActivate, ICanDeactivate
+    {
+        public MyViewThatChangeParameter()
+        {
+            DataContext = new MyViewModelThatChangeParameter();
+        }
+
+        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-canactivateview-";
+            continuationCallback(true);
+        }
+
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-candeactivateview-";
+            continuationCallback(true);
+        }
+    }
+
+    public class MyViewModelThatChangeParameter : INavigationAware, ICanActivate, ICanDeactivate
+    {
+        public static string Parameter = null;
+
+        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-canactivateviewmodel-";
+            Parameter = (string)navigationContext.Parameter;
+            continuationCallback(true);
+        }
+
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-candeactivateviewmodel-";
+            Parameter = (string)navigationContext.Parameter;
+            continuationCallback(true);
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-onavigatingfromviewmodel-";
+            Parameter = (string)navigationContext.Parameter;
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-onavigatingtoviewmodel-";
+            Parameter = (string)navigationContext.Parameter;
+        }
+
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            navigationContext.Parameter = navigationContext.Parameter + "-navigatedtoviewmodel-";
+            Parameter = (string)navigationContext.Parameter;
         }
     }
 
@@ -584,34 +758,39 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
     public class MySelectableViewModelWithGuardsStatic : ISelectable, ICanActivate, INavigationAware
     {
         public int Id { get; set; }
+
+        public MySelectableViewModelWithGuardsStatic()
+        {
+            Id = 1;
+        }
 
         public bool IsTarget(Type sourceType, object parameter)
         {
@@ -641,28 +820,28 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -703,28 +882,28 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             this.IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -755,10 +934,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             this.DataContext = new MyViewModelCanActivate();
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             this.IsCanActivateInvoked = true;
-            P = parameter;
+            P = navigationContext.Parameter;
             c(CActivate);
         }
     }
@@ -777,10 +956,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             this.IsCanActivateInvoked = true;
-            P = parameter;
+            P = navigationContext.Parameter;
             c(CActivate);
         }
     }
@@ -795,7 +974,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             CDeactivate = true;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             c(CDeactivate);
         }
@@ -820,10 +999,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             P = null;
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             this.IsCanActivateInvoked = true;
-            P = parameter;
+            P = navigationContext.Parameter;
             c(CActivate);
         }
     }
@@ -844,7 +1023,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             this.IsCanDeactivateInvoked = true;
             c(CDeactivate);
@@ -862,17 +1041,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
         public bool IsOnNavigatingFromInvoked { get; private set; }
         public bool IsOnNavigatingToInvoked { get; private set; }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
         }
@@ -895,21 +1074,21 @@ namespace MvvmLib.Wpf.Tests.Navigation
             POnNavigatingTo = null;
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -943,34 +1122,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1004,34 +1183,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -1069,34 +1248,34 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(Action<bool> c)
+        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanDeactivateInvoked = true;
             c(CDeactivate);
         }
 
-        public void CanActivate(object parameter, Action<bool> c)
+        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
         {
             IsCanActivateInvoked = true;
-            PCanActivate = parameter;
+            PCanActivate = navigationContext.Parameter;
             c(CActivate);
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationContext navigationContext)
         {
             IsOnNavigatedToInvoked = true;
-            POnNavigatedTo = parameter;
+            POnNavigatedTo = navigationContext.Parameter;
         }
 
-        public void OnNavigatingFrom()
+        public void OnNavigatingFrom(NavigationContext navigationContext)
         {
             IsOnNavigatingFromInvoked = true;
         }
 
-        public void OnNavigatingTo(object parameter)
+        public void OnNavigatingTo(NavigationContext navigationContext)
         {
             IsOnNavigatingToInvoked = true;
-            POnNavigatingTo = parameter;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 }
