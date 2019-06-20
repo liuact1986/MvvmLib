@@ -613,7 +613,7 @@ s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
 <pre><code class="cs">s.Items[1] = new MyViewModel();
 </code></pre>
 
-<p>Or use to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.</p>
+<p>Or to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.</p>
 <pre><code class="cs">var newItem = new MyViewModel();
 NavigationHelper.Replace(1, newItem);
 </code></pre>

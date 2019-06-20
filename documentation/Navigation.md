@@ -406,7 +406,7 @@ Replace Item
 s.Items[1] = new MyViewModel();
 ```
 
-Or use to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.
+Or to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.
 
 ```cs
 var newItem = new MyViewModel();
