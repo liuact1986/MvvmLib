@@ -819,12 +819,18 @@ View model name:
 
     public void OnNavigatedTo(NavigationContext navigationContext)
     {
-
+        // gets the parameter
+        var parameter = navigationContext.Parameter;
+        // etc.
     }
 }
 </code></pre>
 
-<p>The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). Use a dictionary for multiple parameters.</p>
+<p>The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). </p>
+<pre><code class="cs">Navigation.Navigate(typeof(ViewA), &quot;My parameter&quot;);
+</code></pre>
+
+<p>Use a dictionary for multiple parameters.</p>
 <pre><code class="cs">var navigationParameters = new Dictionary&lt;string, object&gt;
 {
     { &quot;redirectTo&quot;,typeof(ViewE) },

@@ -639,12 +639,20 @@ public class ViewAViewModel : INavigationAware
 
     public void OnNavigatedTo(NavigationContext navigationContext)
     {
-
+        // gets the parameter
+        var parameter = navigationContext.Parameter;
+        // etc.
     }
 }
 ```
 
-The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). Use a dictionary for multiple parameters.
+The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). 
+
+```cs
+Navigation.Navigate(typeof(ViewA), "My parameter");
+```
+
+Use a dictionary for multiple parameters.
 
 ```cs
 var navigationParameters = new Dictionary<string, object>
