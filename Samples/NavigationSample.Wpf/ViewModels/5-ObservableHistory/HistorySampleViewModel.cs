@@ -1,9 +1,13 @@
-﻿using MvvmLib.Message;
+﻿using MvvmLib.Commands;
+using MvvmLib.Message;
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
+using NavigationSample.Wpf.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
 {
@@ -17,6 +21,9 @@ namespace NavigationSample.Wpf.ViewModels
         public ObservableCollection<SourceMenuItem> BackStack { get; set; }
         public ObservableCollection<SourceMenuItem> ForwardStack { get; set; }
 
+        public ICommand InsertCommand { get; set; }
+        public ICommand RemoveFirstCommand { get; set; }
+
         public HistorySampleViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
@@ -27,8 +34,19 @@ namespace NavigationSample.Wpf.ViewModels
             Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
             NavigationBrowser = new NavigationBrowser(Navigation.Sources);
 
-            Navigation.CurrentChanged += OnNavigationCurrentSourceChanged;
-            NavigationBrowser.CollectionView.CurrentChanged += OnNavigationBrowserCurrentChanged;
+            InsertCommand = new RelayCommand(Insert);
+            RemoveFirstCommand = new RelayCommand(RemoveFirst);
+        }
+
+        private void RemoveFirst()
+        {
+            if (Navigation.Sources.Count > 0)
+                Navigation.RemoveSourceAt(0);
+        }
+
+        private void Insert()
+        {
+            Navigation.InsertNewSource(0, typeof(ViewD), "View D Inserted at index 0");
         }
 
         private void OnNavigationBrowserCurrentChanged(object sender, System.EventArgs e)
@@ -78,7 +96,8 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatingFrom(NavigationContext navigationContext)
         {
-
+            Navigation.CurrentChanged -= OnNavigationCurrentSourceChanged;
+            NavigationBrowser.CollectionView.CurrentChanged -= OnNavigationBrowserCurrentChanged;
         }
 
         public void OnNavigatingTo(NavigationContext navigationContext)
@@ -88,7 +107,8 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-
+            Navigation.CurrentChanged += OnNavigationCurrentSourceChanged;
+            NavigationBrowser.CollectionView.CurrentChanged += OnNavigationBrowserCurrentChanged;
         }
     }
     public class SourceMenuItem : BindableBase

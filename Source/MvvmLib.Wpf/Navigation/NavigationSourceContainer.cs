@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -40,7 +41,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         public bool CanGoBack
         {
-            get { return this.navigationSources.Count > 0 && this.navigationSources[0].History.CanGoBack; }
+            get { return this.navigationSources.Count > 0 && this.navigationSources[0].CanGoBack; }
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         public bool CanGoForward
         {
-            get { return this.navigationSources.Count > 0 && this.navigationSources[0].History.CanGoForward; }
+            get { return this.navigationSources.Count > 0 && this.navigationSources[0].CanGoForward; }
         }
 
         private readonly IRelayCommand navigateCommand;
@@ -96,6 +97,34 @@ namespace MvvmLib.Navigation
             get { return redirectCommand; }
         }
 
+
+        private readonly IRelayCommand moveToLastCommand;
+        /// <summary>
+        /// Allows to move to the last source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public IRelayCommand MoveToLastCommand
+        {
+            get { return moveToLastCommand; }
+        }
+
+        private readonly IRelayCommand moveToIndexCommand;
+        /// <summary>
+        /// Allows to move to the position for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public IRelayCommand MoveToIndexCommand
+        {
+            get { return moveToIndexCommand; }
+        }
+
+        private readonly IRelayCommand moveToCommand;
+        /// <summary>
+        /// Allows to move to the source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public IRelayCommand MoveToCommand
+        {
+            get { return moveToCommand; }
+        }
+
         /// <summary>
         /// The count of <see cref="NavigationSource"/> for the container.
         /// </summary>
@@ -116,6 +145,9 @@ namespace MvvmLib.Navigation
             goForwardCommand = new RelayCommand(ExecuteGoForwardCommand);
             navigateToRootCommand = new RelayCommand(ExecuteNavigateToRootCommand);
             redirectCommand = new RelayCommand<Type>(ExecuteRedirectCommand);
+            moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand);
+            moveToIndexCommand = new RelayCommand<int>(ExecuteMoveToIndexCommand);
+            moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
         }
 
         #region Commands
@@ -137,12 +169,27 @@ namespace MvvmLib.Navigation
 
         private void ExecuteGoForwardCommand()
         {
-             this.GoForward();
+            this.GoForward();
         }
 
         private void ExecuteNavigateToRootCommand()
         {
             this.NavigateToRoot();
+        }
+
+        private void ExecuteMoveToLastCommand()
+        {
+            this.MoveToLast();
+        }
+
+        private void ExecuteMoveToIndexCommand(int index)
+        {
+            this.MoveTo(index);
+        }
+
+        private void ExecuteMoveToCommand(object source)
+        {
+            this.MoveTo(source);
         }
 
         #endregion // Commands
@@ -153,7 +200,7 @@ namespace MvvmLib.Navigation
         /// Adds the <see cref="NavigationSource"/>.
         /// </summary>
         /// <param name="navigationSource">The navigation source</param>
-        public void Add(NavigationSource navigationSource)
+        public void Register(NavigationSource navigationSource)
         {
             if (navigationSource == null)
                 throw new ArgumentNullException(nameof(navigationSource));
@@ -161,7 +208,7 @@ namespace MvvmLib.Navigation
             if (navigationSources.Count > 0)
             {
                 var existingNavigationSource = navigationSources[0];
-                navigationSource.Sync(existingNavigationSource.History);
+                navigationSource.Sync(existingNavigationSource.Entries, existingNavigationSource.Sources, existingNavigationSource.CurrentIndex);
             }
 
             this.navigationSources.Add(navigationSource);
@@ -173,7 +220,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="navigationSource">The navigation source</param>
         /// <returns>True if registered</returns>
-        public bool Contains(NavigationSource navigationSource)
+        public bool IsRegistered(NavigationSource navigationSource)
         {
             if (navigationSource == null)
                 throw new ArgumentNullException(nameof(navigationSource));
@@ -185,7 +232,7 @@ namespace MvvmLib.Navigation
         /// Removes the <see cref="NavigationSource"/>.
         /// </summary>
         /// <param name="navigationSource">The navigation source</param>
-        public bool Remove(NavigationSource navigationSource)
+        public bool Unregister(NavigationSource navigationSource)
         {
             if (navigationSource == null)
                 throw new ArgumentNullException(nameof(navigationSource));
@@ -200,12 +247,105 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Clears the <see cref="NavigationSources"/>.
         /// </summary>
-        public void Clear()
+        public void UnregisterAll()
         {
             this.navigationSources.Clear();
         }
 
         #endregion // Collection management  
+
+        private static object ResolveSource(Type sourceType, ref object sharedContext)
+        {
+            if (NavigationHelper.IsFrameworkElementType(sourceType))
+            {
+                var source = NavigationHelper.CreateNew(sourceType);
+                var view = source as FrameworkElement;
+                if (view.DataContext == null)
+                {
+                    if (sharedContext == null)
+                        sharedContext = NavigationHelper.ResolveViewModelWithViewModelLocator(sourceType);
+
+                    view.DataContext = sharedContext;
+                }
+                return source;
+            }
+            else
+            {
+                if (sharedContext == null)
+                    sharedContext = NavigationHelper.CreateNew(sourceType);
+
+                return sharedContext;
+            }
+        }
+
+        /// <summary>
+        /// Inserts a new source at the index for all <see cref="NavigationSources"/>.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        public void InsertNewSource(int index, Type sourceType, object parameter)
+        {
+            if (sourceType == null)
+                throw new ArgumentNullException(nameof(sourceType));
+
+            object sharedContext = null;
+            foreach (var navigationSource in navigationSources)
+                navigationSource.InsertNewSource(index, sourceType, parameter, (s) => ResolveSource(s, ref sharedContext));
+        }
+
+        /// <summary>
+        /// Inserts new source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="sourceType">The source type</param>
+        public void InsertNewSource(int index, Type sourceType)
+        {
+            this.InsertNewSource(index, sourceType, null);
+        }
+
+        /// <summary>
+        /// Adds a new source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        public void AddNewSource(Type sourceType, object parameter)
+        {
+            if (sourceType == null)
+                throw new ArgumentNullException(nameof(sourceType));
+
+            object sharedContext = null;
+            foreach (var navigationSource in navigationSources)
+                navigationSource.AddNewSource(sourceType, parameter, (s) => ResolveSource(s, ref sharedContext));
+        }
+
+        /// <summary>
+        /// Adds a new source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        public void AddNewSource(Type sourceType)
+        {
+            this.AddNewSource(sourceType, null);
+        }
+
+        /// <summary>
+        /// Removes source at the index and history for all <see cref="NavigationSources"/>.
+        /// </summary>
+        /// <param name="index">The index</param>
+        public void RemoveSourceAt(int index)
+        {
+            foreach (var navigationSource in navigationSources)
+                navigationSource.RemoveSourceAt(index);
+        }
+
+        /// <summary>
+        /// Clears sources and history for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public void ClearSources()
+        {
+            foreach (var navigationSource in navigationSources)
+                navigationSource.ClearSources();
+        }
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/> for all <see cref="NavigationSources"/>.
@@ -217,10 +357,9 @@ namespace MvvmLib.Navigation
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
 
+            object sharedContext = null;
             foreach (var navigationSource in navigationSources)
-            {
-                navigationSource.Navigate(sourceType, parameter);
-            }
+                navigationSource.Navigate(sourceType, parameter, (s) => ResolveSource(s, ref sharedContext));
         }
 
         /// <summary>
@@ -298,8 +437,18 @@ namespace MvvmLib.Navigation
         {
             foreach (var navigationSource in navigationSources)
             {
-                navigationSource.MoveTo(index);
+                if (index >= 0 && index < navigationSource.Sources.Count)
+                    navigationSource.MoveTo(index);
             }
+        }
+
+        /// <summary>
+        /// Navigates to last source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public void MoveToLast()
+        {
+            foreach (var navigationSource in navigationSources)
+                navigationSource.MoveToLast();
         }
 
         /// <summary>
@@ -315,15 +464,6 @@ namespace MvvmLib.Navigation
             {
                 navigationSource.MoveTo(source);
             }
-        }
-
-        /// <summary>
-        /// Clears sources and history for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public void ClearSources()
-        {
-            foreach (var navigationSource in navigationSources)
-                navigationSource.Clear();
         }
     }
 }

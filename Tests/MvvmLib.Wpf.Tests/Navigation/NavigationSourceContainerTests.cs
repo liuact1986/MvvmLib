@@ -74,8 +74,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var navigationSourceContainer = new NavigationSourceContainer();
             var n1 = new NavigationSource();
             var n2 = new NavigationSource();
-            navigationSourceContainer.Add(n1);
-            navigationSourceContainer.Add(n2);
+            navigationSourceContainer.Register(n1);
+            navigationSourceContainer.Register(n2);
 
             MyNavViewA.Reset();
             MyNavViewB.Reset();

@@ -44,6 +44,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
         [TestMethod]
         public void Registers_Type_For_Navigation()
         {
+            SourceResolver.ClearTypesForNavigation();
+
             Assert.AreEqual(0, SourceResolver.TypesForNavigation.Count);
 
             SourceResolver.RegisterTypeForNavigation<MyNavViewA>("A");

@@ -1,9 +1,13 @@
 ﻿using MvvmLib.Mvvm;
+using System;
 
 namespace NavigationSample.Wpf.ViewModels
 {
     public class ViewBViewModel : BindableBase
     {
+        public Guid Guid { get; set; }
+
+
         private string message;
         public string Message
         {
@@ -14,6 +18,7 @@ namespace NavigationSample.Wpf.ViewModels
         public ViewBViewModel()
         {
             Message = "View B [ViewModel]";
+            this.Guid = Guid.NewGuid();
         }
     }
 }

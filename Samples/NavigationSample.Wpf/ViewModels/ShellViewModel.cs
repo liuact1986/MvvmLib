@@ -52,7 +52,7 @@ namespace NavigationSample.Wpf.ViewModels
                  new MenuItem(nameof(ItemsRegionSampleView), "ListView", IconKind.LibraryBooks, () => Navigate(typeof(ItemsRegionSampleView))),
                  new MenuItem(nameof(SharedSourceSampleView), "Shared Source", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView))),
                  new MenuItem(nameof(NavigationBehaviorsSampleView), "Navigation Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView))),
-                 new MenuItem(nameof(MultipleSubscribersSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(MultipleSubscribersSampleView))),
+                 new MenuItem(nameof(NavigationAllSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(NavigationAllSampleView))),
                  new MenuItem(nameof(SharedSourceNavigationAndEditionSampleView), "Navigation and Edition", IconKind.Pencil, () => Navigate(typeof(SharedSourceNavigationAndEditionSampleView)))
             });
         }

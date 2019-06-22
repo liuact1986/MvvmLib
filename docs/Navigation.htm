@@ -285,6 +285,10 @@ namespace NavigationSample.Wpf.Startup
 	<td>CanGoForward</td>
 	<td>Checks if can go forward</td>
 </tr>
+<tr>
+	<td>ClearSourcesOnNavigate</td>
+	<td>By default the sources (&quot;forward stack&quot;) are removed on navigate and navigate to root</td>
+</tr>
 </tbody>
 </table>
 <table class="table table-bordered-all table-responsive">
@@ -398,6 +402,70 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 &lt;Button Content=&quot;Root&quot; Command=&quot;{Binding Navigation.NavigateToRootCommand}&quot; /&gt;
 </code></pre>
 
+<p>Sources management</p>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Methods</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>InsertNewSource</td>
+	<td>Creates the source with SourceResolver, inject dependencies and inserts the source at the index. The parameter is stored</td>
+</tr>
+<tr>
+	<td>AddNewSource</td>
+	<td>Creates the source with SourceResolver, inject dependencies and adds the source. The parameter is stored</td>
+</tr>
+<tr>
+	<td>RemoveSourceAt</td>
+	<td>Removes the source at the index</td>
+</tr>
+<tr>
+	<td>RemoveSource</td>
+	<td>Removes the source</td>
+</tr>
+<tr>
+	<td>RemoveSources</td>
+	<td>Removes the sources from the start index provided to the end</td>
+</tr>
+<tr>
+	<td>ClearSources</td>
+	<td>Clears the source collection</td>
+</tr>
+</tbody>
+</table>
+<p>Example: insert a source and move to this source</p>
+<pre><code class="cs">var source = Navigation.InsertNewSource(0, typeof(ViewA), &quot;View A Inserted at index 0&quot;);
+Navigation.MoveTo(source);
+// or by index
+NavigationMoveTo(0);
+</code></pre>
+
+<p>Navigation processes</p>
+<table class="table table-bordered-all table-responsive">
+<thead>
+<tr>
+	<th>Process</th>
+	<th>Methods</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>&quot;Navigate&quot;</td>
+	<td>Navigate, NavigateFast, Redirect</td>
+	<td>Find <strong>selectable</strong> or create <strong>new</strong> instance, <strong>INavigationAware</strong> methods invoked (OnNaviagtingTo and OnNavigatedTo only for new instance)</td>
+</tr>
+<tr>
+	<td>&quot;Move&quot;</td>
+	<td>MoveTo, GoBack, GoForward, NavigateToRoot</td>
+	<td>only <strong>INavigationAware</strong> methods invoked</td>
+</tr>
+</tbody>
+</table>
 <h3 id="contentcontrolnavigationsource">ContentControlNavigationSource<a class="headerlink" href="#contentcontrolnavigationsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>Inherits from NavigationSource and updates directly the content of the ContentControl.</p>
 <pre><code class="xml">&lt;ContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot; /&gt;

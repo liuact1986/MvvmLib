@@ -57,13 +57,6 @@
     <Compile Include="Animation\StoryboardAccessor.cs" />
     <Compile Include="Animation\TransitioningContentControl.cs" />
     <Compile Include="Animation\TransitioningItemsControl.cs" />
-    <Compile Include="History\CanGoBackEventArgs.cs" />
-    <Compile Include="History\CanGoForwardEventArgs.cs" />
-    <Compile Include="History\CurrentEntryChangedEventArgs.cs" />
-    <Compile Include="History\INavigationHistory.cs" />
-    <Compile Include="History\NavigationEntry.cs" />
-    <Compile Include="History\NavigationEntryCollection.cs" />
-    <Compile Include="History\NavigationHistory.cs" />
     <Compile Include="Interactivity\AttachableCollection.cs" />
     <Compile Include="Interactivity\EventToCommandBehavior.cs" />
     <Compile Include="Interactivity\IAssociatedObject.cs" />
@@ -86,6 +79,8 @@
     <Compile Include="Mvvm\BindableObject.cs" />
     <Compile Include="Mvvm\ReadOnlyCollection.cs" />
     <Compile Include="Navigation\BootstrapperBase.cs" />
+    <Compile Include="Navigation\CanGoBackEventArgs.cs" />
+    <Compile Include="Navigation\CanGoForwardEventArgs.cs" />
     <Compile Include="Navigation\ContentControlNavigationSource.cs" />
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
@@ -99,6 +94,8 @@
     <Compile Include="Navigation\NavigationBrowser.cs" />
     <Compile Include="Navigation\NavigationCollection.cs" />
     <Compile Include="Navigation\NavigationContext.cs" />
+    <Compile Include="Navigation\NavigationEntry.cs" />
+    <Compile Include="Navigation\NavigationEntryCollection.cs" />
     <Compile Include="Navigation\NavigationEventBaseArgs.cs" />
     <Compile Include="Navigation\NavigationFailedEventArgs.cs" />
     <Compile Include="Navigation\NavigationFailedException.cs" />

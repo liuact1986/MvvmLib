@@ -1,11 +1,11 @@
-﻿using MvvmLib.History;
-using MvvmLib.Logger;
+﻿using MvvmLib.Logger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
@@ -131,7 +131,6 @@ namespace MvvmLib.Navigation
             this.items = new List<T>();
             this.entries = new NavigationEntryCollection();
 
-            this.PropertyChanged = null;
             this.sharedSource = sharedSource;
         }
 
@@ -213,19 +212,33 @@ namespace MvvmLib.Navigation
             return items.IndexOf(item);
         }
 
+
         private void InsertItem(int index, T item, NavigationContext navigationContext)
         {
-            NavigationHelper.OnNavigatingTo(item, navigationContext);
 
-            this.items.Insert(index, item);
+            var view = item as FrameworkElement;
+            if(view != null)
+            {
+                NavigationHelper.OnNavigatingTo(view.DataContext, navigationContext);
 
-            NavigationHelper.OnNavigatedTo(item, navigationContext);
+                this.items.Insert(index, item);
+
+                NavigationHelper.OnNavigatedTo(view.DataContext, navigationContext);
+            }
+            else
+            {
+                NavigationHelper.OnNavigatingTo(item, navigationContext);
+
+                this.items.Insert(index, item);
+
+                NavigationHelper.OnNavigatedTo(item, navigationContext);
+            }
 
             OnPropertyChanged(CountString);
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
 
-            this.entries.Insert(index, new NavigationEntry(typeof(T), item, navigationContext.Parameter));
+            this.entries.Insert(index, new NavigationEntry(typeof(T), navigationContext.Parameter));
 
             // after UI notification
             sharedSource.TrySelectingItem(index);
@@ -245,7 +258,7 @@ namespace MvvmLib.Navigation
             OnPropertyChanged(IndexerName);
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, originalItem, item, index);
 
-            this.entries[index] = new NavigationEntry(typeof(T), item, parameter);
+            this.entries[index] = new NavigationEntry(typeof(T), parameter);
 
             sharedSource.TrySelectingItem(index);
         }

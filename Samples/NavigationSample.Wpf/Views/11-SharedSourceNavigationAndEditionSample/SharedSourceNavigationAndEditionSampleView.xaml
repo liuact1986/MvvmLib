@@ -15,20 +15,31 @@
                 <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
                     <Image Source="{Binding Person.ImagePath}" />
                 </Border>
-                <TextBlock Text="FIRSTNAME" Style="{StaticResource Heading}"/>
+                <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
                 <TextBlock Text="{Binding Person.FirstName}" Margin="0 2 0 8"/>
-                <TextBlock Text="LASTNAME" Style="{StaticResource Heading}"/>
+                <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
                 <TextBlock Text="{Binding Person.LastName}" Foreground="Black" Margin="0 2 0 8"/>
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="QuickDetailsTemplate">
+            <Border BorderThickness="2" BorderBrush="{StaticResource Heading}">
+                <StackPanel Margin="10">
+                    <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
+                    <TextBlock Text="{Binding Person.FirstName}" Margin="0 2 0 8"/>
+                    <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
+                    <TextBlock Text="{Binding Person.LastName}" Foreground="Black" Margin="0 2 0 8"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
         <DataTemplate x:Key="AddAndEditTemplate">
             <StackPanel x:Name="SP" Margin="10">
-                <TextBlock Text="FIRSTNAME" Style="{StaticResource Heading}"/>
+                <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
                 <TextBox Text="{Binding Person.FirstName}" Margin="0 2 0 8"/>
-                <TextBlock Text="LASTNAME" Style="{StaticResource Heading}"/>
+                <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
                 <TextBox Text="{Binding Person.LastName}" Margin="0 2 0 8"/>
-                <TextBlock Text="IMAGE" Style="{StaticResource Heading}"/>
+                <TextBlock Text="IMAGE" Style="{StaticResource HeadingStyle}"/>
                 <Button Margin="0 2 0 8" 
                         Command="{Binding DataContext.SelectImageCommand,ElementName=SP}"
                         HorizontalAlignment="Left">
@@ -64,13 +75,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="140"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="5" Grid.ColumnSpan="2">
+        <StackPanel Orientation="Horizontal" Margin="5" Grid.ColumnSpan="3">
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
                     <Setter Property="IsEnabled" Value="False" />
@@ -121,7 +134,7 @@
             </Button>
         </StackPanel>
 
-        <Grid Grid.Row="1" Background="#eee">
+        <Grid Grid.Row="1" Grid.RowSpan="2" Background="#eee">
             <ContentControl Content="{Binding Browser.Current}" Margin="20" FontSize="16">
                 <ContentControl.Style>
                     <Style TargetType="ContentControl">
@@ -141,14 +154,42 @@
             </ContentControl>
         </Grid>
 
+        <TabControl ItemsSource="{Binding PeopleSource.Items}" 
+                        SelectedItem="{Binding PeopleSource.SelectedItem}"
+                        ContentTemplate="{StaticResource AddAndEditTemplate}" Grid.Column="1" Grid.Row="1">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel x:Name="SP" Orientation="Horizontal">
+                        <TextBlock Text="{Binding Person.FirstName}" Margin="20,0"/>
+                        <Button x:Name="CloseButton" Content="X" 
+                                Command="{Binding CloseCommand}" 
+                                CommandParameter="{Binding}"
+                                HorizontalAlignment="Right" Height="20" Width="20" Padding="0"
+                                VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
+
         <DataGrid ItemsSource="{Binding PeopleSource.Items}" 
                   SelectedItem="{Binding PeopleSource.SelectedItem}"
                   AutoGenerateColumns="False"
-                  Grid.Column="1" Grid.Row="1" Margin="5" FontSize="16">
+                  Margin="5" FontSize="16" Grid.Column="1" Grid.Row="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="First Name" Binding="{Binding Person.FirstName, UpdateSourceTrigger=PropertyChanged}" Width="Auto"/>
                 <DataGridTextColumn Header="Last Name" Binding="{Binding Person.LastName, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
+
+
+        <ListView ItemsSource="{Binding PeopleSource.Items}" 
+                      SelectedItem="{Binding PeopleSource.SelectedItem}"
+                      ItemTemplate="{StaticResource QuickDetailsTemplate}" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
     </Grid>
 </UserControl>

@@ -58,17 +58,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\MaterialDesignIcon.cs" />
-    <Compile Include="Converters\DurationToStringConverter.cs" />
-    <Compile Include="Events\TitleChangedEvent.cs" />
-    <Compile Include="Models\FakePeopleService.cs" />
-    <Compile Include="Models\IFakePeopleService.cs" />
-    <Compile Include="Models\Person.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmLibBootstrapper.cs" />
     <Compile Include="ViewModels\1-MasterDetail\MasterDetailViewModel.cs" />
     <Compile Include="ViewModels\1-MasterDetail\PersonDetailsViewModel.cs" />
-    <Compile Include="ViewModels\10-MultipleSubscribers\MultipleSubscribersSampleViewModel.cs" />
+    <Compile Include="ViewModels\10-MultipleSubscribers\NavigationAllSampleViewModel.cs" />
     <Compile Include="ViewModels\11-SharedSourceNavigationAndEdition\SharedSourceNavigationAndEditionSampleViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\AnimationViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\ViewAViewModel.cs" />
@@ -94,8 +88,8 @@
     <Compile Include="Views\1-MasterDetail\PersonDetailsView.xaml.cs">
       <DependentUpon>PersonDetailsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\10-MultipleSubscribers\MultipleSubscribersSampleView.xaml.cs">
-      <DependentUpon>MultipleSubscribersSampleView.xaml</DependentUpon>
+    <Compile Include="Views\10-MultipleSubscribers\NavigationAllSampleView.xaml.cs">
+      <DependentUpon>NavigationAllSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\11-SharedSourceNavigationAndEditionSample\SharedSourceNavigationAndEditionSampleView.xaml.cs">
       <DependentUpon>SharedSourceNavigationAndEditionSampleView.xaml</DependentUpon>
@@ -160,6 +154,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\MaterialDesignIcon.cs" />
+    <Compile Include="Converters\DurationToStringConverter.cs" />
+    <Compile Include="Events\TitleChangedEvent.cs" />
+    <Compile Include="Models\FakePeopleService.cs" />
+    <Compile Include="Models\IFakePeopleService.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -215,7 +215,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\10-MultipleSubscribers\MultipleSubscribersSampleView.xaml">
+    <Page Include="Views\10-MultipleSubscribers\NavigationAllSampleView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

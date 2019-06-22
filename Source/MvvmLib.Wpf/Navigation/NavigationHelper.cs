@@ -5,10 +5,21 @@ using System.Windows;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// Helper class for <see cref="NavigationSource"/> and <see cref="SharedSource{T}"/>.
+    /// Helper for <see cref="NavigationSource"/> and <see cref="SharedSource{T}"/>.
     /// </summary>
     public class NavigationHelper
     {
+        /// <summary>
+        /// Checks if the type is <see cref="FrameworkElement"/>.
+        /// </summary>
+        /// <param name="type">The type</param>
+        /// <returns>True if the type is the type is FrameworkElement</returns>
+        public static bool IsFrameworkElementType(Type type)
+        {
+            var isFrameworkELementType = typeof(FrameworkElement).IsAssignableFrom(type);
+            return isFrameworkELementType;
+        }
+
         private static void CanDeactivateStep2(object source, NavigationContext navigationContext, Action<bool> continuationCallback)
         {
             if (source is ICanDeactivate)
@@ -124,6 +135,7 @@ namespace MvvmLib.Navigation
             return source;
         }
 
+
         /// <summary>
         /// Resolves the view model with <see cref="ViewModelLocator"/>.
         /// </summary>
@@ -183,6 +195,20 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Creates the source and sets the data context for view.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <returns>The source created</returns>
+        public static object ResolveSource(Type sourceType)
+        {
+            var source = CreateNew(sourceType);
+            var view = source as FrameworkElement;
+            if (view != null && view.DataContext == null)
+                view.DataContext = ResolveViewModelWithViewModelLocator(sourceType);
+            return source;
+        }
+
+        /// <summary>
         /// Processes navigation for <see cref="NavigationSource"/>.
         /// </summary>
         /// <param name="current">The current source</param>
@@ -191,6 +217,20 @@ namespace MvvmLib.Navigation
         /// <param name="setCurrent">The method invoked to change current source</param>
         /// <param name="continuationCallback">The continuation callback</param>
         public static void Navigate(object current, IEnumerable sources, NavigationContext navigationContext, Action<object, bool> setCurrent, Action<bool> continuationCallback)
+        {
+            Navigate(current, sources, navigationContext, (sourceType) => ResolveSource(sourceType), setCurrent, continuationCallback);
+        }
+
+        /// <summary>
+        /// Processes navigation for <see cref="NavigationSource"/>.
+        /// </summary>
+        /// <param name="current">The current source</param>
+        /// <param name="sources">The sources</param>
+        /// <param name="navigationContext">The navigation context</param>
+        /// <param name="resolveSource">The function used to create source</param>
+        /// <param name="setCurrent">The method invoked to change current source</param>
+        /// <param name="continuationCallback">The continuation callback</param>
+        public static void Navigate(object current, IEnumerable sources, NavigationContext navigationContext, Func<Type, object> resolveSource, Action<object, bool> setCurrent, Action<bool> continuationCallback)
         {
             var sourceType = navigationContext.SourceType;
             var parameter = navigationContext.Parameter;
@@ -213,15 +253,12 @@ namespace MvvmLib.Navigation
                     }
                     else
                     {
-                        var source = CreateNew(sourceType);
-                        var view = source as FrameworkElement;
-                        if (view != null && view.DataContext == null)
-                            view.DataContext = ResolveViewModelWithViewModelLocator(sourceType);
-
+                        var source = resolveSource(sourceType);
                         CanActivate(source, navigationContext, canActivate =>
                         {
                             if (canActivate)
                             {
+                                var view = source as FrameworkElement;
                                 if (view != null)
                                     ExecuteNavigation(current, source, view.DataContext, navigationContext, setCurrent);
                                 else

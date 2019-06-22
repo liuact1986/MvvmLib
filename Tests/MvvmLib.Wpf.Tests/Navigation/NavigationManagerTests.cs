@@ -154,12 +154,12 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             Assert.AreEqual(false, NavigationManager.AllNavigationSources.ContainsKey("SourceA"));
             var s1 = NavigationManager.CreateDefaultNavigationSource("SourceA");
-            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].Contains(s1));
+            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s1));
             var s2 = NavigationManager.GetDefaultNavigationSource("SourceA");
             Assert.AreEqual(s1, s2);
 
             Assert.AreEqual(true, NavigationManager.RemoveNavigationSource("SourceA", s1));
-            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].Contains(s1));
+            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s1));
             Assert.AreEqual(true, NavigationManager.RemoveNavigationSources("SourceA"));
             Assert.AreEqual(false, NavigationManager.AllNavigationSources.ContainsKey("SourceA"));
         }
@@ -169,11 +169,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             Assert.AreEqual(false, NavigationManager.AllNavigationSources.ContainsKey("SourceA"));
             var s1 = NavigationManager.CreateDefaultNavigationSource("SourceA");
-            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].Contains(s1));
+            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s1));
 
             var s2 = new KeyedNavigationSource("B");
             NavigationManager.AddNavigationSource("SourceA", s2);
-            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].Contains(s2));
+            Assert.AreEqual(true, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s2));
 
             var s3 = NavigationManager.GetDefaultNavigationSource("SourceA");
             Assert.AreEqual(s1, s3);
@@ -182,9 +182,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(s2, s4);
 
             Assert.AreEqual(true, NavigationManager.RemoveNavigationSource("SourceA", s1));
-            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].Contains(s1));
+            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s1));
             Assert.AreEqual(true, NavigationManager.RemoveNavigationSource("SourceA", s2));
-            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].Contains(s2));
+            Assert.AreEqual(false, NavigationManager.AllNavigationSources["SourceA"].IsRegistered(s2));
             Assert.AreEqual(true, NavigationManager.RemoveNavigationSources("SourceA"));
             Assert.AreEqual(false, NavigationManager.AllNavigationSources.ContainsKey("SourceA"));
         }

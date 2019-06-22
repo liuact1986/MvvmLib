@@ -79,6 +79,8 @@
                 <Button Content="View G (Guards)" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewG}" Margin="5" />
                 <Button Content="Redirect" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewE}" Margin="5" />
                 <Button Content="ViewModel A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}" Margin="5" />
+                <Button Content="Insert View D" Command="{Binding InsertCommand}" Margin="5" />
+                <Button Content="Remove first" Command="{Binding RemoveFirstCommand}" Margin="5" />
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Margin="5,0">
@@ -136,8 +138,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Label FontWeight="SemiBold">HISTORY</Label>
-                <ListView ItemsSource="{Binding Navigation.History.Entries}" 
-                          SelectedItem="{Binding Navigation.History.Current, Mode=OneWay}"
+                <ListView ItemsSource="{Binding Navigation.Entries}" 
+                          SelectedIndex="{Binding Navigation.CurrentIndex, Mode=OneWay}"
                           ItemTemplate="{StaticResource StackTemplate}"
                           ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
                           Margin="5" Grid.Row="1" BorderThickness="0" />
@@ -153,11 +155,6 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-
-                <Label FontWeight="SemiBold" Grid.Row="2">CURRENT ENTRY</Label>
-                <StackPanel Grid.Row="3">
-                    <TextBlock Text="{Binding Navigation.History.Current.SourceType.Name}"  Margin="5"/>
-                </StackPanel>
 
                 <Label FontWeight="SemiBold" Grid.Column="1" Grid.Row="2">CURRENT INDEX</Label>
                 <StackPanel  Grid.Column="1" Grid.Row="3">

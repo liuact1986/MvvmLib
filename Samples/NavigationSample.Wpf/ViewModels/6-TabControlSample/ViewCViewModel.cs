@@ -7,7 +7,9 @@ namespace NavigationSample.Wpf.ViewModels
     public class ViewCViewModel : ViewModelBase, INavigationAware, IIsSelected, IDetailViewModel
     {
         public ViewCViewModel()
-        { }
+        {
+            Message = "ViewC [ViewModel]";
+        }
 
         private bool isSelected;
         public bool IsSelected

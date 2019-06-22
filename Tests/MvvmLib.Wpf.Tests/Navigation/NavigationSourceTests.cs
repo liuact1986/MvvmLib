@@ -1,16 +1,847 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmLib.History;
-using MvvmLib.Navigation;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmLib.Navigation;
+using MvvmLib.Wpf.Tests.ViewModels;
+using MvvmLib.Wpf.Tests.Views;
 
 namespace MvvmLib.Wpf.Tests.Navigation
 {
+    // "navigate" navigate/ fast/ redirect => selectable or new + (on navigating from) [on navigating/ed to new]
+    // "Move" back / forward / move / root => (on navigating from) +  on navigating/ed to
 
     [TestClass]
     public class NavigationSourceTests
     {
+        [TestMethod]
+        public void AddNewSource()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(NavSourceViewAViewModel), ((FrameworkElement)sourceA).DataContext.GetType());
+
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(NavSourceViewBViewModel), ((FrameworkElement)sourceB).DataContext.GetType());
+        }
+
+        [TestMethod]
+        public void InsertNewSource_ResolveViewModel_With_ViewModelLocator()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.InsertNewSource(0, typeof(MyViewA), "p");
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(MyViewAViewModel), ((FrameworkElement)sourceA).DataContext.GetType());
+        }
+
+        [TestMethod]
+        public void InsertSource_Manage_CurrentIndex_And_CurrentChangedEvent_Is_Not_Fired()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(0, navigationSource.CurrentIndex);
+            Assert.AreEqual(sourceA, navigationSource.Current); // current is A
+
+            bool isCurrentChangedFired = false;
+            navigationSource.CurrentChanged += (s, e) =>
+            {
+                isCurrentChangedFired = true;
+            };
+
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+
+            Assert.AreEqual(0, navigationSource.CurrentIndex); // not change
+            Assert.AreEqual(sourceA, navigationSource.Current);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+
+            var sourceC = navigationSource.InsertNewSource(0, typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(1, navigationSource.CurrentIndex); // incremented
+            Assert.AreEqual(sourceA, navigationSource.Current);
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(2));
+
+            var sourceD = navigationSource.InsertNewSource(1, typeof(NavSourceViewD), "p4");
+            Assert.AreEqual(2, navigationSource.CurrentIndex);
+            Assert.AreEqual(sourceA, navigationSource.Current);
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceD, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(3));
+            Assert.AreEqual(false, isCurrentChangedFired);
+        }
+
+
+        [TestMethod]
+        public void InsertNewSource()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.InsertNewSource(0, typeof(NavSourceViewA), "p");
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(NavSourceViewAViewModel), ((FrameworkElement)sourceA).DataContext.GetType());
+
+            var sourceB = navigationSource.InsertNewSource(1, typeof(NavSourceViewB), "p2");
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(NavSourceViewBViewModel), ((FrameworkElement)sourceB).DataContext.GetType());
+
+            var sourceC = navigationSource.InsertNewSource(1, typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // do not select
+            Assert.AreEqual(typeof(NavSourceViewCViewModel), ((FrameworkElement)sourceC).DataContext.GetType());
+        }
+
+        [TestMethod]
+        public void RemoveSourceAt()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(2).Parameter);
+
+            // remove at 1
+            navigationSource.RemoveSourceAt(1); // B
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(1).Parameter);
+
+            // remove first
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(0).Parameter);
+
+            // remove last
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+        }
+
+        [TestMethod]
+        public void RemoveSource()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(2).Parameter);
+
+            // remove at 1
+            Assert.AreEqual(true, navigationSource.RemoveSource(sourceB)); // B
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(1).Parameter);
+
+            // remove first
+            Assert.AreEqual(true, navigationSource.RemoveSource(sourceA));
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(0).Parameter);
+
+            // remove last
+            Assert.AreEqual(true, navigationSource.RemoveSource(sourceC));
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+        }
+
+        [TestMethod]
+        public void RemoveSource_Manage_CurrentIndex_And_CurrentChangedEvent_Is_Not_Fired()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(2).Parameter);
+
+            navigationSource.MoveTo(1);
+            Assert.AreEqual(1, navigationSource.CurrentIndex);
+            Assert.AreEqual(sourceB, navigationSource.Current); // current is B
+
+            bool isCurrentChangedFired = false;
+            CurrentSourceChangedEventArgs args = null;
+            navigationSource.CurrentChanged += (s, e) =>
+            {
+                args = e;
+                isCurrentChangedFired = true;
+            };
+
+            // remove at 2
+            navigationSource.RemoveSourceAt(2); // C
+            Assert.AreEqual(1, navigationSource.CurrentIndex); // not change current index < removed index
+            Assert.AreEqual(sourceB, navigationSource.Current);
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+
+            // remove first
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(0, navigationSource.CurrentIndex); // decremented
+            Assert.AreEqual(sourceB, navigationSource.Current);
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(false, isCurrentChangedFired);
+
+            // remove last
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(null, navigationSource.Current);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(true, isCurrentChangedFired);
+            Assert.AreEqual(-1, args.CurrentIndex);
+            Assert.AreEqual(null, args.Current);
+        }
+
+        [TestMethod]
+        public void RemoveRange()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            var sourceD = navigationSource.AddNewSource(typeof(NavSourceViewD), "p4");
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(4, navigationSource.Sources.Count);
+            Assert.AreEqual(4, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(sourceD, navigationSource.Sources.ElementAt(3));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewD), navigationSource.Entries.ElementAt(3).SourceType);
+            Assert.AreEqual("p4", navigationSource.Entries.ElementAt(3).Parameter);
+
+            navigationSource.MoveTo(1);
+            Assert.AreEqual(1, navigationSource.CurrentIndex);
+            Assert.AreEqual(sourceB, navigationSource.Current); // current is B
+
+            // remove at 2
+            navigationSource.RemoveSources(2); // C and d
+            Assert.AreEqual(1, navigationSource.CurrentIndex); // not change current index < removed index
+            Assert.AreEqual(sourceB, navigationSource.Current);
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+
+            navigationSource.RemoveSources(-1); // do nothing
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+
+            navigationSource.RemoveSources(1); // B
+            Assert.AreEqual(0, navigationSource.CurrentIndex); // decremented
+            Assert.AreEqual(sourceA, navigationSource.Current);// changed to A
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+
+            navigationSource.RemoveSources(0);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex); // decremented
+            Assert.AreEqual(null, navigationSource.Current);// changed to null
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_Move()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            var sourceD = navigationSource.AddNewSource(typeof(NavSourceViewD), "p4");
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(4, navigationSource.Sources.Count);
+            Assert.AreEqual(4, navigationSource.Entries.Count);
+            Assert.AreEqual(sourceA, navigationSource.Sources.ElementAt(0));
+            Assert.AreEqual(sourceB, navigationSource.Sources.ElementAt(1));
+            Assert.AreEqual(sourceC, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(sourceD, navigationSource.Sources.ElementAt(3));
+            Assert.AreEqual(typeof(NavSourceViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(typeof(NavSourceViewD), navigationSource.Entries.ElementAt(3).SourceType);
+            Assert.AreEqual("p4", navigationSource.Entries.ElementAt(3).Parameter);
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.MoveTo(1);
+
+            Assert.AreEqual(1, firedCount);
+            Assert.AreEqual(true, states[0]);
+
+            navigationSource.MoveTo(2);
+            Assert.AreEqual(1, firedCount);
+            Assert.AreEqual(true, states[0]);
+
+            navigationSource.MoveTo(1);
+            Assert.AreEqual(1, firedCount);
+            Assert.AreEqual(true, states[0]);
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(2, firedCount);
+            Assert.AreEqual(false, states[1]);
+
+            navigationSource.MoveTo(2);
+            Assert.AreEqual(3, firedCount);
+            Assert.AreEqual(true, states[2]);
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(4, firedCount);
+            Assert.AreEqual(false, states[3]);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_Insert_And_Remove()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+
+            navigationSource.MoveTo(0);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2"); // A [B]
+            Assert.AreEqual(0, firedCount); // not change
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+
+            var sourceC = navigationSource.InsertNewSource(0, typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(1, firedCount); // change [C] A [B]
+            Assert.AreEqual(true, states[0]);
+            Assert.AreEqual(true, navigationSource.CanGoBack);
+
+            var sourceD = navigationSource.InsertNewSource(0, typeof(NavSourceViewD), "p4");
+            Assert.AreEqual(1, firedCount); // not change [D C] A [B]
+
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(1, firedCount); // not change [C] A [B]
+
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(2, firedCount); // change A [B]
+            Assert.AreEqual(false, states[1]);
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+
+            navigationSource.RemoveSourceAt(1);
+            Assert.AreEqual(2, firedCount); // not change A
+
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(2, firedCount); // not change null
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_Clear_Not_Fired_If_Not_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+
+            navigationSource.MoveTo(0);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.ClearSources();
+            Assert.AreEqual(0, firedCount); // not change
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_Clear_Fired_If_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2"); // A [B]
+
+            navigationSource.MoveTo(1);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            Assert.AreEqual(0, firedCount);
+            Assert.AreEqual(true, navigationSource.CanGoBack);
+
+            navigationSource.ClearSources();
+            Assert.AreEqual(1, firedCount); // change
+            Assert.AreEqual(false, states[0]);
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_RemoveRange_Not_Fired_If_Not_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+
+            navigationSource.MoveTo(0);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.RemoveSources(0);
+            Assert.AreEqual(0, firedCount); // not change
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoBack_On_RemoveRange_Fired_If_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2"); // A [B]
+
+            navigationSource.MoveTo(1);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoBackChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoBack);
+            };
+
+            Assert.AreEqual(0, firedCount);
+            Assert.AreEqual(true, navigationSource.CanGoBack);
+
+            navigationSource.RemoveSources(0);
+            Assert.AreEqual(1, firedCount); // change
+            Assert.AreEqual(false, states[0]);
+            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoForward_On_Insert_And_Remove()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            //Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            navigationSource.MoveTo(0);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoForwardChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoForward);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            var sourceB = navigationSource.InsertNewSource(0, typeof(NavSourceViewB), "p2");
+            Assert.AreEqual(0, firedCount); // not change [B] A
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
+            Assert.AreEqual(1, firedCount); // change [B] A [C]
+            Assert.AreEqual(true, states[0]);
+            Assert.AreEqual(true, navigationSource.CanGoForward);
+
+            var sourceD = navigationSource.AddNewSource(typeof(NavSourceViewD), "p4");
+            Assert.AreEqual(1, firedCount); // not change [B] A [C D]
+
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(1, firedCount); // not change A [C D]
+
+            navigationSource.RemoveSourceAt(2);
+            Assert.AreEqual(1, firedCount); // not change A [C]
+
+            navigationSource.RemoveSourceAt(1);
+            Assert.AreEqual(2, firedCount); // change A
+            Assert.AreEqual(false, states[1]);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            navigationSource.RemoveSourceAt(0);
+            Assert.AreEqual(2, firedCount); // not change null
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoForward_On_Clear_Not_Fired_If_Not_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+
+            navigationSource.MoveTo(1);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoForwardChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoForward);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.ClearSources();
+            Assert.AreEqual(0, firedCount); // not change
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoForward_On_Clear_Fired_If_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(true, navigationSource.CanGoForward);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoForwardChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoForward);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.ClearSources();
+            Assert.AreEqual(1, firedCount); 
+            Assert.AreEqual(false, states[0]);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoForward_On_RemoveRange_Not_Fired_If_Not_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+
+            navigationSource.MoveTo(1);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoForwardChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoForward);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.RemoveSources(0);
+            Assert.AreEqual(0, firedCount); // not change
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        [TestMethod]
+        public void CheckCanGoForward_On_RemoveRange_Fired_If_Change()
+        {
+            var navigationSource = new NavigationSource();
+
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+
+            var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
+            var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(true, navigationSource.CanGoForward);
+
+            int firedCount = 0;
+            List<bool> states = new List<bool>();
+            navigationSource.CanGoForwardChanged += (s, e) =>
+            {
+                firedCount += 1;
+                states.Add(e.CanGoForward);
+            };
+
+            Assert.AreEqual(0, firedCount);
+
+            navigationSource.RemoveSources(0);
+            Assert.AreEqual(1, firedCount); // not change
+            Assert.AreEqual(false, states[0]);
+            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(0, navigationSource.Sources.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
+            Assert.AreEqual(-1, navigationSource.CurrentIndex);
+        }
+
+        // can go back => current index > 0
+        // can go forward => currentIndex < this.sources.Count - 1
 
         [TestMethod]
         public void Navigate_With_Source_Name()
@@ -19,9 +850,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
 
@@ -41,11 +870,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(1, navigationSource.Sources.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source);
-            Assert.AreEqual(null, navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual(null, navigationSource.Entries.ElementAt(0).Parameter);
 
             SourceResolver.ClearTypesForNavigation();
         }
@@ -57,9 +884,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
 
@@ -78,12 +903,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), currentSource.GetType());
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source);
-            Assert.AreEqual("p1", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p1", navigationSource.Entries.ElementAt(0).Parameter);
 
             SourceResolver.ClearTypesForNavigation();
         }
@@ -95,9 +918,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.CActivate = false;
@@ -113,9 +934,6 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             navigationSource.Navigate(typeof(MyViewModelNavigationAwareAndGuardsStatic), "p2");
@@ -131,12 +949,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), currentSource.GetType());
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source);
-            Assert.AreEqual("p2", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(0).Parameter);
 
             // can deactivate
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
@@ -151,12 +967,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, MyViewModelNavigationAwareAndGuardsStatic.POnNavigatedTo);
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source); // history
-            Assert.AreEqual("p2", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p2", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             MyViewModelNavigationAwareAndGuardsStatic2.Reset();
@@ -177,12 +992,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var nextSource = navigationSource.Current;
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
             Assert.AreEqual(nextSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic2), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(nextSource, navigationSource.History.Current.Source); // history
-            Assert.AreEqual("p4", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic2), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p4", navigationSource.Entries.ElementAt(1).Parameter);
         }
 
         [TestMethod]
@@ -192,9 +1005,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
@@ -218,9 +1029,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
@@ -243,9 +1052,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
@@ -269,13 +1076,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), currentSource.GetType());
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source);
-            Assert.AreEqual("p3", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
-
+            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(0).Parameter);
 
             // can deactivate
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
@@ -304,12 +1108,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, MyViewModelNavigationAwareAndGuardsStatic2.POnNavigatedTo);
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source); // history
-            Assert.AreEqual("p3", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(0).Parameter);
 
             MYVIEWWITHViewModelNavigationAwareAndGuards.Reset();
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
@@ -337,12 +1139,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, MyViewModelNavigationAwareAndGuardsStatic2.POnNavigatedTo);
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source); // history
-            Assert.AreEqual("p3", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MYVIEWWITHViewModelNavigationAwareAndGuards), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("p3", navigationSource.Entries.ElementAt(0).Parameter);
 
             MyViewModelNavigationAwareAndGuardsStatic.Reset();
             MyViewModelNavigationAwareAndGuardsStatic2.Reset();
@@ -369,12 +1169,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var nextSource = navigationSource.Current;
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
             Assert.AreEqual(nextSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic2), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(nextSource, navigationSource.History.Current.Source); // history
-            Assert.AreEqual("p5", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyViewModelNavigationAwareAndGuardsStatic2), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("p5", navigationSource.Entries.ElementAt(1).Parameter);
         }
 
         [TestMethod]
@@ -384,12 +1182,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -402,27 +1195,18 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(1, navigationSource.Sources.Count);
             Assert.AreEqual(navigationSource.Current, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(navigationSource.Current, navigationSource.History.Current.Source);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("A", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
 
             navigationSource.Navigate(typeof(MyNavViewB), "B");
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(2, navigationSource.Sources.Count);
             Assert.AreEqual(navigationSource.Current, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(navigationSource.Current, navigationSource.History.Current.Source);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("B", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("B", navigationSource.Entries.ElementAt(1).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex - 1).GetType());
 
@@ -431,14 +1215,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(2, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(3, navigationSource.Sources.Count);
             Assert.AreEqual(currentSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewC), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(currentSource, navigationSource.History.Current.Source);
-            Assert.AreEqual(2, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("C", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("C", navigationSource.Entries.ElementAt(2).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewB), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex - 1).GetType());
 
@@ -625,14 +1404,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(3, navigationSource.Sources.Count);
             Assert.AreEqual(prevSource, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(prevSource, navigationSource.History.Current.Source);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("B", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(typeof(MyNavViewC), navigationSource.History.Next.SourceType);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("B", navigationSource.Entries.ElementAt(1).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex - 1).GetType());
             Assert.AreEqual(typeof(MyNavViewC), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex + 1).GetType());
@@ -821,14 +1595,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(2, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(3, navigationSource.Sources.Count);
             Assert.AreEqual(s2, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewC), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s2, navigationSource.History.Current.Source);
-            Assert.AreEqual(2, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("C", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("C", navigationSource.Entries.ElementAt(2).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewB), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex - 1).GetType());
 
@@ -1015,14 +1784,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(3, navigationSource.Sources.Count);
             Assert.AreEqual(s3, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s3, navigationSource.History.Current.Source);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("A", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Next.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewB), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex + 1).GetType());
         }
@@ -1034,12 +1798,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1062,14 +1821,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
             Assert.AreEqual(typeof(MyNavViewB), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex + 1).GetType());
             Assert.AreEqual(typeof(MyNavViewC), navigationSource.Sources.ElementAt(navigationSource.CurrentIndex + 2).GetType());
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("A", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(typeof(MyNavViewB), navigationSource.History.Next.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
 
             navigationSource.Navigate(typeof(MyNavViewD), "D");
             // [A] D
@@ -1079,14 +1833,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(typeof(MyNavViewD), s2.GetType());
             Assert.AreEqual(s2, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewD), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s2, navigationSource.History.Current.Source);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("D", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewD), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("D", navigationSource.Entries.ElementAt(1).Parameter);
         }
 
         [TestMethod]
@@ -1096,12 +1845,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1121,14 +1865,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.Sources.Count);
             Assert.AreEqual(s1, navigationSource.Sources.ElementAt(navigationSource.CurrentIndex));
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual("A", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Root.SourceType);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
         }
 
         [TestMethod]
@@ -1138,12 +1877,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1156,15 +1890,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.Navigate(typeof(MyNavViewB), "B");
             navigationSource.Navigate(typeof(MyNavViewC), "C");
 
-            navigationSource.Clear();
+            navigationSource.ClearSources();
             // A [B C]
             var s1 = navigationSource.Current;
             Assert.AreEqual(-1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(null, navigationSource.Current);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
         }
 
         [TestMethod]
@@ -1174,12 +1906,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1195,12 +1922,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Current.GetType());
             Assert.AreEqual(1, navigationSource.Sources.Count);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual("B", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(1, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("B", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
         }
 
         [TestMethod]
@@ -1210,12 +1934,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1232,12 +1951,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Current.GetType());
             Assert.AreEqual(2, navigationSource.Sources.Count);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual("C", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("C", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
         }
 
         [TestMethod]
@@ -1247,12 +1963,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1271,12 +1982,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Current.GetType());
             Assert.AreEqual(2, navigationSource.Sources.Count);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual(null, navigationSource.History.Current.Parameter);
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual(null, navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
 
             SourceResolver.ClearTypesForNavigation();
         }
@@ -1289,12 +1997,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1313,12 +2016,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Current.GetType());
             Assert.AreEqual(2, navigationSource.Sources.Count);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(s1, navigationSource.History.Current.Source);
-            Assert.AreEqual("C", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(2, navigationSource.History.Entries.Count);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Previous.SourceType);
+            Assert.AreEqual(typeof(MyViewModelRedirect), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("C", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
 
             SourceResolver.ClearTypesForNavigation();
         }
@@ -1330,12 +2030,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.IsNull(navigationSource.Current);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
             Assert.AreEqual(0, navigationSource.Sources.Count);
-            Assert.AreEqual(null, navigationSource.History.Current);
-            Assert.AreEqual(-1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(0, navigationSource.History.Entries.Count);
-            Assert.AreEqual(null, navigationSource.History.Root);
-            Assert.AreEqual(null, navigationSource.History.Next);
-            Assert.AreEqual(null, navigationSource.History.Previous);
+            Assert.AreEqual(0, navigationSource.Entries.Count);
 
             MyNavViewA.Reset();
             MyNavViewModelA.Reset();
@@ -1356,55 +2051,105 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
             Assert.AreEqual(typeof(MyNavViewA), navigationSource.Current.GetType());
             Assert.AreEqual(3, navigationSource.Sources.Count);
-            Assert.AreEqual(0, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(typeof(MyNavViewA), navigationSource.History.Current.SourceType);
-            Assert.AreEqual(navigationSource.Current, navigationSource.History.Current.Source);
-            Assert.AreEqual("A", navigationSource.History.Current.Parameter);
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
         }
 
         [TestMethod]
         public void Sync_With_History()
         {
             var navigationSource = new NavigationSource();
-            var history = new NavigationHistory();
-            var eA = new NavigationEntry(typeof(MyNavViewA), new MyNavViewA(), "A");
-            var eB = new NavigationEntry(typeof(MyNavViewB), new MyNavViewB(), "B");
-            var eC = new NavigationEntry(typeof(MyNavViewC), new MyNavViewC(), "C");
-            history.Navigate(eA);
-            history.Navigate(eB);
-            history.Navigate(eC);
-            history.GoBack(null);
-            Assert.AreEqual(3, history.Entries.Count);
-            Assert.AreEqual(eA, history.Entries.ElementAt(0));
-            Assert.AreEqual(eB, history.Entries.ElementAt(1));
-            Assert.AreEqual(eC, history.Entries.ElementAt(2));
-            Assert.AreEqual(1, history.CurrentIndex);
-            Assert.AreEqual(eB, history.Current);
+            var history = new NavigationEntryCollection();
+            var eA = new NavigationEntry(typeof(MyNavViewA), "A");
+            var eB = new NavigationEntry(typeof(MyNavViewB), "B");
+            var eC = new NavigationEntry(typeof(MyNavViewC), "C");
+            history.Add(eA);
+            history.Add(eB);
+            history.Add(eC);
+            Assert.AreEqual(3, history.Count);
+            Assert.AreEqual(eA, history.ElementAt(0));
+            Assert.AreEqual(eB, history.ElementAt(1));
+            Assert.AreEqual(eC, history.ElementAt(2));
 
-            navigationSource.Sync(history);
+            var sources = new List<object> { new MyNavViewA(), new MyNavViewB(), new MyNavViewC() };
 
-            Assert.AreEqual(3, navigationSource.History.Entries.Count);
-            Assert.AreEqual(eA.SourceType, navigationSource.History.Entries.ElementAt(0).SourceType);
-            Assert.AreEqual(eA.SourceType, navigationSource.History.Entries.ElementAt(0).Source.GetType());
-            Assert.AreEqual(eA.Parameter, navigationSource.History.Entries.ElementAt(0).Parameter);
-            Assert.AreEqual(eB.SourceType, navigationSource.History.Entries.ElementAt(1).SourceType);
-            Assert.AreEqual(eB.SourceType, navigationSource.History.Entries.ElementAt(1).Source.GetType());
-            Assert.AreEqual(eB.Parameter, navigationSource.History.Entries.ElementAt(1).Parameter);
-            Assert.AreEqual(eC.SourceType, navigationSource.History.Entries.ElementAt(2).SourceType);
-            Assert.AreEqual(eC.SourceType, navigationSource.History.Entries.ElementAt(2).Source.GetType());
-            Assert.AreEqual(eC.Parameter, navigationSource.History.Entries.ElementAt(2).Parameter);
-            Assert.AreEqual(1, navigationSource.History.CurrentIndex);
-            Assert.AreEqual(eB.SourceType, navigationSource.History.Current.SourceType);
-            Assert.AreEqual(eB.SourceType, navigationSource.History.Current.Source.GetType());
-            Assert.AreEqual(eB.Parameter, navigationSource.History.Current.Parameter);
+            navigationSource.Sync(history, sources, 1);
+
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+            Assert.AreEqual(eA.SourceType, navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual(eA.Parameter, navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(eB.SourceType, navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual(eB.Parameter, navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(eC.SourceType, navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual(eC.Parameter, navigationSource.Entries.ElementAt(2).Parameter);
 
             Assert.AreEqual(3, navigationSource.Sources.Count);
-            Assert.AreEqual(navigationSource.History.Entries.ElementAt(0).Source, navigationSource.Sources.ElementAt(0));
-            Assert.AreEqual(navigationSource.History.Entries.ElementAt(1).Source, navigationSource.Sources.ElementAt(1));
-            Assert.AreEqual(navigationSource.History.Entries.ElementAt(2).Source, navigationSource.Sources.ElementAt(2));
+            Assert.AreEqual(eA.SourceType, navigationSource.Sources.ElementAt(0).GetType());
+            Assert.AreEqual(eB.SourceType, navigationSource.Sources.ElementAt(1).GetType());
+            Assert.AreEqual(eC.SourceType, navigationSource.Sources.ElementAt(2).GetType());
+
             Assert.AreEqual(1, navigationSource.CurrentIndex);
-            Assert.AreEqual(navigationSource.History.Entries.ElementAt(1).Source, navigationSource.Current);
+        }
+
+        [TestMethod]
+        public void DoNotClear_WithClearSources_OnNavigate_False()
+        {
+            var navigationSource = new NavigationSource();
+            navigationSource.ClearSourcesOnNavigate = false;
+
+            navigationSource.Navigate(typeof(NavSourceViewA), "A");
+            navigationSource.Navigate(typeof(NavSourceViewB), "B");
+            navigationSource.Navigate(typeof(NavSourceViewC), "C");
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(0, navigationSource.CurrentIndex);
+            navigationSource.Navigate(typeof(NavSourceViewD), "D");
+
+            Assert.AreEqual(4, navigationSource.Sources.Count);
+            Assert.AreEqual(4, navigationSource.Entries.Count);
+
+            navigationSource.MoveTo(3);
+            Assert.AreEqual(3, navigationSource.CurrentIndex);
+
+            navigationSource.NavigateToRoot();
+            Assert.AreEqual(0, navigationSource.CurrentIndex);
+            Assert.AreEqual(4, navigationSource.Sources.Count);
+            Assert.AreEqual(4, navigationSource.Entries.Count);
+        }
+
+        [TestMethod]
+        public void Clear_WithClearSources_OnNavigate_True()
+        {
+            var navigationSource = new NavigationSource();
+            navigationSource.ClearSourcesOnNavigate = true;
+
+            navigationSource.Navigate(typeof(NavSourceViewA), "A");
+            navigationSource.Navigate(typeof(NavSourceViewB), "B");
+            navigationSource.Navigate(typeof(NavSourceViewC), "C");
+            Assert.AreEqual(3, navigationSource.Sources.Count);
+            Assert.AreEqual(3, navigationSource.Entries.Count);
+
+            navigationSource.MoveTo(0);
+            Assert.AreEqual(0, navigationSource.CurrentIndex);
+            navigationSource.Navigate(typeof(NavSourceViewD), "D");
+
+            Assert.AreEqual(2, navigationSource.Sources.Count);
+            Assert.AreEqual(2, navigationSource.Entries.Count);
+
+            navigationSource.Navigate(typeof(NavSourceViewA), "A");
+            navigationSource.Navigate(typeof(NavSourceViewB), "B");
+            navigationSource.Navigate(typeof(NavSourceViewC), "C");
+
+            navigationSource.MoveTo(3);
+            Assert.AreEqual(3, navigationSource.CurrentIndex);
+
+            navigationSource.NavigateToRoot();
+            Assert.AreEqual(0, navigationSource.CurrentIndex);
+            Assert.AreEqual(1, navigationSource.Sources.Count);
+            Assert.AreEqual(1, navigationSource.Entries.Count);
         }
 
         [TestMethod]
@@ -1935,4 +2680,56 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
     }
 
+
+    public class NavSourceViewA : UserControl
+    {
+        public NavSourceViewA()
+        {
+            DataContext = new NavSourceViewAViewModel();
+        }
+    }
+
+    public class NavSourceViewAViewModel
+    {
+
+    }
+
+    public class NavSourceViewB : UserControl
+    {
+        public NavSourceViewB()
+        {
+            DataContext = new NavSourceViewBViewModel();
+        }
+    }
+
+    public class NavSourceViewBViewModel
+    {
+
+    }
+
+    public class NavSourceViewC : UserControl
+    {
+        public NavSourceViewC()
+        {
+            DataContext = new NavSourceViewCViewModel();
+        }
+    }
+
+    public class NavSourceViewCViewModel
+    {
+
+    }
+
+    public class NavSourceViewD : UserControl
+    {
+        public NavSourceViewD()
+        {
+            DataContext = new NavSourceViewDViewModel();
+        }
+    }
+
+    public class NavSourceViewDViewModel
+    {
+
+    }
 }

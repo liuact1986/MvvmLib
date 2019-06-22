@@ -25,9 +25,11 @@ namespace MvvmLib.Interactivity
         /// </summary>
         protected override void OnAttach()
         {
-            CheckAssociatedObjectType();
-
-            ((Selector)associatedObject).SelectionChanged += OnSelectionChanged;
+            if (!IsInDesignMode(this))
+            {
+                CheckAssociatedObjectType();
+                ((Selector)associatedObject).SelectionChanged += OnSelectionChanged;
+            }
         }
 
         /// <summary>
@@ -59,10 +61,7 @@ namespace MvvmLib.Interactivity
                     if (item != null)
                     {
                         if (item == removedItem)
-                        {
-                            if (item is IIsSelected)
-                                ((IIsSelected)item).IsSelected = false;
-                        }
+                            TrySetSelected(item, false);
                     }
                 }
             }
@@ -72,13 +71,24 @@ namespace MvvmLib.Interactivity
             {
                 foreach (var item in items)
                 {
-                    // item => view or view model
                     if (item == selectedItem)
-                    {
-                        if (item is IIsSelected context)
-                            ((IIsSelected)item).IsSelected = true;
-                    }
+                        TrySetSelected(item, true);
                 }
+            }
+        }
+
+        private void TrySetSelected(object item, bool isSelected)
+        {
+            var view = item as FrameworkElement;
+            if (view != null)
+            {
+                if (view.DataContext is IIsSelected)
+                    ((IIsSelected)view.DataContext).IsSelected = isSelected;
+            }
+            else
+            {
+                if (item is IIsSelected)
+                    ((IIsSelected)item).IsSelected = isSelected;
             }
         }
     }

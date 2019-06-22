@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace MvvmLib.Wpf.Tests.Views
 {
-    public class MyViewA
+    public class MyViewA : UserControl
     {
 
     }
@@ -14,7 +15,7 @@ namespace MvvmLib.Wpf.Tests.Views
 
 namespace MvvmLib.Wpf.Tests.View
 {
-    public class MyViewB
+    public class MyViewB : UserControl
     {
 
     }

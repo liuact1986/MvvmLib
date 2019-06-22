@@ -79,8 +79,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Label FontWeight="SemiBold">HISTORY</Label>
-                <ListView ItemsSource="{Binding Navigation.History.Entries}" 
-                          SelectedItem="{Binding Navigation.History.Current, Mode=OneWay}"
+                <ListView ItemsSource="{Binding Navigation.Entries}" 
+                          SelectedIndex="{Binding Navigation.CurrentIndex, Mode=OneWay}"
                           ItemTemplate="{StaticResource StackTemplate}"
                           ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
                           Margin="5" Grid.Row="1" BorderThickness="0" />
@@ -96,11 +96,6 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-
-                <Label FontWeight="SemiBold" Grid.Row="2">CURRENT ENTRY</Label>
-                <StackPanel Grid.Row="3">
-                    <TextBlock Text="{Binding Navigation.History.Current.SourceType.Name}"  Margin="5"/>
-                </StackPanel>
 
                 <Label FontWeight="SemiBold" Grid.Column="1" Grid.Row="2">CURRENT INDEX</Label>
                 <StackPanel  Grid.Column="1" Grid.Row="3">

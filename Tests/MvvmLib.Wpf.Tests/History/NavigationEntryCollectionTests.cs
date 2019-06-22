@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmLib.History;
 using MvvmLib.Navigation;
 
 namespace MvvmLib.Wpf.Tests.History
@@ -31,8 +28,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(0, collection.Count);
 
             // Add index 0
-            var viewA = new ViewA();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            var eA = new NavigationEntry(typeof(ViewA),  "A");
             collection.Add(eA);
             Assert.AreEqual(1, collection.Count);
             Assert.AreEqual(eA, collection[0]);
@@ -45,8 +41,7 @@ namespace MvvmLib.Wpf.Tests.History
             Assert.AreEqual(1, countString);
 
             // Add index 1
-            var viewB = new ViewB();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            var eB = new NavigationEntry(typeof(ViewB),  "B");
             collection.Add(eB);
             Assert.AreEqual(2, collection.Count);
             Assert.AreEqual(eA, collection[0]);
@@ -61,7 +56,7 @@ namespace MvvmLib.Wpf.Tests.History
 
             // insert index 1
             var viewC = new ViewC();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            var eC = new NavigationEntry(typeof(ViewC),  "C");
             collection.Insert(1, eC);
             Assert.AreEqual(3, collection.Count);
             Assert.AreEqual(eA, collection[0]);
@@ -86,12 +81,10 @@ namespace MvvmLib.Wpf.Tests.History
             NotifyCollectionChangedEventArgs ev = null;
 
             // Add index 0
-            var viewA = new ViewA();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            var eA = new NavigationEntry(typeof(ViewA),  "A");
             collection.Add(eA);
             // Add index 1
-            var viewB = new ViewB();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            var eB = new NavigationEntry(typeof(ViewB),  "B");
             collection.Add(eB);
 
             collection.CollectionChanged += (s, e) =>
@@ -100,9 +93,7 @@ namespace MvvmLib.Wpf.Tests.History
                 ev = e;
             };
 
-            var viewC = new ViewC();
-            var contextC = new ViewCViewModel();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            var eC = new NavigationEntry(typeof(ViewC),  "C");
             collection[1] = eC;
 
             Assert.AreEqual(2, collection.Count);
@@ -128,15 +119,12 @@ namespace MvvmLib.Wpf.Tests.History
             NotifyCollectionChangedEventArgs ev = null;
 
             // Add index 0
-            var viewA = new ViewA();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            var eA = new NavigationEntry(typeof(ViewA),  "A");
             collection.Add(eA);
             // Add index 1
-            var viewB = new ViewB();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            var eB = new NavigationEntry(typeof(ViewB),  "B");
             collection.Add(eB);
-            var viewC = new ViewC();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            var eC = new NavigationEntry(typeof(ViewC),  "C");
             collection.Add(eC);
 
             Assert.AreEqual(3, collection.Count);
@@ -204,12 +192,10 @@ namespace MvvmLib.Wpf.Tests.History
             NotifyCollectionChangedEventArgs ev = null;
 
             // Add index 0
-            var viewA = new ViewA();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            var eA = new NavigationEntry(typeof(ViewA), "A");
             collection.Add(eA);
             // Add index 1
-            var viewB = new ViewB();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            var eB = new NavigationEntry(typeof(ViewB), "B");
             collection.Add(eB);
 
             collection.CollectionChanged += (s, e) =>
@@ -243,16 +229,12 @@ namespace MvvmLib.Wpf.Tests.History
             int count = 0;
             NotifyCollectionChangedEventArgs ev = null;
 
-            var viewA = new ViewA();
-            var eA = new NavigationEntry(typeof(ViewA), viewA, "A");
+            var eA = new NavigationEntry(typeof(ViewA),  "A");
             collection.Add(eA);
             // Add index 1
-            var viewB = new ViewB();
-            var contextB = new ViewBViewModel();
-            var eB = new NavigationEntry(typeof(ViewB), viewB, "B");
+            var eB = new NavigationEntry(typeof(ViewB),  "B");
             collection.Add(eB);
-            var viewC = new ViewC();
-            var eC = new NavigationEntry(typeof(ViewC), viewC, "C");
+            var eC = new NavigationEntry(typeof(ViewC),  "C");
             collection.Add(eC);
             Assert.AreEqual(eA, collection[0]);
             Assert.AreEqual(eB, collection[1]);
@@ -282,4 +264,39 @@ namespace MvvmLib.Wpf.Tests.History
         }
     }
 
+
+    public class ViewA
+    {
+
+    }
+
+    public class ViewB
+    {
+
+    }
+
+    public class ViewC
+    {
+
+    }
+
+    public class ViewD
+    {
+
+    }
+
+    public class ViewE
+    {
+
+    }
+
+    public class ViewF
+    {
+
+    }
+
+    public class ViewG
+    {
+
+    }
 }

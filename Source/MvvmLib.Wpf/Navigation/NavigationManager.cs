@@ -116,6 +116,21 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Creates the navigation sources container.
+        /// </summary>
+        /// <param name="sourceName">The source name</param>
+        /// <returns>The navigation source container</returns>
+        public static NavigationSourceContainer CreateNavigationSources(string sourceName)
+        {
+            if (allNavigationSources.ContainsKey(sourceName))
+                throw new ArgumentException($"A container with the source name '{sourceName}' is already registered");
+
+            var navigationSourceContainer = new NavigationSourceContainer();
+            allNavigationSources.Add(sourceName, navigationSourceContainer);
+            return navigationSourceContainer;
+        }
+
+        /// <summary>
         /// Unregisters all navigation sources for the source name.
         /// </summary>
         /// <param name="sourceName">The source name</param>
@@ -171,7 +186,7 @@ namespace MvvmLib.Navigation
                 else
                 {
                     var defaultNavigationSource = new KeyedNavigationSource(DefaultKeyedNavigationSourceKey);
-                    navigationSourceContainer.Add(defaultNavigationSource);
+                    navigationSourceContainer.Register(defaultNavigationSource);
                     allNavigationSources[sourceName] = navigationSourceContainer;
                     return defaultNavigationSource;
                 }
@@ -180,7 +195,7 @@ namespace MvvmLib.Navigation
             {
                 navigationSourceContainer = new NavigationSourceContainer();
                 var defaultNavigationSource = new KeyedNavigationSource(DefaultKeyedNavigationSourceKey);
-                navigationSourceContainer.Add(defaultNavigationSource);
+                navigationSourceContainer.Register(defaultNavigationSource);
                 allNavigationSources[sourceName] = navigationSourceContainer;
                 return defaultNavigationSource;
             }
@@ -217,12 +232,12 @@ namespace MvvmLib.Navigation
 
             if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
             {
-                navigationSourceContainer.Add(navigationSource);
+                navigationSourceContainer.Register(navigationSource);
             }
             else
             {
                 navigationSourceContainer = new NavigationSourceContainer();
-                navigationSourceContainer.Add(navigationSource);
+                navigationSourceContainer.Register(navigationSource);
                 allNavigationSources[sourceName] = navigationSourceContainer;
             }
         }
@@ -242,9 +257,9 @@ namespace MvvmLib.Navigation
 
             if (allNavigationSources.TryGetValue(sourceName, out NavigationSourceContainer navigationSourceContainer))
             {
-                if (navigationSourceContainer.Contains(navigationSource))
+                if (navigationSourceContainer.IsRegistered(navigationSource))
                 {
-                    return navigationSourceContainer.Remove(navigationSource);
+                    return navigationSourceContainer.Unregister(navigationSource);
                 }
             }
             return false;

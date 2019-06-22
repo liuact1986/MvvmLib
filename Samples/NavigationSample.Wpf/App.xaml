@@ -62,8 +62,9 @@
             <SolidColorBrush x:Key="MenuForeground" Color="White" />
             <SolidColorBrush x:Key="PageHeaderTitleForeground" Color="White" />
 
-            <Style x:Key="Heading" TargetType="{x:Type TextBlock}">
-                <Setter Property="TextBlock.Foreground" Value="#2980b9" />
+            <SolidColorBrush x:Key="Heading" Color="#2980b9" />
+            <Style x:Key="HeadingStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="TextBlock.Foreground" Value="{StaticResource Heading}" />
                 <Setter Property="TextBlock.FontSize" Value="14"/>
                 <Setter Property="FrameworkElement.VerticalAlignment" Value="Center"/>
             </Style>

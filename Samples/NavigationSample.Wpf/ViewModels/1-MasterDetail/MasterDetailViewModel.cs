@@ -29,9 +29,6 @@ namespace NavigationSample.Wpf.ViewModels
 
             Navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
             PeopleListSource = NavigationManager.GetSharedSource<Person>("MasterDetails");
-
-            PeopleListSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
-            Navigation.CurrentChanged += OnNavigationCurrentChanged;
         }
 
         private void SetTitle()
@@ -88,6 +85,10 @@ namespace NavigationSample.Wpf.ViewModels
         public void OnNavigatingTo(NavigationContext navigationContext)
         {
             SetTitle();
+
+            PeopleListSource.SelectedItemChanged += OnDetailsSourceSelectedItemChanged;
+            Navigation.CurrentChanged += OnNavigationCurrentChanged;
+
             Load();
         }
 

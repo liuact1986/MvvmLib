@@ -56,11 +56,10 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Changes the content of the ContentControl.
         /// </summary>
-        /// <param name="index">The new index</param>
-        /// <param name="source">The new content</param>
-        protected override void SetCurrent(int index, object source)
+        /// <param name="source">The new source</param>
+        protected override void SetCurrent(object source)
         {
-            base.SetCurrent(index, source);
+            base.SetCurrent(source);
             this.control.Content = source;
         }
 

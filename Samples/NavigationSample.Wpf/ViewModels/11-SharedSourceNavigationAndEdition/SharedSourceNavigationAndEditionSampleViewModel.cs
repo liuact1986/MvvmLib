@@ -86,8 +86,7 @@ namespace NavigationSample.Wpf.ViewModels
                     FirstName = $"First.{i}",
                     LastName = $"Last.{i}"
                 };
-                viewModel.Person = person; // for demo , load the person with a service from the view model in real app
-                people.Add(viewModel, person.Id); // dictionary of items + parameter passed to INavigationAware functions
+                people.Add(viewModel, person);
             }
             this.PeopleSource.Load(people);
         }
@@ -95,9 +94,7 @@ namespace NavigationSample.Wpf.ViewModels
         private void Add()
         {
             State = DataFormState.IsAdding;
-            var viewModel = this.PeopleSource.CreateNew();
-            viewModel.Person = new PersonModel();
-            this.PeopleSource.Items.Add(viewModel, -1);
+            this.PeopleSource.AddNew(new PersonModel()); // for demo, pass the id and use a data service in real app
             Browser.MoveCurrentToLast();
         }
 
@@ -274,7 +271,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public void OnNavigatingTo(NavigationContext navigationContext)
         {
-            person.Id = (int)navigationContext.Parameter;
+            Person = navigationContext.Parameter as PersonModel;
             this.person.BeginEdit();
         }
 

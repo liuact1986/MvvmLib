@@ -140,6 +140,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | History | The navigation history |
 | CanGoBack | Checks if can go back |
 | CanGoForward | Checks if can go forward |
+| ClearSourcesOnNavigate | By default the sources ("forward stack") are removed on navigate and navigate to root |
 
 | Events | Description |
 | --- | --- |
@@ -238,6 +239,35 @@ The NavigationSource provides some quick Commands
 <!--NavigateToRoot command -->
 <Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" />
 ```
+
+Sources management
+
+| Methods | Description |
+| --- | --- |
+| InsertNewSource | Creates the source with SourceResolver, inject dependencies and inserts the source at the index. The parameter is stored |
+| AddNewSource | Creates the source with SourceResolver, inject dependencies and adds the source. The parameter is stored |
+| RemoveSourceAt | Removes the source at the index |
+| RemoveSource | Removes the source |
+| RemoveSources | Removes the sources from the start index provided to the end |
+| ClearSources | Clears the source collection |
+
+
+Example: insert a source and move to this source
+
+```cs
+var source = Navigation.InsertNewSource(0, typeof(ViewA), "View A Inserted at index 0");
+Navigation.MoveTo(source);
+// or by index
+NavigationMoveTo(0);
+```
+
+Navigation processes
+
+| Process | Methods | Description |
+| --- | --- | --- |
+| "Navigate" | Navigate, NavigateFast, Redirect | Find **selectable** or create **new** instance, **INavigationAware** methods invoked (OnNaviagtingTo and OnNavigatedTo only for new instance) |
+| "Move" | MoveTo, GoBack, GoForward, NavigateToRoot | only **INavigationAware** methods invoked |
+
 
 ### ContentControlNavigationSource
 

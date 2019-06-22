@@ -75,11 +75,6 @@ namespace MvvmLib.Interactivity
         public static readonly DependencyProperty ConverterProperty =
             DependencyProperty.Register("Converter", typeof(IValueConverter), typeof(EventToCommandBehavior), new PropertyMetadata(null));
 
-        private static bool IsInDesignMode(DependencyObject element)
-        {
-            return DesignerProperties.GetIsInDesignMode(element);
-        }
-
         /// <summary>
         /// Creates the <see cref="Freezable"/>.
         /// </summary>

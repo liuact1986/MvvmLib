@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace MvvmLib.Interactivity
 {
@@ -7,6 +8,16 @@ namespace MvvmLib.Interactivity
     /// </summary>
     public abstract class NavigationBehavior : Freezable, IAssociatedObject
     {
+        /// <summary>
+        /// Chekcs if is in design mode.
+        /// </summary>
+        /// <param name="element">The element</param>
+        /// <returns>True if in design mode</returns>
+        protected bool IsInDesignMode(DependencyObject element)
+        {
+            return DesignerProperties.GetIsInDesignMode(element);
+        }
+
         /// <summary>
         /// The associated dependency object.
         /// </summary>
