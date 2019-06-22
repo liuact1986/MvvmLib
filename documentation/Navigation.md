@@ -131,6 +131,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | NavigateToRoot | Navigates to the first source and clears the history |
 | NavigateFast | Useful for navigation cancellation and not recheck guards |
 | MoveTo | Move to the index or the (existing) source |
+| MoveToLast | Move to the last or the source |
 | Sync | Synchronizes the history and sources with the history provided |
 
 | Property | Description |
@@ -268,7 +269,7 @@ Navigation processes
 | Process | Methods | Description |
 | --- | --- | --- |
 | "Navigate" | Navigate, NavigateFast, Redirect | Find the **selectable** (ISelectable) or create a **new** instance, **INavigationAware** methods invoked (OnNavigatingTo and OnNavigatedTo only for new instance) |
-| "Move" | MoveTo, GoBack, GoForward, NavigateToRoot | only **INavigationAware** methods invoked |
+| "Move" | MoveTo, GoBack, GoForward, NavigateToRoot, MoveToLast | Only **INavigationAware** methods invoked |
 
 
 ### ContentControlNavigationSource
