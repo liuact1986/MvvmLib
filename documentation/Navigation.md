@@ -260,7 +260,7 @@ Example: insert and move to a source
 var source = Navigation.InsertNewSource(0, typeof(ViewA), "View A Inserted at index 0");
 Navigation.MoveTo(source);
 // or by index
-NavigationMoveTo(0);
+Navigation.MoveTo(0);
 ```
 
 Navigation processes
