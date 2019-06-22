@@ -138,7 +138,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Sources | The collection of sources |
 | Current | The current source. Can be binded to Content property of ContentControls |
 | CurrentIndex | The index of the current source |
-| History | The navigation history |
+| Entries | The navigation history entries |
 | CanGoBack | Checks if can go back |
 | CanGoForward | Checks if can go forward |
 | ClearSourcesOnNavigate | By default the sources ("forward stack") are removed on navigate and navigate to root |
@@ -146,7 +146,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Events | Description |
 | --- | --- |
 | PropertyChanged | Invoked on property changed (Current, CurrentIndex, etc.) |
-| CollecitonChanged | Invoked on collection changed (Sources) |
+| CollectionChanged | Invoked on collection changed (Sources) |
 | CurrentChanged | Invoked on Current changed |
 | CanGoBackChanged | Invoked on CanGoBack changed |
 | CanGoForwardChanged | Invoked on CanGoForward changed |
@@ -250,11 +250,11 @@ Sources management
 | AddNewSource | Creates the source with SourceResolver, inject dependencies and adds the source. The parameter is stored |
 | RemoveSourceAt | Removes the source at the index |
 | RemoveSource | Removes the source |
-| RemoveSources | Removes the sources from the start index provided to the end |
+| RemoveSources | Removes the sources from the start index to the end (remove range) |
 | ClearSources | Clears the source collection |
 
 
-Example: insert a source and move to this source
+Example: insert and move to a source
 
 ```cs
 var source = Navigation.InsertNewSource(0, typeof(ViewA), "View A Inserted at index 0");
@@ -267,7 +267,7 @@ Navigation processes
 
 | Process | Methods | Description |
 | --- | --- | --- |
-| "Navigate" | Navigate, NavigateFast, Redirect | Find **selectable** or create **new** instance, **INavigationAware** methods invoked (OnNaviagtingTo and OnNavigatedTo only for new instance) |
+| "Navigate" | Navigate, NavigateFast, Redirect | Find the **selectable** (ISelectable) or create a **new** instance, **INavigationAware** methods invoked (OnNavigatingTo and OnNavigatedTo only for new instance) |
 | "Move" | MoveTo, GoBack, GoForward, NavigateToRoot | only **INavigationAware** methods invoked |
 
 

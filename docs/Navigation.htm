@@ -278,8 +278,8 @@ namespace NavigationSample.Wpf.Startup
 	<td>The index of the current source</td>
 </tr>
 <tr>
-	<td>History</td>
-	<td>The navigation history</td>
+	<td>Entries</td>
+	<td>The navigation history entries</td>
 </tr>
 <tr>
 	<td>CanGoBack</td>
@@ -308,7 +308,7 @@ namespace NavigationSample.Wpf.Startup
 	<td>Invoked on property changed (Current, CurrentIndex, etc.)</td>
 </tr>
 <tr>
-	<td>CollecitonChanged</td>
+	<td>CollectionChanged</td>
 	<td>Invoked on collection changed (Sources)</td>
 </tr>
 <tr>
@@ -434,7 +434,7 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 </tr>
 <tr>
 	<td>RemoveSources</td>
-	<td>Removes the sources from the start index provided to the end</td>
+	<td>Removes the sources from the start index to the end (remove range)</td>
 </tr>
 <tr>
 	<td>ClearSources</td>
@@ -442,7 +442,7 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 </tr>
 </tbody>
 </table>
-<p>Example: insert a source and move to this source</p>
+<p>Example: insert and move to a source</p>
 <pre><code class="cs">var source = Navigation.InsertNewSource(0, typeof(ViewA), &quot;View A Inserted at index 0&quot;);
 Navigation.MoveTo(source);
 // or by index
@@ -462,7 +462,7 @@ NavigationMoveTo(0);
 <tr>
 	<td>&quot;Navigate&quot;</td>
 	<td>Navigate, NavigateFast, Redirect</td>
-	<td>Find <strong>selectable</strong> or create <strong>new</strong> instance, <strong>INavigationAware</strong> methods invoked (OnNaviagtingTo and OnNavigatedTo only for new instance)</td>
+	<td>Find the <strong>selectable</strong> (ISelectable) or create a <strong>new</strong> instance, <strong>INavigationAware</strong> methods invoked (OnNavigatingTo and OnNavigatedTo only for new instance)</td>
 </tr>
 <tr>
 	<td>&quot;Move&quot;</td>
