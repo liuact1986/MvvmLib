@@ -130,7 +130,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | GoForward | Navigates to the next source |
 | NavigateToRoot | Navigates to the first source and clears the history |
 | NavigateFast | Useful for navigation cancellation and not recheck guards |
-| MoveTo | Move to the index or the the (existing) source |
+| MoveTo | Move to the index or the (existing) source |
 | Sync | Synchronizes the history and sources with the history provided |
 
 | Property | Description |
