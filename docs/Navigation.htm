@@ -248,6 +248,10 @@ namespace NavigationSample.Wpf.Startup
 	<td>Useful for navigation cancellation and not recheck guards</td>
 </tr>
 <tr>
+	<td>MoveTo</td>
+	<td>Move to the index or the the (existing) source</td>
+</tr>
+<tr>
 	<td>Sync</td>
 	<td>Synchronizes the history and sources with the history provided</td>
 </tr>
@@ -383,6 +387,7 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 <li>GoBackCommand</li>
 <li>GoForwardCommand</li>
 <li>RedirectCommand</li>
+<li>MoveToIndexCommand and MoveToCommand</li>
 </ul>
 <p>Bind the NavigationSource <strong>Current</strong> property to a <strong>ContentControl</strong></p>
 <pre><code class="xml">&lt;ContentControl Content=&quot;{Binding Navigation.Current}&quot; /&gt;
