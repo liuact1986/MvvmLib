@@ -36,7 +36,7 @@ namespace AdaptiveSample.Views
 
         private void OnGoBack(object sender, RoutedEventArgs e)
         {
-            Navigation.GoBack();
+            Navigation.MoveToPrevious();
         }
     }
 }

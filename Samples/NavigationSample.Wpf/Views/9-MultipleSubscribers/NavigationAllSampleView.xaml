@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="NavigationSample.Wpf.Views.NavigationAllSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
+             xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
+             xmlns:mvvmLib="http://mvvmlib.com/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="EditTemplate">
+            <Grid>
+                <StackPanel Margin="20">
+                    <TextBlock Text="MESSAGE" Style="{StaticResource HeadingStyle}"/>
+                    <TextBox Text="{Binding DataContext.Message, UpdateSourceTrigger=PropertyChanged}" Margin="0 2 0 8"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ViewModelEditTemplate">
+            <Grid>
+                <StackPanel Margin="20">
+                    <TextBlock Text="MESSAGE" Style="{StaticResource HeadingStyle}"/>
+                    <TextBox Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}" Margin="0 2 0 8"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <views:DetailsTemplateSelector x:Key="TemplateSelector" 
+                                       EditTemplate="{StaticResource EditTemplate}" 
+                                       ViewModelEditTemplate="{StaticResource ViewModelEditTemplate}" />
+        
+    </UserControl.Resources>
+    
+    <Grid Background="{StaticResource PageBackground}">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+        </Grid.Effect>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+            <Button Command="{Binding Navigation.MoveToFirstCommand}" Margin="5" ToolTip="Root">
+                <controls:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToPreviousCommand}" Margin="5" ToolTip="Back">
+                <controls:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToNextCommand}" Margin="5" ToolTip="Forward">
+                <controls:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToLastCommand}" Margin="5" ToolTip="Last">
+                <controls:MaterialDesignIcon Icon="ArrowRightBoldHexagonOutline" Brush="{StaticResource HighlightBrush}"/>
+            </Button>
+            <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
+            <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5"/>
+            <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5"/>
+            <Button Content="ViewModel B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewBViewModel}" Margin="5"/>
+            <Button Content="ViewModel C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}" Margin="5" />
+            
+            <Button Content="Insert" Command="{Binding InsertCommand}" />
+            <Button Content="Clear" Command="{Binding ClearCommand}" />
+            <Button Click="OnNewWindowClick" Margin="5">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="MonitorMultiple" Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <TextBlock Text="New Window" Margin="5,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Click="OnSyncClick" Margin="5">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="SyncAlert"  Height="15" Brush="{StaticResource HighlightBrush}"/>
+                    <TextBlock Text="Sync" Margin="5,0"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!--<ContentControl Content="{Binding Navigation[0].Current, Mode=OneWay}" mvv  Grid.Row="1" />-->
+        <ContentControl mvvmLib:NavigationManager.SourceName="MultipleSubscribersSample"  Grid.Row="1" />
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TabControl ItemsSource="{Binding Navigation[1].Sources}" 
+                        SelectedItem="{Binding Navigation[1].Current, Mode=OneWay}"
+                        ContentTemplateSelector="{StaticResource TemplateSelector}">
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Header" Value="{Binding DataContext.Message, FallbackValue='TabItem', TargetNullValue='TabItem'}"/>
+                    </Style>
+                </TabControl.ItemContainerStyle>
+            </TabControl>
+
+            <ListView ItemsSource="{Binding Navigation[2].Sources}" 
+                      SelectedItem="{Binding Navigation[2].Current, Mode=OneWay}"
+                      SelectionMode="Multiple" 
+                      Grid.Row="1">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <mvvmLib:Interaction.Behaviors>
+                    <mvvmLib:SelectionSyncBehavior />
+                </mvvmLib:Interaction.Behaviors>
+            </ListView>
+        </Grid>
+    </Grid>
+</UserControl>

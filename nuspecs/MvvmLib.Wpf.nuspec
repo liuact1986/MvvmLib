@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.10.0.0</version>
+    <version>0.11.0.1</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -12,15 +12,15 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MvvmLib Navigation, UI Composition and Mvvm classes.
 
-* NavigationSource: source for ContentControls
+* NavigationSource: source for ContentControls, etc.
 * SharedSource: source for ItemsControls, Selectors (ListBox, TabControl, etc.)
 * AnimatableContentControl, TransitioningContentControl, TransitioningItemsControl: allow to animate content
 * NavigationManager: allows to manage NavigationSources and SharedSources
-* NavigationBrowser: allows to browse items sources.
+* NavigationBrowser: allows to browse enumerables, edit lists and collections.
 * INavigationAware: allows view models to be notified on navigate
 * ICanActivate, ICanDeactivate: allow to cancel navigation
 * IIsSelected, ISelectable, SelectionSyncBehavior: allow to select a view 
-* Navigation Behaviors: SelectionSyncBehavior and EventToCommandBehavior
+* Behaviors: SelectionSyncBehavior, EventToCommandBehavior, EventToMethodBehavior
 * ViewModelLocator: allows to resolve ViewModel for views
 * IIsLoaded: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * BootstrapperBase: base class for Bootstrapper
@@ -29,7 +29,7 @@
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>
-      <dependency id="MvvmLib.Core" version="0.4.0.1" />
+      <dependency id="MvvmLib.Core" version="0.4.1.0" />
     </dependencies>
   </metadata>
   <files>

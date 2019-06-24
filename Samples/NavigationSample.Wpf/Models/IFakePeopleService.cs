@@ -6,5 +6,6 @@ namespace NavigationSample.Wpf.Models
     {
         IList<Person> GetPeople();
         Person GetPersonById(int id);
+        void Add(Person person);
     }
 }

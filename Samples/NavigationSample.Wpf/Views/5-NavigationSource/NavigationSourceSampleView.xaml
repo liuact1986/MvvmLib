@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="NavigationSample.Wpf.Views.NavigationSourceSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:NavigationSample.Wpf.Views"
+             xmlns:viewModels="clr-namespace:NavigationSample.Wpf.ViewModels"
+             xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
+             x:Name="ThisControl"
+             xmlns:mvvmLib="http://mvvmlib.com/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="{StaticResource PageBackground}">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
+        </Grid.Effect>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <controls:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
+            <TextBlock Text="The back and forward buttons have a context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <WrapPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Command="{Binding Navigation.MoveToFirstCommand}" Height="42">
+                <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToPreviousCommand}"  Height="42">
+                <controls:MaterialDesignIcon Icon="MenuLeft" Height="32" Brush="#2980b9"/>
+                <Button.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding BackStack}" IsOpen="True">
+                        <ContextMenu.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding  DisplayName}" Click="OnMenuItemClick"/>
+                            </DataTemplate>
+                        </ContextMenu.ItemTemplate>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToNextCommand}"  Height="42">
+                <controls:MaterialDesignIcon Icon="MenuRight" Height="32" Brush="#2980b9"/>
+                <Button.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding ForwardStack}" IsOpen="True">
+                        <ContextMenu.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding DisplayName}" 
+                                          Click="OnMenuItemClick"
+                                          />
+                            </DataTemplate>
+                        </ContextMenu.ItemTemplate>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <Button Command="{Binding Navigation.MoveToLastCommand}"  Height="42">
+                <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
+            </Button>
+
+            <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}"  Height="42"/>
+            <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}"  Height="42"/>
+            <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}"  Height="42"/>
+            <Button Content="View G (Guards)" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewG}"   Height="42"/>
+            <Button Content="Redirect" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewE}"  Height="42"/>
+            <Button Content="ViewModel A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewAViewModel}"   Height="42"/>
+            <Button Content="Insert View D" Background="Orange" Command="{Binding InsertCommand}"   Height="42" />
+            <Button Content="Remove first" Command="{Binding RemoveFirstCommand}"  Height="42" />
+        </WrapPanel>
+
+        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Row="2">
+            <mvvmLib:AnimatableContentControl.EntranceAnimation>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                                     From="400" To="0" Duration="0:0:0.4"  />
+                </Storyboard>
+            </mvvmLib:AnimatableContentControl.EntranceAnimation>
+            <mvvmLib:AnimatableContentControl.ExitAnimation>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                                     From="0" To="400" Duration="0:0:0.4"  />
+                </Storyboard>
+            </mvvmLib:AnimatableContentControl.ExitAnimation>
+        </mvvmLib:AnimatableContentControl>
+
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="3" Grid.ColumnSpan="2" Background="#fff" VerticalAlignment="Bottom" Height="220">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Label FontWeight="SemiBold">SOURCES</Label>
+                <ListView ItemsSource="{Binding Navigation.Sources}" 
+                          SelectedItem="{Binding Navigation.Current, Mode=OneWay}"
+                          ItemContainerStyle="{StaticResource InformationListViewItemStyle}"
+                          Margin="5" BorderThickness="0" Grid.Row="1">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Margin="5"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Label FontWeight="SemiBold" Grid.Column="1">CURRENT INDEX</Label>
+                <StackPanel  Grid.Column="1" Grid.Row="1">
+                    <TextBlock Text="{Binding Navigation.CurrentIndex}"  Margin="5" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</UserControl>

@@ -28,11 +28,11 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **SharedSource**: source for _ItemsControls_, _Selectors_ (ListBox, TabControl, etc.)
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
-* **NavigationBrowser**: allows to browse items sources.
+* **NavigationBrowser**: allows to browse enumerables, edit lists and collections.
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
-* **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
+* **Navigation Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**, **EventToMethodBehavior**
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **BootstrapperBase**: base class for Bootstrapper

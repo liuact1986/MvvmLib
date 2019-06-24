@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\convention.cs" />
-    <Compile Include="History\NavigationEntryCollectionTests.cs" />
     <Compile Include="Modules\ModuleManagerTests.cs" />
     <Compile Include="Navigation\ContentControlNavigationSourceTests.cs" />
     <Compile Include="Navigation\NavigationHelperTests.cs" />

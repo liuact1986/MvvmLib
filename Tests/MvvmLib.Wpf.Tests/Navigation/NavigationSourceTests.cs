@@ -402,7 +402,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_Move()
+        public void CheckCanMoveToPrevious_On_Move()
         {
             var navigationSource = new NavigationSource();
 
@@ -412,10 +412,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
@@ -467,7 +467,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_Insert_And_Remove()
+        public void CheckCanMoveToPrevious_On_Insert_And_Remove()
         {
             var navigationSource = new NavigationSource();
 
@@ -481,22 +481,22 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2"); // A [B]
             Assert.AreEqual(0, firedCount); // not change
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
 
             var sourceC = navigationSource.InsertNewSource(0, typeof(NavSourceViewC), "p3");
             Assert.AreEqual(1, firedCount); // change [C] A [B]
             Assert.AreEqual(true, states[0]);
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
 
             var sourceD = navigationSource.InsertNewSource(0, typeof(NavSourceViewD), "p4");
             Assert.AreEqual(1, firedCount); // not change [D C] A [B]
@@ -507,7 +507,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.RemoveSourceAt(0);
             Assert.AreEqual(2, firedCount); // change A [B]
             Assert.AreEqual(false, states[1]);
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
 
             navigationSource.RemoveSourceAt(1);
             Assert.AreEqual(2, firedCount); // not change A
@@ -521,7 +521,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_Clear_Not_Fired_If_Not_Change()
+        public void CheckCanMoveToPrevious_On_Clear_Not_Fired_If_Not_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -535,24 +535,24 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             navigationSource.ClearSources();
             Assert.AreEqual(0, firedCount); // not change
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_Clear_Fired_If_Change()
+        public void CheckCanMoveToPrevious_On_Clear_Fired_If_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -567,26 +567,26 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
 
             navigationSource.ClearSources();
             Assert.AreEqual(1, firedCount); // change
             Assert.AreEqual(false, states[0]);
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_RemoveRange_Not_Fired_If_Not_Change()
+        public void CheckCanMoveToPrevious_On_RemoveRange_Not_Fired_If_Not_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -600,24 +600,24 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             navigationSource.RemoveSources(0);
             Assert.AreEqual(0, firedCount); // not change
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoBack_On_RemoveRange_Fired_If_Change()
+        public void CheckCanMoveToPrevious_On_RemoveRange_Fired_If_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -632,57 +632,57 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoBackChanged += (s, e) =>
+            navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoBack);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
 
             navigationSource.RemoveSources(0);
             Assert.AreEqual(1, firedCount); // change
             Assert.AreEqual(false, states[0]);
-            Assert.AreEqual(false, navigationSource.CanGoBack);
+            Assert.AreEqual(false, navigationSource.CanMoveToPrevious);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoForward_On_Insert_And_Remove()
+        public void CheckCanMoveToNext_On_Insert_And_Remove()
         {
             var navigationSource = new NavigationSource();
 
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
-            //Assert.AreEqual(false, navigationSource.CanGoForward);
+            //Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             navigationSource.MoveTo(0);
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoForwardChanged += (s, e) =>
+            navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoForward);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             var sourceB = navigationSource.InsertNewSource(0, typeof(NavSourceViewB), "p2");
             Assert.AreEqual(0, firedCount); // not change [B] A
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             var sourceC = navigationSource.AddNewSource(typeof(NavSourceViewC), "p3");
             Assert.AreEqual(1, firedCount); // change [B] A [C]
             Assert.AreEqual(true, states[0]);
-            Assert.AreEqual(true, navigationSource.CanGoForward);
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
 
             var sourceD = navigationSource.AddNewSource(typeof(NavSourceViewD), "p4");
             Assert.AreEqual(1, firedCount); // not change [B] A [C D]
@@ -696,7 +696,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.RemoveSourceAt(1);
             Assert.AreEqual(2, firedCount); // change A
             Assert.AreEqual(false, states[1]);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             navigationSource.RemoveSourceAt(0);
             Assert.AreEqual(2, firedCount); // not change null
@@ -707,7 +707,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void CheckCanGoForward_On_Clear_Not_Fired_If_Not_Change()
+        public void CheckCanMoveToNext_On_Clear_Not_Fired_If_Not_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -719,28 +719,28 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
 
             navigationSource.MoveTo(1);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoForwardChanged += (s, e) =>
+            navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoForward);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             navigationSource.ClearSources();
             Assert.AreEqual(0, firedCount); // not change
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoForward_On_Clear_Fired_If_Change()
+        public void CheckCanMoveToNext_On_Clear_Fired_If_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -752,14 +752,14 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
 
             navigationSource.MoveTo(0);
-            Assert.AreEqual(true, navigationSource.CanGoForward);
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoForwardChanged += (s, e) =>
+            navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoForward);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -767,14 +767,14 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.ClearSources();
             Assert.AreEqual(1, firedCount); 
             Assert.AreEqual(false, states[0]);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoForward_On_RemoveRange_Not_Fired_If_Not_Change()
+        public void CheckCanMoveToNext_On_RemoveRange_Not_Fired_If_Not_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -786,28 +786,28 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
 
             navigationSource.MoveTo(1);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoForwardChanged += (s, e) =>
+            navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoForward);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
 
             navigationSource.RemoveSources(0);
             Assert.AreEqual(0, firedCount); // not change
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
         }
 
         [TestMethod]
-        public void CheckCanGoForward_On_RemoveRange_Fired_If_Change()
+        public void CheckCanMoveToNext_On_RemoveRange_Fired_If_Change()
         {
             var navigationSource = new NavigationSource();
 
@@ -819,14 +819,14 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var sourceB = navigationSource.AddNewSource(typeof(NavSourceViewB), "p2");
 
             navigationSource.MoveTo(0);
-            Assert.AreEqual(true, navigationSource.CanGoForward);
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
 
             int firedCount = 0;
             List<bool> states = new List<bool>();
-            navigationSource.CanGoForwardChanged += (s, e) =>
+            navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanGoForward);
+                states.Add(e.CanMoveTo);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -834,7 +834,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.RemoveSources(0);
             Assert.AreEqual(1, firedCount); // not change
             Assert.AreEqual(false, states[0]);
-            Assert.AreEqual(false, navigationSource.CanGoForward);
+            Assert.AreEqual(false, navigationSource.CanMoveToNext);
             Assert.AreEqual(0, navigationSource.Sources.Count);
             Assert.AreEqual(0, navigationSource.Entries.Count);
             Assert.AreEqual(-1, navigationSource.CurrentIndex);
@@ -1229,8 +1229,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewC.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
-            navigationSource.GoBack();
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
+            navigationSource.MoveToPrevious();
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingToInvoked);
@@ -1265,8 +1265,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelC.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
-            navigationSource.GoBack();
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
+            navigationSource.MoveToPrevious();
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingToInvoked);
@@ -1301,8 +1301,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewB.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
-            navigationSource.GoBack();
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
+            navigationSource.MoveToPrevious();
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingToInvoked);
@@ -1337,8 +1337,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelB.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
-            navigationSource.GoBack();
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
+            navigationSource.MoveToPrevious();
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingToInvoked);
@@ -1372,8 +1372,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewModelB.Reset();
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
-            Assert.AreEqual(true, navigationSource.CanGoBack);
-            navigationSource.GoBack();
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
+            navigationSource.MoveToPrevious();
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingToInvoked);
@@ -1419,8 +1419,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewB.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoForward);
-            navigationSource.GoForward();
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
+            navigationSource.MoveToNext();
             Assert.AreEqual(true, MyNavViewB.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingToInvoked);
@@ -1456,8 +1456,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelB.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoForward);
-            navigationSource.GoForward();
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
+            navigationSource.MoveToNext();
             Assert.AreEqual(true, MyNavViewB.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingToInvoked);
@@ -1492,8 +1492,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewC.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoForward);
-            navigationSource.GoForward();
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
+            navigationSource.MoveToNext();
             Assert.AreEqual(true, MyNavViewB.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingToInvoked);
@@ -1528,8 +1528,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelC.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoForward);
-            navigationSource.GoForward();
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
+            navigationSource.MoveToNext();
             Assert.AreEqual(true, MyNavViewB.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingToInvoked);
@@ -1563,8 +1563,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewModelB.Reset();
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
-            Assert.AreEqual(true, navigationSource.CanGoForward);
-            navigationSource.GoForward();
+            Assert.AreEqual(true, navigationSource.CanMoveToNext);
+            navigationSource.MoveToNext();
             Assert.AreEqual(true, MyNavViewB.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, MyNavViewB.IsOnNavigatingToInvoked);
@@ -1609,7 +1609,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewC.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
             navigationSource.MoveTo(0);
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
@@ -1645,7 +1645,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelC.CDeactivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
             navigationSource.MoveTo(0);
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
@@ -1681,7 +1681,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewA.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
             navigationSource.MoveTo(0);
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
@@ -1717,7 +1717,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
             MyNavViewModelA.CActivate = false;
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
             navigationSource.MoveTo(0);
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
@@ -1752,7 +1752,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewModelB.Reset();
             MyNavViewC.Reset();
             MyNavViewModelC.Reset();
-            Assert.AreEqual(true, navigationSource.CanGoBack);
+            Assert.AreEqual(true, navigationSource.CanMoveToPrevious);
             navigationSource.MoveTo(0);
             Assert.AreEqual(true, MyNavViewC.IsCanDeactivateInvoked);
             Assert.AreEqual(false, MyNavViewC.IsOnNavigatingFromInvoked);
@@ -1811,8 +1811,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.Navigate(typeof(MyNavViewB), "B");
             navigationSource.Navigate(typeof(MyNavViewC), "C");
 
-            navigationSource.GoBack();
-            navigationSource.GoBack();
+            navigationSource.MoveToPrevious();
+            navigationSource.MoveToPrevious();
             // A [B C]
             var s1 = navigationSource.Current;
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
@@ -1839,7 +1839,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void NavigateToRoot()
+        public void MoveToFirst()
         {
             var navigationSource = new NavigationSource();
             Assert.IsNull(navigationSource.Current);
@@ -1858,7 +1858,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.Navigate(typeof(MyNavViewB), "B");
             navigationSource.Navigate(typeof(MyNavViewC), "C");
 
-            navigationSource.NavigateToRoot();
+            navigationSource.MoveToFirst();
             // A [B C]
             var s1 = navigationSource.Current;
             Assert.AreEqual(0, navigationSource.CurrentIndex); // sources
@@ -2060,34 +2060,27 @@ namespace MvvmLib.Wpf.Tests.Navigation
         public void Sync_With_History()
         {
             var navigationSource = new NavigationSource();
-            var history = new NavigationEntryCollection();
-            var eA = new NavigationEntry(typeof(MyNavViewA), "A");
-            var eB = new NavigationEntry(typeof(MyNavViewB), "B");
-            var eC = new NavigationEntry(typeof(MyNavViewC), "C");
-            history.Add(eA);
-            history.Add(eB);
-            history.Add(eC);
-            Assert.AreEqual(3, history.Count);
-            Assert.AreEqual(eA, history.ElementAt(0));
-            Assert.AreEqual(eB, history.ElementAt(1));
-            Assert.AreEqual(eC, history.ElementAt(2));
 
-            var sources = new List<object> { new MyNavViewA(), new MyNavViewB(), new MyNavViewC() };
+            var from = new NavigationSource();
+            from.AddNewSource(typeof(MyNavViewA), "A");
+            from.AddNewSource(typeof(MyNavViewB), "B");
+            from.AddNewSource(typeof(MyNavViewC), "C");
+            from.MoveTo(1);
 
-            navigationSource.Sync(history, sources, 1);
+            navigationSource.Sync(from);
 
             Assert.AreEqual(3, navigationSource.Entries.Count);
-            Assert.AreEqual(eA.SourceType, navigationSource.Entries.ElementAt(0).SourceType);
-            Assert.AreEqual(eA.Parameter, navigationSource.Entries.ElementAt(0).Parameter);
-            Assert.AreEqual(eB.SourceType, navigationSource.Entries.ElementAt(1).SourceType);
-            Assert.AreEqual(eB.Parameter, navigationSource.Entries.ElementAt(1).Parameter);
-            Assert.AreEqual(eC.SourceType, navigationSource.Entries.ElementAt(2).SourceType);
-            Assert.AreEqual(eC.Parameter, navigationSource.Entries.ElementAt(2).Parameter);
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Entries.ElementAt(0).SourceType);
+            Assert.AreEqual("A", navigationSource.Entries.ElementAt(0).Parameter);
+            Assert.AreEqual(typeof(MyNavViewB), navigationSource.Entries.ElementAt(1).SourceType);
+            Assert.AreEqual("B", navigationSource.Entries.ElementAt(1).Parameter);
+            Assert.AreEqual(typeof(MyNavViewC), navigationSource.Entries.ElementAt(2).SourceType);
+            Assert.AreEqual("C", navigationSource.Entries.ElementAt(2).Parameter);
 
             Assert.AreEqual(3, navigationSource.Sources.Count);
-            Assert.AreEqual(eA.SourceType, navigationSource.Sources.ElementAt(0).GetType());
-            Assert.AreEqual(eB.SourceType, navigationSource.Sources.ElementAt(1).GetType());
-            Assert.AreEqual(eC.SourceType, navigationSource.Sources.ElementAt(2).GetType());
+            Assert.AreEqual(typeof(MyNavViewA), navigationSource.Sources.ElementAt(0).GetType());
+            Assert.AreEqual(typeof(MyNavViewB), navigationSource.Sources.ElementAt(1).GetType());
+            Assert.AreEqual(typeof(MyNavViewC), navigationSource.Sources.ElementAt(2).GetType());
 
             Assert.AreEqual(1, navigationSource.CurrentIndex);
         }
@@ -2114,7 +2107,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.MoveTo(3);
             Assert.AreEqual(3, navigationSource.CurrentIndex);
 
-            navigationSource.NavigateToRoot();
+            navigationSource.MoveToFirst();
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(4, navigationSource.Sources.Count);
             Assert.AreEqual(4, navigationSource.Entries.Count);
@@ -2146,7 +2139,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.MoveTo(3);
             Assert.AreEqual(3, navigationSource.CurrentIndex);
 
-            navigationSource.NavigateToRoot();
+            navigationSource.MoveToFirst();
             Assert.AreEqual(0, navigationSource.CurrentIndex);
             Assert.AreEqual(1, navigationSource.Sources.Count);
             Assert.AreEqual(1, navigationSource.Entries.Count);
@@ -2161,14 +2154,14 @@ namespace MvvmLib.Wpf.Tests.Navigation
             MyNavViewModelB.Reset();
             MyNavViewModelC.Reset();
 
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.NavigateToRootCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToFirstCommand.CanExecute(null);
 
             navigationSource.NavigateCommand.Execute(typeof(MyNavViewModelA));
             Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.GoForwardCommand.CanExecute(null);
-            navigationSource.NavigateToRootCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToNextCommand.CanExecute(null);
+            navigationSource.MoveToFirstCommand.CanExecute(null);
 
             MyNavViewModelA.Reset();
             MyNavViewModelB.Reset();
@@ -2176,42 +2169,36 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             navigationSource.NavigateCommand.Execute(typeof(MyNavViewModelB));
             Assert.AreEqual(true, MyNavViewModelB.IsOnNavigatedToInvoked);
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.GoForwardCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToNextCommand.CanExecute(null);
 
             MyNavViewModelA.Reset();
             MyNavViewModelB.Reset();
             MyNavViewModelC.Reset();
 
-            navigationSource.GoBackCommand.Execute(null);
+            navigationSource.MoveToPreviousCommand.Execute(null);
             Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.GoForwardCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToNextCommand.CanExecute(null);
 
             MyNavViewModelA.Reset();
             MyNavViewModelB.Reset();
             MyNavViewModelC.Reset();
 
-            navigationSource.GoForwardCommand.Execute(null);
+            navigationSource.MoveToNextCommand.Execute(null);
             Assert.AreEqual(true, MyNavViewModelB.IsOnNavigatedToInvoked);
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.GoForwardCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToNextCommand.CanExecute(null);
+
 
             MyNavViewModelA.Reset();
             MyNavViewModelB.Reset();
             MyNavViewModelC.Reset();
 
-            navigationSource.RedirectCommand.Execute(typeof(MyNavViewModelC));
-            Assert.AreEqual(true, MyNavViewModelC.IsOnNavigatedToInvoked);
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.NavigateToRootCommand.Execute(null);
+            navigationSource.MoveToFirstCommand.Execute(null);
             Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.GoBackCommand.CanExecute(null);
-            navigationSource.GoForwardCommand.CanExecute(null);
+            navigationSource.MoveToPreviousCommand.CanExecute(null);
+            navigationSource.MoveToNextCommand.CanExecute(null);
         }
 
         [TestMethod]

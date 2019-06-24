@@ -34,11 +34,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
         }
 
         [TestMethod]
-        public void Initialization_With_Dictionary()
+        public void Initialization_With_Collection()
         {
             var item1 = new MySharedItem { Id = 1, Name = "A" };
             var item2 = new MySharedItem { Id = 2, Name = "B" };
-            var sharedSource = new SharedSource<MySharedItem>().Load(new Dictionary<MySharedItem, object>
+            var sharedSource = new SharedSource<MySharedItem>().Load(new InitItemCollection<MySharedItem>
             {
                { item1, 1 },{ item2, 2 }
             });
@@ -62,7 +62,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item1 = new MySharedItem { Id = 1, Name = "A" };
 
             item1.CActivate = false;
-            s.Items.Insert(0, item1, 1);
+            s.Insert(0, item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingToInvoked);
@@ -71,7 +71,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, item1.POnNavigatedTo);
 
             item1.CActivate = true;
-            s.Items.Insert(0, item1, 1);
+            s.Insert(0, item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -80,7 +80,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, item1.POnNavigatedTo);
 
             Assert.AreEqual(1, s.Items.Count);
-            Assert.AreEqual(item1, s.Items[0]);
+            Assert.AreEqual(item1, s.Items.ElementAt(0));
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item1 = new MySharedItem { Id = 1, Name = "A" };
 
             item1.CActivate = false;
-            s.Items.Add(item1, 1);
+            s.Add(item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingToInvoked);
@@ -99,7 +99,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(null, item1.POnNavigatedTo);
 
             item1.CActivate = true;
-            s.Items.Add(item1, 1);
+            s.Add(item1, 1);
             Assert.AreEqual(true, item1.IsCanActivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingToInvoked);
@@ -108,7 +108,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, item1.POnNavigatedTo);
 
             Assert.AreEqual(1, s.Items.Count);
-            Assert.AreEqual(item1, s.Items[0]);
+            Assert.AreEqual(item1, s.Items.ElementAt(0));
         }
 
         [TestMethod]
@@ -127,7 +127,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(5, sharedSource.Items.Count);
             Assert.AreEqual(0, sharedSource.SelectedIndex);
 
-            sharedSource.Items.Add(new MySelectableViewModel { Id = 2 }, 2);
+            sharedSource.Add(new MySelectableViewModel { Id = 2 }, 2);
 
             Assert.AreEqual(3, sharedSource.SelectedIndex);
             Assert.AreEqual(item1, sharedSource.SelectedItem);
@@ -149,7 +149,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(5, sharedSource.Items.Count);
             Assert.AreEqual(0, sharedSource.SelectedIndex);
 
-            sharedSource.Items.Add(new MySelectableViewModel { Id = 2 }, 2);
+            sharedSource.Add(new MySelectableViewModel { Id = 2 }, 2);
 
             Assert.AreEqual(3, sharedSource.SelectedIndex);
             Assert.AreEqual(item1, sharedSource.SelectedItem);
@@ -173,7 +173,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, sharedSource.SelectedIndex);
             Assert.AreEqual(item1, sharedSource.SelectedItem);
             Assert.AreEqual(1, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
 
             var item2 = sharedSource.AddNew(10);
             Assert.AreEqual(true, item2.IsCanActivateInvoked);
@@ -184,8 +184,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(10, item2.POnNavigatedTo);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
         }
 
         [TestMethod]
@@ -206,7 +206,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, sharedSource.SelectedIndex);
             Assert.AreEqual(item1, sharedSource.SelectedItem);
             Assert.AreEqual(1, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
 
             var item2 = sharedSource.InsertNew(0, 10);
             Assert.AreEqual(true, item2.IsCanActivateInvoked);
@@ -217,8 +217,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(10, item2.POnNavigatedTo);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item2, sharedSource.Items[0]);
-            Assert.AreEqual(item1, sharedSource.Items[1]);
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(1));
         }
 
         [TestMethod]
@@ -233,22 +233,22 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
             item2.Reset();
             item3.Reset();
 
-            // move item2 B (index 1) => to index 2 (last)
-            sharedSource.Items.Move(1, 2);
+            // move item2 B(index 1) => to index 2(last)
+            sharedSource.Move(1, 2);
 
             // A C B
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item3, sharedSource.Items[1]);
-            Assert.AreEqual(item2, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(2));
             // select item moved item2
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item2, sharedSource.SelectedItem);
@@ -265,50 +265,50 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(false, item3.IsOnNavigatedToInvoked);
         }
 
-        [TestMethod]
-        public void SetItem()
-        {
-            var sharedSource = new SharedSource<MySharedItem>();
-            Assert.AreEqual(0, sharedSource.Items.Count);
-            Assert.AreEqual(-1, sharedSource.SelectedIndex);
+        //[TestMethod]
+        //public void SetItem()
+        //{
+        //    var sharedSource = new SharedSource<MySharedItem>();
+        //    Assert.AreEqual(0, sharedSource.Items.Count);
+        //    Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = sharedSource.AddNew("A");
-            var item2 = sharedSource.AddNew("B");
-            var item3 = sharedSource.AddNew("C");
+        //    var item1 = sharedSource.AddNew("A");
+        //    var item2 = sharedSource.AddNew("B");
+        //    var item3 = sharedSource.AddNew("C");
 
-            Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
-            Assert.AreEqual(2, sharedSource.SelectedIndex);
-            Assert.AreEqual(item3, sharedSource.SelectedItem);
+        //    Assert.AreEqual(3, sharedSource.Items.Count);
+        //    Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+        //    Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+        //    Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
+        //    Assert.AreEqual(2, sharedSource.SelectedIndex);
+        //    Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            item2.Reset();
-            item3.Reset();
+        //    item2.Reset();
+        //    item3.Reset();
 
-            // replace item2 by item4
-            var item4 = sharedSource.CreateNew();
-            sharedSource.Items[1] = item4;
+        //   // replace item2 by item4
+        //    var item4 = sharedSource.CreateNew();
+        //    sharedSource.SelectedItem = item4;
 
-            // A C B
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item4, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
-            // select item updated
-            Assert.AreEqual(1, sharedSource.SelectedIndex);
-            Assert.AreEqual(item4, sharedSource.SelectedItem);
-            // navigation methods are not invoked
-            Assert.AreEqual(false, item2.IsCanActivateInvoked);
-            Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
-            Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
-            Assert.AreEqual(false, item2.IsOnNavigatingToInvoked);
-            Assert.AreEqual(false, item2.IsOnNavigatedToInvoked);
-            Assert.AreEqual(false, item3.IsCanActivateInvoked);
-            Assert.AreEqual(false, item3.IsOnNavigatingFromInvoked);
-            Assert.AreEqual(false, item3.IsOnNavigatingFromInvoked);
-            Assert.AreEqual(false, item3.IsOnNavigatingToInvoked);
-            Assert.AreEqual(false, item3.IsOnNavigatedToInvoked);
-        }
+        //    // A C B
+        //    Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+        //    Assert.AreEqual(item4, sharedSource.Items.ElementAt(1));
+        //    Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
+        //    // select item updated
+        //    Assert.AreEqual(1, sharedSource.SelectedIndex);
+        //    Assert.AreEqual(item4, sharedSource.SelectedItem);
+        //    // navigation methods are not invoked
+        //    Assert.AreEqual(false, item2.IsCanActivateInvoked);
+        //    Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
+        //    Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
+        //    Assert.AreEqual(false, item2.IsOnNavigatingToInvoked);
+        //    Assert.AreEqual(false, item2.IsOnNavigatedToInvoked);
+        //    Assert.AreEqual(false, item3.IsCanActivateInvoked);
+        //    Assert.AreEqual(false, item3.IsOnNavigatingFromInvoked);
+        //    Assert.AreEqual(false, item3.IsOnNavigatingFromInvoked);
+        //    Assert.AreEqual(false, item3.IsOnNavigatingToInvoked);
+        //    Assert.AreEqual(false, item3.IsOnNavigatedToInvoked);
+        //}
 
         [TestMethod]
         public void ReplaceItem()
@@ -322,9 +322,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
@@ -334,7 +334,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             item2.Reset();
             item4.Reset();
             item2.CDeactivate = false;
-            sharedSource.Items.Replace(1, item4, "D");
+            sharedSource.Replace(1, item4, "D");
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item4.IsCanActivateInvoked);
@@ -348,7 +348,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             item2.Reset();
             item4.Reset();
             item4.CActivate = false;
-            sharedSource.Items.Replace(1, item4, "D");
+            sharedSource.Replace(1, item4, "D");
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item2.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item4.IsCanActivateInvoked);
@@ -362,11 +362,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             // with parameter
             item2.Reset();
             item4.Reset();
-            sharedSource.Items.Replace(1, item4, "D");
-            // A C B
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item4, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            sharedSource.Replace(1, item4, "D");
+            //  A C B
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item4, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             // select item updated
             Assert.AreEqual(1, sharedSource.SelectedIndex);
             Assert.AreEqual(item4, sharedSource.SelectedItem);
@@ -396,25 +396,25 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
             item1.CDeactivate = false;
-            sharedSource.Items.RemoveAt(0);
+            sharedSource.RemoveAt(0);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
 
             item1.CDeactivate = true;
-            sharedSource.Items.RemoveAt(0);
+            sharedSource.RemoveAt(0);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item2, sharedSource.Items[0]);
-            Assert.AreEqual(item3, sharedSource.Items[1]);
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(1));
             Assert.AreEqual(1, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
@@ -431,25 +431,25 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
             item1.CDeactivate = false;
-            sharedSource.Items.Remove(item1);
+            sharedSource.Remove(item1);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
 
             item1.CDeactivate = true;
-            sharedSource.Items.Remove(item1);
+            sharedSource.Remove(item1);
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
 
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item2, sharedSource.Items[0]);
-            Assert.AreEqual(item3, sharedSource.Items[1]);
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(1));
             Assert.AreEqual(1, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
@@ -473,9 +473,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
@@ -501,8 +501,8 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item2 = sharedSource.AddNew("B");
 
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
             Assert.AreEqual(null, sharedSource.SelectedItem);
 
@@ -510,9 +510,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
         }
@@ -529,29 +529,29 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
             // remove last
-            sharedSource.Items.RemoveAt(2);
+            sharedSource.RemoveAt(2);
             Assert.AreEqual(2, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
             Assert.AreEqual(1, sharedSource.SelectedIndex);
             Assert.AreEqual(item2, sharedSource.SelectedItem);
 
             // remove first
-            sharedSource.Items.RemoveAt(0);
+            sharedSource.RemoveAt(0);
             Assert.AreEqual(1, sharedSource.Items.Count);
-            Assert.AreEqual(item2, sharedSource.Items[0]);
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(0));
             Assert.AreEqual(0, sharedSource.SelectedIndex);
             Assert.AreEqual(item2, sharedSource.SelectedItem);
 
-            // 
-            sharedSource.Items.RemoveAt(0);
+
+            sharedSource.RemoveAt(0);
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
             Assert.AreEqual(null, sharedSource.SelectedItem);
@@ -569,21 +569,21 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            // C => B => A
+            //  C => B => A
             var selections = new Dictionary<int, object>();
             sharedSource.SelectedItemChanged += (s, e) =>
             {
-                // 1 B ... 0 A
+                //  1 B... 0 A
                 selections.Add(e.SelectedIndex, e.SelectedItem);
             };
 
-            sharedSource.Items.Clear();
+            sharedSource.Clear();
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
@@ -593,10 +593,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
             Assert.AreEqual(null, sharedSource.SelectedItem);
-            // item3 removed (old index 2) ... select item2 (index 1)
+            //   item3 removed(old index 2) ... select item2(index 1)
             Assert.AreEqual(1, selections.ElementAt(0).Key);
             Assert.AreEqual(item2, selections.ElementAt(0).Value);
-            // item1 removed change index, select item1 (index 0)
+            // item1 removed change index, select item1(index 0)
             Assert.AreEqual(0, selections.ElementAt(1).Key);
             Assert.AreEqual(item1, selections.ElementAt(1).Value);
             // empty items
@@ -618,23 +618,23 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            // C => B X => A
+            //  C => B X => A
             var selections = new Dictionary<int, object>();
             sharedSource.SelectedItemChanged += (s, e) =>
             {
-                // 1 B ... 0 B 
+                //  1 B... 0 B
                 selections.Add(e.SelectedIndex, e.SelectedItem);
             };
 
             item2.CDeactivate = false;
 
-            sharedSource.Items.Clear();
+            sharedSource.Clear();
             Assert.AreEqual(true, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(true, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(true, item2.IsCanDeactivateInvoked);
@@ -644,7 +644,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, sharedSource.Items.Count);
             Assert.AreEqual(0, sharedSource.SelectedIndex);
             Assert.AreEqual(item2, sharedSource.SelectedItem);
-            // item3 removed (old index 2) ... select item2 (index 1 B)
+            // item3 removed(old index 2) ... select item2(index 1 B)
             Assert.AreEqual(1, selections.ElementAt(0).Key);
             Assert.AreEqual(item2, selections.ElementAt(0).Value);
             // item1 removed change index, same seleected item item2
@@ -665,13 +665,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
             var item3 = sharedSource.AddNew("C");
 
             Assert.AreEqual(3, sharedSource.Items.Count);
-            Assert.AreEqual(item1, sharedSource.Items[0]);
-            Assert.AreEqual(item2, sharedSource.Items[1]);
-            Assert.AreEqual(item3, sharedSource.Items[2]);
+            Assert.AreEqual(item1, sharedSource.Items.ElementAt(0));
+            Assert.AreEqual(item2, sharedSource.Items.ElementAt(1));
+            Assert.AreEqual(item3, sharedSource.Items.ElementAt(2));
             Assert.AreEqual(2, sharedSource.SelectedIndex);
             Assert.AreEqual(item3, sharedSource.SelectedItem);
 
-            sharedSource.Items.ClearFast();
+            sharedSource.ClearFast();
             Assert.AreEqual(false, item1.IsCanDeactivateInvoked);
             Assert.AreEqual(false, item1.IsOnNavigatingFromInvoked);
             Assert.AreEqual(false, item2.IsCanDeactivateInvoked);
@@ -752,13 +752,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(0, sharedSource.Items.Count);
             Assert.AreEqual(-1, sharedSource.SelectedIndex);
 
-            var item1 = sharedSource.AddNew("p");
+            sharedSource.AddNew("p");
 
             Assert.AreEqual("p-canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel-", MyViewModelThatChangeParameter.Parameter);
 
             MyViewModelThatChangeParameter.Parameter = null;
 
-            sharedSource.Items.RemoveAt(0);
+            sharedSource.RemoveAt(0);
 
             Assert.AreEqual("p-canactivateviewmodel--onavigatingtoviewmodel--navigatedtoviewmodel--candeactivateviewmodel--onavigatingfromviewmodel-", MyViewModelThatChangeParameter.Parameter);
         }

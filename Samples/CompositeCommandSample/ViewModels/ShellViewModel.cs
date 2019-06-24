@@ -22,9 +22,9 @@ namespace CompositeCommandSample.ViewModels
 
         public void Load()
         {
-            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabA"));
-            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabB"));
-            this.TabItemsSource.Items.Add(new TabViewModel(applicationCommands, "TabC"));
+            this.TabItemsSource.Add(new TabViewModel(applicationCommands, "TabA"));
+            this.TabItemsSource.Add(new TabViewModel(applicationCommands, "TabB"));
+            this.TabItemsSource.Add(new TabViewModel(applicationCommands, "TabC"));
         }
     }
 

@@ -112,12 +112,12 @@ namespace MvvmLib.Interactivity
             if (eventInfo == null)
                 throw new ArgumentException($"Unable to register the \"{EventName}\" event.");
 
-            MethodInfo methodInfo = typeof(EventToCommandBehavior).GetTypeInfo().GetDeclaredMethod(nameof(HandleEvent));
+            MethodInfo methodInfo = typeof(EventToCommandBehavior).GetTypeInfo().GetDeclaredMethod(nameof(OnEvent));
             eventHandler = methodInfo.CreateDelegate(eventInfo.EventHandlerType, this);
             eventInfo.AddEventHandler(associatedObject, eventHandler);
         }
 
-        private void HandleEvent(object sender, object eventArgs)
+        private void OnEvent(object sender, object eventArgs)
         {
             if (Command == null)
                 return;
@@ -147,6 +147,5 @@ namespace MvvmLib.Interactivity
             eventInfo.RemoveEventHandler(AssociatedObject, eventHandler);
             eventHandler = null;
         }
-
     }
 }

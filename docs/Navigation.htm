@@ -65,6 +65,8 @@
 
 <li class="tocentry"><a href="#eventtocommandbehavior">EventToCommandBehavior</a></li>
 
+<li class="tocentry"><a href="#eventtomethodbehavior">EventToMethodBehavior</a></li>
+
 <li class="tocentry"><a href="#modules">Modules</a></li>
 
 </ul>
@@ -117,7 +119,7 @@
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
 <li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
 <li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
-<li><strong>Navigation Behaviors</strong>: <strong>SelectionSyncBehavior</strong> and <strong>EventToCommandBehavior</strong></li>
+<li><strong>Behaviors</strong>: <strong>SelectionSyncBehavior</strong>, <strong>EventToCommandBehavior</strong>,<strong>EventToMethodBehavior</strong></li>
 <li><strong>ModuleManager</strong>: allows to manage modules/assemblies loaded &quot;on demand&quot;</li>
 </ul>
 <h2 id="create-a-bootstrapper">Create a Bootstrapper<a class="headerlink" href="#create-a-bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -228,24 +230,24 @@ namespace NavigationSample.Wpf.Startup
 	<td>Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation)</td>
 </tr>
 <tr>
+	<td>NavigateFast</td>
+	<td>Useful for navigation cancellation and not recheck guards</td>
+</tr>
+<tr>
 	<td>Redirect</td>
 	<td>Redirects and removes the previous entry from the history</td>
 </tr>
 <tr>
-	<td>GoBack</td>
+	<td>MoveToPrevious</td>
 	<td>Navigates to the previous source</td>
 </tr>
 <tr>
-	<td>GoForward</td>
+	<td>MoveToNext</td>
 	<td>Navigates to the next source</td>
 </tr>
 <tr>
-	<td>NavigateToRoot</td>
+	<td>MoveToFirst</td>
 	<td>Navigates to the first source and clears the history</td>
-</tr>
-<tr>
-	<td>NavigateFast</td>
-	<td>Useful for navigation cancellation and not recheck guards</td>
 </tr>
 <tr>
 	<td>MoveTo</td>
@@ -257,7 +259,7 @@ namespace NavigationSample.Wpf.Startup
 </tr>
 <tr>
 	<td>Sync</td>
-	<td>Synchronizes the history and sources with the history provided</td>
+	<td>Synchronizes the history and sources with the navigation source provided</td>
 </tr>
 </tbody>
 </table>
@@ -286,11 +288,11 @@ namespace NavigationSample.Wpf.Startup
 	<td>The navigation history entries</td>
 </tr>
 <tr>
-	<td>CanGoBack</td>
+	<td>CanMoveToPrevious</td>
 	<td>Checks if can go back</td>
 </tr>
 <tr>
-	<td>CanGoForward</td>
+	<td>CanMoveToNext</td>
 	<td>Checks if can go forward</td>
 </tr>
 <tr>
@@ -320,12 +322,12 @@ namespace NavigationSample.Wpf.Startup
 	<td>Invoked on Current changed</td>
 </tr>
 <tr>
-	<td>CanGoBackChanged</td>
-	<td>Invoked on CanGoBack changed</td>
+	<td>CanMoveToPreviousChanged</td>
+	<td>Invoked on CanMoveToPrevious changed</td>
 </tr>
 <tr>
-	<td>CanGoForwardChanged</td>
-	<td>Invoked on CanGoForward changed</td>
+	<td>CanMoveToNextChanged</td>
+	<td>Invoked on CanMoveToNext changed</td>
 </tr>
 <tr>
 	<td>Navigating</td>
@@ -341,6 +343,15 @@ namespace NavigationSample.Wpf.Startup
 </tr>
 </tbody>
 </table>
+<p>Commands</p>
+<ul>
+<li>NavigateCommand with source type</li>
+<li>MoveToFirstCommand</li>
+<li>MoveToPreviousCommand</li>
+<li>MoveToNextCommand</li>
+<li>RedirectCommand</li>
+<li>MoveToIndexCommand and MoveToCommand</li>
+</ul>
 <p>Create the default navigation source.</p>
 <pre><code class="cs">this.Navigation = NavigationManager.CreateDefaultNavigationSource(&quot;Main&quot;);
 </code></pre>
@@ -364,14 +375,14 @@ navigation.Navigate(typeof(ViewA));
 // with parameter
 navigation.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 
-// GoBack
-navigation.GoBack();
+// MoveToPrevious
+navigation.MoveToPrevious();
 
-// GoForward
-navigation.GoForward();
+// MoveToNext
+navigation.MoveToNext();
 
-// Navigate to root
-navigation.NavigateToRoot();
+// Navigate to root (&quot;forward stack&quot; cleared)
+navigation.MoveToFirst();
 </code></pre>
 
 <p>Add navigation sources for the same source name:</p>
@@ -387,9 +398,9 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 <p>The container provides some quick commands (these commands not check can go back / forward)</p>
 <ul>
 <li>NavigateCommand with source type</li>
-<li>NavigateToRootCommand</li>
-<li>GoBackCommand</li>
-<li>GoForwardCommand</li>
+<li>MoveToFirstCommand</li>
+<li>MoveToPreviousCommand</li>
+<li>MoveToNextCommand</li>
 <li>RedirectCommand</li>
 <li>MoveToIndexCommand and MoveToCommand</li>
 </ul>
@@ -401,14 +412,14 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 <pre><code class="xml">&lt;!--Navigate command --&gt;
 &lt;Button Content=&quot;View A&quot; Command=&quot;{Binding Navigation.NavigateCommand}&quot; CommandParameter=&quot;{x:Type views:ViewA}&quot; /&gt;
 
-&lt;!--GoBack command --&gt;
-&lt;Button Content=&quot;Go Back&quot; Command=&quot;{Binding Navigation.GoBackCommand}&quot; /&gt;
+&lt;!--MoveToPrevious command --&gt;
+&lt;Button Content=&quot;Go Back&quot; Command=&quot;{Binding Navigation.MoveToPreviousCommand}&quot; /&gt;
 
-&lt;!--GoForward command --&gt;
-&lt;Button Content=&quot;Go Forward&quot; Command=&quot;{Binding Navigation.GoForwardCommand}&quot; /&gt;
+&lt;!--MoveToNext command --&gt;
+&lt;Button Content=&quot;Go Forward&quot; Command=&quot;{Binding Navigation.MoveToNextCommand}&quot; /&gt;
 
-&lt;!--NavigateToRoot command --&gt;
-&lt;Button Content=&quot;Root&quot; Command=&quot;{Binding Navigation.NavigateToRootCommand}&quot; /&gt;
+&lt;!--MoveToFirst command --&gt;
+&lt;Button Content=&quot;Root&quot; Command=&quot;{Binding Navigation.MoveToFirstCommand}&quot; /&gt;
 </code></pre>
 
 <p>Sources management</p>
@@ -470,7 +481,7 @@ Navigation.MoveTo(0);
 </tr>
 <tr>
 	<td>&quot;Move&quot;</td>
-	<td>MoveTo, GoBack, GoForward, NavigateToRoot, MoveToLast</td>
+	<td>MoveTo, MoveToPrevious, MoveToNext, MoveToFirst, MoveToLast</td>
 	<td>Only <strong>INavigationAware</strong> methods invoked</td>
 </tr>
 </tbody>
@@ -493,7 +504,7 @@ Navigation.MoveTo(0);
 
 <h2 id="sharedsource-for-itemscontrol-listbox-tabcontrol-etc.">SharedSource for ItemsControl, ListBox, TabControl, etc.<a class="headerlink" href="#sharedsource-for-itemscontrol-listbox-tabcontrol-etc." title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Provides an Items collection that implements INotifyCollectionChanged, a SelectedItem and more to quickly bind sources... add, remove, replace, move items, select an item by SelectedIndex or SelectedItem, etc. INotifyCollectionChanged and INotifyPropertyChanged do the work for the UI.</p>
-<p>SharedSourceItemCollection methods</p>
+<p>Methods</p>
 <table class="table table-bordered-all table-responsive">
 <thead>
 <tr>
@@ -502,6 +513,22 @@ Navigation.MoveTo(0);
 </tr>
 </thead>
 <tbody>
+<tr>
+	<td>Load</td>
+	<td>Allows to initialize the SharedSource with a collection and parameters</td>
+</tr>
+<tr>
+	<td>CreateNew</td>
+	<td>Returns an item instance created with the SourceResolver</td>
+</tr>
+<tr>
+	<td>InsertNew</td>
+	<td>Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation</td>
+</tr>
+<tr>
+	<td>AddNew</td>
+	<td>Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation</td>
+</tr>
 <tr>
 	<td>Insert</td>
 	<td>Allows to insert item at index. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces</td>
@@ -534,51 +561,13 @@ Navigation.MoveTo(0);
 	<td>ClearFast</td>
 	<td>Removes all items. ICanDeactive and INavigationAware methods are not invoked</td>
 </tr>
-</tbody>
-</table>
-<p>SharedSourceItemCollection events</p>
-<table class="table table-bordered-all table-responsive">
-<thead>
 <tr>
-	<th>Event</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<td>PropertyChanged</td>
-	<td>Invoked on property changed (count, indexer)</td>
-</tr>
-<tr>
-	<td>CollectionChanged</td>
-	<td>Invoked on collection changed (Add, Move, Remove, Replace, Reset)</td>
+	<td>Sync</td>
+	<td>Synchronizes the SharedSource with the SharedSource provided</td>
 </tr>
 </tbody>
 </table>
-<p>SharedSource provides methods that allow to create and insert quickly. Theses methods use use the SourceResolver to resolve injected dependencies. The SourceResolver factory method can be overridden and use a IoC Container.</p>
-<table class="table table-bordered-all table-responsive">
-<thead>
-<tr>
-	<th>Method</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-	<td>CreateNew</td>
-	<td>Returns an item instance created with the SourceResolver</td>
-</tr>
-<tr>
-	<td>InsertNew</td>
-	<td>Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation</td>
-</tr>
-<tr>
-	<td>AddNew</td>
-	<td>Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation</td>
-</tr>
-</tbody>
-</table>
-<p>SharedSource properties</p>
+<p>Properties</p>
 <table class="table table-bordered-all table-responsive">
 <thead>
 <tr>
@@ -601,7 +590,7 @@ Navigation.MoveTo(0);
 </tr>
 </tbody>
 </table>
-<p>SharedSource events</p>
+<p>Events</p>
 <table class="table table-bordered-all table-responsive">
 <thead>
 <tr>
@@ -611,19 +600,30 @@ Navigation.MoveTo(0);
 </thead>
 <tbody>
 <tr>
+	<td>PropertyChanged</td>
+	<td>Invoked on property changed (count, indexer)</td>
+</tr>
+<tr>
 	<td>SelectedItemChanged</td>
 	<td>Invoked on selected item changed</td>
 </tr>
 <tr>
-	<td>PropertyChanged</td>
-	<td>Invoked on selected index and selected item changed</td>
+	<td>CanMoveToPreviousChanged</td>
+	<td>Invoked on CanMoveToPrevious changed</td>
 </tr>
 <tr>
-	<td>SelectionHandling</td>
-	<td>Allows to select automatically items after insertion, etc. (SelectedItem)</td>
+	<td>CanMoveToNextChanged</td>
+	<td>Invoked on CanMoveToNext changed</td>
 </tr>
 </tbody>
 </table>
+<p>Commands</p>
+<ul>
+<li>MoveToFirstCommand</li>
+<li>MoveToPreviousCommand</li>
+<li>MoveToNextCommand</li>
+<li>MoveToIndexCommand and MoveToCommand</li>
+</ul>
 <h3 id="creating-sharedsources">Creating SharedSources<a class="headerlink" href="#creating-sharedsources" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <pre><code class="cs">var s = NavigationManager.CreateSharedSource&lt;MySharedItem&gt;();
 </code></pre>
@@ -656,10 +656,26 @@ NavigationManager.RemoveSharedSource&lt;MySharedItem&gt;(&quot;key1&quot;);
 </code></pre>
 
 <h3 id="add-items-to-a-shared-source">Add items to a Shared source<a class="headerlink" href="#add-items-to-a-shared-source" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<p>Load</p>
+<pre><code class="cs">DetailsSource.Load(new List&lt;MyItemDetailsViewModel&gt;
+{
+    new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.1&quot; }),
+    new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.2&quot; })
+});
+</code></pre>
+
+<p>Or with parameters</p>
+<pre><code class="cs">DetailsSource.Load(new InitItemCollection&lt;MyItemDetailsViewModel&gt;
+{
+    { new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.1&quot; }), &quot;Parameter 1&quot; },
+    { new MyItemDetailsViewModel(new MyItem { Name = &quot;Item.2&quot; }), &quot;Parameter 2&quot; }
+});
+</code></pre>
+
 <p>Adding items</p>
 <pre><code class="cs">var s = NavigationManager.GetSharedSource&lt;MyViewModel&gt;();
-s.Items.Add(1, new MyViewModel(), &quot;My parameter to pass to view model&quot;);
-s.Items.Insert(1, new MyViewModel(), &quot;My parameter to pass to view model&quot;);
+s.Add(1, new MyViewModel(), &quot;My parameter to pass to view model&quot;);
+s.Insert(1, new MyViewModel(), &quot;My parameter to pass to view model&quot;);
 </code></pre>
 
 <p>Or with short cuts</p>
@@ -670,27 +686,23 @@ s.InsertNew(1, &quot;My parameter to pass to view model&quot;);
 
 <p>Remove</p>
 <pre><code class="cs">var s = NavigationManager.GetSharedSource&lt;MyViewModel&gt;();
-s.Items.RemoveAt(1);
+s.RemoveAt(1);
 
 var vieModel = new MyViewModel();
-s.Items.Remove(viewModel);
+s.Remove(viewModel);
 </code></pre>
 
 <p>Clear</p>
-<pre><code class="cs">s.Items.Clear();
+<pre><code class="cs">s.Clear();
 
-s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
+s.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
 </code></pre>
 
 <p>Move</p>
-<pre><code class="cs">s.Items.Move(1, 2); // moves the item at index 1 to index 2
+<pre><code class="cs">s.Move(1, 2); // moves the item at index 1 to index 2
 </code></pre>
 
 <p>Replace Item</p>
-<pre><code class="cs">s.Items[1] = new MyViewModel();
-</code></pre>
-
-<p>Or to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.</p>
 <pre><code class="cs">var newItem = new MyViewModel();
 NavigationHelper.Replace(1, newItem);
 </code></pre>
@@ -903,7 +915,7 @@ View model name:
 }
 </code></pre>
 
-<p>The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). </p>
+<p>The navigation context contains the navigation parameter. That allows to modify this parameter (on MoveToPrevious, MoveToNext, check activation, ect.). </p>
 <pre><code class="cs">Navigation.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 </code></pre>
 
@@ -960,10 +972,16 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 
 <h2 id="navigationbrowser">NavigationBrowser<a class="headerlink" href="#navigationbrowser" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
-<p>Allows to browse a source (NavigationSource, SharedSource, etc.) with a CollectionView.</p>
+<p>Allows to browse a source (ienumerable) with a CollectionView. Add, Edit , Delete, is possible with generic lists or collections (with element type not object). IEditableObject is checked on edit. For example a list of people.</p>
 </blockquote>
-<pre><code class="cs">this.PeopleSource = NavigationManager.GetOrCreateSharedSource&lt;PersonViewModel&gt;();
-this.Browser = new NavigationBrowser(this.PeopleSource.Items);
+<pre><code class="cs">People = new  List&lt;Person&gt;
+{
+    new PersonModel { Id = 1, FirstName = &quot;First1&quot;, LastName = &quot;Last1&quot; },
+    new PersonModel { Id = 2, FirstName = &quot;First2&quot;, LastName = &quot;Last2&quot; },
+    new PersonModel { Id = 3, FirstName = &quot;First3&quot;, LastName = &quot;Last3&quot;}
+};
+
+this.Browser = new NavigationBrowser(People);
 </code></pre>
 
 <p>Add buttons and bind Borwser commands</p>
@@ -971,14 +989,31 @@ this.Browser = new NavigationBrowser(this.PeopleSource.Items);
 &lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
 &lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
 &lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
-&lt;TextBox x:Name=&quot;PositionTextBox&quot; Width=&quot;80&quot;&gt;
+&lt;TextBox x:Name=&quot;PositionTextBox&quot;  Width=&quot;80&quot;&gt;
     &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
-        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;TextChanged&quot; 
+        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;KeyUp&quot; 
                                         Command=&quot;{Binding Browser.MoveCurrentToPositionCommand}&quot;
                                         CommandParameter=&quot;{Binding ElementName=PositionTextBox, Path=Text}&quot;
                                         /&gt;
     &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
 &lt;/TextBox&gt;
+
+&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.MoveCurrentToFirstCommand}&quot; /&gt;
+&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
+&lt;Button Content=&quot;Next&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
+&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
+&lt;TextBox x:Name=&quot;RankTextBox&quot; Text=&quot;{Binding Browser.Rank, Mode=OneWay}&quot; Width=&quot;30&quot; TextAlignment=&quot;Center&quot; VerticalContentAlignment=&quot;Center&quot; Margin=&quot;2&quot;&gt;
+    &lt;mvvmLib:Interaction.Behaviors&gt;
+        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;KeyUp&quot; 
+                                        Command=&quot;{Binding Browser.MoveCurrentToRankCommand}&quot;
+                                        CommandParameter=&quot;{Binding ElementName=RankTextBox, Path=Text}&quot;
+                                        /&gt;
+    &lt;/mvvmLib:Interaction.Behaviors&gt;
+&lt;/TextBox&gt;
+&lt;TextBlock Text=&quot;{Binding Browser.CollectionView.Count, StringFormat='of {0}'}&quot; VerticalAlignment=&quot;Center&quot; Margin=&quot;5,0&quot;/&gt;
+&lt;Button Content=&quot;Add&quot; Command=&quot;{Binding Browser.AddCommand}&quot; /&gt;
+&lt;Button Content=&quot;Edit&quot; Command=&quot;{Binding Browser.EditCommand}&quot; /&gt;
+&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.DeleteCommand}&quot; /&gt;
 </code></pre>
 
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -1181,6 +1216,31 @@ this.Browser = new NavigationBrowser(this.PeopleSource.Items);
     private void SayHello(string value)
     {
         Message = $&quot;Hello {value}! {DateTime.Now.ToLongTimeString()}&quot;;
+    }
+}
+</code></pre>
+
+<h2 id="eventtomethodbehavior">EventToMethodBehavior<a class="headerlink" href="#eventtomethodbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example: on button click, call the method &quot;MyMethod&quot; of the ViewModel (current DataContext) with a parameter</p>
+<pre><code class="xml">&lt;Button Content=&quot;Click!&quot; HorizontalAlignment=&quot;Left&quot; Margin=&quot;5&quot;&gt;
+    &lt;mvvmLib:Interaction.Behaviors&gt;
+        &lt;mvvmLib:EventToMethodBehavior EventName=&quot;Click&quot; TargetObject=&quot;{Binding}&quot; MethodName=&quot;MyMethod&quot; Parameter=&quot;MvvmLib!&quot;/&gt;
+    &lt;/mvvmLib:Interaction.Behaviors&gt;
+&lt;/Button&gt;
+</code></pre>
+
+<pre><code class="cs">public class ViewAViewModel : BindableBase
+{
+    private string message;
+    public string Message
+    {
+        get { return message; }
+        set { SetProperty(ref message, value); }
+    }
+
+    private void MyMethod(object parameter)
+    {
+        Message = $&quot;MyMethod invoked witth parameter '{parameter}' {DateTime.Now.ToLongTimeString()}&quot;;
     }
 }
 </code></pre>

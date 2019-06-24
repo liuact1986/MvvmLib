@@ -62,7 +62,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void OnDeleteItemEventFired(ItemDetailsViewModel itemDetailsViewModel)
         {
-            MyItemsSource.Items.Remove(itemDetailsViewModel);
+            MyItemsSource.Remove(itemDetailsViewModel);
         }
 
         private void AddInternal()
@@ -81,7 +81,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void Clear()
         {
-            MyItemsSource.Items.Clear();
+            MyItemsSource.Clear();
         }
 
         private void SetTitle()

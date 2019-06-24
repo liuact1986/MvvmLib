@@ -14,7 +14,7 @@ namespace MvvmLib.Mvvm
     {
         private readonly Cloner cloner;
         private readonly Dictionary<Type, PropertyInfo[]> propertyCache;
-        private readonly object originalValue;
+        private object originalValue;
         private readonly bool keepAlive;
         private object trackedValue;
         private WeakReference trackedValueRef;
@@ -113,6 +113,9 @@ namespace MvvmLib.Mvvm
 
         private bool ValueHasChanged(object oldValue, object newValue)
         {
+            if(newValue == null)
+                return !(oldValue == null);
+
             var equals = newValue.Equals(oldValue);
             return !equals;
         }
@@ -290,6 +293,15 @@ namespace MvvmLib.Mvvm
             this.HasChanges = changed;
 
             return changed;
+        }
+
+        /// <summary>
+        /// Accept changes and set has changes to false.
+        /// </summary>
+        public void AcceptChanges()
+        {
+            this.originalValue = cloner.DeepClone(trackedValue);
+            this.HasChanges = false;
         }
     }
 

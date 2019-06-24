@@ -27,7 +27,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void OnCloseItem(IDetailViewModel item)
         {
-            DetailsSource.Items.Remove(item);
+            DetailsSource.Remove(item);
         }
     }
 }

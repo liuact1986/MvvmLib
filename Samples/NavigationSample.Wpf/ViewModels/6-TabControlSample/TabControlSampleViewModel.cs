@@ -26,8 +26,11 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void AddItem(Type sourceType)
         {
-            var instance = DetailsSource.CreateNew(sourceType);
-            DetailsSource.Items.Add((IDetailViewModel)instance);
+            if (sourceType == typeof(ViewCViewModel))
+                DetailsSource.AddNew<ViewCViewModel>();
+
+            if (sourceType == typeof(ViewDViewModel))
+                DetailsSource.AddNew<ViewDViewModel>();
         }
 
         private void SetTitle()

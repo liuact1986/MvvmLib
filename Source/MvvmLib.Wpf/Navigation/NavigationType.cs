@@ -6,31 +6,19 @@
     public enum NavigationType
     {
         /// <summary>
-        /// On navigate.
+        /// New.
         /// </summary>
         New,
         /// <summary>
-        /// On go back.
+        /// Back.
         /// </summary>
         Back,
         /// <summary>
-        /// On go forward.
+        /// Forward.
         /// </summary>
         Forward,
         /// <summary>
-        /// On redirect.
-        /// </summary>
-        Redirect,
-        /// <summary>
-        /// On insert.
-        /// </summary>
-        Insert,
-        /// <summary>
-        /// On remove.
-        /// </summary>
-        Remove,
-        /// <summary>
-        /// On go root.
+        /// Root.
         /// </summary>
         Root
     }

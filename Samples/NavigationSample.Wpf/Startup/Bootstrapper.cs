@@ -33,8 +33,7 @@ namespace NavigationSample.Wpf.Startup
             // 6. TabControl and ListView
             NavigationManager.CreateSharedSource<IDetailViewModel>();
             NavigationManager.CreateSharedSource<Person>();
-            NavigationManager.CreateSharedSource<MyItemDetailsViewModel>();
-            
+            NavigationManager.CreateSharedSource<MyItemDetailsViewModel>();         
         }
 
         //protected override object CreateShellViewModel()

@@ -12,7 +12,7 @@
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
-* **Navigation Behaviors**: **SelectionSyncBehavior** and **EventToCommandBehavior**
+* **Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**
 * **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
 ## Create a Bootstrapper
@@ -125,14 +125,14 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Method | Description |
 | --- | --- |
 | Navigate | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
-| Redirect | Redirects and removes the previous entry from the history |
-| GoBack | Navigates to the previous source |
-| GoForward | Navigates to the next source |
-| NavigateToRoot | Navigates to the first source and clears the history |
 | NavigateFast | Useful for navigation cancellation and not recheck guards |
+| Redirect | Redirects and removes the previous entry from the history |
+| MoveToPrevious | Navigates to the previous source |
+| MoveToNext | Navigates to the next source |
+| MoveToFirst | Navigates to the first source and clears the history |
 | MoveTo | Move to the index or the (existing) source |
 | MoveToLast | Move to the last or the source |
-| Sync | Synchronizes the history and sources with the history provided |
+| Sync | Synchronizes the history and sources with the navigation source provided |
 
 | Property | Description |
 | --- | --- |
@@ -140,8 +140,8 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Current | The current source. Can be binded to Content property of ContentControls |
 | CurrentIndex | The index of the current source |
 | Entries | The navigation history entries |
-| CanGoBack | Checks if can go back |
-| CanGoForward | Checks if can go forward |
+| CanMoveToPrevious | Checks if can go back |
+| CanMoveToNext | Checks if can go forward |
 | ClearSourcesOnNavigate | By default the sources ("forward stack") are removed on navigate and navigate to root |
 
 | Events | Description |
@@ -149,11 +149,20 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | PropertyChanged | Invoked on property changed (Current, CurrentIndex, etc.) |
 | CollectionChanged | Invoked on collection changed (Sources) |
 | CurrentChanged | Invoked on Current changed |
-| CanGoBackChanged | Invoked on CanGoBack changed |
-| CanGoForwardChanged | Invoked on CanGoForward changed |
+| CanMoveToPreviousChanged | Invoked on CanMoveToPrevious changed |
+| CanMoveToNextChanged | Invoked on CanMoveToNext changed |
 | Navigating | Invoked before navigation starts |
 | Navigated | Invoked after navigation ends |
 | NavigationFailed | Invoked on navigation cancelled |
+
+Commands
+
+* NavigateCommand with source type
+* MoveToFirstCommand
+* MoveToPreviousCommand
+* MoveToNextCommand
+* RedirectCommand
+* MoveToIndexCommand and MoveToCommand
 
 Create the default navigation source.
 
@@ -187,14 +196,14 @@ navigation.Navigate(typeof(ViewA));
 // with parameter
 navigation.Navigate(typeof(ViewA), "My parameter");
 
-// GoBack
-navigation.GoBack();
+// MoveToPrevious
+navigation.MoveToPrevious();
 
-// GoForward
-navigation.GoForward();
+// MoveToNext
+navigation.MoveToNext();
 
-// Navigate to root
-navigation.NavigateToRoot();
+// Navigate to root ("forward stack" cleared)
+navigation.MoveToFirst();
 ```
 
 Add navigation sources for the same source name:
@@ -215,9 +224,9 @@ navigationSources.Navigate(typeof(ViewA), "My parameter");
 The container provides some quick commands (these commands not check can go back / forward)
 
 * NavigateCommand with source type
-* NavigateToRootCommand
-* GoBackCommand
-* GoForwardCommand
+* MoveToFirstCommand
+* MoveToPreviousCommand
+* MoveToNextCommand
 * RedirectCommand
 * MoveToIndexCommand and MoveToCommand
 
@@ -233,14 +242,14 @@ The NavigationSource provides some quick Commands
 <!--Navigate command -->
 <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
 
-<!--GoBack command -->
-<Button Content="Go Back" Command="{Binding Navigation.GoBackCommand}" />
+<!--MoveToPrevious command -->
+<Button Content="Go Back" Command="{Binding Navigation.MoveToPreviousCommand}" />
 
-<!--GoForward command -->
-<Button Content="Go Forward" Command="{Binding Navigation.GoForwardCommand}" />
+<!--MoveToNext command -->
+<Button Content="Go Forward" Command="{Binding Navigation.MoveToNextCommand}" />
 
-<!--NavigateToRoot command -->
-<Button Content="Root" Command="{Binding Navigation.NavigateToRootCommand}" />
+<!--MoveToFirst command -->
+<Button Content="Root" Command="{Binding Navigation.MoveToFirstCommand}" />
 ```
 
 Sources management
@@ -269,7 +278,7 @@ Navigation processes
 | Process | Methods | Description |
 | --- | --- | --- |
 | "Navigate" | Navigate, NavigateFast, Redirect | Find the **selectable** (ISelectable) or create a **new** instance, **INavigationAware** methods invoked (OnNavigatingTo and OnNavigatedTo only for new instance) |
-| "Move" | MoveTo, GoBack, GoForward, NavigateToRoot, MoveToLast | Only **INavigationAware** methods invoked |
+| "Move" | MoveTo, MoveToPrevious, MoveToNext, MoveToFirst, MoveToLast | Only **INavigationAware** methods invoked |
 
 
 ### ContentControlNavigationSource
@@ -300,10 +309,14 @@ The namespace:
 
 Provides an Items collection that implements INotifyCollectionChanged, a SelectedItem and more to quickly bind sources... add, remove, replace, move items, select an item by SelectedIndex or SelectedItem, etc. INotifyCollectionChanged and INotifyPropertyChanged do the work for the UI.
 
-SharedSourceItemCollection methods
+Methods
 
 | Method | Description |
 | --- | --- |
+| Load | Allows to initialize the SharedSource with a collection and parameters |
+| CreateNew | Returns an item instance created with the SourceResolver |
+| InsertNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
+| AddNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
 | Insert | Allows to insert item at index. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
 | Add | Adds and item. ICanDeactive, ICanActivate and INavigationAware are invoked for items that implement these interfaces |
 | Move | Moves the item from the old index to the new index. Navigation guards and INavigationAware are not invoked |
@@ -312,25 +325,9 @@ SharedSourceItemCollection methods
 | Remove | Removes the item. ICanDeactive is checked for the item and OnNavigatingFrom is invoked for item that implement INavigationAware |
 | Clear | Removes all items. ICanDeactive and INavigationAware OnNavigatingFrom methods are invoked for each item before deletion |
 | ClearFast | Removes all items. ICanDeactive and INavigationAware methods are not invoked |
+| Sync | Synchronizes the SharedSource with the SharedSource provided |
 
-SharedSourceItemCollection events
-
-| Event | Description |
-| --- | --- |
-| PropertyChanged | Invoked on property changed (count, indexer) |
-| CollectionChanged | Invoked on collection changed (Add, Move, Remove, Replace, Reset) |
-
-
-SharedSource provides methods that allow to create and insert quickly. Theses methods use use the SourceResolver to resolve injected dependencies. The SourceResolver factory method can be overridden and use a IoC Container.
-
-| Method | Description |
-| --- | --- |
-| CreateNew | Returns an item instance created with the SourceResolver |
-| InsertNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
-| AddNew | Creates a new instance with the SourceResolver an inserts the item created at index. A parameter can be provided for navigation |
-
-
-SharedSource properties
+Properties
 
 | Property | Description |
 | --- | --- |
@@ -338,13 +335,21 @@ SharedSource properties
 | SelectedIndex | The index of selected item |
 | SelectionHandling | Allows to select automatically items after insertion, etc. (SelectedItem) |
 
-SharedSource events
+Events
 
 | Event | Description |
 | --- | --- |
+| PropertyChanged | Invoked on property changed (count, indexer) |
 | SelectedItemChanged | Invoked on selected item changed |
-| PropertyChanged | Invoked on selected index and selected item changed |
-| SelectionHandling | Allows to select automatically items after insertion, etc. (SelectedItem) |
+| CanMoveToPreviousChanged | Invoked on CanMoveToPrevious changed |
+| CanMoveToNextChanged | Invoked on CanMoveToNext changed |
+
+Commands
+
+* MoveToFirstCommand
+* MoveToPreviousCommand
+* MoveToNextCommand
+* MoveToIndexCommand and MoveToCommand
 
 ### Creating SharedSources
 
@@ -393,12 +398,32 @@ var s = NavigationManager.GetNewSharedSource<MySharedItem>();
 
 ### Add items to a Shared source
 
+Load
+
+```cs
+DetailsSource.Load(new List<MyItemDetailsViewModel>
+{
+    new MyItemDetailsViewModel(new MyItem { Name = "Item.1" }),
+    new MyItemDetailsViewModel(new MyItem { Name = "Item.2" })
+});
+```
+
+Or with parameters
+
+```cs
+DetailsSource.Load(new InitItemCollection<MyItemDetailsViewModel>
+{
+    { new MyItemDetailsViewModel(new MyItem { Name = "Item.1" }), "Parameter 1" },
+    { new MyItemDetailsViewModel(new MyItem { Name = "Item.2" }), "Parameter 2" }
+});
+```
+
 Adding items
 
 ```cs
 var s = NavigationManager.GetSharedSource<MyViewModel>();
-s.Items.Add(1, new MyViewModel(), "My parameter to pass to view model");
-s.Items.Insert(1, new MyViewModel(), "My parameter to pass to view model");
+s.Add(1, new MyViewModel(), "My parameter to pass to view model");
+s.Insert(1, new MyViewModel(), "My parameter to pass to view model");
 ```
 
 Or with short cuts
@@ -413,33 +438,27 @@ Remove
 
 ```cs
 var s = NavigationManager.GetSharedSource<MyViewModel>();
-s.Items.RemoveAt(1);
+s.RemoveAt(1);
 
 var vieModel = new MyViewModel();
-s.Items.Remove(viewModel);
+s.Remove(viewModel);
 ```
 
 Clear
 
 ```cs
-s.Items.Clear();
+s.Clear();
 
-s.Items.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
+s.ClearFast(); // without invoking ICanDeactivate and OnNavigatingFrom
 ```
 
 Move
 
 ```cs
-s.Items.Move(1, 2); // moves the item at index 1 to index 2
+s.Move(1, 2); // moves the item at index 1 to index 2
 ```
 
 Replace Item
-
-```cs
-s.Items[1] = new MyViewModel();
-```
-
-Or to check ICanDeactivate, ICanActivate and invoke INavigationAware methods.
 
 ```cs
 var newItem = new MyViewModel();
@@ -679,7 +698,7 @@ public class ViewAViewModel : INavigationAware
 }
 ```
 
-The navigation context contains the navigation parameter. That allows to modify this parameter (on goback, goforward, check activation, ect.). 
+The navigation context contains the navigation parameter. That allows to modify this parameter (on MoveToPrevious, MoveToNext, check activation, ect.). 
 
 ```cs
 Navigation.Navigate(typeof(ViewA), "My parameter");
@@ -746,11 +765,17 @@ public class PersonDetailsViewModel : BindableBase, ISelectable
 
 ## NavigationBrowser
 
-> Allows to browse a source (NavigationSource, SharedSource, etc.) with a CollectionView.
+> Allows to browse a source (ienumerable) with a CollectionView. Add, Edit , Delete, is possible with generic lists or collections (with element type not object). IEditableObject is checked on edit. For example a list of people.
 
 ```cs
-this.PeopleSource = NavigationManager.GetOrCreateSharedSource<PersonViewModel>();
-this.Browser = new NavigationBrowser(this.PeopleSource.Items);
+People = new  List<Person>
+{
+    new PersonModel { Id = 1, FirstName = "First1", LastName = "Last1" },
+    new PersonModel { Id = 2, FirstName = "First2", LastName = "Last2" },
+    new PersonModel { Id = 3, FirstName = "First3", LastName = "Last3"}
+};
+
+this.Browser = new NavigationBrowser(People);
 ```
 
 Add buttons and bind Borwser commands
@@ -760,14 +785,31 @@ Add buttons and bind Borwser commands
 <Button Content="Previous" Command="{Binding Browser.MoveCurrentToPreviousCommand}" />
 <Button Content="Previous" Command="{Binding Browser.MoveCurrentToNextCommand}" />
 <Button Content="Last" Command="{Binding Browser.MoveCurrentToLastCommand}" />
-<TextBox x:Name="PositionTextBox" Width="80">
+<TextBox x:Name="PositionTextBox"  Width="80">
     <mvvmLib:NavigationInteraction.Behaviors>
-        <mvvmLib:EventToCommandBehavior EventName="TextChanged" 
+        <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
                                         Command="{Binding Browser.MoveCurrentToPositionCommand}"
                                         CommandParameter="{Binding ElementName=PositionTextBox, Path=Text}"
                                         />
     </mvvmLib:NavigationInteraction.Behaviors>
 </TextBox>
+
+<Button Content="First" Command="{Binding Browser.MoveCurrentToFirstCommand}" />
+<Button Content="Previous" Command="{Binding Browser.MoveCurrentToPreviousCommand}" />
+<Button Content="Next" Command="{Binding Browser.MoveCurrentToNextCommand}" />
+<Button Content="Last" Command="{Binding Browser.MoveCurrentToLastCommand}" />
+<TextBox x:Name="RankTextBox" Text="{Binding Browser.Rank, Mode=OneWay}" Width="30" TextAlignment="Center" VerticalContentAlignment="Center" Margin="2">
+    <mvvmLib:Interaction.Behaviors>
+        <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
+                                        Command="{Binding Browser.MoveCurrentToRankCommand}"
+                                        CommandParameter="{Binding ElementName=RankTextBox, Path=Text}"
+                                        />
+    </mvvmLib:Interaction.Behaviors>
+</TextBox>
+<TextBlock Text="{Binding Browser.CollectionView.Count, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
+<Button Content="Add" Command="{Binding Browser.AddCommand}" />
+<Button Content="Edit" Command="{Binding Browser.EditCommand}" />
+<Button Content="First" Command="{Binding Browser.DeleteCommand}" />
 ```
 
 
@@ -991,6 +1033,35 @@ public class ViewAViewModel : BindableBase
     private void SayHello(string value)
     {
         Message = $"Hello {value}! {DateTime.Now.ToLongTimeString()}";
+    }
+}
+```
+
+## EventToMethodBehavior
+
+Example: on button click, call the method "MyMethod" of the ViewModel (current DataContext) with a parameter
+
+```xml
+<Button Content="Click!" HorizontalAlignment="Left" Margin="5">
+    <mvvmLib:Interaction.Behaviors>
+        <mvvmLib:EventToMethodBehavior EventName="Click" TargetObject="{Binding}" MethodName="MyMethod" Parameter="MvvmLib!"/>
+    </mvvmLib:Interaction.Behaviors>
+</Button>
+```
+
+```cs
+public class ViewAViewModel : BindableBase
+{
+    private string message;
+    public string Message
+    {
+        get { return message; }
+        set { SetProperty(ref message, value); }
+    }
+
+    private void MyMethod(object parameter)
+    {
+        Message = $"MyMethod invoked witth parameter '{parameter}' {DateTime.Now.ToLongTimeString()}";
     }
 }
 ```

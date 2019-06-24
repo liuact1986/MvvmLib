@@ -5,19 +5,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
     /// The navigation source base class.
     /// </summary>
-    public class NavigationSource : INotifyPropertyChanged
+    public class NavigationSource : IMovableSource, INotifyPropertyChanged
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
 
         private ILogger logger;
         /// <summary>
-        /// The logger used by the library.
+        /// The logger used.
         /// </summary>
         public ILogger Logger
         {
@@ -25,20 +27,20 @@ namespace MvvmLib.Navigation
             set { logger = value; }
         }
 
-        private readonly ObservableCollection<object> sources;
+        private ObservableCollection<object> sources;
         /// <summary>
-        /// The collection of sources. A source is a View or a ViewModel.
+        /// The sources collection.
         /// </summary>
         public IReadOnlyCollection<object> Sources
         {
             get { return sources; }
         }
 
-        private readonly NavigationEntryCollection entries;
+        private readonly List<NavigationEntry> entries;
         /// <summary>
         /// The entry collection.
         /// </summary>
-        public IReadOnlyCollection<NavigationEntry> Entries
+        public IReadOnlyList<NavigationEntry> Entries
         {
             get { return entries; }
         }
@@ -59,22 +61,11 @@ namespace MvvmLib.Navigation
         public int CurrentIndex
         {
             get { return currentIndex; }
-        }
-
-        /// <summary>
-        /// Chekcs if can go back.
-        /// </summary>
-        public bool CanGoBack
-        {
-            get { return this.currentIndex > 0; }
-        }
-
-        /// <summary>
-        /// Chekcs if can go forward.
-        /// </summary>
-        public bool CanGoForward
-        {
-            get { return this.currentIndex < this.sources.Count - 1; }
+            set
+            {
+                if (!Equals(currentIndex, value))
+                    MoveTo(value);
+            }
         }
 
         private bool clearSourcesOnNavigate;
@@ -87,76 +78,118 @@ namespace MvvmLib.Navigation
             set { clearSourcesOnNavigate = value; }
         }
 
-        private readonly IRelayCommand navigateCommand;
+        /// <summary>
+        /// Checks if can move to previous source.
+        /// </summary>
+        public bool CanMoveToPrevious
+        {
+            get { return this.currentIndex > 0; }
+        }
+
+        /// <summary>
+        /// Checks if can move to next source.
+        /// </summary>
+        public bool CanMoveToNext
+        {
+            get { return this.currentIndex < this.sources.Count - 1; }
+        }
+
+        private IRelayCommand navigateCommand;
         /// <summary>
         /// Allows to navigate to the source with the source type provided.
         /// </summary>
         public IRelayCommand NavigateCommand
         {
-            get { return navigateCommand; }
+            get
+            {
+                if (navigateCommand == null)
+                    navigateCommand = new RelayCommand<Type>(ExecuteNavigateCommand);
+                return navigateCommand;
+            }
         }
 
-        private readonly IRelayCommand goBackCommand;
+        private IRelayCommand moveToFirstCommand;
         /// <summary>
-        /// Allows to navigate to the previous source.
+        /// Allows to move to the first source.
         /// </summary>
-        public IRelayCommand GoBackCommand
+        public IRelayCommand MoveToFirstCommand
         {
-            get { return goBackCommand; }
+            get
+            {
+                if (moveToFirstCommand == null)
+                    moveToFirstCommand = new RelayCommand(ExecuteMoveToFirstCommand, CanExecuteMoveToFirstCommand);
+                return moveToFirstCommand;
+            }
         }
 
-        private readonly IRelayCommand goForwardCommand;
+        private IRelayCommand moveToPreviousCommand;
         /// <summary>
-        /// Allows to navigate to the next source.
+        /// Allows to move to the previous source.
         /// </summary>
-        public IRelayCommand GoForwardCommand
+        public IRelayCommand MoveToPreviousCommand
         {
-            get { return goForwardCommand; }
+            get
+            {
+                if (moveToPreviousCommand == null)
+                    moveToPreviousCommand = new RelayCommand(ExecuteMoveToPreviousCommand, CanExecuteMoveToPreviousCommand);
+                return moveToPreviousCommand;
+            }
         }
 
-        private readonly IRelayCommand navigateToRootCommand;
+        private IRelayCommand moveToNextCommand;
         /// <summary>
-        /// Allows to navigate to the first source.
+        /// Allows to move to the next source.
         /// </summary>
-        public IRelayCommand NavigateToRootCommand
+        public IRelayCommand MoveToNextCommand
         {
-            get { return navigateToRootCommand; }
+            get
+            {
+                if (moveToNextCommand == null)
+                    moveToNextCommand = new RelayCommand(ExecuteMoveToNextCommand, CanExecuteMoveToNextCommand);
+                return moveToNextCommand;
+            }
         }
 
-        private readonly IRelayCommand redirectCommand;
-        /// <summary>
-        /// Allows to redirect to the source with the source type provided.
-        /// </summary>
-        public IRelayCommand RedirectCommand
-        {
-            get { return redirectCommand; }
-        }
-
-        private readonly IRelayCommand moveToLastCommand;
+        private IRelayCommand moveToLastCommand;
         /// <summary>
         /// Allows to move to the last source.
         /// </summary>
         public IRelayCommand MoveToLastCommand
         {
-            get { return moveToLastCommand; }
+            get
+            {
+                if (moveToLastCommand == null)
+                    moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
+                return moveToLastCommand;
+            }
         }
 
-        private readonly IRelayCommand moveToIndexCommand;
+        private IRelayCommand moveToIndexCommand;
         /// <summary>
         /// Allows to move to the index.
         /// </summary>
         public IRelayCommand MoveToIndexCommand
         {
-            get { return moveToIndexCommand; }
+            get
+            {
+                if (moveToIndexCommand == null)
+                    moveToIndexCommand = new RelayCommand<object>(ExecuteMoveToIndexCommand);
+                return moveToIndexCommand;
+            }
         }
 
-        private readonly IRelayCommand moveToCommand;
+        private IRelayCommand moveToCommand;
         /// <summary>
         /// Allows to move to the source.
         /// </summary>
         public IRelayCommand MoveToCommand
         {
-            get { return moveToCommand; }
+            get
+            {
+                if (moveToCommand == null)
+                    moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
+                return moveToCommand;
+            }
         }
 
         /// <summary>
@@ -165,29 +198,29 @@ namespace MvvmLib.Navigation
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Invoked when the can go back value changed.
+        /// Invoked on <see cref="CanMoveToPrevious"/> changed.
         /// </summary>
-        public event EventHandler<CanGoBackEventArgs> CanGoBackChanged;
+        public event EventHandler<CanMoveToEventArgs> CanMoveToPreviousChanged;
 
         /// <summary>
-        /// Invoked when the can go forward value changed.
+        /// Invoked on <see cref="CanMoveToNext"/> changed.
         /// </summary>
-        public event EventHandler<CanGoForwardEventArgs> CanGoForwardChanged;
+        public event EventHandler<CanMoveToEventArgs> CanMoveToNextChanged;
 
         /// <summary>
         /// Invoked before navigation starts.
         /// </summary>
-        public event EventHandler<NavigatingEventArgs> Navigating;
+        public event EventHandler<NavigationEventArgs> Navigating;
 
         /// <summary>
         /// Invoked after navigation ends.
         /// </summary>
-        public event EventHandler<NavigatedEventArgs> Navigated;
+        public event EventHandler<NavigationEventArgs> Navigated;
 
         /// <summary>
         /// Invoked on navigation failed (cancelled or exception).
         /// </summary>
-        public event EventHandler<NavigationFailedEventArgs> NavigationFailed;
+        public event EventHandler<NavigationEventArgs> NavigationFailed;
 
         /// <summary>
         /// Invoked on current source changed.
@@ -195,23 +228,15 @@ namespace MvvmLib.Navigation
         public event EventHandler<CurrentSourceChangedEventArgs> CurrentChanged;
 
         /// <summary>
-        /// Creates the navigation source.
+        /// Creates the <see cref="NavigationSource"/>.
         /// </summary>
         public NavigationSource()
         {
             this.sources = new ObservableCollection<object>();
-            this.entries = new NavigationEntryCollection();
-            this.currentIndex = -1;
+            this.entries = new List<NavigationEntry>();
             this.clearSourcesOnNavigate = true;
-
-            navigateCommand = new RelayCommand<Type>(ExecuteNavigateCommand);
-            goBackCommand = new RelayCommand(ExecuteGoBackCommand, CanExecuteGoBackCommand);
-            goForwardCommand = new RelayCommand(ExecuteGoForwardCommand, CanExecuteGoForwardCommand);
-            navigateToRootCommand = new RelayCommand(ExecuteNavigateToRootCommand, CanExecuteNavigateToRootCommand);
-            redirectCommand = new RelayCommand<Type>(ExecuteRedirectCommand);
-            moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
-            moveToIndexCommand = new RelayCommand<int>(ExecuteMoveToIndexCommand);
-            moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
+            this.currentIndex = -1;
+            this.notifyOnCurrentChanged = true;
         }
 
         #region Commands
@@ -221,108 +246,100 @@ namespace MvvmLib.Navigation
             this.Navigate(sourceType, null);
         }
 
-        private void ExecuteGoBackCommand()
+        private void ExecuteMoveToFirstCommand()
         {
-            this.GoBack();
+            MoveToFirst();
         }
 
-        private void ExecuteRedirectCommand(Type sourceType)
+        private bool CanExecuteMoveToFirstCommand()
         {
-            this.Redirect(sourceType, null);
+            return CanMoveToPrevious;
         }
 
-        private bool CanExecuteGoBackCommand()
+        private void ExecuteMoveToPreviousCommand()
         {
-            return this.CanGoBack;
+            MoveToPrevious();
         }
 
-        private void ExecuteGoForwardCommand()
+        private bool CanExecuteMoveToPreviousCommand()
         {
-            this.GoForward();
+            return CanMoveToPrevious;
         }
 
-        private bool CanExecuteGoForwardCommand()
+        private void ExecuteMoveToNextCommand()
         {
-            return this.CanGoForward;
+            MoveToNext();
         }
 
-        private void ExecuteNavigateToRootCommand()
+        private bool CanExecuteMoveToNextCommand()
         {
-            this.NavigateToRoot();
-        }
-
-        private bool CanExecuteNavigateToRootCommand()
-        {
-            return this.sources.Count > 0;
+            return CanMoveToNext;
         }
 
         private void ExecuteMoveToLastCommand()
         {
-            this.MoveToLast();
+            MoveToLast();
         }
 
         private bool CanExecuteMoveToLastCommand()
         {
-            return this.sources.Count > 0 && currentIndex < this.sources.Count;
+            return CanMoveToNext;
         }
 
-        private void ExecuteMoveToIndexCommand(int index)
+        private void ExecuteMoveToIndexCommand(object args)
         {
-            this.MoveTo(index);
+            if (args != null)
+            {
+                if (int.TryParse(args.ToString(), out int position))
+                {
+                    MoveTo(position);
+                }
+            }
         }
 
-        private void ExecuteMoveToCommand(object source)
+        private void ExecuteMoveToCommand(object args)
         {
-            this.MoveTo(source);
+            MoveTo(args);
         }
 
         #endregion // Commands
 
-        #region  Events
+        #region Events
 
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void OnCanGobackChanged(bool canGoBack)
+        private void OnCanMoveToPreviousChanged(bool canMove)
         {
-            navigateToRootCommand.RaiseCanExecuteChanged();
-            goBackCommand.RaiseCanExecuteChanged();
+            moveToFirstCommand?.RaiseCanExecuteChanged();
+            moveToPreviousCommand?.RaiseCanExecuteChanged();
 
-            OnPropertyChanged(nameof(CanGoBack));
-
-            this.CanGoBackChanged?.Invoke(this, new CanGoBackEventArgs(canGoBack));
+            CanMoveToPreviousChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
-        private void OnCanGoForwardChanged(bool canGoForward)
+        private void OnCanMoveToNextChanged(bool canMove)
         {
-            moveToLastCommand.RaiseCanExecuteChanged();
-            goForwardCommand.RaiseCanExecuteChanged();
+            moveToLastCommand?.RaiseCanExecuteChanged();
+            moveToNextCommand?.RaiseCanExecuteChanged();
 
-            OnPropertyChanged(nameof(CanGoForward));
-
-            this.CanGoForwardChanged?.Invoke(this, new CanGoForwardEventArgs(canGoForward));
-        }
-
-        private void OnCurrentChanged()
-        {
-            CurrentChanged?.Invoke(this, new CurrentSourceChangedEventArgs(this.currentIndex, this.current));
+            CanMoveToNextChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
         private void OnNavigating(NavigationEntry entry, NavigationType navigationType)
         {
-            Navigating?.Invoke(this, new NavigatingEventArgs(entry.SourceType, entry.Parameter, navigationType));
+            Navigating?.Invoke(this, new NavigationEventArgs(entry.SourceType, entry.Parameter, navigationType));
         }
 
         private void OnNavigated(Type sourceType, object parameter, NavigationType navigationType)
         {
-            Navigated?.Invoke(this, new NavigatedEventArgs(sourceType, parameter, navigationType));
+            Navigated?.Invoke(this, new NavigationEventArgs(sourceType, parameter, navigationType));
         }
 
-        private void OnNavigationFailed(NavigationFailedException exception)
+        private void OnNavigationFailed(Type sourceType, object parameter, NavigationType navigationType)
         {
-            NavigationFailed?.Invoke(this, new NavigationFailedEventArgs(exception));
+            NavigationFailed?.Invoke(this, new NavigationEventArgs(sourceType, parameter, navigationType));
         }
 
         private void OnNavigationCompleted(bool success, Type sourceType, object parameter, NavigationType navigationType)
@@ -330,7 +347,12 @@ namespace MvvmLib.Navigation
             if (success)
                 this.OnNavigated(sourceType, parameter, navigationType);
             else
-                this.OnNavigationFailed(new NavigationFailedException(this.current, this));
+                this.OnNavigationFailed(sourceType, parameter, navigationType);
+        }
+
+        private void OnCurrentChanged()
+        {
+            CurrentChanged?.Invoke(this, new CurrentSourceChangedEventArgs(this.currentIndex, this.current));
         }
 
         #endregion // Events
@@ -340,7 +362,8 @@ namespace MvvmLib.Navigation
         private void SetCurrentIndex(int index)
         {
             currentIndex = index;
-            OnPropertyChanged(nameof(CurrentIndex));
+            if (notifyOnCurrentChanged)
+                OnPropertyChanged(nameof(CurrentIndex));
         }
 
         private void UpdateEntryParameter(int index, object parameter)
@@ -349,37 +372,48 @@ namespace MvvmLib.Navigation
                 this.entries[index].Parameter = parameter;
         }
 
-        private void CheckCanGoBackAndCanGoForward(bool oldCanGoBack, bool oldCanGoForward)
+        private void CheckCanMoveTo(bool oldCanMoveToPrevious, bool oldCanMoveToNext)
         {
-            if (CanGoBack != oldCanGoBack)
-                OnCanGobackChanged(CanGoBack);
-            if (CanGoForward != oldCanGoForward)
-                OnCanGoForwardChanged(CanGoForward);
+            if (CanMoveToPrevious != oldCanMoveToPrevious)
+                OnCanMoveToPreviousChanged(CanMoveToPrevious);
+            if (CanMoveToNext != oldCanMoveToNext)
+                OnCanMoveToNextChanged(CanMoveToNext);
         }
 
         private void InsertSourceInternal(int index, Type sourceType, object source, object parameter)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-
             if (index < 0 || index > this.sources.Count)
                 throw new IndexOutOfRangeException();
 
-            this.sources.Insert(index, source);
             this.entries.Insert(index, new NavigationEntry(sourceType, parameter));
+            this.sources.Insert(index, source);
         }
 
-        private void InsertAndSelectSourceInternal(int index, Type sourceType, object source, object parameter)
+
+        private bool notifyOnCurrentChanged;
+        /// <summary>
+        /// Allows to select inserted item (Select by default).
+        /// </summary>
+        public bool NotifyOnCurrentChanged
         {
-            bool oldCanGoBack = CanGoBack;
-            bool oldCanGoForward = CanGoForward;
+            get { return notifyOnCurrentChanged; }
+            set { notifyOnCurrentChanged = value; }
+        }
+
+
+        private void InsertSourceAndSetCurrentIndex(int index, Type sourceType, object source, object parameter)
+        {
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
 
             InsertSourceInternal(index, sourceType, source, parameter);
 
             if (currentIndex >= index)
                 SetCurrentIndex(currentIndex + 1);
 
-            CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
         }
 
         internal object InsertNewSource(int index, Type sourceType, object parameter, Func<Type, object> resolveSource)
@@ -390,7 +424,7 @@ namespace MvvmLib.Navigation
                 throw new ArgumentNullException(nameof(resolveSource));
 
             var source = resolveSource(sourceType);
-            InsertAndSelectSourceInternal(index, sourceType, source, parameter);
+            InsertSourceAndSetCurrentIndex(index, sourceType, source, parameter);
 
             return source;
         }
@@ -408,7 +442,7 @@ namespace MvvmLib.Navigation
                 throw new ArgumentNullException(nameof(sourceType));
 
             var source = NavigationHelper.ResolveSource(sourceType);
-            InsertAndSelectSourceInternal(index, sourceType, source, parameter);
+            InsertSourceAndSetCurrentIndex(index, sourceType, source, parameter);
 
             return source;
         }
@@ -444,8 +478,8 @@ namespace MvvmLib.Navigation
             if (index < 0 || index > this.sources.Count - 1)
                 throw new IndexOutOfRangeException();
 
-            this.sources.RemoveAt(index);
             this.entries.RemoveAt(index);
+            this.sources.RemoveAt(index);
         }
 
         /// <summary>
@@ -454,8 +488,8 @@ namespace MvvmLib.Navigation
         /// <param name="index">The index</param>
         public void RemoveSourceAt(int index)
         {
-            bool oldCanGoBack = CanGoBack;
-            bool oldCanGoForward = CanGoForward;
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
 
             RemoveAtInternal(index);
 
@@ -464,10 +498,29 @@ namespace MvvmLib.Navigation
                 this.SetCurrentIndex(-1);
                 this.SetCurrent(null);
             }
+            else if (this.currentIndex == index)
+            {
+                // remove selected
+                // (1) [A B] xC [D E] => [A B] D [E] (old 2, new 2 + change current)
+                // (1) xA [B C] => B [C] (old 0, new 0 + change current)
+                // (else) [A B] xC => [A] B (old 2, new 1 + change current)
+                if (this.sources.Count > index)
+                    this.SetCurrent(this.sources[index]);
+                else
+                {
+                    var newIndex = index - 1;
+                    this.SetCurrentIndex(newIndex);
+                    this.SetCurrent(this.sources[newIndex]);
+                }
+            }
             else if (currentIndex > index)
+            {
+                // [xA B] C [D E] => [B] C [D E] change current index - 1 (old 2, new 1)
+                // [A B] C [D xE] => [A B] C [D] not change
                 this.SetCurrentIndex(currentIndex - 1);
+            }
 
-            CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
         }
 
         /// <summary>
@@ -494,12 +547,14 @@ namespace MvvmLib.Navigation
         {
             if (startIndex >= 0 && startIndex < this.sources.Count)
             {
-                bool oldCanGoBack = CanGoBack;
-                bool oldCanGoForward = CanGoForward;
+                var oldCanMoveToPrevious = CanMoveToPrevious;
+                var oldCanMoveToNext = CanMoveToNext;
 
                 while (sources.Count > startIndex)
                     this.RemoveAtInternal(startIndex);
 
+                // A [B xC xD xE] => A [B] (old 0, new 0) not change
+                // [A xB] xC [xD xE] => A => select last
                 if (currentIndex >= startIndex)
                 {
                     // select last
@@ -516,7 +571,7 @@ namespace MvvmLib.Navigation
                     }
                 }
 
-                CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
+                CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
             }
         }
 
@@ -525,15 +580,15 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void ClearSources()
         {
-            bool oldCanGoBack = CanGoBack;
-            bool oldCanGoForward = CanGoForward;
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
 
             this.sources.Clear();
             this.entries.Clear();
             this.SetCurrentIndex(-1);
             this.SetCurrent(null);
 
-            CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
         }
 
         #endregion // Sources management
@@ -545,8 +600,11 @@ namespace MvvmLib.Navigation
         protected virtual void SetCurrent(object source)
         {
             current = source;
-            OnPropertyChanged(nameof(Current));
-            OnCurrentChanged();
+            if (notifyOnCurrentChanged)
+            {
+                OnPropertyChanged(nameof(Current));
+                OnCurrentChanged();
+            }
         }
 
         /// <summary>
@@ -557,28 +615,47 @@ namespace MvvmLib.Navigation
             this.SetCurrent(null);
         }
 
-        private void SyncOnNavigate(Type sourceType, object source, bool isSelectable, NavigationContext navigationContext)
+        private void ExecuteNavigationWithSelectable(object selectable, NavigationContext navigationContext)
         {
-            bool oldCanGoBack = CanGoBack;
-            bool oldCanGoForward = CanGoForward;
-            if (isSelectable)
-            {
-                int index = sources.IndexOf(source);
-                UpdateEntryParameter(index, navigationContext.Parameter);
-                this.SetCurrentIndex(index);
-                this.SetCurrent(source);
-            }
-            else
-            {
-                var newIndex = this.currentIndex + 1;
-                this.InsertSourceInternal(newIndex, sourceType, source, navigationContext.Parameter);
-                if (clearSourcesOnNavigate)
-                    this.RemoveSources(newIndex + 1);
-                UpdateEntryParameter(newIndex, navigationContext.Parameter);
-                this.SetCurrentIndex(newIndex);
-                this.SetCurrent(source);
-            }
-            CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
+
+            NavigationHelper.OnNavigatingFrom(current, navigationContext);
+
+            int index = sources.IndexOf(selectable);
+            UpdateEntryParameter(index, navigationContext.Parameter);
+            this.SetCurrentIndex(index);
+            this.SetCurrent(selectable);
+
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
+
+            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, NavigationType.Back);
+        }
+
+        private void ExecuteNavigationNew(object source, object context, NavigationContext navigationContext)
+        {
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
+
+            NavigationHelper.OnNavigatingFrom(current, navigationContext);
+
+            NavigationHelper.OnNavigatingTo(context, navigationContext);
+
+            var newIndex = this.currentIndex + 1;
+            this.InsertSourceInternal(newIndex, navigationContext.SourceType, source, navigationContext.Parameter);
+
+            if (clearSourcesOnNavigate)
+                this.RemoveSources(newIndex + 1);
+
+            UpdateEntryParameter(newIndex, navigationContext.Parameter);
+            this.SetCurrentIndex(newIndex);
+            this.SetCurrent(source);
+
+            NavigationHelper.OnNavigatedTo(context, navigationContext);
+
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
+
+            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
         }
 
         internal void Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
@@ -590,9 +667,42 @@ namespace MvvmLib.Navigation
                 this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
             var navigationContext = new NavigationContext(sourceType, parameter);
-            NavigationHelper.Navigate(current, sources, navigationContext, resolveSource,
-                (source, isSelectable) => SyncOnNavigate(sourceType, source, isSelectable, navigationContext),
-                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.New));
+            NavigationHelper.CanDeactivate(current, navigationContext, canDeactivate =>
+            {
+                if (canDeactivate)
+                {
+                    var selectable = NavigationHelper.FindSelectable(sources, sourceType, parameter);
+                    if (selectable != null)
+                    {
+                        NavigationHelper.CanActivate(selectable, navigationContext, canActivate =>
+                        {
+                            if (canActivate)
+                                ExecuteNavigationWithSelectable(selectable, navigationContext);
+                            else
+                                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+                        });
+                    }
+                    else
+                    {
+                        var source = resolveSource(sourceType);
+                        NavigationHelper.CanActivate(source, navigationContext, canActivate =>
+                        {
+                            if (canActivate)
+                            {
+                                var view = source as FrameworkElement;
+                                if (view != null)
+                                    ExecuteNavigationNew(source, view.DataContext, navigationContext);
+                                else
+                                    ExecuteNavigationNew(source, source, navigationContext);
+                            }
+                            else
+                                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+                        });
+                    }
+                }
+                else
+                    this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+            });
         }
 
         /// <summary>
@@ -602,16 +712,7 @@ namespace MvvmLib.Navigation
         /// <param name="parameter">The parameter</param>
         public void Navigate(Type sourceType, object parameter)
         {
-            if (sourceType == null)
-                throw new ArgumentNullException(nameof(sourceType));
-
-            if (this.currentIndex >= 0)
-                this.OnNavigating(this.entries[currentIndex], NavigationType.New);
-
-            var navigationContext = new NavigationContext(sourceType, parameter);
-            NavigationHelper.Navigate(current, sources, navigationContext,
-                (source, isSelectable) => SyncOnNavigate(sourceType, source, isSelectable, navigationContext),
-                success => OnNavigationCompleted(success, sourceType, parameter, NavigationType.New));
+            this.Navigate(sourceType, parameter, NavigationHelper.ResolveSource);
         }
 
         /// <summary>
@@ -704,11 +805,23 @@ namespace MvvmLib.Navigation
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
-            var navigationContext = new NavigationContext(sourceType, parameter);
-            NavigationHelper.NavigateFast(current, sources, navigationContext,
-                (source, isSelectable) => SyncOnNavigate(sourceType, source, isSelectable, navigationContext));
+            if (this.currentIndex >= 0)
+                this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
-            this.OnNavigated(sourceType, parameter, NavigationType.New);
+            var navigationContext = new NavigationContext(sourceType, parameter);
+
+            var selectable = NavigationHelper.FindSelectable(sources, sourceType, parameter);
+            if (selectable != null)
+                ExecuteNavigationWithSelectable(selectable, navigationContext);
+            else
+            {
+                var source = NavigationHelper.ResolveSource(sourceType);
+                var view = source as FrameworkElement;
+                if (view != null)
+                    ExecuteNavigationNew(source, view.DataContext, navigationContext);
+                else
+                    ExecuteNavigationNew(source, source, navigationContext);
+            }
         }
 
         /// <summary>
@@ -742,130 +855,141 @@ namespace MvvmLib.Navigation
             this.NavigateFast(sourceName, null);
         }
 
-        /// <summary>
-        /// Navigates to the source at the index.
-        /// </summary>
-        /// <param name="index">The index</param>
-        public void MoveTo(int index)
-        {
-            if (index < 0 || index > this.sources.Count - 1)
-                throw new IndexOutOfRangeException();
+        #region Move
 
-            var navigationType = this.currentIndex > index ? NavigationType.Back : NavigationType.Forward;
-            this.MoveInternal(index, navigationType);
-        }
-
-        /// <summary>
-        /// Navigates to the specified source.
-        /// </summary>
-        /// <param name="source">The source</param>
-        public void MoveTo(object source)
-        {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
-            var newIndex = this.sources.IndexOf(source);
-            if (newIndex == -1)
-                throw new ArgumentException("Unable to find the source provided");
-
-            this.MoveTo(newIndex);
-        }
-
-        /// <summary>
-        /// Navigates to last source.
-        /// </summary>
-        public void MoveToLast()
-        {
-            if (this.sources.Count > 0 && currentIndex < this.sources.Count)
-                this.MoveTo(this.sources.Count - 1);
-        }
-
-        /// <summary>
-        /// Navigates to the previous source.
-        /// </summary>
-        public void GoBack()
-        {
-            if (this.CanGoBack)
-                this.MoveInternal(this.currentIndex - 1, NavigationType.Back);
-        }
-
-        /// <summary>
-        /// Navigates to the next source.
-        /// </summary>
-        public void GoForward()
-        {
-            if (this.CanGoForward)
-                this.MoveInternal(this.currentIndex + 1, NavigationType.Forward);
-        }
-
-        /// <summary>
-        /// Navigates to the first source.
-        /// </summary>
-        public void NavigateToRoot()
-        {
-            if (this.sources.Count > 0)
-            {
-                this.OnNavigating(this.entries[currentIndex], NavigationType.Root);
-
-                var newIndex = 0;
-                var entry = this.entries[newIndex];
-                var source = this.sources[newIndex];
-
-                var navigationContext = new NavigationContext(entry.SourceType, entry.Parameter);
-                NavigationHelper.Replace(current, source, navigationContext, () =>
-                {
-                    bool oldCanGoBack = CanGoBack;
-                    bool oldCanGoForward = CanGoForward;
-
-                    if (clearSourcesOnNavigate)
-                        RemoveSources(newIndex + 1);
-
-                    UpdateEntryParameter(newIndex, navigationContext.Parameter);
-                    this.SetCurrentIndex(newIndex);
-                    this.SetCurrent(source);
-
-                    CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
-                },
-                 success => OnNavigationCompleted(success, navigationContext.SourceType, navigationContext.Parameter, NavigationType.Root));
-            }
-        }
-
-        private void MoveInternal(int newIndex, NavigationType navigationType)
+        private void MoveToInternal(int index, NavigationType navigationType)
         {
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], navigationType);
 
-            var entry = this.entries[newIndex];
-            var source = this.sources[newIndex];
+            var entry = this.entries[index];
+            var source = this.sources[index];
 
             var navigationContext = new NavigationContext(entry.SourceType, entry.Parameter);
-            NavigationHelper.Replace(current, source, navigationContext, () =>
+            NavigationHelper.CanDeactivate(current, navigationContext, canDeactivate =>
             {
-                bool oldCanGoBack = CanGoBack;
-                bool oldCanGoForward = CanGoForward;
-
-                UpdateEntryParameter(newIndex, navigationContext.Parameter);
-                this.SetCurrentIndex(newIndex);
-                this.SetCurrent(source);
-
-                CheckCanGoBackAndCanGoForward(oldCanGoBack, oldCanGoForward);
-            },
-            success => OnNavigationCompleted(success, navigationContext.SourceType, navigationContext.Parameter, navigationType));
+                if (canDeactivate)
+                {
+                    NavigationHelper.CanActivate(source, navigationContext, canActivate =>
+                    {
+                        if (canActivate)
+                        {
+                            var view = source as FrameworkElement;
+                            if (view != null)
+                                ExecuteMove(index, source, view.DataContext, navigationContext, navigationType);
+                            else
+                                ExecuteMove(index, source, source, navigationContext, navigationType);
+                        }
+                        else
+                            this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, navigationType);
+                    });
+                }
+                else
+                    this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, navigationType);
+            });
         }
 
+        private void ExecuteMove(int index, object source, object context, NavigationContext navigationContext, NavigationType navigationType)
+        {
+            var oldCanMoveToPrevious = CanMoveToPrevious;
+            var oldCanMoveToNext = CanMoveToNext;
+
+            NavigationHelper.OnNavigatingFrom(current, navigationContext);
+
+            NavigationHelper.OnNavigatingTo(context, navigationContext);
+
+            if (clearSourcesOnNavigate && navigationType == NavigationType.Root)
+                RemoveSources(index + 1);
+
+            UpdateEntryParameter(index, navigationContext.Parameter);
+            this.SetCurrentIndex(index);
+            this.SetCurrent(source);
+
+            NavigationHelper.OnNavigatedTo(context, navigationContext);
+
+            CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
+
+            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, navigationType);
+        }
 
         /// <summary>
-        /// Synchronizes the history and sources with the history provided.
+        /// Allows to move to the first source.
         /// </summary>
-        public void Sync(IEnumerable<NavigationEntry> entries, IEnumerable<object> sources, int currentIndex)
+        public void MoveToFirst()
+        {
+            if (CanMoveToPrevious)
+                this.MoveToInternal(0, NavigationType.Root);
+        }
+
+        /// <summary>
+        /// Allows to move to the previous source.
+        /// </summary>
+        public void MoveToPrevious()
+        {
+            if (CanMoveToPrevious)
+                this.MoveToInternal(this.currentIndex - 1, NavigationType.Back);
+        }
+
+        /// <summary>
+        /// Allows to move to the next source.
+        /// </summary>
+        public void MoveToNext()
+        {
+            if (CanMoveToNext)
+                this.MoveToInternal(this.currentIndex + 1, NavigationType.Forward);
+        }
+
+        /// <summary>
+        /// Allows to move to the last source.
+        /// </summary>
+        public void MoveToLast()
+        {
+            if (CanMoveToNext)
+                this.MoveToInternal(this.sources.Count - 1, NavigationType.Forward);
+        }
+
+        /// <summary>
+        /// Allows to move to the source at the index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        public void MoveTo(int index)
+        {
+            if (index >= 0 && index < this.sources.Count)
+            {
+                var navigationType = this.currentIndex > index ? NavigationType.Back : NavigationType.Forward;
+                MoveToInternal(index, navigationType);
+            }
+        }
+
+        /// <summary>
+        /// Allows to move to the source.
+        /// </summary>
+        /// <param name="source">The source</param>
+        public void MoveTo(object source)
+        {
+            var index = this.sources.IndexOf(source);
+            this.MoveTo(index);
+        }
+
+        #endregion // Move
+
+        /// <summary>
+        /// Synchronizes the navigation source with the navigation source provided.
+        /// </summary>
+        public void Sync(NavigationSource navigationSource)
         {
             this.ClearSources();
+
+            var entries = navigationSource.Entries;
+            var sources = navigationSource.Sources;
+            var currentIndex = navigationSource.CurrentIndex;
 
             object currentSource = null;
             object currentParameter = null;
             int index = 0;
             foreach (var entry in entries)
             {
+
                 var originalSource = sources.ElementAt(index);
                 var source = NavigationHelper.EnsureNewView(originalSource);
 
@@ -885,7 +1009,7 @@ namespace MvvmLib.Navigation
                 this.SetCurrentIndex(currentIndex);
                 this.SetCurrent(currentSource);
 
-                CheckCanGoBackAndCanGoForward(false, false);
+                CheckCanMoveTo(false, false);
             }
         }
     }

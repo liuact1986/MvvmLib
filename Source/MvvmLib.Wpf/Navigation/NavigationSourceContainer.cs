@@ -1,7 +1,6 @@
 ﻿using MvvmLib.Commands;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MvvmLib.Navigation
@@ -37,19 +36,11 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Checks if can go back.
+        /// The count of <see cref="NavigationSource"/> for the container.
         /// </summary>
-        public bool CanGoBack
+        public int Count
         {
-            get { return this.navigationSources.Count > 0 && this.navigationSources[0].CanGoBack; }
-        }
-
-        /// <summary>
-        /// Checks if can go forward. 
-        /// </summary>
-        public bool CanGoForward
-        {
-            get { return this.navigationSources.Count > 0 && this.navigationSources[0].CanGoForward; }
+            get { return this.navigationSources.Count; }
         }
 
         private readonly IRelayCommand navigateCommand;
@@ -61,42 +52,32 @@ namespace MvvmLib.Navigation
             get { return navigateCommand; }
         }
 
-        private readonly IRelayCommand goBackCommand;
+        private readonly IRelayCommand moveToFirstCommand;
         /// <summary>
-        /// Allows to navigate to the previous source for all <see cref="NavigationSources"/>.
+        /// Allows to move to the first source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand GoBackCommand
+        public IRelayCommand MoveToFirstCommand
         {
-            get { return goBackCommand; }
+            get { return moveToFirstCommand; }
         }
 
-        private readonly IRelayCommand goForwardCommand;
+        private readonly IRelayCommand moveToPreviousCommand;
         /// <summary>
-        /// Allows to navigate to the next source for all <see cref="NavigationSources"/>.
+        /// Allows to move to the previous source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand GoForwardCommand
+        public IRelayCommand MoveToPreviousCommand
         {
-            get { return goForwardCommand; }
+            get { return moveToPreviousCommand; }
         }
 
-        private readonly IRelayCommand navigateToRootCommand;
+        private readonly IRelayCommand moveToNextCommand;
         /// <summary>
-        /// Allows to navigate to the first source for all <see cref="NavigationSources"/>.
+        /// Allows to move to the next source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand NavigateToRootCommand
+        public IRelayCommand MoveToNextCommand
         {
-            get { return navigateToRootCommand; }
+            get { return moveToNextCommand; }
         }
-
-        private readonly IRelayCommand redirectCommand;
-        /// <summary>
-        /// Allows to redirect to the source with the source type provided for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IRelayCommand RedirectCommand
-        {
-            get { return redirectCommand; }
-        }
-
 
         private readonly IRelayCommand moveToLastCommand;
         /// <summary>
@@ -109,7 +90,7 @@ namespace MvvmLib.Navigation
 
         private readonly IRelayCommand moveToIndexCommand;
         /// <summary>
-        /// Allows to move to the position for all <see cref="NavigationSources"/>.
+        /// Allows to move to the index for all <see cref="NavigationSources"/>.
         /// </summary>
         public IRelayCommand MoveToIndexCommand
         {
@@ -125,13 +106,6 @@ namespace MvvmLib.Navigation
             get { return moveToCommand; }
         }
 
-        /// <summary>
-        /// The count of <see cref="NavigationSource"/> for the container.
-        /// </summary>
-        public int Count
-        {
-            get { return this.navigationSources.Count; }
-        }
 
         /// <summary>
         /// Creates the <see cref="NavigationSourceContainer"/>.
@@ -141,13 +115,13 @@ namespace MvvmLib.Navigation
             navigationSources = new List<NavigationSource>();
 
             navigateCommand = new RelayCommand<Type>(ExecuteNavigateCommand);
-            goBackCommand = new RelayCommand(ExecuteGoBackCommand);
-            goForwardCommand = new RelayCommand(ExecuteGoForwardCommand);
-            navigateToRootCommand = new RelayCommand(ExecuteNavigateToRootCommand);
-            redirectCommand = new RelayCommand<Type>(ExecuteRedirectCommand);
+            moveToFirstCommand = new RelayCommand(ExecuteMoveToFirstCommand);
+            moveToPreviousCommand = new RelayCommand(ExecuteMoveToPreviousCommand);
+            moveToNextCommand = new RelayCommand(ExecuteMoveToNextCommand);
             moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand);
-            moveToIndexCommand = new RelayCommand<int>(ExecuteMoveToIndexCommand);
+            moveToIndexCommand = new RelayCommand<object>(ExecuteMoveToIndexCommand);
             moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
+
         }
 
         #region Commands
@@ -157,39 +131,36 @@ namespace MvvmLib.Navigation
             this.Navigate(sourceType, null);
         }
 
-        private void ExecuteGoBackCommand()
+        private void ExecuteMoveToFirstCommand()
         {
-            this.GoBack();
+            MoveToFirst();
         }
 
-        private void ExecuteRedirectCommand(Type sourceType)
+        private void ExecuteMoveToPreviousCommand()
         {
-            this.Redirect(sourceType, null);
+            MoveToPrevious();
         }
 
-        private void ExecuteGoForwardCommand()
-        {
-            this.GoForward();
-        }
 
-        private void ExecuteNavigateToRootCommand()
+        private void ExecuteMoveToNextCommand()
         {
-            this.NavigateToRoot();
+            MoveToNext();
         }
 
         private void ExecuteMoveToLastCommand()
         {
-            this.MoveToLast();
+            MoveToLast();
         }
 
-        private void ExecuteMoveToIndexCommand(int index)
+
+        private void ExecuteMoveToIndexCommand(object args)
         {
-            this.MoveTo(index);
+            MoveTo(args);
         }
 
-        private void ExecuteMoveToCommand(object source)
+        private void ExecuteMoveToCommand(object args)
         {
-            this.MoveTo(source);
+            MoveTo(args);
         }
 
         #endregion // Commands
@@ -207,8 +178,7 @@ namespace MvvmLib.Navigation
 
             if (navigationSources.Count > 0)
             {
-                var existingNavigationSource = navigationSources[0];
-                navigationSource.Sync(existingNavigationSource.Entries, existingNavigationSource.Sources, existingNavigationSource.CurrentIndex);
+                navigationSource.Sync(navigationSources[0]);
             }
 
             this.navigationSources.Add(navigationSource);
@@ -382,9 +352,7 @@ namespace MvvmLib.Navigation
                 throw new ArgumentNullException(nameof(sourceType));
 
             foreach (var navigationSource in navigationSources)
-            {
                 navigationSource.Redirect(sourceType, parameter);
-            }
         }
 
         /// <summary>
@@ -397,36 +365,39 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Navigates to the previous source for all <see cref="NavigationSources"/>.
+        /// Navigates to the first source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public void GoBack()
+        public void MoveToFirst()
         {
             foreach (var navigationSource in navigationSources)
-            {
-                navigationSource.GoBack();
-            }
+                navigationSource.MoveToFirst();
+        }
+
+        /// <summary>
+        /// Navigates to the previous source for all <see cref="NavigationSources"/>.
+        /// </summary>
+        public void MoveToPrevious()
+        {
+            foreach (var navigationSource in navigationSources)
+                navigationSource.MoveToPrevious();
         }
 
         /// <summary>
         /// Navigates to the next source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public void GoForward()
+        public void MoveToNext()
         {
             foreach (var navigationSource in navigationSources)
-            {
-                navigationSource.GoForward();
-            }
+                navigationSource.MoveToNext();
         }
 
         /// <summary>
-        /// Navigates to the first source for all <see cref="NavigationSources"/>.
+        /// Navigates to last source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public void NavigateToRoot()
+        public void MoveToLast()
         {
             foreach (var navigationSource in navigationSources)
-            {
-                navigationSource.NavigateToRoot();
-            }
+                navigationSource.MoveToLast();
         }
 
         /// <summary>
@@ -443,15 +414,6 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Navigates to last source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public void MoveToLast()
-        {
-            foreach (var navigationSource in navigationSources)
-                navigationSource.MoveToLast();
-        }
-
-        /// <summary>
         /// Navigates to the specified source for all <see cref="NavigationSources"/>.
         /// </summary>
         /// <param name="source">The source</param>
@@ -461,9 +423,7 @@ namespace MvvmLib.Navigation
                 throw new ArgumentNullException(nameof(source));
 
             foreach (var navigationSource in navigationSources)
-            {
                 navigationSource.MoveTo(source);
-            }
         }
     }
 }
