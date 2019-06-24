@@ -127,11 +127,11 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Navigate | Navigates to the source (a source is a view or ViewModel) type or source name (for a type registered with SourceResolver.RegisterTypeForNavigation) |
 | NavigateFast | Useful for navigation cancellation and not recheck guards |
 | Redirect | Redirects and removes the previous entry from the history |
+| MoveToFirst | Navigates to the first source and clears the history |
 | MoveToPrevious | Navigates to the previous source |
 | MoveToNext | Navigates to the next source |
-| MoveToFirst | Navigates to the first source and clears the history |
-| MoveTo | Move to the index or the (existing) source |
 | MoveToLast | Move to the last or the source |
+| MoveTo | Move to the index or the (existing) source |
 | Sync | Synchronizes the history and sources with the navigation source provided |
 
 | Property | Description |
@@ -161,7 +161,6 @@ Commands
 * MoveToFirstCommand
 * MoveToPreviousCommand
 * MoveToNextCommand
-* RedirectCommand
 * MoveToIndexCommand and MoveToCommand
 
 Create the default navigation source.

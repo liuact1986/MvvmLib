@@ -238,6 +238,10 @@ namespace NavigationSample.Wpf.Startup
 	<td>Redirects and removes the previous entry from the history</td>
 </tr>
 <tr>
+	<td>MoveToFirst</td>
+	<td>Navigates to the first source and clears the history</td>
+</tr>
+<tr>
 	<td>MoveToPrevious</td>
 	<td>Navigates to the previous source</td>
 </tr>
@@ -246,16 +250,12 @@ namespace NavigationSample.Wpf.Startup
 	<td>Navigates to the next source</td>
 </tr>
 <tr>
-	<td>MoveToFirst</td>
-	<td>Navigates to the first source and clears the history</td>
+	<td>MoveToLast</td>
+	<td>Move to the last or the source</td>
 </tr>
 <tr>
 	<td>MoveTo</td>
 	<td>Move to the index or the (existing) source</td>
-</tr>
-<tr>
-	<td>MoveToLast</td>
-	<td>Move to the last or the source</td>
 </tr>
 <tr>
 	<td>Sync</td>
@@ -349,7 +349,6 @@ namespace NavigationSample.Wpf.Startup
 <li>MoveToFirstCommand</li>
 <li>MoveToPreviousCommand</li>
 <li>MoveToNextCommand</li>
-<li>RedirectCommand</li>
 <li>MoveToIndexCommand and MoveToCommand</li>
 </ul>
 <p>Create the default navigation source.</p>
