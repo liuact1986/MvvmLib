@@ -777,22 +777,9 @@ People = new  List<Person>
 this.Browser = new NavigationBrowser(People);
 ```
 
-Add buttons and bind Borwser commands
+Add buttons and bind Browser commands
 
 ```xml
-<Button Content="First" Command="{Binding Browser.MoveCurrentToFirstCommand}" />
-<Button Content="Previous" Command="{Binding Browser.MoveCurrentToPreviousCommand}" />
-<Button Content="Previous" Command="{Binding Browser.MoveCurrentToNextCommand}" />
-<Button Content="Last" Command="{Binding Browser.MoveCurrentToLastCommand}" />
-<TextBox x:Name="PositionTextBox"  Width="80">
-    <mvvmLib:NavigationInteraction.Behaviors>
-        <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                        Command="{Binding Browser.MoveCurrentToPositionCommand}"
-                                        CommandParameter="{Binding ElementName=PositionTextBox, Path=Text}"
-                                        />
-    </mvvmLib:NavigationInteraction.Behaviors>
-</TextBox>
-
 <Button Content="First" Command="{Binding Browser.MoveCurrentToFirstCommand}" />
 <Button Content="Previous" Command="{Binding Browser.MoveCurrentToPreviousCommand}" />
 <Button Content="Next" Command="{Binding Browser.MoveCurrentToNextCommand}" />

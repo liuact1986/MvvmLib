@@ -983,21 +983,8 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 this.Browser = new NavigationBrowser(People);
 </code></pre>
 
-<p>Add buttons and bind Borwser commands</p>
+<p>Add buttons and bind Browser commands</p>
 <pre><code class="xml">&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.MoveCurrentToFirstCommand}&quot; /&gt;
-&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
-&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
-&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
-&lt;TextBox x:Name=&quot;PositionTextBox&quot;  Width=&quot;80&quot;&gt;
-    &lt;mvvmLib:NavigationInteraction.Behaviors&gt;
-        &lt;mvvmLib:EventToCommandBehavior EventName=&quot;KeyUp&quot; 
-                                        Command=&quot;{Binding Browser.MoveCurrentToPositionCommand}&quot;
-                                        CommandParameter=&quot;{Binding ElementName=PositionTextBox, Path=Text}&quot;
-                                        /&gt;
-    &lt;/mvvmLib:NavigationInteraction.Behaviors&gt;
-&lt;/TextBox&gt;
-
-&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.MoveCurrentToFirstCommand}&quot; /&gt;
 &lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
 &lt;Button Content=&quot;Next&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
 &lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
