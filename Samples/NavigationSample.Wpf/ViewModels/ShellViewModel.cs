@@ -53,7 +53,8 @@ namespace NavigationSample.Wpf.ViewModels
                  new MenuItem(nameof(NavigationBehaviorsSampleView), "Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView))),
                  new MenuItem(nameof(NavigationAllSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(NavigationAllSampleView))),
                  new MenuItem(nameof(SharedSourceNavigationAndEditionSampleView), "Multiple Views (SharedSource)", IconKind.Pencil, () => Navigate(typeof(SharedSourceNavigationAndEditionSampleView))),
-                 new MenuItem(nameof(NavigationBrowserSampleView), "Navigation browser", IconKind.Broom, () => Navigate(typeof(NavigationBrowserSampleView)))
+                 new MenuItem(nameof(NavigationBrowserSampleView), "Navigation browser", IconKind.Broom, () => Navigate(typeof(NavigationBrowserSampleView))),
+                 new MenuItem(nameof(DataPagerSampleView), "DataPager with DataGrid", IconKind.ViewGrid, () => Navigate(typeof(DataPagerSampleView)))
             });
         }
 

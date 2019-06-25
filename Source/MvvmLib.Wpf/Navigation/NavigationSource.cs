@@ -316,6 +316,7 @@ namespace MvvmLib.Navigation
             moveToFirstCommand?.RaiseCanExecuteChanged();
             moveToPreviousCommand?.RaiseCanExecuteChanged();
 
+            OnPropertyChanged(nameof(CanMoveToPrevious));
             CanMoveToPreviousChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
@@ -324,6 +325,7 @@ namespace MvvmLib.Navigation
             moveToLastCommand?.RaiseCanExecuteChanged();
             moveToNextCommand?.RaiseCanExecuteChanged();
 
+            OnPropertyChanged(nameof(CanMoveToNext));
             CanMoveToNextChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 

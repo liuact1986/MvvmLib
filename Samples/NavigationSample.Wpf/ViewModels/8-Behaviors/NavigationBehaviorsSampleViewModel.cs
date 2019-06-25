@@ -100,7 +100,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void MyMethod(object parameter)
         {
-            Message3 = $"MyMethod invoked witth parameter '{parameter}' {DateTime.Now.ToLongTimeString()}";
+            Message3 = $"MyMethod invoked with the parameter '{parameter}' {DateTime.Now.ToLongTimeString()}";
         }
     }
 }

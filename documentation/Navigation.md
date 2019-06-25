@@ -4,6 +4,7 @@
 * **NavigationSource**: Source for **Views** and **ViewModels**. It has an History, a collection of "Sources" (a source is a View or a ViewModel), a **Current** source that can be binded to the content of the **ContentControls**. There is two other NavigationSource Types: **KeyedNavigationSource** (a navigation source with a key) and **ContentControlNavigationSource** that updates directly the content of the ContentControl provided. The **SourceName Attached Property** of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with **NavigationSourceContainers**. It allows to **navigate simultaneously** for all NavigationSources registered for a SourceName and/or open new Shells.
 * **SharedSource**: Source for **Models** and **ViewModels** with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
 * **NavigationBrowser**: allows to browse an items source (the "Sources" collection of NavigationSources or the collection of "Items" of the SharedSources for example) with a CollectionView.
+* **DataPager**: paging for DatagRid
 * **ViewModelLocator**: is used by **NavigationSources** and **SharedSources** (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The **ResolveViewModel** attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.
 * **SourceResolver** is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
@@ -769,9 +770,9 @@ public class PersonDetailsViewModel : BindableBase, ISelectable
 ```cs
 People = new  List<Person>
 {
-    new PersonModel { Id = 1, FirstName = "First1", LastName = "Last1" },
-    new PersonModel { Id = 2, FirstName = "First2", LastName = "Last2" },
-    new PersonModel { Id = 3, FirstName = "First3", LastName = "Last3"}
+    new Person { Id = 1, FirstName = "First1", LastName = "Last1" },
+    new Person { Id = 2, FirstName = "First2", LastName = "Last2" },
+    new Person { Id = 3, FirstName = "First3", LastName = "Last3"}
 };
 
 this.Browser = new NavigationBrowser(People);
@@ -798,6 +799,95 @@ Add buttons and bind Browser commands
 <Button Content="First" Command="{Binding Browser.DeleteCommand}" />
 ```
 
+## DataPager
+
+```cs
+this.People = new ObservableCollection<Person>(peopleList);
+this.DataPager = new DataPager<Person>(People, 10);
+```
+
+Filter
+
+```cs
+DataPager.Filter = new Func<Person, bool>(p => p.Age > 30);
+   
+// reset the list
+DataPager.Filter = null;
+```
+
+Sort
+
+```cs
+DataPager.CustomSorter = new PersonSorter();
+```
+
+```cs
+public class PersonSorter : IComparer<Person>
+{
+    public int Compare(Person x, Person y)
+    {
+        return x.Age.CompareTo(y.Age);
+    }
+}
+```
+
+```xml
+<DataGrid x:Name="DataGrid1" ItemsSource="{Binding DataPager.Items}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+    <DataGrid.Columns>
+        <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
+        <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />
+        <DataGridTextColumn Header="Age" Width="*" Binding="{Binding Age}" />
+    </DataGrid.Columns>
+    <DataGrid.RowDetailsTemplate>
+        <DataTemplate>
+            <StackPanel Margin="10">
+                <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
+                    <Image Source="{Binding ImagePath}" />
+                </Border>
+                <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBlock Text="{Binding FirstName}" Margin="0 2 0 8"/>
+                <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBlock Text="{Binding LastName}" Foreground="Black" Margin="0 2 0 8"/>
+            </StackPanel>
+        </DataTemplate>
+    </DataGrid.RowDetailsTemplate>
+</DataGrid>
+```
+
+Commands
+
+* MoveToFirstPageCommand
+* MoveToPreviousPageCommand
+* MoveToNextPageCommand
+* MoveToLastPageCommand
+* MoveToPageCommand with page index
+
+Methods
+
+* MoveToFirstPage
+* MoveToPreviousPage
+* MoveToNextPage
+* MoveToLastPage
+* MoveToPage with page index
+
+Properties
+* CanMoveToPreviousPage
+* CanMoveToNextPage
+* ItemsCount
+* PageCount
+* PageSize
+* PageIndex
+* CurrentPage (PageIndex + 1)
+* Start
+* End
+* Items
+* Filter
+* CustomSorter
+
+Events
+
+* PropertyChanged
+* Refreshed
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior
 

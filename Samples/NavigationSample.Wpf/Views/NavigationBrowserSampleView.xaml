@@ -57,7 +57,7 @@
                             <TextBlock Text="SAVE" Margin="5,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding DataContext.CancelCommand, ElementName=ThisControl}">
+                    <Button Command="{Binding DataContext.Browser.CancelCommand, ElementName=ThisControl}">
                         <StackPanel Orientation="Horizontal">
                             <controls:MaterialDesignIcon Icon="Close" Brush="#2980b9"/>
                             <TextBlock Text="CANCEL" Margin="5,0" VerticalAlignment="Center"/>

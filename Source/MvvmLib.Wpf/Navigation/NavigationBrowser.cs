@@ -46,7 +46,7 @@ namespace MvvmLib.Navigation
             get { return current; }
             private set
             {
-                if (value != current)
+                if (!Equals(current, value))
                 {
                     current = value;
                     OnPropertyChanged(nameof(Current));
@@ -631,9 +631,16 @@ namespace MvvmLib.Navigation
         /// </summary>
         public void Cancel()
         {
-            if (current is IEditableObject)
+            // cancel new
+            if (state == NavigationBrowserState.IsAdding)
             {
-                ((IEditableObject)current).CancelEdit();
+                Delete();
+            }
+            else if (state == NavigationBrowserState.IsEditing)
+            {
+                // cancel edit
+                if (current is IEditableObject)
+                    ((IEditableObject)current).CancelEdit();
             }
             State = NavigationBrowserState.IsReading;
         }

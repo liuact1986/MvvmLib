@@ -173,6 +173,13 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref imagePath, value); }
         }
 
+        private int age;
+        public int Age
+        {
+            get { return age; }
+            set { SetProperty(ref age, value); }
+        }
+
         public PersonModel()
         {
             ImagePath = "../../Assets/default-user.jpg";

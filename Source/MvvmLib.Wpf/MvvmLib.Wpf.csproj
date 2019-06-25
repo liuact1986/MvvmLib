@@ -83,6 +83,7 @@
     <Compile Include="Navigation\CanMoveToEventArgs.cs" />
     <Compile Include="Navigation\ContentControlNavigationSource.cs" />
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
+    <Compile Include="Navigation\DataPager.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />

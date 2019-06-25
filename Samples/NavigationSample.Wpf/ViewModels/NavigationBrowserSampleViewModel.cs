@@ -35,7 +35,6 @@ namespace NavigationSample.Wpf.ViewModels
         public ICommand SelectImageCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand SaveCommand { get; set; }
-        public ICommand CancelCommand { get; set; }
 
         public NavigationBrowserSampleViewModel(IEventAggregator eventAggregator)
         {
@@ -53,7 +52,6 @@ namespace NavigationSample.Wpf.ViewModels
             SelectImageCommand = new RelayCommand(SelectImage);
             DeleteCommand = new RelayCommand(Delete);
             SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
         }
 
         private void SetTitle()
@@ -94,22 +92,6 @@ namespace NavigationSample.Wpf.ViewModels
                 {
                     Browser.Save();
                     eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} saved!");
-                }
-            }
-        }
-
-        private void Cancel()
-        {
-            var current = CurrentPerson;
-            if (current != null)
-            {
-                if (current.Id > 0)
-                {
-                    Browser.Cancel();
-                }
-                else
-                {
-                    Browser.Delete();
                 }
             }
         }

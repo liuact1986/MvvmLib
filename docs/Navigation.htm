@@ -55,6 +55,8 @@
 
 <li class="tocentry"><a href="#navigationbrowser">NavigationBrowser</a></li>
 
+<li class="tocentry"><a href="#datapager">DataPager</a></li>
+
 <li class="tocentry"><a href="#iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior</a></li>
 
 <li class="tocentry"><a href="#animatablecontentcontrol">AnimatableContentControl</a></li>
@@ -111,6 +113,7 @@
 <li><strong>NavigationSource</strong>: Source for <strong>Views</strong> and <strong>ViewModels</strong>. It has an History, a collection of &quot;Sources&quot; (a source is a View or a ViewModel), a <strong>Current</strong> source that can be binded to the content of the <strong>ContentControls</strong>. There is two other NavigationSource Types: <strong>KeyedNavigationSource</strong> (a navigation source with a key) and <strong>ContentControlNavigationSource</strong> that updates directly the content of the ContentControl provided. The <strong>SourceName Attached Property</strong> of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with <strong>NavigationSourceContainers</strong>. It allows to <strong>navigate simultaneously</strong> for all NavigationSources registered for a SourceName and/or open new Shells.</li>
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
 <li><strong>NavigationBrowser</strong>: allows to browse an items source (the &quot;Sources&quot; collection of NavigationSources or the collection of &quot;Items&quot; of the SharedSources for example) with a CollectionView.</li>
+<li><strong>DataPager</strong>: paging for DatagRid</li>
 <li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
@@ -975,9 +978,9 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 </blockquote>
 <pre><code class="cs">People = new  List&lt;Person&gt;
 {
-    new PersonModel { Id = 1, FirstName = &quot;First1&quot;, LastName = &quot;Last1&quot; },
-    new PersonModel { Id = 2, FirstName = &quot;First2&quot;, LastName = &quot;Last2&quot; },
-    new PersonModel { Id = 3, FirstName = &quot;First3&quot;, LastName = &quot;Last3&quot;}
+    new Person { Id = 1, FirstName = &quot;First1&quot;, LastName = &quot;Last1&quot; },
+    new Person { Id = 2, FirstName = &quot;First2&quot;, LastName = &quot;Last2&quot; },
+    new Person { Id = 3, FirstName = &quot;First3&quot;, LastName = &quot;Last3&quot;}
 };
 
 this.Browser = new NavigationBrowser(People);
@@ -1002,6 +1005,87 @@ this.Browser = new NavigationBrowser(People);
 &lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.DeleteCommand}&quot; /&gt;
 </code></pre>
 
+<h2 id="datapager">DataPager<a class="headerlink" href="#datapager" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<pre><code class="cs">this.People = new ObservableCollection&lt;Person&gt;(peopleList);
+this.DataPager = new DataPager&lt;Person&gt;(People, 10);
+</code></pre>
+
+<p>Filter</p>
+<pre><code class="cs">DataPager.Filter = new Func&lt;Person, bool&gt;(p =&gt; p.Age &gt; 30);
+   
+// reset the list
+DataPager.Filter = null;
+</code></pre>
+
+<p>Sort</p>
+<pre><code class="cs">DataPager.CustomSorter = new PersonSorter();
+</code></pre>
+
+<pre><code class="cs">public class PersonSorter : IComparer&lt;Person&gt;
+{
+    public int Compare(Person x, Person y)
+    {
+        return x.Age.CompareTo(y.Age);
+    }
+}
+</code></pre>
+
+<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding DataPager.Items}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot; Grid.Row=&quot;1&quot;&gt;
+    &lt;DataGrid.Columns&gt;
+        &lt;DataGridTextColumn Header=&quot;First Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding FirstName}&quot; /&gt;
+        &lt;DataGridTextColumn Header=&quot;Last Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding LastName}&quot; /&gt;
+        &lt;DataGridTextColumn Header=&quot;Age&quot; Width=&quot;*&quot; Binding=&quot;{Binding Age}&quot; /&gt;
+    &lt;/DataGrid.Columns&gt;
+    &lt;DataGrid.RowDetailsTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;StackPanel Margin=&quot;10&quot;&gt;
+                &lt;Border Height=&quot;160&quot; Margin=&quot;0,5&quot; BorderBrush=&quot;#eee&quot; BorderThickness=&quot;2&quot; HorizontalAlignment=&quot;Left&quot;&gt;
+                    &lt;Image Source=&quot;{Binding ImagePath}&quot; /&gt;
+                &lt;/Border&gt;
+                &lt;TextBlock Text=&quot;FIRSTNAME&quot; Style=&quot;{StaticResource HeadingStyle}&quot;/&gt;
+                &lt;TextBlock Text=&quot;{Binding FirstName}&quot; Margin=&quot;0 2 0 8&quot;/&gt;
+                &lt;TextBlock Text=&quot;LASTNAME&quot; Style=&quot;{StaticResource HeadingStyle}&quot;/&gt;
+                &lt;TextBlock Text=&quot;{Binding LastName}&quot; Foreground=&quot;Black&quot; Margin=&quot;0 2 0 8&quot;/&gt;
+            &lt;/StackPanel&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/DataGrid.RowDetailsTemplate&gt;
+&lt;/DataGrid&gt;
+</code></pre>
+
+<p>Commands</p>
+<ul>
+<li>MoveToFirstPageCommand</li>
+<li>MoveToPreviousPageCommand</li>
+<li>MoveToNextPageCommand</li>
+<li>MoveToLastPageCommand</li>
+<li>MoveToPageCommand with page index</li>
+</ul>
+<p>Methods</p>
+<ul>
+<li>MoveToFirstPage</li>
+<li>MoveToPreviousPage</li>
+<li>MoveToNextPage</li>
+<li>MoveToLastPage</li>
+<li>MoveToPage with page index</li>
+</ul>
+<p>Properties
+* CanMoveToPreviousPage
+* CanMoveToNextPage
+* ItemsCount
+* PageCount
+* PageSize
+* PageIndex
+* CurrentPage (PageIndex + 1)
+* Start
+* End
+* Items
+* Filter
+* CustomSorter</p>
+<p>Events</p>
+<ul>
+<li>PropertyChanged</li>
+<li>Refreshed</li>
+</ul>
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Bind the Items collection and the SelectedItem of the SharedSource is easy.</p>
 <p><strong>IIsSelected</strong> allows to be notified from ViewModel of selection.</p>

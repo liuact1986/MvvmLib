@@ -84,6 +84,7 @@
     <Compile Include="ViewModels\6-TabControlSample\ViewModelBase.cs" />
     <Compile Include="ViewModels\7-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\8-Behaviors\NavigationBehaviorsSampleViewModel.cs" />
+    <Compile Include="ViewModels\DataPagerSampleViewModel.cs" />
     <Compile Include="ViewModels\NavigationBrowserSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewEViewModel.cs" />
@@ -126,6 +127,9 @@
     </Compile>
     <Compile Include="Views\8-Behaviors\NavigationBehaviorsSampleView.xaml.cs">
       <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DataPagerSampleView.xaml.cs">
+      <DependentUpon>DataPagerSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -267,6 +271,10 @@
     <Page Include="Views\8-Behaviors\NavigationBehaviorsSampleView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DataPagerSampleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>
