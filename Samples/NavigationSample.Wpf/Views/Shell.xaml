@@ -108,5 +108,7 @@
                 <ProgressBar IsIndeterminate="True"  Visibility="Collapsed" Width="100" Height="16" />
             </StatusBarItem>
         </StackPanel>
+
+        <controls:NotificationControl x:Name="NotificationControl"/>
     </Grid>
 </Window>

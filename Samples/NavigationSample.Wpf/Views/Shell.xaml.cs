@@ -1,4 +1,8 @@
 ﻿using MvvmLib.Animation;
+using MvvmLib.Message;
+using NavigationSample.Wpf.Controls;
+using NavigationSample.Wpf.Events;
+using System;
 using System.Windows;
 using System.Windows.Media.Animation;
 
@@ -9,12 +13,19 @@ namespace NavigationSample.Wpf.Views
         private bool isPaneOpened;
         private bool isAnimating;
 
-        public Shell()
+        public Shell(IEventAggregator eventAggregator)
         {
             isPaneOpened = true;
             isAnimating = false;
 
             InitializeComponent();
+
+            eventAggregator.GetEvent<NotificationMessageEvent>().Subscribe(OnNotificationPublished);
+        }
+
+        private void OnNotificationPublished(string message)
+        {
+            NotificationControl.PushNotification(new NotificationItem { Content = message });
         }
 
         private void OnHamburgerButtonClick(object sender, RoutedEventArgs e)

@@ -59,7 +59,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\NotificationControl.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\SizeToVisibilityConverter.cs" />
     <Compile Include="Models\FakePeopleService.cs" />
     <Compile Include="Models\IFakePeopleService.cs" />
     <Compile Include="Models\Person.cs" />

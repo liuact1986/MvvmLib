@@ -7,4 +7,9 @@ namespace NavigationSample.Wpf.Events
     {
 
     }
+
+    public class NotificationMessageEvent : ParameterizedEvent<string>
+    {
+
+    }
 }

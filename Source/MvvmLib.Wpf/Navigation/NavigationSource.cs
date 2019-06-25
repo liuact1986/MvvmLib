@@ -394,14 +394,13 @@ namespace MvvmLib.Navigation
 
         private bool notifyOnCurrentChanged;
         /// <summary>
-        /// Allows to select inserted item (Select by default).
+        /// Allows to cancel <see cref="INotifyPropertyChanged"/>. Usefull sometimes with animations.
         /// </summary>
         public bool NotifyOnCurrentChanged
         {
             get { return notifyOnCurrentChanged; }
             set { notifyOnCurrentChanged = value; }
         }
-
 
         private void InsertSourceAndSetCurrentIndex(int index, Type sourceType, object source, object parameter)
         {

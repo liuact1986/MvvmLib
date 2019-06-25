@@ -93,6 +93,7 @@ namespace NavigationSample.Wpf.ViewModels
                 if (!current.HasErrors)
                 {
                     Browser.Save();
+                    eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} saved!");
                 }
             }
         }

@@ -325,21 +325,6 @@ namespace MvvmLib.Navigation
             State = NavigationBrowserState.IsReading;
         }
 
-        private bool IsReadOnly(IEnumerable itemsSource)
-        {
-
-            try
-            {
-                if (!((IList)itemsSource).IsReadOnly)
-                {
-                    return false;
-                }
-            }
-            catch
-            { }
-            return true;
-        }
-
         private Type GetElementTypeForReadableGenericListOrCollection(Type type)
         {
             if (type.IsArray)
