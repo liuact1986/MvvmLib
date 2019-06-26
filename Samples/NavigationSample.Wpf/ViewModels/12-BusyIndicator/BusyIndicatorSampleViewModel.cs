@@ -2,10 +2,6 @@
 using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NavigationSample.Wpf.ViewModels

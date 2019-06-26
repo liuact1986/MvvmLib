@@ -25,7 +25,7 @@ namespace NavigationSample.Wpf.Views
 
         private void OnBusyEvent(BusyEventArgs args)
         {
-            Dispatcher.Invoke(() => BusyIndicator.SetIsBusy(args.IsBusy));
+            Dispatcher.Invoke(() => BusyIndicator.IsBusy = args.IsBusy);
         }
     }
 }

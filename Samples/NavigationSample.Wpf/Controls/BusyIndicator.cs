@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace NavigationSample.Wpf.Controls
 {
@@ -41,12 +42,31 @@ namespace NavigationSample.Wpf.Controls
             busyIndicator.SetIsBusy((bool)e.NewValue);
         }
 
-        public void SetIsBusy(bool isBusy)
+        private void SetIsBusy(bool isBusy)
         {
-            if (isBusy)
-                this.Visibility = Visibility.Visible;
-            else
-                this.Visibility = Visibility.Collapsed;
+            var timer = new DispatcherTimer { Interval = DisplayAfter };
+            EventHandler timerCallback = null;
+            timerCallback = (s, e) =>
+            {
+                timer.Stop();
+                timer.Tick -= timerCallback;
+                if (isBusy)
+                    this.Visibility = Visibility.Visible;
+                else
+                    this.Visibility = Visibility.Collapsed;
+            };
+            timer.Tick += timerCallback;
+            timer.Start();
         }
+
+        public TimeSpan DisplayAfter
+        {
+            get { return (TimeSpan)GetValue(DisplayAfterProperty); }
+            set { SetValue(DisplayAfterProperty, value); }
+        }
+
+        public static readonly DependencyProperty DisplayAfterProperty =
+            DependencyProperty.Register("DisplayAfter", typeof(TimeSpan), typeof(BusyIndicator), new PropertyMetadata(new TimeSpan(0,0,0,0,100)));
+
     }
 }
