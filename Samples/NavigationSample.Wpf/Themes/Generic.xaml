@@ -65,5 +65,31 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+
+    <Style TargetType="{x:Type controls:BusyIndicator}">
+        <Setter Property="Message" Value="Please wait..." />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:BusyIndicator}">
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                        <Rectangle Fill="#7F222222" />
+
+                        <Border BorderBrush="White" BorderThickness="1"  Background="#FF252526" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="2">
+                            <Grid MinWidth="200">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Foreground="White" Text="{TemplateBinding Message}" Margin="20,20,20,10" />
+                                <ProgressBar IsIndeterminate="True" Height="15" Margin="20,0,20,20" Grid.Row="1" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

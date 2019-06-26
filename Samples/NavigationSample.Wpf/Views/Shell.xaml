@@ -15,8 +15,6 @@
         Title="Navigation Sample" Height="640" Width="800">
 
     <Window.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
         <Storyboard x:Key="CloseMenu">
             <DoubleAnimation  Storyboard.TargetName="Panel" Storyboard.TargetProperty="(Grid.Width)" Duration="0:0:0.4" To="48"/>
         </Storyboard>
@@ -52,7 +50,7 @@
                     </Grid.Effect>
 
                     <Button Command="{Binding Navigation.MoveToPreviousCommand}"
-                            Visibility="{Binding Navigation.CanMoveToPrevious, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Navigation.CanMoveToPrevious, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Width="60" Style="{StaticResource MaterialDesignFlatButton}">
                         <controls:MaterialDesignIcon Width="24" Height="24" Brush="{StaticResource MenuForeground}" Icon="ArrowLeft" />
                     </Button>

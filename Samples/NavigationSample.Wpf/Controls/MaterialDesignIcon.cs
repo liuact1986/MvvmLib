@@ -6,6 +6,7 @@ using System.Windows.Media;
 
 namespace NavigationSample.Wpf.Controls
 {
+
     public class MaterialDesignIcon : Control
     {
         private static IDictionary<IconKind, string> iconKinds;

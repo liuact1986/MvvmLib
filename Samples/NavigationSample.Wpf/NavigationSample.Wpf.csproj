@@ -59,6 +59,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\BusyIndicator.cs" />
     <Compile Include="Controls\NotificationControl.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\SizeToVisibilityConverter.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="ViewModels\6-TabControlSample\ViewModelBase.cs" />
     <Compile Include="ViewModels\7-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\8-Behaviors\NavigationBehaviorsSampleViewModel.cs" />
-    <Compile Include="ViewModels\DataPagerSampleViewModel.cs" />
+    <Compile Include="ViewModels\11-DataPager\DataPagerSampleViewModel.cs" />
     <Compile Include="ViewModels\NavigationBrowserSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewEViewModel.cs" />
@@ -128,7 +129,11 @@
     <Compile Include="Views\8-Behaviors\NavigationBehaviorsSampleView.xaml.cs">
       <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DataPagerSampleView.xaml.cs">
+    <Compile Include="ViewModels\12-BusyIndicator\BusyIndicatorSampleViewModel.cs" />
+    <Compile Include="Views\12-BusyIndicator\BusyIndicatorSampleView.xaml.cs">
+      <DependentUpon>BusyIndicatorSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\11-DataPager\DataPagerSampleView.xaml.cs">
       <DependentUpon>DataPagerSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
@@ -158,6 +163,9 @@
     </Compile>
     <Compile Include="Views\ViewG.xaml.cs">
       <DependentUpon>ViewG.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewH.xaml.cs">
+      <DependentUpon>ViewH.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -272,7 +280,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DataPagerSampleView.xaml">
+    <Page Include="Views\12-BusyIndicator\BusyIndicatorSampleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\11-DataPager\DataPagerSampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -311,6 +323,10 @@
     <Page Include="Views\ViewG.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewH.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Window1.xaml">
       <Generator>MSBuild:Compile</Generator>
