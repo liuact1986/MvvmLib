@@ -21,6 +21,6 @@
 
         <ContentControl Content="{Binding Navigation.Current}" Grid.Row="1"/>
 
-        <controls:BusyIndicator x:Name="BusyIndicator" Visibility="Collapsed" Grid.RowSpan="2"/>
+        <controls:BusyIndicator x:Name="BusyIndicator" FocusAfterBusy="MessageTextBox" Grid.RowSpan="2"/>
     </Grid>
 </UserControl>
