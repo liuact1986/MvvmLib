@@ -4,6 +4,7 @@ using NavigationSample.Wpf.Controls;
 using NavigationSample.Wpf.Events;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace NavigationSample.Wpf.Views
@@ -43,6 +44,9 @@ namespace NavigationSample.Wpf.Views
                 storyboardAccessor.UnhandleCompleted();
                 isAnimating = false;
                 isPaneOpened = !isPaneOpened;
+
+                var visibility = isPaneOpened ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
+                ListView1.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, visibility);
             });
             storyboard.Begin();
         }

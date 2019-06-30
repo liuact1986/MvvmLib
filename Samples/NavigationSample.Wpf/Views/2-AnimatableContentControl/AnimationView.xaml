@@ -28,7 +28,7 @@
         <StackPanel>
             <StackPanel Orientation="Horizontal">
                 <controls:MaterialDesignIcon Icon="Information" Height="16" Brush="{StaticResource HighlightBrush}" Margin="2"/>
-                <TextBlock Text="The back and forward buttons have a context menu" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
+                <TextBlock Text="Spam the navigation and cancel animations" FontStyle="Italic" FontSize="10" VerticalAlignment="Center" />
             </StackPanel>
             <WrapPanel Orientation="Horizontal" Margin="5">
                 <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />

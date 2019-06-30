@@ -15,6 +15,7 @@ namespace ModuleSample.ViewModels
         {
             this.Navigation = new NavigationSource();
 
+            // if (!ModuleManager.Modules["ModuleA"].IsLoaded)
             ModuleManager.LoadModule("ModuleA");
 
             NavigateCommand = new RelayCommand<string>(Navigate);

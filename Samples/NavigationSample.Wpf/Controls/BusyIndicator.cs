@@ -92,9 +92,7 @@ namespace NavigationSample.Wpf.Controls
         {
             this.displayAfterTimer.Stop();
             this.Visibility = Visibility.Visible;
-        }
-
-       
+        }   
     }
 
     public class FocusHelper

@@ -88,7 +88,7 @@
                           Foreground="{StaticResource MenuForeground}" 
                           ItemContainerStyle="{StaticResource ListViewItemStyle}"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0" Background="Transparent" Grid.Row="1">
-                    <ItemsControl.ItemTemplate>
+                    <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type ListViewItem}">
                             <Border x:Name="Border">
                                 <StackPanel Orientation="Horizontal" Height="48">
@@ -98,7 +98,7 @@
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
+                    </ListView.ItemTemplate>
 
                 </ListView>
             </Grid>
