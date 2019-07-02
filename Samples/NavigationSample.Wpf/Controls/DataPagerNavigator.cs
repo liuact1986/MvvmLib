@@ -109,6 +109,13 @@ namespace NavigationSample.Wpf.Controls
             Refresh();
         }
 
+        private void SelectPageAndUpdateVisualStates()
+        {
+            if (AutoEllipsisMode == AutoEllipsisMode.Both)
+                SelectNumericButton();
+            UpdateVisualStates();
+        }
+
         public void Refresh()
         {
             if (AutoEllipsisMode == AutoEllipsisMode.Both)
@@ -125,9 +132,7 @@ namespace NavigationSample.Wpf.Controls
                 if (int.TryParse(textBox.Text, out int currentPage))
                 {
                     DataPager.MoveToPage(currentPage - 1);
-                    if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                        SelectNumericButton();
-                    UpdateVisualStates();
+                    SelectPageAndUpdateVisualStates();
                 }
             }
         }
@@ -135,38 +140,29 @@ namespace NavigationSample.Wpf.Controls
         private void OnMoveToLastPageButtonClick(object sender, RoutedEventArgs e)
         {
             DataPager.MoveToLastPage();
-            if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                SelectNumericButton();
-            UpdateVisualStates();
+            SelectPageAndUpdateVisualStates();
         }
 
         private void OnMoveToNextPageButtonClick(object sender, RoutedEventArgs e)
         {
             DataPager.MoveToNextPage();
-            if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                SelectNumericButton();
-            UpdateVisualStates();
+            SelectPageAndUpdateVisualStates();
         }
 
         private void OnMoveToPreviousPageButtonClick(object sender, RoutedEventArgs e)
         {
             DataPager.MoveToPreviousPage();
-            if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                SelectNumericButton();
-            UpdateVisualStates();
+            SelectPageAndUpdateVisualStates();
         }
 
         private void OnMoveToFirstPageButtonClick(object sender, RoutedEventArgs e)
         {
             DataPager.MoveToFirstPage();
-            if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                SelectNumericButton();
-            UpdateVisualStates();
+            SelectPageAndUpdateVisualStates();
         }
 
         private void SelectNumericButton()
         {
-            bool isFound = false;
             foreach (NumericButton button in numericButtons.Items)
             {
                 if (!button.IsEllipsisButton)
@@ -174,17 +170,12 @@ namespace NavigationSample.Wpf.Controls
                     if (button.PageIndex == DataPager.PageIndex)
                     {
                         button.IsChecked = true;
-                        isFound = true;
-                    }
-                    else
-                    {
-                        button.IsChecked = false;
+                        return;
                     }
                 }
             }
 
-            if (!isFound)
-                CreateNumericButtons(DataPager.PageIndex);
+            CreateNumericButtons(DataPager.PageIndex);
         }
 
         private void UpdateVisualStates()
@@ -292,19 +283,13 @@ namespace NavigationSample.Wpf.Controls
                 if (pageIndex > DataPager.PageCount - 1)
                     pageIndex = DataPager.PageCount - 1;
 
-                DataPager.PageIndex = pageIndex;
-                CreateNumericButtons(pageIndex);
                 DataPager.MoveToPage(pageIndex);
-                if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                    SelectNumericButton();
-                UpdateVisualStates();
+                SelectPageAndUpdateVisualStates();
             }
             else
             {
                 DataPager.MoveToPage(numericButton.PageIndex);
-                if (AutoEllipsisMode == AutoEllipsisMode.Both)
-                    SelectNumericButton();
-                UpdateVisualStates();
+                SelectPageAndUpdateVisualStates();
             }
         }
     }
