@@ -30,6 +30,7 @@ namespace MvvmLib.Navigation
         /// The number of items by page.
         /// </summary>
         int PageSize { get; set; }
+
         /// <summary>
         /// The number of pages.
         /// </summary>

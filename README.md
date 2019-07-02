@@ -36,7 +36,7 @@ ___
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **NavigationBrowser**: allows to browse enumerables, edit lists and collections.
-* **DataPager**: paging for DataGrid
+* **DataPager**: paging for DataGrid, etc.
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 

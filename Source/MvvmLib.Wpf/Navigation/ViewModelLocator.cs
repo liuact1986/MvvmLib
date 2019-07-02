@@ -80,7 +80,7 @@ namespace MvvmLib.Navigation
             else
                 Logger.Log($"No ViewModel Type found with ResolveViewModel dependency attached property on \"{view.GetType()}\"", Category.Warn, Priority.High);
 
-            view.Loaded += OnViewLoaded;
+            view.Loaded -= OnViewLoaded;
         }
     }
 

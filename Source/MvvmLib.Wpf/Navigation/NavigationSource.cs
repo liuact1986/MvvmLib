@@ -78,6 +78,17 @@ namespace MvvmLib.Navigation
             set { clearSourcesOnNavigate = value; }
         }
 
+
+        private bool notifyOnCurrentChanged;
+        /// <summary>
+        /// Allows to cancel <see cref="INotifyPropertyChanged"/>. Usefull sometimes with animations.
+        /// </summary>
+        public bool NotifyOnCurrentChanged
+        {
+            get { return notifyOnCurrentChanged; }
+            set { notifyOnCurrentChanged = value; }
+        }
+
         /// <summary>
         /// Checks if can move to previous source.
         /// </summary>
@@ -391,17 +402,6 @@ namespace MvvmLib.Navigation
 
             this.entries.Insert(index, new NavigationEntry(sourceType, parameter));
             this.sources.Insert(index, source);
-        }
-
-
-        private bool notifyOnCurrentChanged;
-        /// <summary>
-        /// Allows to cancel <see cref="INotifyPropertyChanged"/>. Usefull sometimes with animations.
-        /// </summary>
-        public bool NotifyOnCurrentChanged
-        {
-            get { return notifyOnCurrentChanged; }
-            set { notifyOnCurrentChanged = value; }
         }
 
         private void InsertSourceAndSetCurrentIndex(int index, Type sourceType, object source, object parameter)

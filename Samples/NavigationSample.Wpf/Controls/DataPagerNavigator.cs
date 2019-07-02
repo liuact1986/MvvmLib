@@ -213,7 +213,7 @@ namespace NavigationSample.Wpf.Controls
             // [0 1 2 .3.] [.0. 3 4 .5.] [.3. 5 6 .7.] [.5. 7 8 .9] [.7. 9]
 
             if (NumericButtonCount <= 2)
-                throw new ArgumentException("NumericButtonCount require a number greater than 2");
+                throw new ArgumentException("NumericButtonCount requires a number greater than 2");
 
             numericButtons.Items.Clear();
 

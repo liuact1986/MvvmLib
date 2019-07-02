@@ -434,11 +434,7 @@ namespace MvvmLib.Navigation
 
             int startIndex = pageIndex * pageSize; // 0 ...5 ...
             int endIndex = startIndex + pageSize;  // 5 ... 10
-            if (endIndex < itemsCount)
-            {
-                Take(startIndex, endIndex);
-            }
-            else
+            if (endIndex >= itemsCount)
             {
                 // 5.. (3 items) .. 10
                 endIndex = itemsCount;

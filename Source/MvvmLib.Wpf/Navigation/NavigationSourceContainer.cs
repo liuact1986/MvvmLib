@@ -121,7 +121,6 @@ namespace MvvmLib.Navigation
             moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand);
             moveToIndexCommand = new RelayCommand<object>(ExecuteMoveToIndexCommand);
             moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
-
         }
 
         #region Commands
