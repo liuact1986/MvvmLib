@@ -92,4 +92,133 @@
         </Setter>
     </Style>
 
+
+    <Style x:Key="PageButtonStyle" TargetType="Button">
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="MinWidth" Value="28"/>
+        <Setter Property="MinHeight" Value="28"/>
+        <!--<Setter Property="Background" Value="Transparent"/>-->
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style TargetType="{x:Type controls:DataPagerNavigator}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:DataPagerNavigator}">
+
+                    <Grid Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <Button x:Name="MoveToFirstPageButton" Background="{TemplateBinding Background}" Style="{StaticResource PageButtonStyle}">
+                                <Path Width="8" Height="8"
+                                  Data="M186.84901,0.87000641L270.861,0.87000641 143.59299,128.13806 271.861,256.40601 188.34901,256.40601 59.831,127.88806z M0,0L59.831,0 59.831,127.88806 59.831,256.406 0,256.406z"
+                                  Fill="{TemplateBinding Foreground}"
+                                  Stretch="Uniform"/>
+                            </Button>
+
+                            <Button x:Name="MoveToPreviousPageButton" Background="{TemplateBinding Background}" Style="{StaticResource PageButtonStyle}">
+                                <Path Width="8" Height="8"
+                                  Data="F1M646.688,13.5518L646.783,13.4593 646.965,13.639 668.383,35.0583 689.459,35.0583 665.155,10.751 657.503,3.10126 657.323,2.92023 664.876,-4.63837 689.184,-28.9417 668.109,-28.9417 646.688,-7.52637 636.15,3.01398 646.688,13.5518z"
+                                  Fill="{TemplateBinding Foreground}"
+                                  Stretch="Uniform"/>
+                            </Button>
+
+                            <ItemsControl x:Name="NumericButtons">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+
+                            <Button x:Name="MoveToNextPageButton" Background="{TemplateBinding Background}" Style="{StaticResource PageButtonStyle}">
+                                <Path Width="8" Height="8"
+                                  Data="F1M568.254,-7.43524L568.159,-7.34277 567.977,-7.52246 546.559,-28.9417 525.484,-28.9417 549.787,-4.63446 557.439,3.01532 557.619,3.19629 550.067,10.7549 525.758,35.0583 546.834,35.0583 568.254,13.6429 578.792,3.10254 568.254,-7.43524z"
+                                  Fill="{TemplateBinding Foreground}"
+                                  Stretch="Fill"/>
+                            </Button>
+
+                            <Button x:Name="MoveToLastPageButton" Background="{TemplateBinding Background}" Style="{StaticResource PageButtonStyle}">
+                                <Path Width="8" Height="8"
+                                  Data="M212.02997,0L271.86096,0 271.86096,256.40601 212.02997,256.40601 212.02997,128.51749 85.010976,255.53601 1.0000002,255.53601 128.26799,128.26744 0,4.0510441E-06 83.510976,4.0510441E-06 212.02997,128.5174z"
+                                  Fill="{TemplateBinding Foreground}"
+                                  Stretch="UniformToFill"/>
+                            </Button>
+
+                        </StackPanel>
+
+                        <Grid Background="Transparent" Grid.Column="1" HorizontalAlignment="Right"
+                              Visibility="{Binding PagerControlsVisibility.TextControlVisibility,RelativeSource={RelativeSource TemplatedParent}}" Margin="4 0 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Page" TextAlignment="Center" VerticalAlignment="Center" Margin="4 0"/>
+                            <TextBox x:Name="CurrentPageTextBox" Text="{Binding DataPager.CurrentPage}" TextAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"  MinWidth="28"  MinHeight="28" Grid.Column="1"/>
+                            <TextBlock TextAlignment="Center" Text="of" VerticalAlignment="Center" Margin="4 0" Grid.Column="2"/>
+                            <TextBlock Text="{Binding DataPager.PageCount}" TextAlignment="Center" VerticalAlignment="Center" Margin="4 0" Grid.Column="3"/>
+                        </Grid>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <SolidColorBrush x:Key="NumericButton.MouseOver.Background" Color="#FFF3F9FF"/>
+    <SolidColorBrush x:Key="NumericButton.MouseOver.Border" Color="#FF5593FF"/>
+    <SolidColorBrush x:Key="NumericButton.Disabled.Background" Color="#FFE6E6E6"/>
+    <SolidColorBrush x:Key="NumericButton.Disabled.Border" Color="#FFBCBCBC"/>
+    <SolidColorBrush x:Key="NumericButton.Disabled.Foreground" Color="#FF838383"/>
+    <SolidColorBrush x:Key="NumericButton.Pressed.Background" Color="#FFD9ECFF"/>
+    <SolidColorBrush x:Key="NumericButton.Pressed.Border" Color="#FF3C77DD"/>
+    <Style TargetType="{x:Type controls:NumericButton}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="MinWidth" Value="28"/>
+        <Setter Property="MinHeight" Value="28"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:NumericButton}">
+                    <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                        <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource NumericButton.MouseOver.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource NumericButton.MouseOver.Border}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource NumericButton.Disabled.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource NumericButton.Disabled.Border}"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource NumericButton.Disabled.Foreground}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource NumericButton.Pressed.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource NumericButton.Pressed.Border}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter Property="Background" TargetName="border" Value="{StaticResource NumericButton.Pressed.Background}"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource NumericButton.Pressed.Border}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

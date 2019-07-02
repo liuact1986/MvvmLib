@@ -803,13 +803,13 @@ Add buttons and bind Browser commands
 
 ```cs
 this.People = new ObservableCollection<Person>(peopleList);
-this.DataPager = new DataPager<Person>(People, 10);
+this.DataPager = new DataPager(People, 10);
 ```
 
 Filter
 
 ```cs
-DataPager.Filter = new Func<Person, bool>(p => p.Age > 30);
+DataPager.Filter = new Func<object, bool>(p => ((Person)p).Age > 30);
    
 // reset the list
 DataPager.Filter = null;
@@ -822,11 +822,11 @@ DataPager.CustomSorter = new PersonSorter();
 ```
 
 ```cs
-public class PersonSorter : IComparer<Person>
+public class PersonSorter : IComparer<object>
 {
-    public int Compare(Person x, Person y)
+    public int Compare(object x, object y)
     {
-        return x.Age.CompareTo(y.Age);
+        return ((Person)x).Age.CompareTo(((Person)y).Age);
     }
 }
 ```
@@ -888,6 +888,8 @@ Events
 
 * PropertyChanged
 * Refreshed
+* PageChanging
+* PageChanged
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior
 

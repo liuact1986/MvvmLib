@@ -86,6 +86,7 @@
     <Compile Include="Navigation\DataPager.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
+    <Compile Include="Navigation\IDataPager.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
     <Compile Include="Navigation\IIsSelected.cs" />
     <Compile Include="Navigation\IMovableSource.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Navigation\NavigationSource.cs" />
     <Compile Include="Navigation\NavigationSourceContainer.cs" />
     <Compile Include="Navigation\NavigationType.cs" />
+    <Compile Include="Navigation\PageChangeEventArgs.cs" />
     <Compile Include="Navigation\SelectionHandling.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceSelectedItemChangedEventArgs.cs" />

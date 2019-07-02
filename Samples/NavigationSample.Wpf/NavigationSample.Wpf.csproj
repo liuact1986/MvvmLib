@@ -60,7 +60,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\BusyIndicator.cs" />
+    <Compile Include="Controls\DataPagerNavigator.cs" />
     <Compile Include="Controls\NotificationControl.cs" />
+    <Compile Include="Controls\NumericButton.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\SizeToVisibilityConverter.cs" />
     <Compile Include="Models\FakePeopleService.cs" />

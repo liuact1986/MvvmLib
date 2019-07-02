@@ -3,6 +3,7 @@ using MvvmLib.Message;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -14,7 +15,7 @@ namespace NavigationSample.Wpf.ViewModels
         private readonly IEventAggregator eventAggregator;
 
         public ObservableCollection<PersonModel> People { get; private set; }
-        public DataPager<PersonModel> DataPager { get; private set; }
+        public DataPager DataPager { get; private set; }
 
         public ICommand FilterCommand { get; set; }
         public ICommand SortCommand { get; set; }
@@ -55,13 +56,13 @@ namespace NavigationSample.Wpf.ViewModels
             else
             {
                 var age = int.Parse(args.ToString());
-                DataPager.Filter = new Func<PersonModel, bool>(p => p.Age > age);
+                DataPager.Filter = new Func<object, bool>(p => ((PersonModel)p).Age > age);
             }
         }
 
         private void Load()
         {
-            int count = 25;
+            int count = 250;
             var random = new Random();
             var peopleList = new List<PersonModel>();
             for (int i = 0; i < count; i++)
@@ -72,7 +73,7 @@ namespace NavigationSample.Wpf.ViewModels
                 peopleList.Add(person);
             }
             this.People = new ObservableCollection<PersonModel>(peopleList);
-            this.DataPager = new DataPager<PersonModel>(People, 10);
+            this.DataPager = new DataPager(People, 10);
         }
 
         public void OnNavigatingFrom(NavigationContext navigationContext)
@@ -91,11 +92,11 @@ namespace NavigationSample.Wpf.ViewModels
         }
     }
 
-    public class PersonSorter : IComparer<PersonModel>
+    public class PersonSorter : IComparer<object>
     {
-        public int Compare(PersonModel x, PersonModel y)
+        public int Compare(object x, object y)
         {
-            return x.Age.CompareTo(y.Age);
+            return ((PersonModel)x).Age.CompareTo(((PersonModel)y).Age);
         }
     }
 }

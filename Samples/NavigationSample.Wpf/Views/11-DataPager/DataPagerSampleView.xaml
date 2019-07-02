@@ -8,7 +8,7 @@
              FontSize="16"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <Grid Background="{StaticResource PageBackground}">
         <Grid.Effect>
             <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
@@ -38,7 +38,7 @@
             </DataGrid.Columns>
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="10">
+                    <StackPanel Margin="20,10">
                         <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
                             <Image Source="{Binding ImagePath}" />
                         </Border>
@@ -57,7 +57,16 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal">
+            <controls:DataPagerNavigator DataPager="{Binding DataPager}" AutoEllipsisMode="Both" NumericButtonCount="5"/>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" >
+                <ComboBox SelectionChanged="ComboBox_SelectionChanged" VerticalContentAlignment="Center" Margin="2">
+                    <ComboBoxItem Content="10" IsSelected="True"/>
+                    <ComboBoxItem Content="20" />
+                    <ComboBoxItem Content="50" />
+                </ComboBox>
+
+                <!--     
                 <TextBox x:Name="PageTextBox" Text="{Binding DataPager.CurrentPage}" VerticalContentAlignment="Center" Width="30" Margin="2">
                     <mvvmLib:Interaction.Behaviors>
                         <mvvmLib:EventToCommandBehavior EventName="KeyUp" Command="{Binding DataPager.MoveToPageCommand}" CommandParameter="{Binding Text,ElementName=PageTextBox}"/>
@@ -65,18 +74,13 @@
                 </TextBox>
                 <TextBlock Text="{Binding DataPager.PageCount, StringFormat='of {0}'}" VerticalAlignment="Center" />
 
-                <ComboBox SelectionChanged="ComboBox_SelectionChanged" VerticalContentAlignment="Center" Margin="2">
-                    <ComboBoxItem Content="10" IsSelected="True"/>
-                    <ComboBoxItem Content="20" />
-                    <ComboBoxItem Content="50" />
-                </ComboBox>
-                
                 <TextBlock Text="{Binding DataPager.Start}" VerticalAlignment="Center" Margin="10,0,0,0" />
                 <TextBlock Text="{Binding DataPager.End, StringFormat=' to {0}'}" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding DataPager.ItemsCount, StringFormat=' of {0}'}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding DataPager.ItemsCount, StringFormat=' of {0}'}" VerticalAlignment="Center"/>-->
             </StackPanel>
 
-            <StackPanel x:Name="PagingMenu" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" />
+            <!--<StackPanel x:Name="PagingMenu" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" />-->
+
 
         </Grid>
     </Grid>

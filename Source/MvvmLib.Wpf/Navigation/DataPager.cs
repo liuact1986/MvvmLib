@@ -8,13 +8,13 @@ using System.ComponentModel;
 
 namespace MvvmLib.Navigation
 {
+
     /// <summary>
-    /// DataPager from DataGrid.
+    /// DataPager for DataGrid, etc.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class DataPager<T> : INotifyPropertyChanged
+    public class DataPager : IDataPager
     {
-        private List<T> innerList;
+        private List<object> innerList;
 
         private IEnumerable source;
         /// <summary>
@@ -25,11 +25,11 @@ namespace MvvmLib.Navigation
             get { return source; }
         }
 
-        private ObservableCollection<T> items;
+        private ObservableCollection<object> items;
         /// <summary>
         /// The items displayed.
         /// </summary>
-        public ObservableCollection<T> Items
+        public ObservableCollection<object> Items
         {
             get { return items; }
         }
@@ -45,7 +45,7 @@ namespace MvvmLib.Navigation
 
         private int pageSize;
         /// <summary>
-        /// The page size.
+        /// The number of items by page.
         /// </summary>
         public int PageSize
         {
@@ -107,11 +107,11 @@ namespace MvvmLib.Navigation
             get { return end; }
         }
 
-        private Func<T, bool> filter;
+        private Func<object, bool> filter;
         /// <summary>
         /// The filter.
         /// </summary>
-        public Func<T, bool> Filter
+        public Func<object, bool> Filter
         {
             get { return filter; }
             set
@@ -124,11 +124,11 @@ namespace MvvmLib.Navigation
             }
         }
 
-        private IComparer<T> customSorter;
+        private IComparer<object> customSorter;
         /// <summary>
         /// The custom sorter.
         /// </summary>
-        public IComparer<T> CustomSorter
+        public IComparer<object> CustomSorter
         {
             get { return customSorter; }
             set
@@ -238,30 +238,40 @@ namespace MvvmLib.Navigation
         /// </summary>
         public event EventHandler Refreshed;
 
+        /// <summary>
+        /// Invoked on page changing.
+        /// </summary>
+        public event EventHandler<PageChangeEventArgs> PageChanging;
 
         /// <summary>
-        /// Creates the <see cref="DataPager{T}"/>.
+        /// Invoked on page changed.
+        /// </summary>
+        public event EventHandler<PageChangeEventArgs> PageChanged;
+
+
+        /// <summary>
+        /// Creates the <see cref="DataPager"/>.
         /// </summary>
         /// <param name="source">The source</param>
         /// <param name="pageSize">The page size</param>
-        public DataPager(IEnumerable<T> source, int pageSize)
+        public DataPager(IEnumerable<object> source, int pageSize)
             : this(source, pageSize, 0)
         { }
 
         /// <summary>
-        /// Creates the <see cref="DataPager{T}"/>.
+        /// Creates the <see cref="DataPager"/>.
         /// </summary>
         /// <param name="source">The source</param>
         /// <param name="pageSize">The page size</param>
         /// <param name="pageIndex">The page index</param>
-        public DataPager(IEnumerable<T> source, int pageSize, int pageIndex)
+        public DataPager(IEnumerable<object> source, int pageSize, int pageIndex)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
             this.source = source;
-            this.innerList = new List<T>();
-            this.items = new ObservableCollection<T>();
+            this.innerList = new List<object>();
+            this.items = new ObservableCollection<object>();
             this.pageSize = pageSize;
 
             if (source is INotifyCollectionChanged)
@@ -282,6 +292,16 @@ namespace MvvmLib.Navigation
         private void OnRefreshed()
         {
             this.Refreshed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnPageChanged(int pageIndex)
+        {
+            PageChanged?.Invoke(this, new PageChangeEventArgs(pageIndex));
+        }
+
+        private void OnPageChanging(int pageIndex)
+        {
+            PageChanging?.Invoke(this, new PageChangeEventArgs(pageIndex));
         }
 
         #endregion // Events
@@ -359,7 +379,7 @@ namespace MvvmLib.Navigation
         private void FilterAndSortItems()
         {
             this.innerList.Clear();
-            foreach (T item in this.source)
+            foreach (var item in this.source)
             {
                 if (filter == null || filter(item))
                     this.innerList.Add(item);
@@ -402,6 +422,8 @@ namespace MvvmLib.Navigation
 
         private void MoveToPageInternal(int pageIndex)
         {
+            OnPageChanging(pageIndex);
+
             var oldCanMoveToPreviousPage = CanMoveToPreviousPage;
             var oldCanMoveToNextPage = CanMoveToNextPage;
 
@@ -435,7 +457,10 @@ namespace MvvmLib.Navigation
             OnPropertyChanged(nameof(CurrentPage));
 
             CheckCanMove(oldCanMoveToPreviousPage, oldCanMoveToNextPage);
+
+            OnPageChanged(pageIndex);
         }
+
 
         private void Take(int startIndex, int endIndex)
         {
