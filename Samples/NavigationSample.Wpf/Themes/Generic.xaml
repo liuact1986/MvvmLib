@@ -154,8 +154,7 @@
 
                         </StackPanel>
 
-                        <Grid Background="Transparent" Grid.Column="1" HorizontalAlignment="Right"
-                              Visibility="{Binding PagerControlsVisibility.TextControlVisibility,RelativeSource={RelativeSource TemplatedParent}}" Margin="4 0 0 0">
+                        <Grid Background="Transparent" Grid.Column="1" HorizontalAlignment="Right" Margin="4 0 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>

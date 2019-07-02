@@ -57,7 +57,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <controls:DataPagerNavigator DataPager="{Binding DataPager}" AutoEllipsisMode="Both" NumericButtonCount="5"/>
+            <controls:DataPagerNavigator DataPager="{Binding DataPager}" AutoEllipsisMode="Both" NumericButtonCount="6"/>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1" >
                 <ComboBox SelectionChanged="ComboBox_SelectionChanged" VerticalContentAlignment="Center" Margin="2">
