@@ -253,7 +253,7 @@ namespace NavigationSample.Wpf.Controls
             }
         }
 
-        public void CreateNumericButton(int pageIndex)
+        private void CreateNumericButton(int pageIndex)
         {
             var button = new NumericButton
             {
@@ -268,7 +268,7 @@ namespace NavigationSample.Wpf.Controls
             numericButtons.Items.Add(button);
         }
 
-        public void CreateEllipsisButton(int pageIndex)
+        private void CreateEllipsisButton(int pageIndex)
         {
             var button = new NumericButton
             {
