@@ -28,13 +28,13 @@ namespace MvvmLib.Modules
         }
 
         /// <summary>
-        /// The module config full name (namespace + config name).
+        /// The module configuration full name (namespace + config name).
         /// </summary>
-        [ConfigurationProperty("moduleConfigFullName", IsRequired = true)]
-        public string ModuleConfigFullName
+        [ConfigurationProperty("moduleConfigurationFullName", IsRequired = true)]
+        public string ModuleConfigurationFullName
         {
-            get { return (string)this["moduleConfigFullName"]; }
-            set { base["moduleConfigFullName"] = value; }
+            get { return (string)this["moduleConfigurationFullName"]; }
+            set { base["moduleConfigurationFullName"] = value; }
         }
     }
 

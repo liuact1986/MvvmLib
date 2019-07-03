@@ -1,5 +1,6 @@
 ﻿using MvvmLib.IoC;
 using MvvmLib.Message;
+using MvvmLib.Modules;
 using MvvmLib.Navigation;
 using System;
 
@@ -20,6 +21,7 @@ namespace ModuleSample.Startup
         protected override void RegisterRequiredTypes()
         {
             container.RegisterInstance<IInjector>(container);
+            container.RegisterSingleton<IModuleManager, ModuleManager>();
             container.RegisterSingleton<IEventAggregator, EventAggregator>();
         }
 

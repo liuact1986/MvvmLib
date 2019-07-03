@@ -70,11 +70,13 @@
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\Priority.cs" />
     <Compile Include="Modules\AssemblyLoader.cs" />
-    <Compile Include="Modules\IModuleConfig.cs" />
+    <Compile Include="Modules\IModuleConfiguration.cs" />
+    <Compile Include="Modules\IModuleManager.cs" />
     <Compile Include="Modules\ModuleConfigurationElement.cs" />
     <Compile Include="Modules\ModuleConfigurationElementCollection.cs" />
     <Compile Include="Modules\ModuleInfo.cs" />
-    <Compile Include="Modules\ModuleLoadingFailException.cs" />
+    <Compile Include="Modules\ModuleInitializer.cs" />
+    <Compile Include="Modules\ModuleLoadedEventArgs.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="Modules\ModulesConfigurationSection.cs" />
     <Compile Include="Mvvm\BindableObject.cs" />

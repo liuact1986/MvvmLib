@@ -23,13 +23,13 @@
             get { return path; }
         }
 
-        private readonly string moduleConfigFullName;
+        private readonly string moduleConfigurationFullName;
         /// <summary>
-        /// The module config full name.
+        /// The module configuration full name.
         /// </summary>
-        public string ModuleConfigFullName
+        public string ModuleConfigurationFullName
         {
-            get { return moduleConfigFullName; }
+            get { return moduleConfigurationFullName; }
         }
 
         internal bool isLoaded;
@@ -41,12 +41,11 @@
             get { return isLoaded; }
         }
 
-        internal ModuleInfo(string moduleName, string path, string moduleConfigFullName)
+        internal ModuleInfo(string moduleName, string path, string moduleConfigurationFullName)
         {
             this.moduleName = moduleName;
             this.path = path;
-            this.moduleConfigFullName = moduleConfigFullName;
+            this.moduleConfigurationFullName = moduleConfigurationFullName;
         }
     }
-
 }

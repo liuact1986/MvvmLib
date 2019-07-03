@@ -1335,7 +1335,7 @@ using MvvmLib.Navigation;
 
 namespace ModuleA
 {
-    public class ModuleAConfig : IModuleConfig
+    public class ModuleAConfiguration : IModuleConfiguration
     {
         public void Initialize()
         {
@@ -1351,6 +1351,10 @@ namespace ModuleA
 <li>In main project. Register the module infos:</li>
 </ul>
 <p>With Bootstrapper</p>
+<p>Registering the module: </p>
+<ul>
+<li>With ModuleManager.Default instance</li>
+</ul>
 <pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
 {
     //  etc.
@@ -1360,7 +1364,54 @@ namespace ModuleA
         // 1. The module name (an id)
         // 2. The path
         // 3. The module config class full name
-        ModuleManager.RegisterModule(&quot;ModuleA&quot;, @&quot;Modules\ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
+        ModuleManager.Default.RegisterModule(&quot;ModuleA&quot;, &quot;ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfiguration&quot;)
+    }
+}
+</code></pre>
+
+<ul>
+<li>Or Register a ModuleManager with IoC Container</li>
+</ul>
+<pre><code class="cs">public abstract class MvvmLibBootstrapper : BootstrapperBase
+{
+    protected IInjector container;
+
+    public MvvmLibBootstrapper(IInjector container)
+    {
+        if (container == null)
+            throw new ArgumentNullException(nameof(container));
+
+        this.container = container;
+    }
+
+    protected override void RegisterRequiredTypes()
+    {
+        container.RegisterInstance&lt;IInjector&gt;(container);
+        container.RegisterSingleton&lt;IModuleManager, ModuleManager&gt;(); // &lt;=
+        container.RegisterSingleton&lt;IEventAggregator, EventAggregator&gt;();
+    }
+
+    protected override void SetViewFactory()
+    {
+        SourceResolver.SetFactory((sourceType) =&gt; container.GetNewInstance(sourceType));
+    }
+
+    protected override void SetViewModelFactory()
+    {
+        ViewModelLocationProvider.SetViewModelFactory((viewModelType) =&gt; container.GetInstance(viewModelType));
+    }
+}
+</code></pre>
+
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    // etc.
+
+    protected override void RegisterModules()
+    {
+        var moduleManager = container.GetInstance&lt;IModuleManager&gt;();
+
+        moduleManager.RegisterModule(&quot;ModuleA&quot;, @&quot;ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfiguration&quot;);
     }
 }
 </code></pre>
@@ -1375,42 +1426,72 @@ namespace ModuleA
     &lt;supportedRuntime version=&quot;v4.0&quot; sku=&quot;.NETFramework,Version=v4.5&quot; /&gt;
   &lt;/startup&gt;
   &lt;modules&gt;
-     &lt;module moduleName=&quot;ModuleA&quot; path=&quot;Modules\ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
+    &lt;module moduleName=&quot;ModuleA&quot; path=&quot;ModuleA.dll&quot; moduleConfigurationFullName=&quot;ModuleA.ModuleAConfiguration&quot;/&gt;
   &lt;/modules&gt;
 &lt;/configuration&gt;
 </code></pre>
 
-<p><strong>Tip</strong>: copy dll to a directory of main project</p>
-<p>Example create a directory &quot;Modules&quot; and copy ModuleA.dll and ModuleB.dll (pre-build command lines)</p>
-<pre class="nocode">if not exist &quot;$(ProjectDir)bin\Debug\Modules&quot; mkdir &quot;$(ProjectDir)bin\Debug\Modules&quot;
-
-copy &quot;$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleA.dll&quot; 
-copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleB.dll&quot; 
-</pre><p><strong>Or in same directory</strong></p>
-<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
-{
-    //  etc.
-
-    protected override void RegisterModules()
-    {
-        ModuleManager.RegisterModule(&quot;ModuleA&quot;, &quot;ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
-    }
-}
-</code></pre>
-
-<pre><code class="xml">&lt;modules&gt;
-    &lt;module moduleName=&quot;ModuleA&quot; path=&quot;ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
-&lt;/modules&gt;
-</code></pre>
-
+<p><strong>Tip</strong>: copy dll to the main project (pre-build command lines in project properties)</p>
 <pre class="nocode">copy &quot;$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll&quot;  &quot;$(ProjectDir)bin\Debug\ModuleA.dll&quot; 
 copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &quot;$(ProjectDir)bin\Debug\ModuleB.dll&quot; 
 </pre><h3 id="loading-the-module">Loading the module<a class="headerlink" href="#loading-the-module" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
-<pre><code class="cs">ModuleManager.LoadModule(&quot;ModuleA&quot;);
+<pre><code class="cs">ModuleManager.Default.LoadModule(&quot;ModuleA&quot;);
 </code></pre>
 
-<p>Navigate by source name. Example</p>
-<pre><code class="cs">await this.Navigation.NavigateAsync(&quot;ViewA&quot;);
+<p>or inject de module manager instance</p>
+<pre><code class="cs">public class ShellViewModel : BindableBase
+{
+    private readonly IModuleManager moduleManager;
+
+    public NavigationSource Navigation { get; }
+    public ICommand NavigateCommand { get; set; }
+
+
+    public ShellViewModel(IModuleManager moduleManager)
+    {
+        this.moduleManager = moduleManager;
+
+        this.Navigation = new NavigationSource();
+        NavigateCommand = new RelayCommand&lt;string&gt;(NavigateToModule);
+
+        moduleManager.ModuleLoaded += OnModuleLoaded;
+    }
+
+    private void OnModuleLoaded(object sender, ModuleLoadedEventArgs e)
+    {
+
+    }
+
+    private void NavigateToModule(string sourceName)
+    {
+        var moduleName = GetModuleName(sourceName);
+        if (moduleName == null)
+            return;
+
+        LoadModule(moduleName);
+
+        this.Navigation.Navigate(sourceName);
+    }
+
+    private string GetModuleName(string sourceName)
+    {
+        switch (sourceName)
+        {
+            case &quot;ViewA&quot;:
+            case &quot;ViewB&quot;:
+                return &quot;ModuleA&quot;;
+            case &quot;ViewC&quot;:
+                return &quot;ModuleB&quot;;
+        }
+        return null;
+    }
+
+    private void LoadModule(string moduleName)
+    {
+        if (!moduleManager.IsModuleLoaded(moduleName))
+            moduleManager.LoadModule(moduleName);
+    }
+}
 </code></pre>
 
 <h3 id="shared-project-services-infrastructure-etc.">Shared project (services, infrastructure, etc.)<a class="headerlink" href="#shared-project-services-infrastructure-etc." title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>

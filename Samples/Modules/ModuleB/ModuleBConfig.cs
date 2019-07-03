@@ -4,14 +4,15 @@ using ModuleSharedServices;
 using MvvmLib.IoC;
 using MvvmLib.Modules;
 using MvvmLib.Navigation;
+using System.Threading.Tasks;
 
 namespace ModuleB
 {
-    public class ModuleBConfig : IModuleConfig
+    public class ModuleBConfiguration : IModuleConfiguration
     {
         private readonly IInjector injector;
 
-        public ModuleBConfig(IInjector injector)
+        public ModuleBConfiguration(IInjector injector)
         {
             this.injector = injector;
         }

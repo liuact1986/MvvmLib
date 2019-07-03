@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 
 namespace MvvmLib.Modules
@@ -16,16 +15,12 @@ namespace MvvmLib.Modules
         /// <returns>The assembly</returns>
         public static Assembly LoadFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-
             var file = new FileInfo(path);
             if (!file.Exists)
                 throw new FileNotFoundException($"No file found for the path '{path}'");
 
-            var assembly = Assembly.LoadFile(file.FullName);
+            var assembly = Assembly.LoadFile(file.FullName); // can fail, unexpected file for example
             return assembly;
         }
     }
-
 }

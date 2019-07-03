@@ -1165,7 +1165,7 @@ using MvvmLib.Navigation;
 
 namespace ModuleA
 {
-    public class ModuleAConfig : IModuleConfig
+    public class ModuleAConfiguration : IModuleConfiguration
     {
         public void Initialize()
         {
@@ -1181,6 +1181,10 @@ namespace ModuleA
 
 With Bootstrapper
 
+Registering the module: 
+
+* With ModuleManager.Default instance
+
 ```cs
 public class Bootstrapper : MvvmLibBootstrapper
 {
@@ -1191,7 +1195,55 @@ public class Bootstrapper : MvvmLibBootstrapper
         // 1. The module name (an id)
         // 2. The path
         // 3. The module config class full name
-        ModuleManager.RegisterModule("ModuleA", @"Modules\ModuleA.dll", "ModuleA.ModuleAConfig");
+        ModuleManager.Default.RegisterModule("ModuleA", "ModuleA.dll", "ModuleA.ModuleAConfiguration")
+    }
+}
+```
+
+* Or Register a ModuleManager with IoC Container
+
+```cs
+public abstract class MvvmLibBootstrapper : BootstrapperBase
+{
+    protected IInjector container;
+
+    public MvvmLibBootstrapper(IInjector container)
+    {
+        if (container == null)
+            throw new ArgumentNullException(nameof(container));
+
+        this.container = container;
+    }
+
+    protected override void RegisterRequiredTypes()
+    {
+        container.RegisterInstance<IInjector>(container);
+        container.RegisterSingleton<IModuleManager, ModuleManager>(); // <=
+        container.RegisterSingleton<IEventAggregator, EventAggregator>();
+    }
+
+    protected override void SetViewFactory()
+    {
+        SourceResolver.SetFactory((sourceType) => container.GetNewInstance(sourceType));
+    }
+
+    protected override void SetViewModelFactory()
+    {
+        ViewModelLocationProvider.SetViewModelFactory((viewModelType) => container.GetInstance(viewModelType));
+    }
+}
+```
+
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    // etc.
+
+    protected override void RegisterModules()
+    {
+        var moduleManager = container.GetInstance<IModuleManager>();
+
+        moduleManager.RegisterModule("ModuleA", @"ModuleA.dll", "ModuleA.ModuleAConfiguration");
     }
 }
 ```
@@ -1208,58 +1260,80 @@ Or in App.Config file
     <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
   </startup>
   <modules>
-     <module moduleName="ModuleA" path="Modules\ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
+    <module moduleName="ModuleA" path="ModuleA.dll" moduleConfigurationFullName="ModuleA.ModuleAConfiguration"/>
   </modules>
 </configuration>
 ```
 
-**Tip**: copy dll to a directory of main project
-
-Example create a directory "Modules" and copy ModuleA.dll and ModuleB.dll (pre-build command lines)
-
-```
-if not exist "$(ProjectDir)bin\Debug\Modules" mkdir "$(ProjectDir)bin\Debug\Modules"
-
-copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleA.dll" 
-copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleB.dll" 
-```
-
-**Or in same directory**
-
-```cs
-public class Bootstrapper : MvvmLibBootstrapper
-{
-    //  etc.
-
-    protected override void RegisterModules()
-    {
-        ModuleManager.RegisterModule("ModuleA", "ModuleA.dll", "ModuleA.ModuleAConfig");
-    }
-}
-```
-
-```xml
-<modules>
-    <module moduleName="ModuleA" path="ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
-</modules>
-```
+**Tip**: copy dll to the main project (pre-build command lines in project properties)
 
 ```
 copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\ModuleA.dll" 
 copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\ModuleB.dll" 
 ```
 
-
 ### Loading the module
 
 ```cs
-ModuleManager.LoadModule("ModuleA");
+ModuleManager.Default.LoadModule("ModuleA");
 ```
 
-Navigate by source name. Example
+or inject de module manager instance
 
 ```cs
-await this.Navigation.NavigateAsync("ViewA");
+public class ShellViewModel : BindableBase
+{
+    private readonly IModuleManager moduleManager;
+
+    public NavigationSource Navigation { get; }
+    public ICommand NavigateCommand { get; set; }
+
+
+    public ShellViewModel(IModuleManager moduleManager)
+    {
+        this.moduleManager = moduleManager;
+
+        this.Navigation = new NavigationSource();
+        NavigateCommand = new RelayCommand<string>(NavigateToModule);
+
+        moduleManager.ModuleLoaded += OnModuleLoaded;
+    }
+
+    private void OnModuleLoaded(object sender, ModuleLoadedEventArgs e)
+    {
+
+    }
+
+    private void NavigateToModule(string sourceName)
+    {
+        var moduleName = GetModuleName(sourceName);
+        if (moduleName == null)
+            return;
+
+        LoadModule(moduleName);
+
+        this.Navigation.Navigate(sourceName);
+    }
+
+    private string GetModuleName(string sourceName)
+    {
+        switch (sourceName)
+        {
+            case "ViewA":
+            case "ViewB":
+                return "ModuleA";
+            case "ViewC":
+                return "ModuleB";
+        }
+        return null;
+    }
+
+    private void LoadModule(string moduleName)
+    {
+        if (!moduleManager.IsModuleLoaded(moduleName))
+            moduleManager.LoadModule(moduleName);
+    }
+}
 ```
 
 ### Shared project (services, infrastructure, etc.)

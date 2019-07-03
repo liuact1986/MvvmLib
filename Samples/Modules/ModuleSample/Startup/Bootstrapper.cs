@@ -39,7 +39,11 @@ namespace ModuleSample.Startup
         {
             // with App.Config 
             // or
-            ModuleManager.RegisterModule("ModuleB", @"ModuleB.dll", "ModuleB.ModuleBConfig");
+
+            var moduleManager = container.GetInstance<IModuleManager>();
+            moduleManager.RegisterModule("ModuleB", @"ModuleB.dll", "ModuleB.ModuleBConfiguration");
+
+            //ModuleManager.Default.RegisterModule("ModuleB", @"ModuleB.dll", "ModuleB.ModuleBConfiguration");
         }
     }
 

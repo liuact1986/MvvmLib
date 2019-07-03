@@ -6,10 +6,17 @@
         xmlns:local="clr-namespace:ModuleSample.Views"
         mc:Ignorable="d"
         Title="Shell" Height="450" Width="800">
+
+    <Window.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Content="View A (module A)" Command="{Binding NavigateCommand}" CommandParameter="ViewA" Margin="5"/>
@@ -18,5 +25,12 @@
         </StackPanel>
 
         <ContentControl x:Name="C1" Content="{Binding Navigation.Current}" Grid.Row="1"/>
+
+        <StackPanel VerticalAlignment="Bottom" Height="22" Grid.Row="2">
+            <StatusBarItem  VerticalAlignment="Center" HorizontalAlignment="Right">
+                <ProgressBar IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Width="100" Height="16" />
+            </StatusBarItem>
+        </StackPanel>
+
     </Grid>
 </Window>
