@@ -18,7 +18,7 @@ namespace MvvmLib.Utils
             int i = 0;
             foreach (var item in items)
             {
-                if (item == targetItem)
+                if (Equals(item, targetItem))
                     return i;
 
                 i++;

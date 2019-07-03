@@ -47,15 +47,15 @@ namespace NavigationSample.Wpf.ViewModels
                  new MenuItem(nameof(AnimationView), "Animatable Content Control", IconKind.Gamepad, () => Navigate(typeof(AnimationView))),
                  new MenuItem(nameof(TransitioningContentControlSampleView), "Transitioning Content Control", IconKind.Tennis, () => Navigate(typeof(TransitioningContentControlSampleView))),
                  new MenuItem(nameof(AnimationQueueView), "Transitioning Items Control", IconKind.Football, () => Navigate(typeof(AnimationQueueView))),
-                 new MenuItem(nameof(NavigationSourceSampleView),"Navigation Source", IconKind.Navigation, () => Navigate(typeof(NavigationSourceSampleView))),
+                 new MenuItem(nameof(NavigationSourceSampleView),"NavigationSource", IconKind.Navigation, () => Navigate(typeof(NavigationSourceSampleView))),
                  new MenuItem(nameof(TabControlSampleView),"TabControl", IconKind.Tab, () => Navigate(typeof(TabControlSampleView))),
-                 new MenuItem(nameof(SharedSourceSampleView), "Shared Source", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView))),
+                 new MenuItem(nameof(SharedSourceSampleView), "SharedSource", IconKind.Airplane, () => Navigate(typeof(SharedSourceSampleView))),
                  new MenuItem(nameof(NavigationBehaviorsSampleView), "Behaviors", IconKind.BellRing, () => Navigate(typeof(NavigationBehaviorsSampleView))),
                  new MenuItem(nameof(NavigationAllSampleView), "Multiple Shells/Views", IconKind.BookMultiple, () => Navigate(typeof(NavigationAllSampleView))),
                  new MenuItem(nameof(SharedSourceNavigationAndEditionSampleView), "Multiple Views (SharedSource)", IconKind.Pencil, () => Navigate(typeof(SharedSourceNavigationAndEditionSampleView))),
-                 new MenuItem(nameof(NavigationBrowserSampleView), "Navigation browser", IconKind.Broom, () => Navigate(typeof(NavigationBrowserSampleView))),
-                 new MenuItem(nameof(DataPagerSampleView), "DataPager with DataGrid", IconKind.ViewGrid, () => Navigate(typeof(DataPagerSampleView))),
-                 new MenuItem(nameof(BusyIndicatorSampleView), "Busy Indicator", IconKind.TimerSand, () => Navigate(typeof(BusyIndicatorSampleView)))
+                 new MenuItem(nameof(NavigationBrowserSampleView), "NavigationBrowser", IconKind.Broom, () => Navigate(typeof(NavigationBrowserSampleView))),
+                 new MenuItem(nameof(DataPagerSampleView), "DataPager", IconKind.ViewGrid, () => Navigate(typeof(DataPagerSampleView))),
+                 new MenuItem(nameof(BusyIndicatorSampleView), "BusyIndicator", IconKind.TimerSand, () => Navigate(typeof(BusyIndicatorSampleView)))
             });
         }
 
@@ -81,7 +81,7 @@ namespace NavigationSample.Wpf.ViewModels
             this.Title = title;
         }
 
-        private void OnNavigated(object sender, NavigationEventArgs e)
+        private void OnNavigated(object sender, NavigatedEventArgs e)
         {
             // sync menu item selection
             if (e.NavigationType == NavigationType.Back)

@@ -106,10 +106,9 @@ namespace MvvmLib.Navigation
             get { return this.collectionView.CurrentPosition < this.collectionView.Count - 1; }
         }
 
-
         private IRelayCommand moveCurrentToFirstCommand;
         /// <summary>
-        /// Allows to move to the first item of the <see cref="CollectionView"/>.
+        /// Allows to move to the first item.
         /// </summary>
         public IRelayCommand MoveCurrentToFirstCommand
         {
@@ -124,7 +123,7 @@ namespace MvvmLib.Navigation
 
         private IRelayCommand moveCurrentToPreviousCommand;
         /// <summary>
-        /// Allows to move to the previous item of the <see cref="CollectionView"/>.
+        /// Allows to move to the previous item.
         /// </summary>
         public IRelayCommand MoveCurrentToPreviousCommand
         {
@@ -138,7 +137,7 @@ namespace MvvmLib.Navigation
 
         private IRelayCommand moveCurrentToNextCommand;
         /// <summary>
-        /// Allows to move to the next item of the <see cref="CollectionView"/>.
+        /// Allows to move to the next item.
         /// </summary>
         public IRelayCommand MoveCurrentToNextCommand
         {
@@ -153,7 +152,7 @@ namespace MvvmLib.Navigation
 
         private IRelayCommand moveCurrentToLastCommand;
         /// <summary>
-        /// Allows to move to the last item of the <see cref="CollectionView"/>.
+        /// Allows to move to the last item.
         /// </summary>
         public IRelayCommand MoveCurrentToLastCommand
         {
@@ -167,7 +166,7 @@ namespace MvvmLib.Navigation
 
         private IRelayCommand moveCurrentToPositionCommand;
         /// <summary>
-        /// Allows to move to the position of the <see cref="CollectionView"/>.
+        /// Allows to move to the position.
         /// </summary>
         public IRelayCommand MoveCurrentToPositionCommand
         {
@@ -195,7 +194,7 @@ namespace MvvmLib.Navigation
 
         private IRelayCommand moveCurrentToCommand;
         /// <summary>
-        /// Allows to move to the item of the <see cref="CollectionView"/>.
+        /// Allows to move to the item.
         /// </summary>
         public IRelayCommand MoveCurrentToCommand
         {
@@ -477,32 +476,17 @@ namespace MvvmLib.Navigation
         {
             var oldCanMoveCurrentToPrevious = CanMoveCurrentToPrevious;
             var oldCanMoveCurrentToNext = CanMoveCurrentToNext;
-            int index;
+
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    index = e.NewStartingIndex;
-                    foreach (var item in e.NewItems)
-                    {
-                        this.innerList.Insert(index, NavigationHelper.EnsureNewView(item));
-                        index++;
-                    }
+                    this.innerList.Insert(e.NewStartingIndex, NavigationHelper.EnsureNewView(e.NewItems[0]));
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    index = e.OldStartingIndex;
-                    foreach (var item in e.OldItems)
-                    {
-                        this.innerList.RemoveAt(index);
-                        index++;
-                    }
+                    this.innerList.RemoveAt(e.OldStartingIndex);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    index = e.NewStartingIndex;
-                    foreach (var item in e.NewItems)
-                    {
-                        this.innerList[index] = NavigationHelper.EnsureNewView(item);
-                        index++;
-                    }
+                    this.innerList[e.NewStartingIndex] = NavigationHelper.EnsureNewView(e.NewItems[0]);
                     break;
                 case NotifyCollectionChangedAction.Move:
                     throw new NotSupportedException("Move is not supported");
@@ -529,7 +513,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the first item of the <see cref="CollectionView"/>.
+        /// Allows to move to the first item.
         /// </summary>
         public void MoveCurrentToFirst()
         {
@@ -537,7 +521,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the previous item of the <see cref="CollectionView"/>.
+        /// Allows to move to the previous item.
         /// </summary>
         public void MoveCurrentToPrevious()
         {
@@ -545,7 +529,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the next item of the <see cref="CollectionView"/>.
+        /// Allows to move to the next item.
         /// </summary>
         public void MoveCurrentToNext()
         {
@@ -553,7 +537,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the last item of the <see cref="CollectionView"/>.
+        /// Allows to move to the last item.
         /// </summary>
         public void MoveCurrentToLast()
         {
@@ -561,7 +545,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the position of the <see cref="CollectionView"/>.
+        /// Allows to move to the position.
         /// </summary>
         /// <param name="position">The position</param>
         public void MoveCurrentToPosition(int position)
@@ -571,7 +555,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Allows to move to the item of the <see cref="CollectionView"/>.
+        /// Allows to move to the item.
         /// </summary>
         /// <param name="item">The item</param>
         public void MoveCurrentTo(object item)

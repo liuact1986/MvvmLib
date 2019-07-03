@@ -60,7 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\BusyIndicator.cs" />
-    <Compile Include="Controls\DataPagerNavigator.cs" />
+    <Compile Include="Controls\DataPager.cs" />
     <Compile Include="Controls\NotificationControl.cs" />
     <Compile Include="Controls\NumericButton.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
@@ -71,13 +71,13 @@
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="Startup\MvvmLibBootstrapper.cs" />
     <Compile Include="ViewModels\1-MasterDetail\MasterDetailViewModel.cs" />
+    <Compile Include="ViewModels\3-TransitioningContentControl\TransitioningControlViewModel.cs" />
     <Compile Include="ViewModels\9-MultipleSubscribers\NavigationAllSampleViewModel.cs" />
     <Compile Include="ViewModels\10-SharedSourceNavigationAndEdition\SharedSourceNavigationAndEditionSampleViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\AnimationViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\ViewAViewModel.cs" />
     <Compile Include="ViewModels\2-AnimatableContentControl\ViewBViewModel.cs" />
     <Compile Include="ViewModels\3-TransitioningContentControl\TransitioningContentControlSampleViewModel.cs" />
-    <Compile Include="ViewModels\3-TransitioningContentControl\TransitoningControlViewModel.cs" />
     <Compile Include="ViewModels\4-TransitioningItemsControl\AnimationQueueViewModel.cs" />
     <Compile Include="ViewModels\5-NavigationSource\NavigationSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\6-TabControlSample\IDetailViewModel.cs" />
@@ -87,8 +87,8 @@
     <Compile Include="ViewModels\6-TabControlSample\ViewModelBase.cs" />
     <Compile Include="ViewModels\7-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\8-Behaviors\NavigationBehaviorsSampleViewModel.cs" />
-    <Compile Include="ViewModels\11-DataPager\DataPagerSampleViewModel.cs" />
-    <Compile Include="ViewModels\NavigationBrowserSampleViewModel.cs" />
+    <Compile Include="ViewModels\12-DataPager\DataPagerSampleViewModel.cs" />
+    <Compile Include="ViewModels\11-NavigationBrowser\NavigationBrowserSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewEViewModel.cs" />
     <Compile Include="ViewModels\ViewGViewModel.cs" />
@@ -131,18 +131,18 @@
     <Compile Include="Views\8-Behaviors\NavigationBehaviorsSampleView.xaml.cs">
       <DependentUpon>NavigationBehaviorsSampleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\12-BusyIndicator\BusyIndicatorSampleViewModel.cs" />
-    <Compile Include="Views\12-BusyIndicator\BusyIndicatorSampleView.xaml.cs">
+    <Compile Include="ViewModels\13-BusyIndicator\BusyIndicatorSampleViewModel.cs" />
+    <Compile Include="Views\13-BusyIndicator\BusyIndicatorSampleView.xaml.cs">
       <DependentUpon>BusyIndicatorSampleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\11-DataPager\DataPagerSampleView.xaml.cs">
+    <Compile Include="Views\12-DataPager\DataPagerSampleView.xaml.cs">
       <DependentUpon>DataPagerSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MenuItem.cs" />
-    <Compile Include="Views\NavigationBrowserSampleView.xaml.cs">
+    <Compile Include="Views\11-NavigationBrowser\NavigationBrowserSampleView.xaml.cs">
       <DependentUpon>NavigationBrowserSampleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell.xaml.cs">
@@ -282,11 +282,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\12-BusyIndicator\BusyIndicatorSampleView.xaml">
+    <Page Include="Views\13-BusyIndicator\BusyIndicatorSampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\11-DataPager\DataPagerSampleView.xaml">
+    <Page Include="Views\12-DataPager\DataPagerSampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -294,7 +294,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\NavigationBrowserSampleView.xaml">
+    <Page Include="Views\11-NavigationBrowser\NavigationBrowserSampleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

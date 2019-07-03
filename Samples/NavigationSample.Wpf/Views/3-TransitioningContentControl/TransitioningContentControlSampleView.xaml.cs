@@ -9,7 +9,7 @@ namespace NavigationSample.Wpf.Views
         {
             InitializeComponent();
 
-            TransitioningContentControl2.Content = new TransitoningControlViewModel();
+            TransitioningContentControl2.Content = new TransitioningControlViewModel();
         }
 
         private void OnReplayClick(object sender, System.Windows.RoutedEventArgs e)

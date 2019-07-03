@@ -147,6 +147,8 @@ namespace MvvmLib.Navigation
 
         #endregion // NavigationSourceContainer
 
+        #region NavigationSource
+
         /// <summary>
         /// Tries to get the default <see cref="KeyedNavigationSource"/> with the default key. A <see cref="NavigationSourceContainer"/> is created if the <see cref="AllNavigationSources"/> collection does not contain the source name.
         /// </summary>
@@ -265,6 +267,7 @@ namespace MvvmLib.Navigation
             return false;
         }
 
+        #endregion // NavigationSource
 
         #region SharedSource
 

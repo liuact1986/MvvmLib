@@ -47,7 +47,7 @@ namespace MvvmLib.Navigation
 
         private object current;
         /// <summary>
-        /// The current source (View or a ViewModel).
+        /// The current source (View or ViewModel).
         /// </summary>
         public object Current
         {
@@ -226,7 +226,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Invoked after navigation ends.
         /// </summary>
-        public event EventHandler<NavigationEventArgs> Navigated;
+        public event EventHandler<NavigatedEventArgs> Navigated;
 
         /// <summary>
         /// Invoked on navigation failed (cancelled or exception).
@@ -345,22 +345,14 @@ namespace MvvmLib.Navigation
             Navigating?.Invoke(this, new NavigationEventArgs(entry.SourceType, entry.Parameter, navigationType));
         }
 
-        private void OnNavigated(Type sourceType, object parameter, NavigationType navigationType)
+        private void OnNavigated(Type sourceType, object source, object parameter, NavigationType navigationType)
         {
-            Navigated?.Invoke(this, new NavigationEventArgs(sourceType, parameter, navigationType));
+            Navigated?.Invoke(this, new NavigatedEventArgs(sourceType, source, parameter, navigationType));
         }
 
         private void OnNavigationFailed(Type sourceType, object parameter, NavigationType navigationType)
         {
             NavigationFailed?.Invoke(this, new NavigationEventArgs(sourceType, parameter, navigationType));
-        }
-
-        private void OnNavigationCompleted(bool success, Type sourceType, object parameter, NavigationType navigationType)
-        {
-            if (success)
-                this.OnNavigated(sourceType, parameter, navigationType);
-            else
-                this.OnNavigationFailed(sourceType, parameter, navigationType);
         }
 
         private void OnCurrentChanged()
@@ -630,7 +622,7 @@ namespace MvvmLib.Navigation
 
             CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
 
-            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, NavigationType.Back);
+            this.OnNavigated(navigationContext.SourceType, selectable, navigationContext.Parameter, NavigationType.Back);
         }
 
         private void ExecuteNavigationNew(object source, object context, NavigationContext navigationContext)
@@ -656,7 +648,7 @@ namespace MvvmLib.Navigation
 
             CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
 
-            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+            this.OnNavigated(navigationContext.SourceType, source, navigationContext.Parameter, NavigationType.New);
         }
 
         internal void Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
@@ -910,7 +902,7 @@ namespace MvvmLib.Navigation
 
             CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
 
-            this.OnNavigated(navigationContext.SourceType, navigationContext.Parameter, navigationType);
+            this.OnNavigated(navigationContext.SourceType, source, navigationContext.Parameter, navigationType);
         }
 
         /// <summary>

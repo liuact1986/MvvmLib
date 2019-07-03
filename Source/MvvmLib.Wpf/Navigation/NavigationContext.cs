@@ -3,7 +3,7 @@
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// The navigation context class.
+    /// The navigation context class. Allows to update the parameter between navigation methods.
     /// </summary>
     public class NavigationContext
     {

@@ -1,12 +1,12 @@
 ﻿namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// Allows to notify the view model when view is loaded.
+    /// Allows to notify the view model when the view is loaded. Only available with <see cref="ViewModelLocator.ResolveViewModelProperty"/>.
     /// </summary>
     public interface IIsLoaded
     {
         /// <summary>
-        /// Invoked when view is loaded.
+        /// Invoked when the view is loaded.
         /// </summary>
         void OnLoaded();
     }

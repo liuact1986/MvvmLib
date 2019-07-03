@@ -1,7 +1,6 @@
 ﻿using MvvmLib.Commands;
 using MvvmLib.Logger;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +17,7 @@ namespace MvvmLib.Navigation
     /// The SelectedItem can be binded to the content of ContentControls.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SharedSource<T> : INavigatableCollectionSource<T>
+    public class SharedSource<T> : IMovableSource, INotifyPropertyChanged, ISharedSource
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
         private bool handleSelectionChanged;

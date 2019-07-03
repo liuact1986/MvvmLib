@@ -37,7 +37,7 @@
                 <views:PersonDetailsView />
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type viewModels:TransitoningControlViewModel}">
+            <DataTemplate DataType="{x:Type viewModels:TransitioningControlViewModel}">
                 <TextBlock Text="{Binding Message}" FontSize="24" FontFamily="MV Boli" />
             </DataTemplate>
 

@@ -7,22 +7,22 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class CanMoveToEventArgs : EventArgs
     {
-        private readonly bool canMoveTo;
+        private readonly bool value;
         /// <summary>
         /// Checks if can move.
         /// </summary>
-        public bool CanMoveTo
+        public bool Value
         {
-            get { return canMoveTo; }
+            get { return value; }
         }
 
         /// <summary>
         /// Creates the <see cref="CanMoveToEventArgs"/>.
         /// </summary>
-        /// <param name="canMoveTo">Checks if can move</param>
-        public CanMoveToEventArgs(bool canMoveTo)
+        /// <param name="value">Checks if can move</param>
+        public CanMoveToEventArgs(bool value)
         {
-            this.canMoveTo = canMoveTo;
+            this.value = value;
         }
     }
 }

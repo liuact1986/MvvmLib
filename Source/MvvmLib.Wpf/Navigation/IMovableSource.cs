@@ -4,9 +4,7 @@ using System;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// Source for Models and ViewModels with a collection of Items and SelectedItem/SelectedIndex. 
-    /// It supports Views but its not the target. 
-    /// This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
+    /// Allows to move between items/ sources. 
     /// </summary>
     public interface IMovableSource
     {

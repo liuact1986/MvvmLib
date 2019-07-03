@@ -415,7 +415,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             var sourceA = navigationSource.AddNewSource(typeof(NavSourceViewA), "p");
@@ -484,7 +484,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -538,7 +538,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -570,7 +570,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -603,7 +603,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -635,7 +635,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToPreviousChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -670,7 +670,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -726,7 +726,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -759,7 +759,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -793,7 +793,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);
@@ -826,7 +826,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             navigationSource.CanMoveToNextChanged += (s, e) =>
             {
                 firedCount += 1;
-                states.Add(e.CanMoveTo);
+                states.Add(e.Value);
             };
 
             Assert.AreEqual(0, firedCount);

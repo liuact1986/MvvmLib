@@ -7,7 +7,7 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class CurrentSourceChangedEventArgs : EventArgs
     {
-        private int currentIndex;
+        private readonly int currentIndex;
         /// <summary>
         /// Gets the current index;
         /// </summary>

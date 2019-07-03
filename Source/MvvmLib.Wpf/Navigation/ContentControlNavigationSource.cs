@@ -62,6 +62,5 @@ namespace MvvmLib.Navigation
             base.SetCurrent(source);
             this.control.Content = source;
         }
-
     }
 }
