@@ -1,5 +1,6 @@
 ﻿using ModuleSample.ViewModels;
 using ModuleSample.Views;
+using ModuleSharedServices;
 using MvvmLib.IoC;
 using MvvmLib.Modules;
 using MvvmLib.Navigation;
@@ -15,7 +16,8 @@ namespace ModuleSample.Startup
 
         protected override void RegisterTypes()
         {
-
+            // shared service
+            container.RegisterSingleton<IMySharedService, MySharedService>();
         }
 
         protected override void PreloadApplicationData()
@@ -37,7 +39,7 @@ namespace ModuleSample.Startup
         {
             // with App.Config 
             // or
-            //ModuleManager.RegisterModule("ModuleA", @"C:\Projects\vx1\MvvmLib\Samples\Modules\ModuleA\bin\Debug\ModuleA.dll", "ModuleA.ModuleAConfig");
+            ModuleManager.RegisterModule("ModuleB", @"Modules\ModuleB.dll", "ModuleB.ModuleBConfig");
         }
     }
 

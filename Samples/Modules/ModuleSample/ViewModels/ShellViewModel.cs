@@ -15,15 +15,36 @@ namespace ModuleSample.ViewModels
         {
             this.Navigation = new NavigationSource();
 
-            // if (!ModuleManager.Modules["ModuleA"].IsLoaded)
-            ModuleManager.LoadModule("ModuleA");
-
             NavigateCommand = new RelayCommand<string>(Navigate);
         }
 
         private void Navigate(string sourceName)
         {
+            LoadModuleForSourceName(sourceName);
+
             this.Navigation.Navigate(sourceName, null);
+        }
+
+        private void LoadModuleForSourceName(string sourceName)
+        {
+            switch (sourceName)
+            {
+                case "ViewA":
+                case "ViewB":
+                    LoadModule("ModuleA");
+                    break;
+                case "ViewC":
+                    LoadModule("ModuleB");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void LoadModule(string moduleName)
+        {
+            if (!ModuleManager.IsModuleLoaded(moduleName))
+                ModuleManager.LoadModule(moduleName);
         }
     }
 }

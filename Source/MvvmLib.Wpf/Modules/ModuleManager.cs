@@ -1,6 +1,9 @@
-﻿using System;
+﻿using MvvmLib.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Reflection;
 
 namespace MvvmLib.Modules
 {
@@ -31,7 +34,7 @@ namespace MvvmLib.Modules
             {
                 foreach (ModuleConfigurationElement module in config.Modules)
                 {
-                    RegisterModule(module.Name, module.File, module.ModuleConfigFullName);
+                    RegisterModule(module.ModuleName, module.Path, module.ModuleConfigFullName);
                 }
             }
         }
@@ -39,13 +42,40 @@ namespace MvvmLib.Modules
         /// <summary>
         /// Registers a module to load on demand.
         /// </summary>
-        /// <param name="name">The module name</param>
-        /// <param name="file">The file</param>
+        /// <param name="moduleName">The module name</param>
+        /// <param name="path">The path (relative or absolute)</param>
         /// <param name="moduleConfigFullName">The module config full name</param>
-        public static void RegisterModule(string name, string file, string moduleConfigFullName)
+        public static void RegisterModule(string moduleName, string path, string moduleConfigFullName)
         {
-            var module = new ModuleInfo(name, file, moduleConfigFullName);
-            modules[name] = module;
+            if (moduleName == null)
+                throw new ArgumentNullException(nameof(moduleName));
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+            if (moduleConfigFullName == null)
+                throw new ArgumentNullException(nameof(moduleConfigFullName));
+
+            var module = new ModuleInfo(moduleName, path, moduleConfigFullName);
+            modules[moduleName] = module;
+        }
+
+        /// <summary>
+        /// Checks if the module is registered.
+        /// </summary>
+        /// <param name="moduleName">The module name</param>
+        /// <returns>True if registered</returns>
+        public static bool IsModuleRegistered(string moduleName)
+        {
+            return modules.ContainsKey(moduleName);
+        }
+
+        /// <summary>
+        /// Checks if the module is loaded.
+        /// </summary>
+        /// <param name="moduleName">The module name</param>
+        /// <returns>True if loaded</returns>
+        public static bool IsModuleLoaded(string moduleName)
+        {
+            return IsModuleRegistered(moduleName) && modules[moduleName].IsLoaded;
         }
 
         /// <summary>
@@ -58,22 +88,27 @@ namespace MvvmLib.Modules
             {
                 if (!module.IsLoaded)
                 {
-                    var assembly = AssemblyLoader.Load(module.File);
-                    if (assembly == null)
-                        throw new ModuleLoadingFailException($"No assembly found for the file '{module.File}', module name '{module.Name}'");
-
-                    AssemblyLoader.InitializeModule(assembly, module.ModuleConfigFullName);
+                    var assembly = AssemblyLoader.LoadFile(module.Path);
+                    InitializeModule(assembly, module.ModuleConfigFullName);
                     module.isLoaded = true;
                 }
             }
         }
 
-        /// <summary>
-        /// Clears the <see cref="Modules"/>.
-        /// </summary>
-        public static void ClearModules()
+        private static void InitializeModule(Assembly assembly, string moduleConfigFullName)
         {
-            modules.Clear();
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
+            var type = assembly.GetType(moduleConfigFullName);
+            if (type == null)
+                throw new FileNotFoundException($"Unable to find the module config '{moduleConfigFullName}' for assembly '{assembly.FullName}'");
+
+            var moduleConfig = SourceResolver.CreateInstance(type) as IModuleConfig;
+            if (moduleConfig == null)
+                throw new ArgumentNullException(nameof(moduleConfig));
+
+            moduleConfig.Initialize();
         }
     }
 

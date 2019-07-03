@@ -13,7 +13,7 @@ namespace ModuleA.ViewModels
 
         public ViewAViewModel()
         {
-            this.Message = "ViewA [ViewModel]";
+            this.Message = "ViewA [ModuleA]";
         }
     }
 }

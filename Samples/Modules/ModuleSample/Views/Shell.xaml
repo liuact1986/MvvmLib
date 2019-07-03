@@ -12,8 +12,9 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="View A" Command="{Binding NavigateCommand}" CommandParameter="ViewA" Margin="5"/>
-            <Button Content="ViewModel B" Command="{Binding NavigateCommand}" CommandParameter="ViewB" Margin="5"/>
+            <Button Content="View A (module A)" Command="{Binding NavigateCommand}" CommandParameter="ViewA" Margin="5"/>
+            <Button Content="ViewModel B (module A)" Command="{Binding NavigateCommand}" CommandParameter="ViewB" Margin="5"/>
+            <Button Content="View C (module B)" Command="{Binding NavigateCommand}" CommandParameter="ViewC" Margin="5"/>
         </StackPanel>
 
         <ContentControl x:Name="C1" Content="{Binding Navigation.Current}" Grid.Row="1"/>

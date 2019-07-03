@@ -111,6 +111,16 @@
       <Project>{99912ea1-46fc-4d13-8295-ba786582ca74}</Project>
       <Name>MvvmLib.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ModuleSharedServices\ModuleSharedServices.csproj">
+      <Project>{c324f0d2-948d-4c67-8e86-286250a4d052}</Project>
+      <Name>ModuleSharedServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(ProjectDir)bin\Debug\Modules" mkdir "$(ProjectDir)bin\Debug\Modules"
+
+copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleA.dll" 
+copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleB.dll"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

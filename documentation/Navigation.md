@@ -1186,9 +1186,9 @@ public class Bootstrapper : MvvmLibBootstrapper
     protected override void RegisterModules()
     {
         // 1. The module name (an id)
-        // 2. The location of the dll
+        // 2. The path
         // 3. The module config class full name
-        ModuleManager.RegisterModule("ModuleA", @"C:\MyProject\Modules\ModuleA.dll", "ModuleA.ModuleAConfig");
+        ModuleManager.RegisterModule("ModuleA", @"Modules\ModuleA.dll", "ModuleA.ModuleAConfig");
     }
 }
 ```
@@ -1205,10 +1205,22 @@ Or in App.Config file
     <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
   </startup>
   <modules>
-    <module name="ModuleA" file="C:\MyProject\Modules\ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
+     <module moduleName="ModuleA" path="Modules\ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
   </modules>
 </configuration>
 ```
+
+**Tip**: copy dll to a directory of main project
+
+Example create a directory "Modules" and copy ModuleA.dll and ModuleB.dll (pre-build command lines)
+
+```
+if not exist "$(ProjectDir)bin\Debug\Modules" mkdir "$(ProjectDir)bin\Debug\Modules"
+
+copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleA.dll" 
+copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleB.dll" 
+```
+
 
 * Load the assembly/ module
 
@@ -1221,3 +1233,38 @@ Navigate by source name. Example
 ```cs
 await this.Navigation.NavigateAsync("ViewA");
 ```
+
+Shared project (services, infrastructure, etc.)
+
+Register the service with IoC container in main project
+
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        : base(container)
+    { }
+
+    protected override void RegisterTypes()
+    {
+        // shared service
+        container.RegisterType<IMySharedService, MySharedService>();
+    }
+
+    // etc.
+}
+```
+
+Use this service in modules
+
+```cs
+public class ViewCViewModel : BindableBase
+{
+    public ViewCViewModel(IMySharedService mySharedService)
+    {
+        
+    }
+}
+```
+
+

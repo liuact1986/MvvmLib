@@ -1,28 +1,26 @@
-﻿using System;
-
-namespace MvvmLib.Modules
+﻿namespace MvvmLib.Modules
 {
     /// <summary>
     /// The module info.
     /// </summary>
     public class ModuleInfo
     {
-        private readonly string name;
+        private readonly string moduleName;
         /// <summary>
         /// The module name.
         /// </summary>
-        public string Name
+        public string ModuleName
         {
-            get { return name; }
+            get { return moduleName; }
         }
 
-        private readonly string file;
+        private readonly string path;
         /// <summary>
-        /// The file.
+        /// The path (relative or absolute).
         /// </summary>
-        public string File
+        public string Path
         {
-            get { return file; }
+            get { return path; }
         }
 
         private readonly string moduleConfigFullName;
@@ -43,17 +41,10 @@ namespace MvvmLib.Modules
             get { return isLoaded; }
         }
 
-        internal ModuleInfo(string name, string file, string moduleConfigFullName)
+        internal ModuleInfo(string moduleName, string path, string moduleConfigFullName)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
-            if (moduleConfigFullName == null)
-                throw new ArgumentNullException(nameof(moduleConfigFullName));
-
-            this.name = name;
-            this.file = file;
+            this.moduleName = moduleName;
+            this.path = path;
             this.moduleConfigFullName = moduleConfigFullName;
         }
     }

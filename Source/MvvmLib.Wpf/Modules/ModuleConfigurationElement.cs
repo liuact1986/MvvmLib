@@ -10,25 +10,25 @@ namespace MvvmLib.Modules
         /// <summary>
         /// The module name.
         /// </summary>
-        [ConfigurationProperty("name", IsRequired = true)]
-        public string Name
+        [ConfigurationProperty("moduleName", IsRequired = true)]
+        public string ModuleName
         {
-            get { return this["name"] as string; }
-            set { base["name"] = value; }
+            get { return this["moduleName"] as string; }
+            set { base["moduleName"] = value; }
         }
 
         /// <summary>
         /// The file (location of .dll).
         /// </summary>
-        [ConfigurationProperty("file", IsRequired = true)]
-        public string File
+        [ConfigurationProperty("path", IsRequired = true)]
+        public string Path
         {
-            get { return (string)this["file"]; }
-            set { base["file"] = value; }
+            get { return (string)this["path"]; }
+            set { base["path"] = value; }
         }
 
         /// <summary>
-        /// The module config full name (namespace + config name)
+        /// The module config full name (namespace + config name).
         /// </summary>
         [ConfigurationProperty("moduleConfigFullName", IsRequired = true)]
         public string ModuleConfigFullName

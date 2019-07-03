@@ -77,7 +77,7 @@ namespace MvvmLib.Modules
         /// <returns>The key</returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((ModuleConfigurationElement)element).Name;
+            return ((ModuleConfigurationElement)element).ModuleName;
         }
     }
 

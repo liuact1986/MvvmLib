@@ -1,38 +1,30 @@
-﻿using MvvmLib.Navigation;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace MvvmLib.Modules
 {
-
     /// <summary>
-    /// Allows to load and initialize modules.
+    /// Allows to load assemblies.
     /// </summary>
     public class AssemblyLoader
     {
         /// <summary>
-        /// Load the module for the file.
+        /// Loads the assembly.
         /// </summary>
-        /// <param name="file">The file</param>
-        /// <returns>The Assembly</returns>
-        public static Assembly Load(string file)
+        /// <param name="path">The path</param>
+        /// <returns>The assembly</returns>
+        public static Assembly LoadFile(string path)
         {
-            var assembly = Assembly.LoadFile(file);
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            var file = new FileInfo(path);
+            if (!file.Exists)
+                throw new FileNotFoundException($"No file found for the path '{path}'");
+
+            var assembly = Assembly.LoadFile(file.FullName);
             return assembly;
-        }
-
-        /// <summary>
-        /// Creates the <see cref="IModuleConfig"/> and invokes <see cref="IModuleConfig.Initialize"/>.
-        /// </summary>
-        /// <param name="assembly">The module</param>
-        /// <param name="moduleConfigFullName">The module config full name</param>
-        public static void InitializeModule(Assembly assembly, string moduleConfigFullName)
-        {
-            var type = assembly.GetType(moduleConfigFullName);
-            if (type == null)
-                throw new ModuleLoadingFailException($"Unable to find the module config '{moduleConfigFullName}' for assembly '{assembly.FullName}'");
-
-            var moduleConfig = SourceResolver.CreateInstance(type) as IModuleConfig;
-            moduleConfig.Initialize();
         }
     }
 

@@ -1357,9 +1357,9 @@ namespace ModuleA
     protected override void RegisterModules()
     {
         // 1. The module name (an id)
-        // 2. The location of the dll
+        // 2. The path
         // 3. The module config class full name
-        ModuleManager.RegisterModule(&quot;ModuleA&quot;, @&quot;C:\MyProject\Modules\ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
+        ModuleManager.RegisterModule(&quot;ModuleA&quot;, @&quot;Modules\ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
     }
 }
 </code></pre>
@@ -1374,12 +1374,18 @@ namespace ModuleA
     &lt;supportedRuntime version=&quot;v4.0&quot; sku=&quot;.NETFramework,Version=v4.5&quot; /&gt;
   &lt;/startup&gt;
   &lt;modules&gt;
-    &lt;module name=&quot;ModuleA&quot; file=&quot;C:\MyProject\Modules\ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
+     &lt;module moduleName=&quot;ModuleA&quot; path=&quot;Modules\ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
   &lt;/modules&gt;
 &lt;/configuration&gt;
 </code></pre>
 
-<ul>
+<p><strong>Tip</strong>: copy dll to a directory of main project</p>
+<p>Example create a directory &quot;Modules&quot; and copy ModuleA.dll and ModuleB.dll (pre-build command lines)</p>
+<pre class="nocode">if not exist &quot;$(ProjectDir)bin\Debug\Modules&quot; mkdir &quot;$(ProjectDir)bin\Debug\Modules&quot;
+
+copy &quot;$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleA.dll&quot; 
+copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleB.dll&quot; 
+</pre><ul>
 <li>Load the assembly/ module</li>
 </ul>
 <pre><code class="cs">ModuleManager.LoadModule(&quot;ModuleA&quot;);
@@ -1387,6 +1393,34 @@ namespace ModuleA
 
 <p>Navigate by source name. Example</p>
 <pre><code class="cs">await this.Navigation.NavigateAsync(&quot;ViewA&quot;);
+</code></pre>
+
+<p>Shared project (services, infrastructure, etc.)</p>
+<p>Register the service with IoC container in main project</p>
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    public Bootstrapper(IInjector container)
+        : base(container)
+    { }
+
+    protected override void RegisterTypes()
+    {
+        // shared service
+        container.RegisterType&lt;IMySharedService, MySharedService&gt;();
+    }
+
+    // etc.
+}
+</code></pre>
+
+<p>Use this service in modules</p>
+<pre><code class="cs">public class ViewCViewModel : BindableBase
+{
+    public ViewCViewModel(IMySharedService mySharedService)
+    {
+        
+    }
+}
 </code></pre>
 
 
