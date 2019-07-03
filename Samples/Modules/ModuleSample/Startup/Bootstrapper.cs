@@ -17,7 +17,7 @@ namespace ModuleSample.Startup
         protected override void RegisterTypes()
         {
             // shared service
-            container.RegisterSingleton<IMySharedService, MySharedService>();
+            //container.RegisterSingleton<IMySharedService, MySharedService>();
         }
 
         protected override void PreloadApplicationData()
@@ -39,7 +39,7 @@ namespace ModuleSample.Startup
         {
             // with App.Config 
             // or
-            ModuleManager.RegisterModule("ModuleB", @"Modules\ModuleB.dll", "ModuleB.ModuleBConfig");
+            ModuleManager.RegisterModule("ModuleB", @"ModuleB.dll", "ModuleB.ModuleBConfig");
         }
     }
 

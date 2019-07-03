@@ -1148,6 +1148,9 @@ public class ViewAViewModel : BindableBase
 
 > allows to manage modules/assemblies loaded "on demand"
 
+
+### Registering modules
+
 For example:
 
 * Create a library "ModuleA"
@@ -1221,8 +1224,33 @@ copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDi
 copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleB.dll" 
 ```
 
+**Or in same directory**
 
-* Load the assembly/ module
+```cs
+public class Bootstrapper : MvvmLibBootstrapper
+{
+    //  etc.
+
+    protected override void RegisterModules()
+    {
+        ModuleManager.RegisterModule("ModuleA", "ModuleA.dll", "ModuleA.ModuleAConfig");
+    }
+}
+```
+
+```xml
+<modules>
+    <module moduleName="ModuleA" path="ModuleA.dll" moduleConfigFullName="ModuleA.ModuleAConfig"/>
+</modules>
+```
+
+```
+copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\ModuleA.dll" 
+copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\ModuleB.dll" 
+```
+
+
+### Loading the module
 
 ```cs
 ModuleManager.LoadModule("ModuleA");
@@ -1234,7 +1262,7 @@ Navigate by source name. Example
 await this.Navigation.NavigateAsync("ViewA");
 ```
 
-Shared project (services, infrastructure, etc.)
+### Shared project (services, infrastructure, etc.)
 
 Register the service with IoC container in main project
 

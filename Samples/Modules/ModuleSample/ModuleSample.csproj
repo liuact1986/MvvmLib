@@ -118,9 +118,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>if not exist "$(ProjectDir)bin\Debug\Modules" mkdir "$(ProjectDir)bin\Debug\Modules"
-
-copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleA.dll" 
-copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\Modules\ModuleB.dll"</PreBuildEvent>
+    <PreBuildEvent>copy "$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll"  "$(ProjectDir)bin\Debug\ModuleA.dll" 
+copy "$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll"  "$(ProjectDir)bin\Debug\ModuleB.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>

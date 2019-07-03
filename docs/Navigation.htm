@@ -1321,6 +1321,7 @@ DataPager.Filter = null;
 <blockquote>
 <p>allows to manage modules/assemblies loaded &quot;on demand&quot;</p>
 </blockquote>
+<h3 id="registering-modules">Registering modules<a class="headerlink" href="#registering-modules" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>For example:</p>
 <ul>
 <li>Create a library &quot;ModuleA&quot;</li>
@@ -1385,9 +1386,26 @@ namespace ModuleA
 
 copy &quot;$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleA.dll&quot; 
 copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &quot;$(ProjectDir)bin\Debug\Modules\ModuleB.dll&quot; 
-</pre><ul>
-<li>Load the assembly/ module</li>
-</ul>
+</pre><p><strong>Or in same directory</strong></p>
+<pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
+{
+    //  etc.
+
+    protected override void RegisterModules()
+    {
+        ModuleManager.RegisterModule(&quot;ModuleA&quot;, &quot;ModuleA.dll&quot;, &quot;ModuleA.ModuleAConfig&quot;);
+    }
+}
+</code></pre>
+
+<pre><code class="xml">&lt;modules&gt;
+    &lt;module moduleName=&quot;ModuleA&quot; path=&quot;ModuleA.dll&quot; moduleConfigFullName=&quot;ModuleA.ModuleAConfig&quot;/&gt;
+&lt;/modules&gt;
+</code></pre>
+
+<pre class="nocode">copy &quot;$(SolutionDir)Samples\Modules\ModuleA\bin\Debug\ModuleA.dll&quot;  &quot;$(ProjectDir)bin\Debug\ModuleA.dll&quot; 
+copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &quot;$(ProjectDir)bin\Debug\ModuleB.dll&quot; 
+</pre><h3 id="loading-the-module">Loading the module<a class="headerlink" href="#loading-the-module" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <pre><code class="cs">ModuleManager.LoadModule(&quot;ModuleA&quot;);
 </code></pre>
 
@@ -1395,7 +1413,7 @@ copy &quot;$(SolutionDir)Samples\Modules\ModuleB\bin\Debug\ModuleB.dll&quot;  &q
 <pre><code class="cs">await this.Navigation.NavigateAsync(&quot;ViewA&quot;);
 </code></pre>
 
-<p>Shared project (services, infrastructure, etc.)</p>
+<h3 id="shared-project-services-infrastructure-etc.">Shared project (services, infrastructure, etc.)<a class="headerlink" href="#shared-project-services-infrastructure-etc." title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>Register the service with IoC container in main project</p>
 <pre><code class="cs">public class Bootstrapper : MvvmLibBootstrapper
 {

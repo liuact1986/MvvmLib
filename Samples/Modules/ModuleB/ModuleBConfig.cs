@@ -20,6 +20,8 @@ namespace ModuleB
         {
             injector.RegisterType<IMyService, MyService>();
 
+            // injector.RegisterType<IMySharedService, MySharedService>();
+
             SourceResolver.RegisterTypeForNavigation<ViewC>();
         }
     }
