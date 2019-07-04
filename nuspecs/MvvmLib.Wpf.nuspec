@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.11.5.2</version>
+    <version>0.11.5.3</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -27,7 +27,6 @@
 * BootstrapperBase: base class for Bootstrapper
 * ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
-    <releaseNotes>Rename DataPager to PagedSource and create Navigated EventArgs with source</releaseNotes>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>

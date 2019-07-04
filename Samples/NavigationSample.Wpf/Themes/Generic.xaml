@@ -168,7 +168,7 @@
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Page" TextAlignment="Center" VerticalAlignment="Center" Margin="4 0"/>
-                            <TextBox x:Name="CurrentPageTextBox" Text="{Binding PagedSource.CurrentPage}" TextAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"  MinWidth="28"  MinHeight="28" Grid.Column="1"/>
+                            <TextBox x:Name="CurrentPageTextBox" Text="{Binding PagedSource.CurrentPage, Mode=OneWay}" TextAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"  MinWidth="28"  MinHeight="28" Grid.Column="1"/>
                             <TextBlock TextAlignment="Center" Text="of" VerticalAlignment="Center" Margin="4 0" Grid.Column="2"/>
                             <TextBlock Text="{Binding PagedSource.PageCount}" TextAlignment="Center" VerticalAlignment="Center" Margin="4 0" Grid.Column="3"/>
                         </Grid>

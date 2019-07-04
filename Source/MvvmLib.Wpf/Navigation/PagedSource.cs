@@ -76,7 +76,6 @@ namespace MvvmLib.Navigation
         public int PageIndex
         {
             get { return pageIndex; }
-            set { pageIndex = value; }
         }
 
         private int currentPage;
@@ -86,7 +85,6 @@ namespace MvvmLib.Navigation
         public int CurrentPage
         {
             get { return currentPage; }
-            set { currentPage = value; }
         }
 
         private int start;

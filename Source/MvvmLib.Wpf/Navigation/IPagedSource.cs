@@ -40,12 +40,12 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The page index.
         /// </summary>
-        int PageIndex { get; set; }
+        int PageIndex { get; }
 
         /// <summary>
         /// The current page (page index + 1)
         /// </summary>
-        int CurrentPage { get; set; }
+        int CurrentPage { get; }
 
         /// <summary>
         /// The position of the first item of the page.
