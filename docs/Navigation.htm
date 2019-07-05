@@ -1123,7 +1123,7 @@ PagedSource.ClearFilter();
 }
 </code></pre>
 
-<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding PagedSource.Items}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot; Grid.Row=&quot;1&quot;&gt;
+<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding PagedSource}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot;&gt;
     &lt;DataGrid.Columns&gt;
         &lt;DataGridTextColumn Header=&quot;First Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding FirstName}&quot; /&gt;
         &lt;DataGridTextColumn Header=&quot;Last Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding LastName}&quot; /&gt;
@@ -1131,7 +1131,7 @@ PagedSource.ClearFilter();
     &lt;/DataGrid.Columns&gt;
     &lt;DataGrid.RowDetailsTemplate&gt;
         &lt;DataTemplate&gt;
-            &lt;StackPanel Margin=&quot;10&quot;&gt;
+            &lt;StackPanel Margin=&quot;20,10&quot;&gt;
                 &lt;Border Height=&quot;160&quot; Margin=&quot;0,5&quot; BorderBrush=&quot;#eee&quot; BorderThickness=&quot;2&quot; HorizontalAlignment=&quot;Left&quot;&gt;
                     &lt;Image Source=&quot;{Binding ImagePath}&quot; /&gt;
                 &lt;/Border&gt;

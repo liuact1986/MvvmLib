@@ -937,7 +937,7 @@ public class PersonSorter : IComparer
 ```
 
 ```xml
-<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource.Items}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" AutoGenerateColumns="False" IsReadOnly="True">
     <DataGrid.Columns>
         <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
         <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />
@@ -945,7 +945,7 @@ public class PersonSorter : IComparer
     </DataGrid.Columns>
     <DataGrid.RowDetailsTemplate>
         <DataTemplate>
-            <StackPanel Margin="10">
+            <StackPanel Margin="20,10">
                 <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
                     <Image Source="{Binding ImagePath}" />
                 </Border>
