@@ -1069,27 +1069,26 @@ catch (Exception ex)
 </code></pre>
 
 <p>Delete with confirmation</p>
-<p>```cs
-var current = this.CollectionView.CurrentItem as Person;
+<pre><code class="cs">var current = this.CollectionView.CurrentItem as Person;
 string name = current.FirstName;
 var result = MessageBox.Show($&quot;Delete {name}?&quot;, &quot;Confirmation&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
 if (result)
 {
     try
     {
-        // remove from db ...</p>
-<pre><code>    CollectionView.Remove(current);
+        // remove from db ...
 
-    eventAggregator.GetEvent&lt;NotificationMessageEvent&gt;().Publish($&quot;{name} removed!&quot;);
-}
-catch (Exception ex)
-{
-    MessageBox.Show($&quot;A problem occured:{ex.Message}&quot;);
+        CollectionView.Remove(current);
+
+        eventAggregator.GetEvent&lt;NotificationMessageEvent&gt;().Publish($&quot;{name} removed!&quot;);
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($&quot;A problem occured:{ex.Message}&quot;);
+    }
 }
 </code></pre>
 
-<p>}
-````</p>
 <p>Create new with injection (if an IoC Container is used for the SourceResolver factory)</p>
 <pre><code class="cs">var user = new UserWrapper(new User { RoleId = 1 });
 this.CollectionView.AddNewItem(user);
