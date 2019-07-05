@@ -892,7 +892,7 @@ if (result)
 }
 ```
 
-Create new with injection (if an IoC Container is used for the SourceResolver factory)
+Add new item
 
 ```cs
 var user = new UserWrapper(new User { RoleId = 1 });
