@@ -28,7 +28,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **SharedSource**: source for _ItemsControls_, _Selectors_ (ListBox, TabControl, etc.)
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
-* **NavigationBrowser**: allows to browse enumerables, edit lists and collections
+* **ListCollectionEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation

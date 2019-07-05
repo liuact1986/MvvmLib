@@ -53,7 +53,7 @@
 
 <li class="tocentry"><a href="#iselectable-with-navigationsource">ISelectable with NavigationSource</a></li>
 
-<li class="tocentry"><a href="#navigationbrowser">NavigationBrowser</a></li>
+<li class="tocentry"><a href="#listcollectionex">ListCollectionEx</a></li>
 
 <li class="tocentry"><a href="#pagedsource">PagedSource</a></li>
 
@@ -112,7 +112,7 @@
 <li><strong>BootstrapperBase</strong>: allows to manage the startup of the application. Configure an IoC Container, the view and ViewModel factories, register dependencies, preload data, create the Shell ViewModel and the Shell.</li>
 <li><strong>NavigationSource</strong>: Source for <strong>Views</strong> and <strong>ViewModels</strong>. It has an History, a collection of &quot;Sources&quot; (a source is a View or a ViewModel), a <strong>Current</strong> source that can be binded to the content of the <strong>ContentControls</strong>. There is two other NavigationSource Types: <strong>KeyedNavigationSource</strong> (a navigation source with a key) and <strong>ContentControlNavigationSource</strong> that updates directly the content of the ContentControl provided. The <strong>SourceName Attached Property</strong> of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with <strong>NavigationSourceContainers</strong>. It allows to <strong>navigate simultaneously</strong> for all NavigationSources registered for a SourceName and/or open new Shells.</li>
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
-<li><strong>NavigationBrowser</strong>: allows to browse an items source (the &quot;Sources&quot; collection of NavigationSources or the collection of &quot;Items&quot; of the SharedSources for example) with a CollectionView.</li>
+<li><strong>ListCollectionEx</strong>: allows to browse, filter, sort, group, add, edit with lists and collections.</li>
 <li><strong>PagedSource</strong>: paging for DataGrid, etc.</li>
 <li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
@@ -972,9 +972,9 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 }
 </code></pre>
 
-<h2 id="navigationbrowser">NavigationBrowser<a class="headerlink" href="#navigationbrowser" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="listcollectionex">ListCollectionEx<a class="headerlink" href="#listcollectionex" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
-<p>Allows to browse a source (ienumerable) with a CollectionView. Add, Edit , Delete, is possible with generic lists or collections (with element type not object). IEditableObject is checked on edit. For example a list of people.</p>
+<p>Allows to browse, filter, sort, group, add, edit with lists and collections.</p>
 </blockquote>
 <pre><code class="cs">People = new  List&lt;Person&gt;
 {
@@ -983,26 +983,116 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
     new Person { Id = 3, FirstName = &quot;First3&quot;, LastName = &quot;Last3&quot;}
 };
 
-this.Browser = new NavigationBrowser(People);
+this.CollectionView = new ListCollectionViewEx(People);
 </code></pre>
 
-<p>Add buttons and bind Browser commands</p>
-<pre><code class="xml">&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.MoveCurrentToFirstCommand}&quot; /&gt;
-&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Browser.MoveCurrentToPreviousCommand}&quot; /&gt;
-&lt;Button Content=&quot;Next&quot; Command=&quot;{Binding Browser.MoveCurrentToNextCommand}&quot; /&gt;
-&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Browser.MoveCurrentToLastCommand}&quot; /&gt;
-&lt;TextBox x:Name=&quot;RankTextBox&quot; Text=&quot;{Binding Browser.Rank, Mode=OneWay}&quot; Width=&quot;30&quot; TextAlignment=&quot;Center&quot; VerticalContentAlignment=&quot;Center&quot; Margin=&quot;2&quot;&gt;
+<p>Add buttons and bind commands</p>
+<pre><code class="xml">&lt;!-- move --&gt;
+&lt;Button Content=&quot;First&quot; Command=&quot;{Binding CollectionView.MoveCurrentToFirstCommand}&quot; /&gt;
+&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding CollectionView.MoveCurrentToPreviousCommand}&quot; /&gt;
+&lt;Button Content=&quot;Next&quot; Command=&quot;{Binding CollectionView.MoveCurrentToNextCommand}&quot; /&gt;
+&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding CollectionView.MoveCurrentToLastCommand}&quot; /&gt;
+&lt;TextBox x:Name=&quot;RankTextBox&quot; Text=&quot;{Binding CollectionView.Rank, Mode=OneWay}&quot; Width=&quot;30&quot; TextAlignment=&quot;Center&quot; VerticalContentAlignment=&quot;Center&quot; Margin=&quot;2&quot;&gt;
     &lt;mvvmLib:Interaction.Behaviors&gt;
         &lt;mvvmLib:EventToCommandBehavior EventName=&quot;KeyUp&quot; 
-                                        Command=&quot;{Binding Browser.MoveCurrentToRankCommand}&quot;
+                                        Command=&quot;{Binding CollectionView.MoveCurrentToRankCommand}&quot;
                                         CommandParameter=&quot;{Binding ElementName=RankTextBox, Path=Text}&quot;
                                         /&gt;
     &lt;/mvvmLib:Interaction.Behaviors&gt;
 &lt;/TextBox&gt;
-&lt;TextBlock Text=&quot;{Binding Browser.CollectionView.Count, StringFormat='of {0}'}&quot; VerticalAlignment=&quot;Center&quot; Margin=&quot;5,0&quot;/&gt;
-&lt;Button Content=&quot;Add&quot; Command=&quot;{Binding Browser.AddCommand}&quot; /&gt;
-&lt;Button Content=&quot;Edit&quot; Command=&quot;{Binding Browser.EditCommand}&quot; /&gt;
-&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Browser.DeleteCommand}&quot; /&gt;
+&lt;TextBlock Text=&quot;{Binding CollectionView.Count, StringFormat='of {0}'}&quot; VerticalAlignment=&quot;Center&quot; Margin=&quot;5,0&quot;/&gt;
+
+&lt;!-- group --&gt;
+&lt;Button Content=&quot;Group&quot; Command=&quot;{Binding CollectionView.ToggleGroupByCommand}&quot; CommandParameter=&quot;Type&quot; /&gt;
+
+&lt;!-- sort --&gt;
+&lt;Button Content=&quot;SORT (descending)&quot; Command=&quot;{Binding CollectionView.SortByDescendingCommand}&quot; CommandParameter=&quot;Name&quot; /&gt;
+
+&lt;!-- Add edit delete --&gt;
+&lt;Button Content=&quot;Add&quot; Command=&quot;{Binding CollectionView.AddNewCommand}&quot; /&gt;
+&lt;Button Content=&quot;Edit&quot; Command=&quot;{Binding CollectionView.EditCommand}&quot; /&gt;
+&lt;Button Content=&quot;Delete&quot; Command=&quot;{Binding CollectionView.DeleteCommand}&quot; /&gt;
+
+&lt;!-- cancel new or edit --&gt;
+&lt;Button Content=&quot;Cancel&quot; Command=&quot;{Binding CollectionView.CancelCommand}&quot; /&gt;
+&lt;!-- commit new or commit edit --&gt;
+&lt;Button Content=&quot;Save&quot; Command=&quot;{Binding CollectionView.SaveCommand}&quot; /&gt;
+</code></pre>
+
+<p>Filter</p>
+<pre><code class="cs">this.CollectionView.FilterBy&lt;Person&gt;(p =&gt; p.Age &gt; age);
+</code></pre>
+
+<p>Reset filter</p>
+<pre><code class="cs"> this.CollectionView.ClearFilter();
+</code></pre>
+
+<p>Sort</p>
+<pre><code class="cs">this.CollectionView.SortBy(&quot;Age&quot;, true); // true to clear sort descriptions
+</code></pre>
+
+<p>Save</p>
+<pre><code class="cs">try
+{
+    if (this.CollectionView.IsAddingNew)
+    {
+        var current = this.CollectionView.CurrentAddItem as Person;
+        current.ValidateAll();
+        if (!current.HasErrors)
+        {
+            // save to db ...
+
+            CollectionView.CommitNew();
+
+            eventAggregator.GetEvent&lt;NotificationMessageEvent&gt;().Publish($&quot;{current.FirstName} added!&quot;);
+        }
+    }
+    else if (this.CollectionView.IsEditingItem)
+    {
+        var current = this.CollectionView.CurrentEditItem as Person;
+        current.ValidateAll();
+        if (!current.HasErrors)
+        {
+
+            // save to db ..
+
+            CollectionView.CommitEdit();
+
+            eventAggregator.GetEvent&lt;NotificationMessageEvent&gt;().Publish($&quot;{current.FirstName} saved!&quot;);
+        }
+    }
+}
+catch (Exception ex)
+{
+    MessageBox.Show($&quot;A problem occured:{ex.Message}&quot;);
+}
+</code></pre>
+
+<p>Delete with confirmation</p>
+<p>```cs
+var current = this.CollectionView.CurrentItem as Person;
+string name = current.FirstName;
+var result = MessageBox.Show($&quot;Delete {name}?&quot;, &quot;Confirmation&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+if (result)
+{
+    try
+    {
+        // remove from db ...</p>
+<pre><code>    CollectionView.Remove(current);
+
+    eventAggregator.GetEvent&lt;NotificationMessageEvent&gt;().Publish($&quot;{name} removed!&quot;);
+}
+catch (Exception ex)
+{
+    MessageBox.Show($&quot;A problem occured:{ex.Message}&quot;);
+}
+</code></pre>
+
+<p>}
+````</p>
+<p>Create new with injection (if an IoC Container is used for the SourceResolver factory)</p>
+<pre><code class="cs">var user = new UserWrapper(new User { RoleId = 1 });
+this.CollectionView.AddNewItem(user);
 </code></pre>
 
 <h2 id="pagedsource">PagedSource<a class="headerlink" href="#pagedsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -1011,17 +1101,21 @@ this.PagedSource = new PagedSource(People, 10);
 </code></pre>
 
 <p>Filter</p>
-<pre><code class="cs">PagedSource.Filter = new Func&lt;object, bool&gt;(p =&gt; ((Person)p).Age &gt; 30);
+<pre><code class="cs">PagedSource.Filter = new Perdicate&lt;object&gt;(p =&gt; ((Person)p).Age &gt; 30);
+// or
+PagedSource.FilterBy&lt;Person&gt;(p =&gt; p.Age &gt; age);
    
 // reset the list
 PagedSource.Filter = null;
+// or
+PagedSource.ClearFilter();
 </code></pre>
 
 <p>Sort</p>
-<pre><code class="cs">PagedSource.CustomSorter = new PersonSorter();
+<pre><code class="cs">PagedSource.CustomSort = new PersonSorter();
 </code></pre>
 
-<pre><code class="cs">public class PersonSorter : IComparer&lt;object&gt;
+<pre><code class="cs">public class PersonSorter : IComparer
 {
     public int Compare(object x, object y)
     {
