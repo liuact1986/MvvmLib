@@ -180,10 +180,24 @@ namespace NavigationSample.Wpf.ViewModels
             set { SetProperty(ref age, value); }
         }
 
+        private PersonType type;
+        public PersonType Type
+        {
+            get { return type; }
+            set { SetProperty(ref type, value); }
+        }
+
         public PersonModel()
         {
             ImagePath = "../../Assets/default-user.jpg";
         }
+    }
+
+    public enum PersonType
+    {
+        User,
+        Admin,
+        SuperAdmin
     }
 
     public class PersonViewModel : BindableBase, INavigationAware

@@ -47,13 +47,8 @@
 
             <ControlTemplate x:Key="DefaultErrorTemplate">
                 <Grid x:Name="container">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
 
-                    <AdornedElementPlaceholder Grid.Column="0"
-                                           Name="customAdorner"
-                                           VerticalAlignment="Center" />
+                    <AdornedElementPlaceholder Name="customAdorner" VerticalAlignment="Center" />
 
                     <Border x:Name="ValidationErrorElement"
                         BorderBrush="#FFDB000C"
@@ -75,13 +70,12 @@
                         </Grid>
                     </Border>
 
-                    <Border Grid.Column="1"
-                        Background="Red"
+                    <Border Background="Red"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Width="15"
-                        Height="15"
-                        Margin="5"
+                        VerticalAlignment="Center"
+                        Margin="0,0,4,0"
+                        Height="12"
+                        Width="12"
                         CornerRadius="10"
                         ToolTip="{Binding ElementName=customAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}">
                         <TextBlock Text="!"
@@ -95,11 +89,6 @@
             </ControlTemplate>
 
             <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Validation.ErrorTemplate"
-                    Value="{StaticResource DefaultErrorTemplate}" />
-            </Style>
-
-            <Style TargetType="{x:Type ListView}">
                 <Setter Property="Validation.ErrorTemplate"
                     Value="{StaticResource DefaultErrorTemplate}" />
             </Style>

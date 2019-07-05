@@ -14,33 +14,25 @@ namespace MvvmLib.Navigation
     /// </summary>
     public class PagedSource : IPagedSource
     {
-        private List<object> innerList;
+        private ObservableCollection<object> items;
+        private ArrayList internalList;
 
-        private IEnumerable source;
+        private readonly IEnumerable sourceCollection;
         /// <summary>
         /// The source collection.
         /// </summary>
-        public IEnumerable Source
+        public IEnumerable SourceCollection
         {
-            get { return source; }
+            get { return sourceCollection; }
         }
 
-        private ObservableCollection<object> items;
+        private int itemCount;
         /// <summary>
-        /// The items displayed.
+        /// The item count.
         /// </summary>
-        public ObservableCollection<object> Items
+        public int ItemCount
         {
-            get { return items; }
-        }
-
-        private int itemsCount;
-        /// <summary>
-        /// The items count.
-        /// </summary>
-        public int ItemsCount
-        {
-            get { return itemsCount; }
+            get { return itemCount; }
         }
 
         private int pageSize;
@@ -105,11 +97,11 @@ namespace MvvmLib.Navigation
             get { return end; }
         }
 
-        private Func<object, bool> filter;
+        private Predicate<object> filter;
         /// <summary>
         /// The filter.
         /// </summary>
-        public Func<object, bool> Filter
+        public Predicate<object> Filter
         {
             get { return filter; }
             set
@@ -122,18 +114,18 @@ namespace MvvmLib.Navigation
             }
         }
 
-        private IComparer<object> customSorter;
+        private IComparer customSort;
         /// <summary>
-        /// The custom sorter.
+        /// The custom sort.
         /// </summary>
-        public IComparer<object> CustomSorter
+        public IComparer CustomSort
         {
-            get { return customSorter; }
+            get { return customSort; }
             set
             {
-                if (!Equals(customSorter, value))
+                if (!Equals(customSort, value))
                 {
-                    customSorter = value;
+                    customSort = value;
                     RefreshInternal(0);
                 }
             }
@@ -247,6 +239,11 @@ namespace MvvmLib.Navigation
         public event EventHandler<PageChangeEventArgs> PageChanged;
 
         /// <summary>
+        /// Invoked on collection changed.
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        /// <summary>
         /// Creates the <see cref="PagedSource"/>.
         /// </summary>
         /// <param name="source">The source</param>
@@ -261,13 +258,13 @@ namespace MvvmLib.Navigation
         /// <param name="source">The source</param>
         /// <param name="pageSize">The page size</param>
         /// <param name="pageIndex">The page index</param>
-        public PagedSource(IEnumerable<object> source, int pageSize, int pageIndex)
+        public PagedSource(IEnumerable source, int pageSize, int pageIndex)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            this.source = source;
-            this.innerList = new List<object>();
+            this.sourceCollection = source;
+            this.internalList = new ArrayList();
             this.items = new ObservableCollection<object>();
             this.pageSize = pageSize;
 
@@ -368,21 +365,21 @@ namespace MvvmLib.Navigation
             if (pageSize <= 0)
                 return 0;
 
-            var pageCount = Math.Max(1, (int)Math.Ceiling((double)itemCount / PageSize));
+            var pageCount = Math.Max(1, (int)Math.Ceiling((double)itemCount / pageSize));
             return pageCount;
         }
 
         private void FilterAndSortItems()
         {
-            this.innerList.Clear();
-            foreach (var item in this.source)
+            this.internalList.Clear();
+            foreach (var item in this.sourceCollection)
             {
                 if (filter == null || filter(item))
-                    this.innerList.Add(item);
+                    this.internalList.Add(item);
             }
-            if (customSorter != null)
+            if (customSort != null)
             {
-                this.innerList.Sort(customSorter);
+                this.internalList.Sort(customSort);
             }
         }
 
@@ -390,10 +387,10 @@ namespace MvvmLib.Navigation
         {
             FilterAndSortItems();
 
-            this.itemsCount = this.innerList.Count;
-            OnPropertyChanged(nameof(ItemsCount));
+            this.itemCount = this.internalList.Count;
+            OnPropertyChanged(nameof(ItemCount));
 
-            this.pageCount = GetPageCount(itemsCount, pageSize);
+            this.pageCount = GetPageCount(itemCount, pageSize);
             OnPropertyChanged(nameof(PageCount));
 
             if (pageCount > 0)
@@ -430,10 +427,10 @@ namespace MvvmLib.Navigation
 
             int startIndex = pageIndex * pageSize; // 0 ...5 ...
             int endIndex = startIndex + pageSize;  // 5 ... 10
-            if (endIndex >= itemsCount)
+            if (endIndex >= itemCount)
             {
                 // 5.. (3 items) .. 10
-                endIndex = itemsCount;
+                endIndex = itemCount;
             }
 
             Take(startIndex, endIndex);
@@ -453,12 +450,26 @@ namespace MvvmLib.Navigation
             OnPageChanged(pageIndex);
         }
 
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
+        {
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
+        }
+
         private void Take(int startIndex, int endIndex)
         {
             this.items.Clear();
-            for (int i = startIndex; i < endIndex; i++)
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            for (int index = startIndex; index < endIndex; index++)
             {
-                this.items.Add(innerList[i]);
+                var item = internalList[index];
+                this.items.Add(item);
+                OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
             }
         }
 
@@ -500,6 +511,36 @@ namespace MvvmLib.Navigation
         public void MoveToPage(int pageIndex)
         {
             MoveToPageInternal(pageIndex);
+        }
+
+        /// <summary>
+        /// Clears the filter.
+        /// </summary>
+        public void ClearFilter()
+        {
+            this.Filter = null;
+        }
+
+        /// <summary>
+        /// Allows to define a filter with generics.
+        /// </summary>
+        /// <typeparam name="T">The item type</typeparam>
+        /// <param name="filter">The filter</param>
+        public void FilterBy<T>(Func<T, bool> filter)
+        {
+            if (filter == null)
+                throw new ArgumentNullException(nameof(filter));
+
+            this.Filter = new Predicate<object>(p => filter((T)p));
+        }
+
+        /// <summary>
+        /// Gets the enumerator. Allows to bind to the paged source directly.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator GetEnumerator()
+        {
+            return items.GetEnumerator();
         }
     }
 }

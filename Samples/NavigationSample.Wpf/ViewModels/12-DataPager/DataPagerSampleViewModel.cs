@@ -44,19 +44,19 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void Sort()
         {
-            PagedSource.CustomSorter = new PersonSorter();
+            PagedSource.CustomSort = new PersonSorter();
         }
 
         private void Filter(string args)
         {
             if (string.IsNullOrWhiteSpace(args))
             {
-                PagedSource.Filter = null;
+                PagedSource.ClearFilter();
             }
             else
             {
                 var age = int.Parse(args.ToString());
-                PagedSource.Filter = new Func<object, bool>(p => ((PersonModel)p).Age > age);
+                PagedSource.FilterBy<PersonModel>(p => p.Age > age);
             }
         }
 
@@ -92,7 +92,7 @@ namespace NavigationSample.Wpf.ViewModels
         }
     }
 
-    public class PersonSorter : IComparer<object>
+    public class PersonSorter : IComparer
     {
         public int Compare(object x, object y)
         {

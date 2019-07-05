@@ -3,7 +3,7 @@
 * **BootstrapperBase**: allows to manage the startup of the application. Configure an IoC Container, the view and ViewModel factories, register dependencies, preload data, create the Shell ViewModel and the Shell.
 * **NavigationSource**: Source for **Views** and **ViewModels**. It has an History, a collection of "Sources" (a source is a View or a ViewModel), a **Current** source that can be binded to the content of the **ContentControls**. There is two other NavigationSource Types: **KeyedNavigationSource** (a navigation source with a key) and **ContentControlNavigationSource** that updates directly the content of the ContentControl provided. The **SourceName Attached Property** of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with **NavigationSourceContainers**. It allows to **navigate simultaneously** for all NavigationSources registered for a SourceName and/or open new Shells.
 * **SharedSource**: Source for **Models** and **ViewModels** with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
-* **NavigationBrowser**: allows to browse an items source (the "Sources" collection of NavigationSources or the collection of "Items" of the SharedSources for example) with a CollectionView.
+* **ListCollectionEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
 * **ViewModelLocator**: is used by **NavigationSources** and **SharedSources** (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The **ResolveViewModel** attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.
 * **SourceResolver** is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.
@@ -763,9 +763,9 @@ public class PersonDetailsViewModel : BindableBase, ISelectable
 }
 ```
 
-## NavigationBrowser
+## ListCollectionEx
 
-> Allows to browse a source (ienumerable) with a CollectionView. Add, Edit , Delete, is possible with generic lists or collections (with element type not object). IEditableObject is checked on edit. For example a list of people.
+> Allows to browse, filter, sort, group, add, edit with lists and collections.
 
 ```cs
 People = new  List<Person>
@@ -775,29 +775,130 @@ People = new  List<Person>
     new Person { Id = 3, FirstName = "First3", LastName = "Last3"}
 };
 
-this.Browser = new NavigationBrowser(People);
+this.CollectionView = new ListCollectionViewEx(People);
 ```
 
-Add buttons and bind Browser commands
+Add buttons and bind commands
 
 ```xml
-<Button Content="First" Command="{Binding Browser.MoveCurrentToFirstCommand}" />
-<Button Content="Previous" Command="{Binding Browser.MoveCurrentToPreviousCommand}" />
-<Button Content="Next" Command="{Binding Browser.MoveCurrentToNextCommand}" />
-<Button Content="Last" Command="{Binding Browser.MoveCurrentToLastCommand}" />
-<TextBox x:Name="RankTextBox" Text="{Binding Browser.Rank, Mode=OneWay}" Width="30" TextAlignment="Center" VerticalContentAlignment="Center" Margin="2">
+<!-- move -->
+<Button Content="First" Command="{Binding CollectionView.MoveCurrentToFirstCommand}" />
+<Button Content="Previous" Command="{Binding CollectionView.MoveCurrentToPreviousCommand}" />
+<Button Content="Next" Command="{Binding CollectionView.MoveCurrentToNextCommand}" />
+<Button Content="Last" Command="{Binding CollectionView.MoveCurrentToLastCommand}" />
+<TextBox x:Name="RankTextBox" Text="{Binding CollectionView.Rank, Mode=OneWay}" Width="30" TextAlignment="Center" VerticalContentAlignment="Center" Margin="2">
     <mvvmLib:Interaction.Behaviors>
         <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                        Command="{Binding Browser.MoveCurrentToRankCommand}"
+                                        Command="{Binding CollectionView.MoveCurrentToRankCommand}"
                                         CommandParameter="{Binding ElementName=RankTextBox, Path=Text}"
                                         />
     </mvvmLib:Interaction.Behaviors>
 </TextBox>
-<TextBlock Text="{Binding Browser.CollectionView.Count, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
-<Button Content="Add" Command="{Binding Browser.AddCommand}" />
-<Button Content="Edit" Command="{Binding Browser.EditCommand}" />
-<Button Content="First" Command="{Binding Browser.DeleteCommand}" />
+<TextBlock Text="{Binding CollectionView.Count, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
+
+<!-- group -->
+<Button Content="Group" Command="{Binding CollectionView.ToggleGroupByCommand}" CommandParameter="Type" />
+
+<!-- sort -->
+<Button Content="SORT (descending)" Command="{Binding CollectionView.SortByDescendingCommand}" CommandParameter="Name" />
+
+<!-- Add edit delete -->
+<Button Content="Add" Command="{Binding CollectionView.AddNewCommand}" />
+<Button Content="Edit" Command="{Binding CollectionView.EditCommand}" />
+<Button Content="Delete" Command="{Binding CollectionView.DeleteCommand}" />
+
+<!-- cancel new or edit -->
+<Button Content="Cancel" Command="{Binding CollectionView.CancelCommand}" />
+<!-- commit new or commit edit -->
+<Button Content="Save" Command="{Binding CollectionView.SaveCommand}" />
 ```
+
+Filter
+
+```cs
+this.CollectionView.FilterBy<Person>(p => p.Age > age);
+```
+Reset filter
+
+```cs
+ this.CollectionView.ClearFilter();
+```
+
+Sort
+
+```cs
+this.CollectionView.SortBy("Age", true); // true to clear sort descriptions
+```
+
+Save
+
+```cs
+try
+{
+    if (this.CollectionView.IsAddingNew)
+    {
+        var current = this.CollectionView.CurrentAddItem as Person;
+        current.ValidateAll();
+        if (!current.HasErrors)
+        {
+            // save to db ...
+
+            CollectionView.CommitNew();
+
+            eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} added!");
+        }
+    }
+    else if (this.CollectionView.IsEditingItem)
+    {
+        var current = this.CollectionView.CurrentEditItem as Person;
+        current.ValidateAll();
+        if (!current.HasErrors)
+        {
+
+            // save to db ..
+
+            CollectionView.CommitEdit();
+
+            eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} saved!");
+        }
+    }
+}
+catch (Exception ex)
+{
+    MessageBox.Show($"A problem occured:{ex.Message}");
+}
+```
+
+Delete with confirmation
+
+```cs
+var current = this.CollectionView.CurrentItem as Person;
+string name = current.FirstName;
+var result = MessageBox.Show($"Delete {name}?", "Confirmation", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+if (result)
+{
+    try
+    {
+        // remove from db ...
+
+        CollectionView.Remove(current);
+
+        eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{name} removed!");
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"A problem occured:{ex.Message}");
+    }
+}
+````
+
+Create new with injection (if an IoC Container is used for the SourceResolver factory)
+
+```cs
+var user = new UserWrapper(new User { RoleId = 1 });
+this.CollectionView.AddNewItem(user);
+```
+
 
 ## PagedSource
 
@@ -809,20 +910,24 @@ this.PagedSource = new PagedSource(People, 10);
 Filter
 
 ```cs
-PagedSource.Filter = new Func<object, bool>(p => ((Person)p).Age > 30);
+PagedSource.Filter = new Perdicate<object>(p => ((Person)p).Age > 30);
+// or
+PagedSource.FilterBy<Person>(p => p.Age > age);
    
 // reset the list
 PagedSource.Filter = null;
+// or
+PagedSource.ClearFilter();
 ```
 
 Sort
 
 ```cs
-PagedSource.CustomSorter = new PersonSorter();
+PagedSource.CustomSort = new PersonSorter();
 ```
 
 ```cs
-public class PersonSorter : IComparer<object>
+public class PersonSorter : IComparer
 {
     public int Compare(object x, object y)
     {

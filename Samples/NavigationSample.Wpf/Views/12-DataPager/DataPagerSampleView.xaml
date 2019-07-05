@@ -30,7 +30,7 @@
             <Button Content="Add" Command="{Binding AddCommand}" Margin="20,0"/>
         </StackPanel>
 
-        <DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource.Items}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+        <DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
                 <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />

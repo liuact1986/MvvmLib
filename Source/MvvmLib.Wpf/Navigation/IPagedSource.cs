@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace MvvmLib.Navigation
@@ -10,22 +11,17 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// DataPager for DataGrid, etc.
     /// </summary>
-    public interface IPagedSource : INotifyPropertyChanged
+    public interface IPagedSource : INotifyCollectionChanged, INotifyPropertyChanged, IEnumerable
     {
         /// <summary>
         /// The source collection.
         /// </summary>
-        IEnumerable Source { get; }
-
-        /// <summary>
-        /// The items displayed.
-        /// </summary>
-        ObservableCollection<object> Items { get; }
+        IEnumerable SourceCollection { get; }
 
         /// <summary>
         /// The items count.
         /// </summary>
-        int ItemsCount { get; }
+        int ItemCount { get; }
 
         /// <summary>
         /// The number of items by page.
@@ -60,12 +56,12 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The filter.
         /// </summary>
-        Func<object, bool> Filter { get; set; }
+        Predicate<object> Filter { get; set; }
 
         /// <summary>
         /// The custom sorter.
         /// </summary>
-        IComparer<object> CustomSorter { get; set; }
+        IComparer CustomSort { get; set; }
 
         /// <summary>
         /// Checks if can move to previous page.
@@ -115,6 +111,18 @@ namespace MvvmLib.Navigation
         /// Invoked on page changed.
         /// </summary>
         event EventHandler<PageChangeEventArgs> PageChanged;
+
+        /// <summary>
+        /// Clears the filter.
+        /// </summary>
+        void ClearFilter();
+
+        /// <summary>
+        /// Allows to define a filter with generics.
+        /// </summary>
+        /// <typeparam name="T">The item type</typeparam>
+        /// <param name="filter">The filter</param>
+        void FilterBy<T>(Func<T, bool> filter);
 
         /// <summary>
         /// Allows to move to the first page.

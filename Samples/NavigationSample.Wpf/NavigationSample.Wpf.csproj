@@ -88,7 +88,7 @@
     <Compile Include="ViewModels\7-SharedSource\SharedSourceSampleViewModel.cs" />
     <Compile Include="ViewModels\8-Behaviors\NavigationBehaviorsSampleViewModel.cs" />
     <Compile Include="ViewModels\12-DataPager\DataPagerSampleViewModel.cs" />
-    <Compile Include="ViewModels\11-NavigationBrowser\NavigationBrowserSampleViewModel.cs" />
+    <Compile Include="ViewModels\11-ListCollectionViewEx\ListCollectionViewExSampleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ViewEViewModel.cs" />
     <Compile Include="ViewModels\ViewGViewModel.cs" />
@@ -138,13 +138,13 @@
     <Compile Include="Views\12-DataPager\DataPagerSampleView.xaml.cs">
       <DependentUpon>DataPagerSampleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\11-ListCollectionViewEx\ListCollectionViewExSampleView.xaml.cs">
+      <DependentUpon>ListCollectionViewExSampleView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MenuItem.cs" />
-    <Compile Include="Views\11-NavigationBrowser\NavigationBrowserSampleView.xaml.cs">
-      <DependentUpon>NavigationBrowserSampleView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
     </Compile>
@@ -290,13 +290,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\11-ListCollectionViewEx\ListCollectionViewExSampleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\11-NavigationBrowser\NavigationBrowserSampleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Shell.xaml">
       <Generator>MSBuild:Compile</Generator>

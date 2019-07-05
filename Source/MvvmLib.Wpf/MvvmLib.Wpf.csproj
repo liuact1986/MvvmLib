@@ -97,7 +97,6 @@
     <Compile Include="Navigation\ISharedSource.cs" />
     <Compile Include="Navigation\KeyedNavigationSource.cs" />
     <Compile Include="Navigation\NavigatedEventArgs.cs" />
-    <Compile Include="Navigation\NavigationBrowser.cs" />
     <Compile Include="Navigation\NavigationContext.cs" />
     <Compile Include="Navigation\NavigationEntry.cs" />
     <Compile Include="Navigation\NavigationEventArgs.cs" />
@@ -108,6 +107,7 @@
     <Compile Include="Navigation\NavigationType.cs" />
     <Compile Include="Navigation\PageChangeEventArgs.cs" />
     <Compile Include="Navigation\PagedSource.cs" />
+    <Compile Include="Navigation\ListCollectionViewEx.cs" />
     <Compile Include="Navigation\SelectionHandling.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceSelectedItemChangedEventArgs.cs" />

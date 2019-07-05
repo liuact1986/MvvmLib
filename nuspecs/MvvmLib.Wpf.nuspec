@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.11.5.3</version>
+    <version>0.11.5.6</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -16,7 +16,7 @@
 * SharedSource: source for ItemsControls, Selectors (ListBox, TabControl, etc.)
 * AnimatableContentControl, TransitioningContentControl, TransitioningItemsControl: allow to animate content
 * NavigationManager: allows to manage NavigationSources and SharedSources
-* NavigationBrowser: allows to browse enumerables, edit lists and collections.
+* ListCollectionEx: allows to browse, filter, sort, group, add, edit with lists and collections.
 * PagedSource: paging for DataGrid, etc.
 * INavigationAware: allows view models to be notified on navigate
 * ICanActivate, ICanDeactivate: allow to cancel navigation
@@ -27,6 +27,7 @@
 * BootstrapperBase: base class for Bootstrapper
 * ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
+    <releaseNotes>Replace NavigationBrowser by ListCollectionViewEx and PagedSource updated</releaseNotes>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>
