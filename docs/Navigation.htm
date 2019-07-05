@@ -53,7 +53,7 @@
 
 <li class="tocentry"><a href="#iselectable-with-navigationsource">ISelectable with NavigationSource</a></li>
 
-<li class="tocentry"><a href="#listcollectionex">ListCollectionEx</a></li>
+<li class="tocentry"><a href="#listcollectionviewex">ListCollectionViewEx</a></li>
 
 <li class="tocentry"><a href="#pagedsource">PagedSource</a></li>
 
@@ -112,7 +112,7 @@
 <li><strong>BootstrapperBase</strong>: allows to manage the startup of the application. Configure an IoC Container, the view and ViewModel factories, register dependencies, preload data, create the Shell ViewModel and the Shell.</li>
 <li><strong>NavigationSource</strong>: Source for <strong>Views</strong> and <strong>ViewModels</strong>. It has an History, a collection of &quot;Sources&quot; (a source is a View or a ViewModel), a <strong>Current</strong> source that can be binded to the content of the <strong>ContentControls</strong>. There is two other NavigationSource Types: <strong>KeyedNavigationSource</strong> (a navigation source with a key) and <strong>ContentControlNavigationSource</strong> that updates directly the content of the ContentControl provided. The <strong>SourceName Attached Property</strong> of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with <strong>NavigationSourceContainers</strong>. It allows to <strong>navigate simultaneously</strong> for all NavigationSources registered for a SourceName and/or open new Shells.</li>
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
-<li><strong>ListCollectionEx</strong>: allows to browse, filter, sort, group, add, edit with lists and collections.</li>
+<li><strong>ListCollectionViewEx</strong>: allows to browse, filter, sort, group, add, edit with lists and collections.</li>
 <li><strong>PagedSource</strong>: paging for DataGrid, etc.</li>
 <li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
@@ -972,7 +972,7 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 }
 </code></pre>
 
-<h2 id="listcollectionex">ListCollectionEx<a class="headerlink" href="#listcollectionex" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="listcollectionviewex">ListCollectionViewEx<a class="headerlink" href="#listcollectionviewex" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
 <p>Allows to browse, filter, sort, group, add, edit with lists and collections.</p>
 </blockquote>

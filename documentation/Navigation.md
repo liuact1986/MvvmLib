@@ -3,7 +3,7 @@
 * **BootstrapperBase**: allows to manage the startup of the application. Configure an IoC Container, the view and ViewModel factories, register dependencies, preload data, create the Shell ViewModel and the Shell.
 * **NavigationSource**: Source for **Views** and **ViewModels**. It has an History, a collection of "Sources" (a source is a View or a ViewModel), a **Current** source that can be binded to the content of the **ContentControls**. There is two other NavigationSource Types: **KeyedNavigationSource** (a navigation source with a key) and **ContentControlNavigationSource** that updates directly the content of the ContentControl provided. The **SourceName Attached Property** of the NavigationManager allows to attach in Xaml a ContentControl to a ContentControlNavigationSource. The NavigationManager has a collection of NavigationSources stored with **NavigationSourceContainers**. It allows to **navigate simultaneously** for all NavigationSources registered for a SourceName and/or open new Shells.
 * **SharedSource**: Source for **Models** and **ViewModels** with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
-* **ListCollectionEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
+* **ListCollectionViewEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
 * **ViewModelLocator**: is used by **NavigationSources** and **SharedSources** (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The **ResolveViewModel** attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.
 * **SourceResolver** is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.
@@ -763,7 +763,7 @@ public class PersonDetailsViewModel : BindableBase, ISelectable
 }
 ```
 
-## ListCollectionEx
+## ListCollectionViewEx
 
 > Allows to browse, filter, sort, group, add, edit with lists and collections.
 
