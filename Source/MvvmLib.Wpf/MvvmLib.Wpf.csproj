@@ -87,12 +87,12 @@
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
-    <Compile Include="Navigation\IPagedSource.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
     <Compile Include="Navigation\IIsSelected.cs" />
     <Compile Include="Navigation\IMovableSource.cs" />
     <Compile Include="Navigation\INavigationAware.cs" />
     <Compile Include="Navigation\InitItemCollection.cs" />
+    <Compile Include="Navigation\IPagedSource.cs" />
     <Compile Include="Navigation\ISelectable.cs" />
     <Compile Include="Navigation\ISharedSource.cs" />
     <Compile Include="Navigation\KeyedNavigationSource.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Navigation\SelectionHandling.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceSelectedItemChangedEventArgs.cs" />
+    <Compile Include="Navigation\SortPropertyComparer.cs" />
     <Compile Include="Navigation\SourceResolver.cs" />
     <Compile Include="Navigation\ViewModelLocationProvider.cs" />
     <Compile Include="Navigation\ViewModelLocator.cs" />
@@ -127,7 +128,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Utils\EnumerableUtils.cs" />
+    <Compile Include="Utils\EnumerableHelper.cs" />
     <Compile Include="Utils\XamlHelper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

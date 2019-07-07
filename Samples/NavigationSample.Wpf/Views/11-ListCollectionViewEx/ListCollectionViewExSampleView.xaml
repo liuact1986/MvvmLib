@@ -24,17 +24,6 @@
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="QuickDetailsTemplate">
-            <Border BorderThickness="2" BorderBrush="{StaticResource Heading}">
-                <StackPanel Margin="10">
-                    <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
-                    <TextBlock Text="{Binding FirstName}" Margin="0 2 0 8"/>
-                    <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
-                    <TextBlock Text="{Binding LastName}" Foreground="Black" Margin="0 2 0 8"/>
-                </StackPanel>
-            </Border>
-        </DataTemplate>
-
         <DataTemplate x:Key="AddAndEditTemplate">
             <StackPanel x:Name="SP" Margin="10">
                 <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>

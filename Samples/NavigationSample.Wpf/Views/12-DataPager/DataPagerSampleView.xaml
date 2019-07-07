@@ -5,38 +5,177 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:NavigationSample.Wpf.Controls"
              xmlns:mvvmLib="http://mvvmlib.com/"
+             x:Name="ThisControl"
              FontSize="16"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid Background="{StaticResource PageBackground}">
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="DetailsTemplate">
+            <StackPanel Margin="10">
+                <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
+                    <Image Source="{Binding ImagePath}" />
+                </Border>
+                <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBlock Text="{Binding FirstName}" Margin="0 2 0 8"/>
+                <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBlock Text="{Binding LastName}" Foreground="Black" Margin="0 2 0 8"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AddAndEditTemplate">
+            <StackPanel x:Name="SP" Margin="10">
+                <TextBlock Text="FIRSTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBox Text="{Binding FirstName}" Margin="0 2 0 8"/>
+                <TextBlock Text="LASTNAME" Style="{StaticResource HeadingStyle}"/>
+                <TextBox Text="{Binding LastName}" Margin="0 2 0 8"/>
+                <TextBlock Text="AGE" Style="{StaticResource HeadingStyle}"/>
+                <TextBox Text="{Binding Age}" Margin="0 2 0 8"/>
+                <TextBlock Text="IMAGE" Style="{StaticResource HeadingStyle}"/>
+                <Button Margin="0 2 0 8" 
+                        Command="{Binding DataContext.SelectImageCommand,ElementName=ThisControl}" 
+                        HorizontalAlignment="Left">
+                    <Grid Height="160" Margin="0,5" HorizontalAlignment="Left">
+                        <Image Source="{Binding ImagePath}" />
+                    </Grid>
+                </Button>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding DataContext.SaveCommand, ElementName=ThisControl}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:MaterialDesignIcon Icon="Check" Brush="#2980b9"/>
+                            <TextBlock Text="SAVE" Margin="5,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DataContext.PagedSource.CancelCommand, ElementName=ThisControl}">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:MaterialDesignIcon Icon="Close" Brush="#2980b9"/>
+                            <TextBlock Text="CANCEL" Margin="5,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </StackPanel>
+        </DataTemplate>
+
+
+    </UserControl.Resources>
+    
+    <Grid Background="White">
         <Grid.Effect>
             <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}"/>
         </Grid.Effect>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <TextBox x:Name="SearchBox" Width="100" TextAlignment="Center" VerticalContentAlignment="Center" Margin="2">
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+            <StackPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Gainsboro" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </StackPanel.Background>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="IsEnabled" Value="True" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PagedSource.IsAddingNew}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PagedSource.IsEditingItem}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <Button Command="{Binding PagedSource.MoveCurrentToFirstCommand}" >
+                <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
+            </Button>
+            <Button Command="{Binding PagedSource.MoveCurrentToPreviousCommand}" >
+                <controls:MaterialDesignIcon Icon="MenuLeft" Height="32" Brush="#2980b9"/>
+            </Button>
+            <Button Command="{Binding PagedSource.MoveCurrentToNextCommand}" >
+                <controls:MaterialDesignIcon Icon="MenuRight" Height="32" Brush="#2980b9"/>
+            </Button>
+            <Button Command="{Binding PagedSource.MoveCurrentToLastCommand}" >
+                <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
+            </Button>
+
+            <TextBox x:Name="RankTextBox" Text="{Binding PagedSource.Rank, Mode=OneWay}" MinWidth="50" TextAlignment="Center" VerticalContentAlignment="Center" Margin="5">
+                <mvvmLib:Interaction.Behaviors>
+                    <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
+                                                    Command="{Binding PagedSource.MoveCurrentToRankCommand}"
+                                                    CommandParameter="{Binding ElementName=RankTextBox, Path=Text}"
+                                                    />
+                </mvvmLib:Interaction.Behaviors>
+            </TextBox>
+            <TextBlock Text="{Binding PagedSource.ItemCount, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
+
+            <TextBox x:Name="SearchBox" Width="80" TextAlignment="Center" VerticalContentAlignment="Center" Margin="5">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding FilterCommand}" CommandParameter="{Binding Text,ElementName=SearchBox}" />
                 </TextBox.InputBindings>
             </TextBox>
-            <Button Content="Search (Age)" Command="{Binding FilterCommand}" CommandParameter="{Binding Text,ElementName=SearchBox}"/>
-            <Button Content="Sort (Age)" Command="{Binding SortCommand}"/>
-            <Button Content="Add" Command="{Binding AddCommand}" Margin="20,0"/>
+            <Button Command="{Binding FilterCommand}" CommandParameter="{Binding Text,ElementName=SearchBox}">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="Magnify" Brush="#2980b9"/>
+                    <TextBlock Text="(Age)" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding PagedSource.SortByCommand}" CommandParameter="Age">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="ArrowDown" Brush="#2980b9"/>
+                    <TextBlock Text="(Age)" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding PagedSource.SortByDescendingCommand}" CommandParameter="Age">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="ArrowUp" Brush="#2980b9"/>
+                    <TextBlock Text="(Age)" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <Button Command="{Binding PagedSource.AddNewCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="Plus" Brush="#2980b9"/>
+                    <TextBlock Text="ADD" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <Button Command="{Binding PagedSource.EditCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="Pencil" Brush="#2980b9"/>
+                    <TextBlock Text="EDIT" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding DeleteCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <controls:MaterialDesignIcon Icon="Delete" Brush="#2980b9"/>
+                    <TextBlock Text="DELETE" Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
-        <DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" AutoGenerateColumns="False" IsReadOnly="True" Grid.Row="1">
+        <DataGrid x:Name="DataGrid1" 
+                  ItemsSource="{Binding PagedSource}" 
+                  SelectedIndex="{Binding PagedSource.CurrentPosition}"
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True" 
+                  Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
                 <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />
                 <DataGridTextColumn Header="Age" Width="*" Binding="{Binding Age}" />
             </DataGrid.Columns>
-            <DataGrid.RowDetailsTemplate>
+            <!--<DataGrid.RowDetailsTemplate>
                 <DataTemplate>
                     <StackPanel Margin="20,10">
                         <Border Height="160" Margin="0,5" BorderBrush="#eee" BorderThickness="2" HorizontalAlignment="Left">
@@ -48,10 +187,28 @@
                         <TextBlock Text="{Binding LastName}" Foreground="Black" Margin="0 2 0 8"/>
                     </StackPanel>
                 </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
+            </DataGrid.RowDetailsTemplate>-->
         </DataGrid>
 
-        <Grid Grid.Row="2">
+        <ContentControl Content="{Binding PagedSource.CurrentItem, Mode=OneWay}" 
+                        Visibility="{Binding PagedSource.CurrentItem, Converter={StaticResource NullToVisibilityConverter}}"
+                        Grid.Column="1" Grid.Row="1">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="ContentTemplate" Value="{StaticResource DetailsTemplate}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PagedSource.IsAddingNew}" Value="True">
+                            <Setter Property="ContentTemplate" Value="{StaticResource AddAndEditTemplate}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PagedSource.IsEditingItem}" Value="True">
+                            <Setter Property="ContentTemplate" Value="{StaticResource AddAndEditTemplate}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FFCBCBCB" Offset="0.173"/>
@@ -63,6 +220,19 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="IsEnabled" Value="True" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PagedSource.IsAddingNew}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding PagedSource.IsEditingItem}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
 
             <controls:DataPager PagedSource="{Binding PagedSource}" AutoEllipsisMode="Both" NumericButtonCount="6" />
 

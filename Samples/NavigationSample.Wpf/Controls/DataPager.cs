@@ -106,7 +106,13 @@ namespace NavigationSample.Wpf.Controls
                 Refresh();
 
                 this.PagedSource.Refreshed += OnDataPagerRefreshed;
+                this.PagedSource.PageChanged += OnPagedSourcePageChanged;
             }
+        }
+
+        private void OnPagedSourcePageChanged(object sender, PageChangeEventArgs e)
+        {
+            SelectPageAndUpdateVisualStates();
         }
 
         private void OnDataPagerRefreshed(object sender, EventArgs e)

@@ -1,4 +1,5 @@
-﻿using MvvmLib.Commands;
+﻿using Microsoft.Win32;
+using MvvmLib.Commands;
 using MvvmLib.Message;
 using MvvmLib.Navigation;
 using NavigationSample.Wpf.Events;
@@ -6,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -19,22 +21,102 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ICommand FilterCommand { get; set; }
         public ICommand SortCommand { get; set; }
-        public ICommand AddCommand { get; set; }
+
+        public ICommand SelectImageCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
 
         public DataPagerSampleViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
+
+
+            this.People = new ObservableCollection<PersonModel>();
+            this.PagedSource = new PagedSource(People, 10);
+
+            SelectImageCommand = new RelayCommand(SelectImage);
             FilterCommand = new RelayCommand<string>(Filter);
             SortCommand = new RelayCommand(Sort);
-            AddCommand = new RelayCommand(Add);
+            SaveCommand = new RelayCommand(Save);
+            DeleteCommand = new RelayCommand(Delete);
         }
 
-        private void Add()
+        private void SelectImage()
         {
-            var random = new Random();
-            int rank = People.Count;
-            var age = random.Next(15, 80);
-            People.Add(new PersonModel { Id = rank, FirstName = $"First.{rank}", LastName = $"Last.{rank}", Age = age });
+            if (this.PagedSource.CurrentItem == null)
+                return;
+
+            var current = this.PagedSource.CurrentItem as PersonModel;
+
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+            if (dialog.ShowDialog() == true)
+            {
+                current.ImagePath = dialog.FileName;
+            }
+        }
+
+        private void Save()
+        {
+            try
+            {
+                if (this.PagedSource.IsAddingNew)
+                {
+                    var current = this.PagedSource.CurrentAddItem as PersonModel;
+                    current.ValidateAll();
+                    if (!current.HasErrors)
+                    {
+                        // save to db ...
+
+                        PagedSource.CommitNew();
+
+                        eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} added!");
+                    }
+                }
+                else if (this.PagedSource.IsEditingItem)
+                {
+                    var current = this.PagedSource.CurrentEditItem as PersonModel;
+                    current.ValidateAll();
+                    if (!current.HasErrors)
+                    {
+
+                        // save to db ..
+
+                        PagedSource.CommitEdit();
+
+                        eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{current.FirstName} saved!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"A problem occured:{ex.Message}");
+            }
+        }
+
+        private void Delete()
+        {
+            if (this.PagedSource.CurrentItem == null)
+                return;
+
+            var current = this.PagedSource.CurrentItem as PersonModel;
+            string name = current.FirstName;
+            var result = MessageBox.Show($"Delete {name}?", "Confirmation", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+            if (result)
+            {
+                try
+                {
+                    // remove from db ...
+
+                    PagedSource.Remove(current);
+
+                    eventAggregator.GetEvent<NotificationMessageEvent>().Publish($"{name} removed!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"A problem occured:{ex.Message}");
+                }
+            }
         }
 
         private void SetTitle()
@@ -44,7 +126,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void Sort()
         {
-            PagedSource.CustomSort = new PersonSorter();
+            PagedSource.CustomSort = new PersonByAgeSorter();
         }
 
         private void Filter(string args)
@@ -62,18 +144,15 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void Load()
         {
-            int count = 250;
+            int count = 100;
             var random = new Random();
-            var peopleList = new List<PersonModel>();
             for (int i = 0; i < count; i++)
             {
                 int rank = i + 1;
                 var age = random.Next(15, 80);
                 var person = new PersonModel { Id = rank, FirstName = $"First.{rank}", LastName = $"Last.{rank}", Age = age };
-                peopleList.Add(person);
+                People.Add(person);
             }
-            this.People = new ObservableCollection<PersonModel>(peopleList);
-            this.PagedSource = new PagedSource(People, 10);
         }
 
         public void OnNavigatingFrom(NavigationContext navigationContext)
@@ -92,11 +171,19 @@ namespace NavigationSample.Wpf.ViewModels
         }
     }
 
-    public class PersonSorter : IComparer
+    public class PersonByAgeSorter : IComparer
     {
         public int Compare(object x, object y)
         {
             return ((PersonModel)x).Age.CompareTo(((PersonModel)y).Age);
+        }
+    }
+
+    public class PersonByAgeDescendingSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            return -((PersonModel)x).Age.CompareTo(((PersonModel)y).Age);
         }
     }
 }

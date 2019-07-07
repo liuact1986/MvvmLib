@@ -902,42 +902,16 @@ this.CollectionView.AddNewItem(user);
 
 ## PagedSource
 
+### Paging
+
 ```cs
 this.People = new ObservableCollection<Person>(peopleList);
 this.PagedSource = new PagedSource(People, 10);
 ```
 
-Filter
-
-```cs
-PagedSource.Filter = new Perdicate<object>(p => ((Person)p).Age > 30);
-// or
-PagedSource.FilterBy<Person>(p => p.Age > age);
-   
-// reset the list
-PagedSource.Filter = null;
-// or
-PagedSource.ClearFilter();
-```
-
-Sort
-
-```cs
-PagedSource.CustomSort = new PersonSorter();
-```
-
-```cs
-public class PersonSorter : IComparer
-{
-    public int Compare(object x, object y)
-    {
-        return ((Person)x).Age.CompareTo(((Person)y).Age);
-    }
-}
-```
 
 ```xml
-<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" AutoGenerateColumns="False" IsReadOnly="True">
+<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" SelectedIndex="{Binding PagedSource.CurrentPosition}" AutoGenerateColumns="False" IsReadOnly="True">
     <DataGrid.Columns>
         <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
         <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />
@@ -974,8 +948,10 @@ Methods
 * MoveToNextPage
 * MoveToLastPage
 * MoveToPage with page index
+* Refresh (to use only if source collection does not implement INotifyCollectionChanged)
 
 Properties
+
 * CanMoveToPreviousPage
 * CanMoveToNextPage
 * ItemsCount
@@ -995,6 +971,166 @@ Events
 * Refreshed
 * PageChanging
 * PageChanged
+
+### Move current
+
+Properties
+
+* CurrentItem
+* CurrentPosition
+* Rank (position + 1)
+* CanMoveCurrentToPrevious
+* CanMoveCurrentToNext
+
+Commands
+
+* MoveCurrentToFirstCommand
+* MoveCurrentToPreviousCommand
+* MoveCurrentToNextCommand
+* MoveCurrentToLastCommand
+* MoveCurrentToCommand with position or item
+* MoveCurrentToRankCommand rank = position + 1
+
+Methods
+
+* MoveCurrentToFirst
+* MoveCurrentToPrevious
+* MoveCurrentToNext
+* MoveCurrentToLast
+* MoveCurrentTo with position or item
+
+bind to current item
+
+```xml
+<ContentControl Content="{Binding PagedSource.CurrentItem, Mode=OneWay}" 
+                Visibility="{Binding PagedSource.CurrentItem, Converter={StaticResource NullToVisibilityConverter}}"
+                Grid.Column="1" Grid.Row="1">
+    <ContentControl.Style>
+        <Style TargetType="ContentControl">
+            <Setter Property="ContentTemplate" Value="{StaticResource DetailsTemplate}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PagedSource.IsAddingNew}" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource AddAndEditTemplate}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PagedSource.IsEditingItem}" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource AddAndEditTemplate}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ContentControl.Style>
+</ContentControl>
+```
+
+### Filter
+
+```cs
+PagedSource.Filter = new Perdicate<object>(p => ((Person)p).Age > 30);
+// or
+PagedSource.FilterBy<Person>(p => p.Age > age);
+   
+// reset the list
+PagedSource.Filter = null;
+// or
+PagedSource.ClearFilter();
+```
+
+### Sort
+
+With Sort descriptions
+
+```cs
+PagedSource.SortDescriptions.Add(new SortDescription("Age", ListSortDirection.Ascending));
+```
+
+Multiple sort descriptions
+
+```cs
+PagedSource.SortDescriptions.Add(new SortDescription("LastName", ListSortDirection.Ascending));
+PagedSource.SortDescriptions.Add(new SortDescription("FirstName", ListSortDirection.Ascending));
+```
+
+Clear
+
+```cs
+pagedSource.SortDescriptions.Clear();
+```
+
+With methods
+
+```cs
+PagedSource.SortBy("Age", true); // clear sort descritpions if true
+// or
+PagedSource.SortByDescending("Age", true);
+```
+
+With commands
+
+```cs
+ <Button Content="Sort by age" Command="{Binding PagedSource.SortByCommand}" CommandParameter="Age" />
+```
+
+... or descending
+
+```cs
+ <Button Content="Sort by age" Command="{Binding PagedSource.SortByDescendingCommand}" CommandParameter="Age" />
+```
+
+
+With custom sort (has priority)
+
+```cs
+PagedSource.CustomSort = new PersonSorter();
+```
+
+```cs
+public class PersonSorter : IComparer
+{
+    public int Compare(object x, object y)
+    {
+        return ((Person)x).Age.CompareTo(((Person)y).Age);
+    }
+}
+```
+
+Clear
+
+```cs
+PagedSource.CustomSort = null;
+```
+
+### Edition
+
+Commands
+
+* AddNewCommand
+* EditCommand
+* DeleteCommand
+* SaveCommand
+* CancelCommand
+
+Methods
+
+* CreateNew 
+* AddNew
+* AddNewItem
+* EditItem
+* EditCurrentItem
+* CancelNew
+* CancelEdit
+* CommitNew
+* CommitEdit
+* Remove
+* RemoveAt
+
+Properties
+
+* CanAddNew
+* IsAddingNew
+* CurrentAddItem
+* CanEditem
+* IsEditingItem
+* CurrentEditItem
+
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior
 
