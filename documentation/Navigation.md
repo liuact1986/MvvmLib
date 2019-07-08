@@ -913,7 +913,7 @@ this.PagedSource = new PagedSource(People, 10);
 
 
 ```xml
-<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" SelectedIndex="{Binding PagedSource.CurrentPosition}" AutoGenerateColumns="False" IsReadOnly="True">
+<DataGrid x:Name="DataGrid1" ItemsSource="{Binding PagedSource}" AutoGenerateColumns="False" IsReadOnly="True">
     <DataGrid.Columns>
         <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
         <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />

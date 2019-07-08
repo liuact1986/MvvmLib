@@ -1103,7 +1103,7 @@ this.CollectionView.AddNewItem(user);
 this.PagedSource = new PagedSource(People, 10);
 </code></pre>
 
-<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding PagedSource}&quot; SelectedIndex=&quot;{Binding PagedSource.CurrentPosition}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot;&gt;
+<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding PagedSource}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot;&gt;
     &lt;DataGrid.Columns&gt;
         &lt;DataGridTextColumn Header=&quot;First Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding FirstName}&quot; /&gt;
         &lt;DataGridTextColumn Header=&quot;Last Name&quot; Width=&quot;*&quot; Binding=&quot;{Binding LastName}&quot; /&gt;
