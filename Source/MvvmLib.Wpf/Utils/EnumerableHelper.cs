@@ -8,24 +8,11 @@ namespace MvvmLib.Utils
     public class EnumerableHelper
     {
         /// <summary>
-        /// Allows to find index of target item in collection.
+        /// Gets the element at the index.
         /// </summary>
         /// <param name="source">The source</param>
-        /// <param name="targetItem">The target item</param>
-        /// <returns>The index or -1</returns>
-        public static int FindIndex(IEnumerable source, object targetItem)
-        {
-            int i = 0;
-            foreach (var item in source)
-            {
-                if (Equals(item, targetItem))
-                    return i;
-
-                i++;
-            }
-            return -1;
-        }
-
+        /// <param name="index">The index</param>
+        /// <returns>The element or null</returns>
         public static object GetElementAt(IEnumerable source, int index)
         {
             if (source is IList)
@@ -45,6 +32,11 @@ namespace MvvmLib.Utils
             return null;
         }
 
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <param name="source">The source</param>
+        /// <returns>The number of items</returns>
         public static int Count(IEnumerable source)
         {
             if (source is IList)
@@ -61,6 +53,12 @@ namespace MvvmLib.Utils
             return count;
         }
 
+        /// <summary>
+        /// Gets the index of the item.
+        /// </summary>
+        /// <param name="source">The source</param>
+        /// <param name="item">The item</param>
+        /// <returns>The index</returns>
         public static int IndexOf(IEnumerable source, object item)
         {
             if (source is IList)

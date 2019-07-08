@@ -66,6 +66,17 @@ namespace NavigationSample.Wpf.Controls
         {
             base.OnApplyTemplate();
 
+            if (this.moveToFirstPageButton != null)
+                this.moveToFirstPageButton.Click -= OnMoveToFirstPageButtonClick;
+            if (this.moveToPreviousPageButton != null)
+                this.moveToPreviousPageButton.Click -= OnMoveToPreviousPageButtonClick;
+            if (this.moveToNextPageButton != null)
+                this.moveToNextPageButton.Click -= OnMoveToNextPageButtonClick;
+            if (this.moveToLastPageButton != null)
+                this.moveToLastPageButton.Click -= OnMoveToLastPageButtonClick;
+            if (this.currentPageTextBox != null)
+                this.currentPageTextBox.KeyUp -= OnCurrentPageTextBoxKeyUp;
+
             this.moveToFirstPageButton = this.GetTemplateChild(MoveToFirstPageButtonPartName) as Button;
             this.moveToPreviousPageButton = GetTemplateChild(MoveToPreviousPageButtonPartName) as Button;
             this.moveToNextPageButton = GetTemplateChild(MoveToNextPageButtonPartName) as Button;
@@ -81,12 +92,6 @@ namespace NavigationSample.Wpf.Controls
 
         private void HandleEvents()
         {
-            this.moveToFirstPageButton.Click -= OnMoveToFirstPageButtonClick;
-            this.moveToPreviousPageButton.Click -= OnMoveToPreviousPageButtonClick;
-            this.moveToNextPageButton.Click -= OnMoveToNextPageButtonClick;
-            this.moveToLastPageButton.Click -= OnMoveToLastPageButtonClick;
-            this.currentPageTextBox.KeyUp -= OnCurrentPageTextBoxKeyUp;
-
             this.moveToFirstPageButton.Click += OnMoveToFirstPageButtonClick;
             this.moveToPreviousPageButton.Click += OnMoveToPreviousPageButtonClick;
             this.moveToNextPageButton.Click += OnMoveToNextPageButtonClick;
@@ -112,7 +117,7 @@ namespace NavigationSample.Wpf.Controls
 
         private void OnPagedSourcePageChanged(object sender, PageChangeEventArgs e)
         {
-            SelectPageAndUpdateVisualStates();
+            SelectPageAndUpdateButtonStates();
         }
 
         private void OnDataPagerRefreshed(object sender, EventArgs e)
@@ -120,11 +125,11 @@ namespace NavigationSample.Wpf.Controls
             Refresh();
         }
 
-        private void SelectPageAndUpdateVisualStates()
+        private void SelectPageAndUpdateButtonStates()
         {
             if (AutoEllipsisMode == AutoEllipsisMode.Both)
                 SelectNumericButton();
-            UpdateVisualStates();
+            UpdateButtonStates();
         }
 
         public void Refresh()
@@ -132,7 +137,7 @@ namespace NavigationSample.Wpf.Controls
             if (AutoEllipsisMode == AutoEllipsisMode.Both)
                 CreateNumericButtons(0);
 
-            UpdateVisualStates();
+            UpdateButtonStates();
         }
 
         private void OnCurrentPageTextBoxKeyUp(object sender, KeyEventArgs e)
@@ -143,7 +148,7 @@ namespace NavigationSample.Wpf.Controls
                 if (int.TryParse(textBox.Text, out int currentPage))
                 {
                     PagedSource.MoveToPage(currentPage - 1);
-                    SelectPageAndUpdateVisualStates();
+                    SelectPageAndUpdateButtonStates();
                 }
             }
         }
@@ -151,25 +156,25 @@ namespace NavigationSample.Wpf.Controls
         private void OnMoveToLastPageButtonClick(object sender, RoutedEventArgs e)
         {
             PagedSource.MoveToLastPage();
-            SelectPageAndUpdateVisualStates();
+            SelectPageAndUpdateButtonStates();
         }
 
         private void OnMoveToNextPageButtonClick(object sender, RoutedEventArgs e)
         {
             PagedSource.MoveToNextPage();
-            SelectPageAndUpdateVisualStates();
+            SelectPageAndUpdateButtonStates();
         }
 
         private void OnMoveToPreviousPageButtonClick(object sender, RoutedEventArgs e)
         {
             PagedSource.MoveToPreviousPage();
-            SelectPageAndUpdateVisualStates();
+            SelectPageAndUpdateButtonStates();
         }
 
         private void OnMoveToFirstPageButtonClick(object sender, RoutedEventArgs e)
         {
             PagedSource.MoveToFirstPage();
-            SelectPageAndUpdateVisualStates();
+            SelectPageAndUpdateButtonStates();
         }
 
         private void SelectNumericButton()
@@ -189,7 +194,7 @@ namespace NavigationSample.Wpf.Controls
             CreateNumericButtons(PagedSource.PageIndex);
         }
 
-        private void UpdateVisualStates()
+        private void UpdateButtonStates()
         {
             if (PagedSource.CanMoveToPreviousPage)
             {
@@ -295,12 +300,12 @@ namespace NavigationSample.Wpf.Controls
                     pageIndex = PagedSource.PageCount - 1;
 
                 PagedSource.MoveToPage(pageIndex);
-                SelectPageAndUpdateVisualStates();
+                SelectPageAndUpdateButtonStates();
             }
             else
             {
                 PagedSource.MoveToPage(numericButton.PageIndex);
-                SelectPageAndUpdateVisualStates();
+                SelectPageAndUpdateButtonStates();
             }
         }
     }

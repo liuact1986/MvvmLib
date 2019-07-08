@@ -1095,6 +1095,9 @@ this.CollectionView.AddNewItem(user);
 </code></pre>
 
 <h2 id="pagedsource">PagedSource<a class="headerlink" href="#pagedsource" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>PagedSource is a Paged CollectionView that implements ICollectionView and IEditableCollectionViewAddNewItem. Grouping is not supported.</p>
+</blockquote>
 <h3 id="paging">Paging<a class="headerlink" href="#paging" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <pre><code class="cs">this.People = new ObservableCollection&lt;Person&gt;(peopleList);
 this.PagedSource = new PagedSource(People, 10);
@@ -1169,6 +1172,7 @@ this.PagedSource = new PagedSource(People, 10);
 <li>Rank (position + 1)</li>
 <li>CanMoveCurrentToPrevious</li>
 <li>CanMoveCurrentToNext</li>
+<li>etc.</li>
 </ul>
 <p>Commands</p>
 <ul>
@@ -1186,6 +1190,8 @@ this.PagedSource = new PagedSource(People, 10);
 <li>MoveCurrentToNext</li>
 <li>MoveCurrentToLast</li>
 <li>MoveCurrentTo with position or item</li>
+<li>DeferRefresh</li>
+<li>etc.</li>
 </ul>
 <p>bind to current item</p>
 <pre><code class="xml">&lt;ContentControl Content=&quot;{Binding PagedSource.CurrentItem, Mode=OneWay}&quot; 
@@ -1295,6 +1301,35 @@ PagedSource.SortByDescending(&quot;Age&quot;, true);
 <li>IsEditingItem</li>
 <li>CurrentEditItem</li>
 </ul>
+<p>DeferRefresh: allows to defer refresh. Avoid multiple calls of CurrentChanged.</p>
+<p>Example:</p>
+<pre><code class="cs">var people = new ObservableCollection&lt;Person&gt;
+{
+    new Person { Name =&quot;Patrock&quot;, Age = 20 },
+    new Person { Name = &quot;Marie&quot;, Age = 30 },
+    new Person { Name = &quot;Deborah&quot;, Age = 22 }
+};
+
+var collectionView = new PagedSource(people);
+collectionView.CurrentChanged += (s,e) =&gt; { };
+DataGrid1.ItemsSource = collectionView;
+
+// current changed is called 3 times
+collectionView.SortDescriptions.Add(new SortDescription(&quot;Name&quot;, ListSortDirection.Ascending));
+collectionView.SortDescriptions.Clear();
+collectionView.SortDescriptions.Add(new SortDescription(&quot;Age&quot;, ListSortDirection.Ascending));
+</code></pre>
+
+<p>With DeferRefresh</p>
+<pre><code class="cs">// current changed is called one time
+using (collectionView.DeferRefresh())
+{
+    collectionView.SortDescriptions.Add(new SortDescription(&quot;Name&quot;, ListSortDirection.Ascending));
+    collectionView.SortDescriptions.Clear();
+    collectionView.SortDescriptions.Add(new SortDescription(&quot;Age&quot;, ListSortDirection.Ascending));
+}
+</code></pre>
+
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Bind the Items collection and the SelectedItem of the SharedSource is easy.</p>
 <p><strong>IIsSelected</strong> allows to be notified from ViewModel of selection.</p>

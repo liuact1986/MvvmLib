@@ -30,10 +30,6 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.eventAggregator = eventAggregator;
 
-
-            this.People = new ObservableCollection<PersonModel>();
-            this.PagedSource = new PagedSource(People, 10);
-
             SelectImageCommand = new RelayCommand(SelectImage);
             FilterCommand = new RelayCommand<string>(Filter);
             SortCommand = new RelayCommand(Sort);
@@ -146,13 +142,23 @@ namespace NavigationSample.Wpf.ViewModels
         {
             int count = 100;
             var random = new Random();
+
+            var list = new List<PersonModel>();
             for (int i = 0; i < count; i++)
             {
                 int rank = i + 1;
                 var age = random.Next(15, 80);
                 var person = new PersonModel { Id = rank, FirstName = $"First.{rank}", LastName = $"Last.{rank}", Age = age };
-                People.Add(person);
+                list.Add(person);
             }
+            People = new ObservableCollection<PersonModel>(list);
+            this.PagedSource = new PagedSource(People, 10);
+            this.PagedSource.CurrentChanged += PagedSource_CurrentChanged;
+        }
+
+        private void PagedSource_CurrentChanged(object sender, EventArgs e)
+        {
+            
         }
 
         public void OnNavigatingFrom(NavigationContext navigationContext)

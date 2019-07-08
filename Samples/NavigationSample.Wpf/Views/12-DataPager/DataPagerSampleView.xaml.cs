@@ -23,5 +23,12 @@ namespace NavigationSample.Wpf.Views
                 }
             }
         }
+
+        ////private void DataGrid1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        ////{
+        ////    var index = (sender as DataGrid).SelectedIndex;
+        ////    var viewModel = DataContext as DataPagerSampleViewModel;
+        ////    viewModel.PagedSource.MoveCurrentToPosition(index);
+        ////}
     }
 }

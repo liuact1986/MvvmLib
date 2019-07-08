@@ -166,10 +166,9 @@
 
         <DataGrid x:Name="DataGrid1" 
                   ItemsSource="{Binding PagedSource}" 
-                  SelectedIndex="{Binding PagedSource.CurrentPosition}"
                   AutoGenerateColumns="False" 
                   IsReadOnly="True" 
-                  Grid.Row="1">
+                  Grid.Row="1" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="First Name" Width="*" Binding="{Binding FirstName}" />
                 <DataGridTextColumn Header="Last Name" Width="*" Binding="{Binding LastName}" />
@@ -249,8 +248,6 @@
                 </ComboBox>
 
             </StackPanel>
-
-            <!--<StackPanel x:Name="PagingMenu" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" />-->
 
         </Grid>
     </Grid>

@@ -561,7 +561,7 @@ namespace MvvmLib.Animation
         {
             var target = XamlHelper.FindParent<ContentPresenter>(element);
             if (target != null)
-                return EnumerableHelper.FindIndex(innerItemsControl.Items, target);
+                return EnumerableHelper.IndexOf(innerItemsControl.Items, target);
 
             return -1;
         }
@@ -578,7 +578,7 @@ namespace MvvmLib.Animation
             {
                 var context = target.DataContext;
                 if (context != null)
-                    return EnumerableHelper.FindIndex(innerItemsControl.Items, context);
+                    return EnumerableHelper.IndexOf(innerItemsControl.Items, context);
             }
             return -1;
         }

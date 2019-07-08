@@ -902,6 +902,8 @@ this.CollectionView.AddNewItem(user);
 
 ## PagedSource
 
+> PagedSource is a Paged CollectionView that implements ICollectionView and IEditableCollectionViewAddNewItem. Grouping is not supported.
+
 ### Paging
 
 ```cs
@@ -981,6 +983,7 @@ Properties
 * Rank (position + 1)
 * CanMoveCurrentToPrevious
 * CanMoveCurrentToNext
+* etc.
 
 Commands
 
@@ -998,6 +1001,8 @@ Methods
 * MoveCurrentToNext
 * MoveCurrentToLast
 * MoveCurrentTo with position or item
+* DeferRefresh
+* etc.
 
 bind to current item
 
@@ -1130,6 +1135,41 @@ Properties
 * CanEditem
 * IsEditingItem
 * CurrentEditItem
+
+
+DeferRefresh: allows to defer refresh. Avoid multiple calls of CurrentChanged.
+
+Example:
+
+```cs
+var people = new ObservableCollection<Person>
+{
+    new Person { Name ="Patrock", Age = 20 },
+    new Person { Name = "Marie", Age = 30 },
+    new Person { Name = "Deborah", Age = 22 }
+};
+
+var collectionView = new PagedSource(people);
+collectionView.CurrentChanged += (s,e) => { };
+DataGrid1.ItemsSource = collectionView;
+
+// current changed is called 3 times
+collectionView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+collectionView.SortDescriptions.Clear();
+collectionView.SortDescriptions.Add(new SortDescription("Age", ListSortDirection.Ascending));
+```
+
+With DeferRefresh
+
+```cs
+// current changed is called one time
+using (collectionView.DeferRefresh())
+{
+    collectionView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+    collectionView.SortDescriptions.Clear();
+    collectionView.SortDescriptions.Add(new SortDescription("Age", ListSortDirection.Ascending));
+}
+```
 
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior

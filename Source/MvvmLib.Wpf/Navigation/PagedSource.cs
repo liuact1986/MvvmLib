@@ -12,14 +12,14 @@ namespace MvvmLib.Navigation
 {
 
     /// <summary>
-    /// PagedSource for DataGrid, etc.
+    /// A PagedSource is a Paged CollectionView.
     /// </summary>
     public class PagedSource : IPagedSource
     {
         private ArrayList shadowCollection;
         private ArrayList internalList;
-        private Type elementType;
         private bool handleCollectionChanged;
+        private Type elementType;
         private bool oldCanMoveCurrentToPrevious;
         private bool oldCanMoveCurrentToNext;
 
@@ -31,34 +31,6 @@ namespace MvvmLib.Navigation
         public object this[int index]
         {
             get { return internalList[index]; }
-        }
-
-        private IEnumerable sourceCollection;
-        /// <summary>
-        /// The source collection.
-        /// </summary>
-        public IEnumerable SourceCollection
-        {
-            get { return sourceCollection; }
-        }
-
-        private CultureInfo culture;
-        /// <summary>
-        /// The culture. Used with sort descriptions.
-        /// </summary>
-        public CultureInfo Culture
-        {
-            get { return culture; }
-            set { culture = value; }
-        }
-
-        private SortDescriptionCollection sortDescriptions;
-        /// <summary>
-        /// The sort desciptions. 
-        /// </summary>
-        public SortDescriptionCollection SortDescriptions
-        {
-            get { return sortDescriptions; }
         }
 
         private IRelayCommand sortByCommand;
@@ -171,40 +143,6 @@ namespace MvvmLib.Navigation
             get { return end; }
         }
 
-        private Predicate<object> filter;
-        /// <summary>
-        /// The filter.
-        /// </summary>
-        public Predicate<object> Filter
-        {
-            get { return filter; }
-            set
-            {
-                if (!Equals(filter, value))
-                {
-                    filter = value;
-                    Refresh();
-                }
-            }
-        }
-
-        private IComparer customSort;
-        /// <summary>
-        /// The custom sort.
-        /// </summary>
-        public IComparer CustomSort
-        {
-            get { return customSort; }
-            set
-            {
-                if (!Equals(customSort, value))
-                {
-                    customSort = value;
-                    Refresh();
-                }
-            }
-        }
-
         /// <summary>
         /// Checks if can move to previous page.
         /// </summary>
@@ -296,49 +234,13 @@ namespace MvvmLib.Navigation
 
         #region Move
 
-        private object currentItem;
+        private int deferLevel;
         /// <summary>
-        /// The current item.
+        /// Gets a value that indicates if DeferRefresh() is in use.
         /// </summary>
-        public object CurrentItem
+        public bool IsRefreshDeferred
         {
-            get { return currentItem; }
-        }
-
-        private int currentPosition;
-        /// <summary>
-        /// The current position.
-        /// </summary>
-        public int CurrentPosition
-        {
-            get { return currentPosition; }
-            set
-            {
-                if (!Equals(currentPosition, value))
-                {
-                    if (value < 0)
-                    {
-                        SetCurrent(-1, null);
-                    }
-                    else
-                    {
-                        if (value > this.internalList.Count - 1)
-                            throw new IndexOutOfRangeException();
-
-                        var item = this.internalList[value];
-                        SetCurrent(value, item);
-                    }
-                }
-            }
-        }
-
-        private int rank;
-        /// <summary>
-        /// The rank (current position + 1).
-        /// </summary>
-        public int Rank
-        {
-            get { return rank; }
+            get { return deferLevel > 0; }
         }
 
         /// <summary>
@@ -355,6 +257,153 @@ namespace MvvmLib.Navigation
         public bool CanMoveCurrentToNext
         {
             get { return this.currentPosition < this.internalList.Count - 1; }
+        }
+
+        private CultureInfo culture;
+        /// <summary>
+        /// The culture. Used by <see cref="SortDescriptions"/>.
+        /// </summary>
+        public CultureInfo Culture
+        {
+            get { return culture; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                if (!Equals(culture, value))
+                {
+                    culture = value;
+                    OnPropertyChanged(nameof(Culture));
+                }
+            }
+        }
+
+        private IEnumerable sourceCollection;
+        /// <summary>
+        /// The source collection.
+        /// </summary>
+        public IEnumerable SourceCollection
+        {
+            get { return sourceCollection; }
+        }
+
+        private Predicate<object> filter;
+        /// <summary>
+        /// The filter.
+        /// </summary>
+        public Predicate<object> Filter
+        {
+            get { return filter; }
+            set
+            {
+                if (!Equals(filter, value))
+                {
+                    filter = value;
+                    Refresh();
+                }
+            }
+        }
+
+        private IComparer customSort;
+        /// <summary>
+        /// The custom sort.
+        /// </summary>
+        public IComparer CustomSort
+        {
+            get { return customSort; }
+            set
+            {
+                if (!Equals(customSort, value))
+                {
+                    customSort = value;
+                    Refresh();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if filtering is available.
+        /// </summary>
+        public bool CanFilter
+        {
+            get { return true; }
+        }
+
+        private SortDescriptionCollection sortDescriptions;
+        /// <summary>
+        /// The sort descriptions.
+        /// </summary>
+        public SortDescriptionCollection SortDescriptions
+        {
+            get { return sortDescriptions; }
+        }
+
+        /// <summary>
+        /// Checks if sorting is available.
+        /// </summary>
+        public bool CanSort
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Checks if grouping is available.
+        /// </summary>
+        public bool CanGroup
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// The group descriptions.
+        /// </summary>
+        public ObservableCollection<GroupDescription> GroupDescriptions
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        /// The groups.
+        /// </summary>
+        public ReadOnlyObservableCollection<object> Groups
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        /// <summary>
+        /// Checks if collection is empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get { return this.internalList.Count == 0; }
+        }
+
+        private int rank;
+        /// <summary>
+        /// The rank (current position + 1).
+        /// </summary>
+        public int Rank
+        {
+            get { return rank; }
+        }
+
+        private object currentItem;
+        /// <summary>
+        /// The current item.
+        /// </summary>
+        public object CurrentItem
+        {
+            get { return currentItem; }
+        }
+
+        private int currentPosition;
+        /// <summary>
+        /// The current position.
+        /// </summary>
+        public int CurrentPosition
+        {
+            get { return currentPosition; }
         }
 
         private IRelayCommand moveCurrentToFirstCommand;
@@ -457,9 +506,38 @@ namespace MvvmLib.Navigation
             }
         }
 
+        /// <summary>
+        /// Checks if after the last item.
+        /// </summary>
+        public bool IsCurrentAfterLast
+        {
+            get { return this.currentPosition > this.internalList.Count; }
+        }
+
+        /// <summary>
+        /// Checks if is before the first item.
+        /// </summary>
+        public bool IsCurrentBeforeFirst
+        {
+            get { return this.currentPosition < 0; }
+        }
+
         #endregion // Move
 
-        #region editing
+        #region Editing
+
+        /// <summary>
+        /// The new item place holder. At beginning or at the end (default).
+        /// </summary>
+        public NewItemPlaceholderPosition NewItemPlaceholderPosition
+        {
+            get { return NewItemPlaceholderPosition.None; }
+            set
+            {
+                if (value != NewItemPlaceholderPosition.None)
+                    throw new NotSupportedException("NewItemPlaceholder is not currently supported");
+            }
+        }
 
         private bool canAddNew;
         /// <summary>
@@ -513,6 +591,31 @@ namespace MvvmLib.Navigation
         public object CurrentEditItem
         {
             get { return currentEditItem; }
+        }
+
+        private bool canRemove;
+        /// <summary>
+        /// Checks if can remove.
+        /// </summary>
+        public bool CanRemove
+        {
+            get { return canRemove; }
+        }
+
+        /// <summary>
+        /// Checks if can cancel edit.
+        /// </summary>
+        public bool CanCancelEdit
+        {
+            get { return currentEditItem is IEditableObject; }
+        }
+
+        /// <summary>
+        /// Checks if can add new item.
+        /// </summary>
+        public bool CanAddNewItem
+        {
+            get { return !IsEditingItem; }
         }
 
         private IRelayCommand addNewCommand;
@@ -585,12 +688,27 @@ namespace MvvmLib.Navigation
             }
         }
 
-        #endregion // editing
+        #endregion // Editing
 
         /// <summary>
         /// Invoked on property changed.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Invoked on current changing. Allows to cancel changing.
+        /// </summary>
+        public event CurrentChangingEventHandler CurrentChanging;
+
+        /// <summary>
+        /// Invoked on current changed.
+        /// </summary>
+        public event EventHandler CurrentChanged;
+
+        /// <summary>
+        /// Invoked on collection changed.
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary>
         /// Invoked on refreshed.
@@ -606,11 +724,6 @@ namespace MvvmLib.Navigation
         /// Invoked on page changed.
         /// </summary>
         public event EventHandler<PageChangeEventArgs> PageChanged;
-
-        /// <summary>
-        /// Invoked on collection changed.
-        /// </summary>
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         /// <summary>
         /// Creates the <see cref="PagedSource"/>.
@@ -665,6 +778,7 @@ namespace MvvmLib.Navigation
                 {
                     this.canAddNew = true;
                     this.canEditItem = true;
+                    this.canRemove = true;
                 }
             }
 
@@ -675,7 +789,7 @@ namespace MvvmLib.Navigation
                 ((INotifyCollectionChanged)sourceCollection).CollectionChanged += OnSourceCollectionChanged;
             }
 
-           ((INotifyCollectionChanged)this.sortDescriptions).CollectionChanged += OnSortDesciptionsCollectionChanged;
+            ((INotifyCollectionChanged)this.sortDescriptions).CollectionChanged += OnSortDesciptionsCollectionChanged;
 
             this.pageSize = pageSize;
             this.totalCount = shadowCollection.Count; //EnumerableHelper.Count(sourceCollection);
@@ -685,32 +799,16 @@ namespace MvvmLib.Navigation
             MoveToPageInternal(0);
         }
 
+        private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (this.handleCollectionChanged)
+                this.Refresh();
+        }
+
         private void OnSortDesciptionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             this.Refresh();
         }
-
-        private int GetPageCount(int pageSize)
-        {
-            // number of pages with collection filtered
-            var pageCount = Math.Max(1, (int)Math.Ceiling((double)totalCount / pageSize));
-            return pageCount;
-        }
-
-        private Type GetElementType(Type type)
-        {
-            var interfaceTypes = type.GetInterfaces();
-            foreach (var interfaceType in interfaceTypes)
-            {
-                if (interfaceType.IsGenericType && (interfaceType.GetGenericTypeDefinition() == typeof(IList<>)
-                    || interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>)))
-                {
-                    return interfaceType.GetGenericArguments()[0];
-                }
-            }
-            return typeof(object);
-        }
-
 
         #region Events
 
@@ -722,11 +820,6 @@ namespace MvvmLib.Navigation
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
-        }
-
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, object item, int index)
-        {
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, item, index));
         }
 
         private void OnRefreshed()
@@ -742,6 +835,11 @@ namespace MvvmLib.Navigation
         private void OnPageChanging(int pageIndex)
         {
             PageChanging?.Invoke(this, new PageChangeEventArgs(pageIndex));
+        }
+
+        private void OnCurrentChanged()
+        {
+            this.CurrentChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion // Events
@@ -904,57 +1002,187 @@ namespace MvvmLib.Navigation
 
         #endregion // Commands
 
-        private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        /// <summary>
+        /// Checks if the view contains the item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Contains(object item)
         {
-            if (this.handleCollectionChanged)
-                this.Refresh();
+            return this.internalList.Contains(item);
         }
 
-        #region Paging
-
-        private void ApplySort()
+        /// <summary>
+        /// Allows to defer refresh. Avoid multiple calls of <see cref="CurrentChanged"/>.
+        /// </summary>
+        /// <returns>The defer helper.</returns>
+        public IDisposable DeferRefresh()
         {
-            if (customSort != null)
-            {
-                this.shadowCollection.Sort(customSort);
-            }
-            else if (this.sortDescriptions.Count > 0)
-            {
-                var sortComparer = new SortPropertyComparer(sortDescriptions, culture);
-                this.shadowCollection.Sort(sortComparer);
-            }
+            ++deferLevel;
+            return new DeferHelper(this);
         }
 
-        private void ApplyFilter()
+        void EndDefer()
         {
-            this.shadowCollection.Clear();
-            foreach (var item in this.sourceCollection)
+            --deferLevel;
+
+            if (deferLevel == 0)
             {
-                if (filter == null || filter(item))
-                    this.shadowCollection.Add(item);
+                Refresh();
             }
         }
 
         /// <summary>
-        /// Allows to refresh the internal list. Usefull for a <see cref="SourceCollection"/> that does not implement <see cref="INotifyCollectionChanged"/>.
+        /// The enumerator. Allows to bind directly to the <see cref="PagedSource"/>.
         /// </summary>
-        public void Refresh()
+        /// <returns></returns>
+        public IEnumerator GetEnumerator()
         {
-            // filter apply on all internal list => add only items from source collection that pass filter => require to reset list then filter
-            ApplyFilter();
-            // apply sort on all items internal list
-            ApplySort();
+            return this.internalList.GetEnumerator();
+        }
 
-            this.totalCount = shadowCollection.Count; // EnumerableHelper.Count(sourceCollection); // only on source collection changed
-            OnPropertyChanged(nameof(TotalCount));
+        /// <summary>
+        /// Allows to move to the first item.
+        /// </summary>
+        public bool MoveCurrentToFirst()
+        {
+            if (this.internalList.Count > 0)
+            {
+                return this.MoveCurrentToPositionInternal(0);
+            }
+            return false;
+        }
 
-            // page count updated on total items changed or page size changed
-            this.pageCount = GetPageCount(pageSize);
-            OnPropertyChanged(nameof(PageCount));
+        /// <summary>
+        /// Allows to move to the previous item.
+        /// </summary>
+        public bool MoveCurrentToPrevious()
+        {
+            if (CanMoveCurrentToPrevious)
+            {
+                return MoveCurrentToPositionInternal(currentPosition - 1);
+            }
+            return false;
+        }
 
-            MoveToPageInternal(0);
+        /// <summary>
+        /// Allows to move to the next item.
+        /// </summary>
+        public bool MoveCurrentToNext()
+        {
+            if (CanMoveCurrentToNext)
+            {
+                return this.MoveCurrentToPositionInternal(currentPosition + 1);
+            }
+            return false;
+        }
 
-            OnRefreshed();
+        /// <summary>
+        /// Allows to move to the last item.
+        /// </summary>
+        public bool MoveCurrentToLast()
+        {
+            if (CanMoveCurrentToNext)
+            {
+                return this.MoveCurrentToPositionInternal(internalList.Count - 1);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Allows to move to the position.
+        /// </summary>
+        /// <param name="position">The position</param>
+        public bool MoveCurrentToPosition(int position)
+        {
+            if (position >= 0 && position < this.internalList.Count)
+            {
+                return this.MoveCurrentToPositionInternal(position);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Allows to move to the item.
+        /// </summary>
+        /// <param name="item">The item</param>
+        public bool MoveCurrentTo(object item)
+        {
+            int index = internalList.IndexOf(item);
+            if (index != -1)
+            {
+                if (CheckCanChangeCurrent())
+                {
+                    SetCurrent(index, item);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool MoveCurrentToPositionInternal(int position)
+        {
+            if (position < 0 || position > internalList.Count - 1)
+                throw new IndexOutOfRangeException();
+
+            var item = internalList[position];
+            if (CheckCanChangeCurrent())
+            {
+                SetCurrent(position, item);
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckCanChangeCurrent()
+        {
+            var eventArgs = new CurrentChangingEventArgs();
+            CurrentChanging?.Invoke(this, eventArgs);
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void SetCurrent(int position, object item)
+        {
+            this.currentPosition = position;
+            rank = position != -1 ? position + 1 : -1;
+            this.currentItem = item;
+            OnPropertyChanged(nameof(CurrentPosition));
+            OnPropertyChanged(nameof(Rank));
+            OnPropertyChanged(nameof(CurrentItem));
+
+            CheckCanMoveCurrent();
+
+            OnCurrentChanged();
+        }
+
+        private void CheckCanMoveCurrent()
+        {
+            if (CanMoveCurrentToPrevious != oldCanMoveCurrentToPrevious)
+            {
+                moveCurrentToFirstCommand?.RaiseCanExecuteChanged();
+                moveCurrentToPreviousCommand?.RaiseCanExecuteChanged();
+                this.oldCanMoveCurrentToPrevious = CanMoveCurrentToPrevious;
+            }
+            if (CanMoveCurrentToNext != oldCanMoveCurrentToNext)
+            {
+                moveCurrentToNextCommand?.RaiseCanExecuteChanged();
+                moveCurrentToLastCommand?.RaiseCanExecuteChanged();
+                this.oldCanMoveCurrentToNext = CanMoveCurrentToNext;
+            }
+        }
+
+
+        #region Paging
+
+        private int GetPageCount(int pageSize)
+        {
+            // number of pages with collection filtered
+            var pageCount = Math.Max(1, (int)Math.Ceiling((double)totalCount / pageSize));
+            return pageCount;
         }
 
         private void CheckCanMove(bool oldCanMoveToPreviousPage, bool oldCanMoveToNextPage)
@@ -1015,14 +1243,12 @@ namespace MvvmLib.Navigation
         private void TakeItems(int startIndex, int count)
         {
             this.internalList.Clear();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-
             for (int index = startIndex; index < count; index++)
             {
                 var item = shadowCollection[index];
                 this.internalList.Add(item);
-                OnCollectionChanged(NotifyCollectionChangedAction.Add, item, index);
             }
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>
@@ -1144,129 +1370,71 @@ namespace MvvmLib.Navigation
             SortBy(propertyName, ListSortDirection.Ascending, clearSortDescriptions);
         }
 
-        #region Move
-
-        /// <summary>
-        /// Allows to move to the first item.
-        /// </summary>
-        public bool MoveCurrentToFirst()
+        private void ApplySort()
         {
-            if (this.internalList.Count > 0)
+            if (customSort != null)
             {
-                this.MoveCurrentToPositionInternal(0);
-                return true;
+                this.shadowCollection.Sort(customSort);
             }
-            return false;
+            else if (this.sortDescriptions.Count > 0)
+            {
+                var sortComparer = new SortPropertyComparer(sortDescriptions, culture);
+                this.shadowCollection.Sort(sortComparer);
+            }
         }
 
-        /// <summary>
-        /// Allows to move to the previous item.
-        /// </summary>
-        public bool MoveCurrentToPrevious()
+        private void ApplyFilter()
         {
-            if (CanMoveCurrentToPrevious)
+            this.shadowCollection.Clear();
+            foreach (var item in this.sourceCollection)
             {
-                MoveCurrentToPositionInternal(currentPosition - 1);
-                return true;
+                if (filter == null || filter(item))
+                    this.shadowCollection.Add(item);
             }
-            return false;
         }
 
         /// <summary>
-        /// Allows to move to the next item.
+        /// Allows to refresh the internal list. Usefull for a <see cref="SourceCollection"/> that does not implement <see cref="INotifyCollectionChanged"/>.
         /// </summary>
-        public bool MoveCurrentToNext()
+        public void Refresh()
         {
-            if (CanMoveCurrentToNext)
-            {
-                this.MoveCurrentToPositionInternal(currentPosition + 1);
-                return true;
-            }
-            return false;
+            if (IsRefreshDeferred)
+                return;
+
+            // apply filter apply on all (internal list) => add only items from source collection that pass filter => require to reset list then filter
+            ApplyFilter();
+            // apply sort on all items (internal list)
+            ApplySort();
+
+            this.totalCount = shadowCollection.Count;
+            OnPropertyChanged(nameof(TotalCount));
+
+            // page count updated on total items changed or page size changed
+            this.pageCount = GetPageCount(pageSize);
+            OnPropertyChanged(nameof(PageCount));
+
+            MoveToPageInternal(0);
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+            OnRefreshed();
         }
-
-        /// <summary>
-        /// Allows to move to the last item.
-        /// </summary>
-        public bool MoveCurrentToLast()
-        {
-            if (CanMoveCurrentToNext)
-            {
-                this.MoveCurrentToPositionInternal(internalList.Count - 1);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Allows to move to the position.
-        /// </summary>
-        /// <param name="position">The position</param>
-        public bool MoveCurrentToPosition(int position)
-        {
-            if (position >= 0 && position < this.internalList.Count)
-            {
-                this.MoveCurrentToPositionInternal(position);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Allows to move to the item.
-        /// </summary>
-        /// <param name="item">The item</param>
-        public bool MoveCurrentTo(object item)
-        {
-            int index = internalList.IndexOf(item);
-            if (index != -1)
-            {
-                SetCurrent(index, item);
-                return true;
-            }
-            return false;
-        }
-
-        private void MoveCurrentToPositionInternal(int position)
-        {
-            if (position < 0 || position > internalList.Count - 1)
-                throw new IndexOutOfRangeException();
-
-            var item = internalList[position];
-            SetCurrent(position, item);
-        }
-
-        private void SetCurrent(int position, object item)
-        {
-            this.currentPosition = position;
-            rank = position != -1 ? position + 1 : -1;
-            this.currentItem = item;
-            OnPropertyChanged(nameof(CurrentPosition));
-            OnPropertyChanged(nameof(Rank));
-            OnPropertyChanged(nameof(CurrentItem));
-
-            CheckCanMoveCurrent();
-        }
-
-        private void CheckCanMoveCurrent()
-        {
-            if (CanMoveCurrentToPrevious != oldCanMoveCurrentToPrevious)
-            {
-                moveCurrentToFirstCommand?.RaiseCanExecuteChanged();
-                moveCurrentToPreviousCommand?.RaiseCanExecuteChanged();
-                this.oldCanMoveCurrentToPrevious = CanMoveCurrentToPrevious;
-            }
-            if (CanMoveCurrentToNext != oldCanMoveCurrentToNext)
-            {
-                moveCurrentToNextCommand?.RaiseCanExecuteChanged();
-                moveCurrentToLastCommand?.RaiseCanExecuteChanged();
-                this.oldCanMoveCurrentToNext = CanMoveCurrentToNext;
-            }
-        }
-
-        #endregion // Move
 
         #region editing
+
+        private Type GetElementType(Type type)
+        {
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType.IsGenericType && (interfaceType.GetGenericTypeDefinition() == typeof(IList<>)
+                    || interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    return interfaceType.GetGenericArguments()[0];
+                }
+            }
+            return typeof(object);
+        }
 
         /// <summary>
         /// Creates an instance with the <see cref="SourceResolver"/>. Allows to inject dependencies if the factory is overridden with an IoC Container. 
@@ -1306,32 +1474,44 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Adds the new item.
         /// </summary>
-        /// <param name="item">The item</param>
-        public void AddNewItem(object item)
+        /// <param name="newItem">The new item</param>
+        public object AddNewItem(object newItem)
         {
             if (!canAddNew)
                 throw new InvalidOperationException("Add new is not supported");
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-            if (isEditingItem)
-                throw new InvalidOperationException("An item is currently editing. Call CommitEdit or CancelEdit before add a new item.");
-            if (isAddingNew)
-                return;
+            if (newItem == null)
+                throw new ArgumentNullException(nameof(newItem));
+
+            // implicit commit
+            if (IsAddingNew)
+                CommitNew();
+            if (IsEditingItem)
+                CommitEdit();
 
             this.handleCollectionChanged = false;
-            ((IList)sourceCollection).Add(item);
+
+            ((IList)sourceCollection).Add(newItem);
 
             this.Refresh();
 
-            this.currentAddItem = item;
+            if (newItem is IEditableObject)
+            {
+                ((IEditableObject)newItem).BeginEdit();
+            }
+
+            this.currentAddItem = newItem;
             this.isAddingNew = true;
             OnPropertyChanged(nameof(CurrentAddItem));
             OnPropertyChanged(nameof(IsAddingNew));
 
             MoveToLastPage();
             MoveCurrentToLast();
+
             this.handleCollectionChanged = true;
+
+            return newItem;
         }
+
 
         /// <summary>
         /// Allows to begin edit. If the current item implements <see cref="IEditableObject"/>, "BeginEdit" is invoked.
@@ -1352,10 +1532,12 @@ namespace MvvmLib.Navigation
                 throw new InvalidOperationException("Edit item is not supported");
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
-            if (isAddingNew)
-                throw new InvalidOperationException("An item is currently adding. Call CommitNew or CancelNew before add a new item");
-            if (isEditingItem)
-                return;
+
+            // implicit commit
+            if (IsAddingNew)
+                CommitNew();
+            if (IsEditingItem)
+                CommitEdit();
 
             if (item is IEditableObject)
             {
@@ -1376,10 +1558,10 @@ namespace MvvmLib.Navigation
             if (!this.isAddingNew)
                 throw new InvalidOperationException("Not currently adding new item");
             if (isEditingItem)
-                throw new InvalidOperationException("An item is currently editing. Call CommitEdit or CancelEdit before add a new item.");
+                throw new InvalidOperationException("An item is currently editing");
 
             this.handleCollectionChanged = false;
-            ((IList)sourceCollection).Remove(currentAddItem);
+            ((IList)sourceCollection).Remove(this.currentAddItem);
 
             this.Refresh();
 
@@ -1402,7 +1584,7 @@ namespace MvvmLib.Navigation
             if (!this.isEditingItem)
                 throw new InvalidOperationException("Not currently editing item");
             if (isAddingNew)
-                throw new InvalidOperationException("An item is currently adding. Call CommitNew or CancelNew before add a new item");
+                throw new InvalidOperationException("An item is currently adding");
 
             if (currentEditItem is IEditableObject)
             {
@@ -1423,7 +1605,7 @@ namespace MvvmLib.Navigation
             if (!this.isAddingNew)
                 throw new InvalidOperationException("Not currently adding new item");
             if (isEditingItem)
-                throw new InvalidOperationException("An item is currently editing. Call CommitEdit or CancelEdit before add a new item.");
+                throw new InvalidOperationException("An item is currently editing");
 
             this.currentAddItem = null;
             this.isAddingNew = false;
@@ -1457,7 +1639,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="item">The item</param>
         /// <returns>True if removed</returns>
-        public bool Remove(object item)
+        public void Remove(object item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -1466,9 +1648,7 @@ namespace MvvmLib.Navigation
             if (position != -1)
             {
                 RemoveInternal(position, item);
-                return true;
             }
-            return false;
         }
 
         /// <summary>
@@ -1566,13 +1746,25 @@ namespace MvvmLib.Navigation
 
         #endregion
 
-        /// <summary>
-        /// Gets the enumerator. Allows to bind to the paged source directly.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator GetEnumerator()
+        class DeferHelper : IDisposable
         {
-            return this.internalList.GetEnumerator();
+            private PagedSource collectionView;
+
+            public DeferHelper(PagedSource collectionView)
+            {
+                this.collectionView = collectionView;
+            }
+
+            public void Dispose()
+            {
+                if (collectionView != null)
+                {
+                    collectionView.EndDefer();
+                    collectionView = null;
+                }
+
+                GC.SuppressFinalize(this);
+            }
         }
     }
 
