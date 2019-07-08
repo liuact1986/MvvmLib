@@ -1144,7 +1144,7 @@ Example:
 ```cs
 var people = new ObservableCollection<Person>
 {
-    new Person { Name ="Patrock", Age = 20 },
+    new Person { Name ="Ben", Age = 20 },
     new Person { Name = "Marie", Age = 30 },
     new Person { Name = "Deborah", Age = 22 }
 };
