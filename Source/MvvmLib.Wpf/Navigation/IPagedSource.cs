@@ -28,7 +28,7 @@ namespace MvvmLib.Navigation
         IRelayCommand SortByDescendingCommand { get; }
 
         /// <summary>
-        /// The total of items after applying the filter and sorting
+        /// The total of items after applying the filter and sorting.
         /// </summary>
         int TotalCount { get; }
 
@@ -53,7 +53,7 @@ namespace MvvmLib.Navigation
         int PageIndex { get; }
 
         /// <summary>
-        /// The current page (page index + 1)
+        /// The current page (page index + 1).
         /// </summary>
         int CurrentPage { get; }
 

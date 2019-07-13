@@ -49,6 +49,8 @@
 
 <li class="tocentry"><a href="#composite-command">Composite command</a></li>
 
+<li class="tocentry"><a href="#asynccommand">AsyncCommand</a></li>
+
 <li class="tocentry"><a href="#sync-data">Sync Data</a></li>
 
 <li class="tocentry"><a href="#singleton">Singleton</a></li>
@@ -935,6 +937,50 @@ public class ApplicationCommands : IApplicationCommands
         
     &lt;/Grid&gt;
 &lt;/Window&gt;
+</code></pre>
+
+<h2 id="asynccommand">AsyncCommand<a class="headerlink" href="#asynccommand" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example</p>
+<pre><code class="cs">public class MainWindowViewModel : BindableBase
+{
+    private bool isBusy;
+    public bool IsBusy
+    {
+        get { return isBusy; }
+        set { SetProperty(ref isBusy, value); }
+    }
+
+    public AsyncCommand MyCommand { get; set; }
+
+    public MainWindowViewModel()
+    {
+        MyCommand = new AsyncCommand(ExecuteMyCommand);
+    }
+
+    private async Task ExecuteMyCommand()
+    {
+        IsBusy = true;
+
+        await Task.Delay(3000);
+
+        IsBusy = false;
+    }
+}
+</code></pre>
+
+<p>Supports cancellation:</p>
+<pre><code class="cs">MyCommand.Cancel(); 
+// other sample 
+MyCommand.CancellationTokenSource.CancelAfter(500);
+</code></pre>
+
+<p>Checks cancellation</p>
+<pre><code class="cs">if (MyCommand.IsCancellationRequested)
+    return;
+</code></pre>
+
+<p>Handle exception</p>
+<pre><code class="cs">MyCommand = new AsyncCommand(ExecuteMyCommand, ex =&gt; { });
 </code></pre>
 
 <h2 id="sync-data">Sync Data<a class="headerlink" href="#sync-data" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>

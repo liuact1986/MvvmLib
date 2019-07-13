@@ -852,6 +852,59 @@ Bind the composite command in the Shell
 </Window>
 ```
 
+## AsyncCommand
+
+
+Example
+
+```cs
+public class MainWindowViewModel : BindableBase
+{
+    private bool isBusy;
+    public bool IsBusy
+    {
+        get { return isBusy; }
+        set { SetProperty(ref isBusy, value); }
+    }
+
+    public AsyncCommand MyCommand { get; set; }
+
+    public MainWindowViewModel()
+    {
+        MyCommand = new AsyncCommand(ExecuteMyCommand);
+    }
+
+    private async Task ExecuteMyCommand()
+    {
+        IsBusy = true;
+
+        await Task.Delay(3000);
+
+        IsBusy = false;
+    }
+}
+```
+
+Supports cancellation:
+
+```cs
+MyCommand.Cancel(); 
+// other sample 
+MyCommand.CancellationTokenSource.CancelAfter(500);
+```
+
+Checks cancellation
+
+```cs
+if (MyCommand.IsCancellationRequested)
+    return;
+```
+
+Handle exception
+
+```cs
+MyCommand = new AsyncCommand(ExecuteMyCommand, ex => { });
+```
 
 ## Sync Data
 

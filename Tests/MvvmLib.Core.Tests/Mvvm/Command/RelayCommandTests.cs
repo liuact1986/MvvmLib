@@ -4,6 +4,8 @@ using MvvmLib.Mvvm;
 
 namespace MvvmLib.Core.Tests.Mvvm
 {
+
+
     [TestClass]
     public class RelayCommandTests
     {
@@ -31,11 +33,11 @@ namespace MvvmLib.Core.Tests.Mvvm
             var command = new RelayCommand(() =>
             {
                 isCalled = true;
-            },()=>
-            {
-                isChecked = true;
-                return false;
-            });
+            }, () =>
+             {
+                 isChecked = true;
+                 return false;
+             });
 
             if (command.CanExecute(null))
             {
@@ -155,6 +157,6 @@ namespace MvvmLib.Core.Tests.Mvvm
 
         }
 
- 
+
     }
 }

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.11.7</version>
+    <version>0.11.7.1</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -27,11 +27,10 @@
 * BootstrapperBase: base class for Bootstrapper
 * ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
-    <releaseNotes>PagedSource is a Paged CollectionView that implements ICollectionView and IEditableCollectionViewAddNewItem</releaseNotes>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>
-      <dependency id="MvvmLib.Core" version="0.4.1.0" />
+      <dependency id="MvvmLib.Core" version="0.4.2.0" />
     </dependencies>
   </metadata>
   <files>

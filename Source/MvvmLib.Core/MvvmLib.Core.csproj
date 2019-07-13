@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.4.1.0</Version>
+    <Version>0.4.2.0</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
@@ -21,7 +21,7 @@
     <PackageTags>mvvm, library, wpf, uwp, windows, validation, commands, eventaggregator</PackageTags>
     <Product>MvvmLib.Core</Product>
     <PackageId>MvvmLib.Core</PackageId>
-    <PackageReleaseNotes>* Cloner, keepAlive eventAggregator</PackageReleaseNotes>
+    <PackageReleaseNotes>* AsynCommand</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 

@@ -792,7 +792,7 @@ namespace MvvmLib.Navigation
             ((INotifyCollectionChanged)this.sortDescriptions).CollectionChanged += OnSortDesciptionsCollectionChanged;
 
             this.pageSize = pageSize;
-            this.totalCount = shadowCollection.Count; //EnumerableHelper.Count(sourceCollection);
+            this.totalCount = shadowCollection.Count;
             this.pageCount = GetPageCount(pageSize);
 
             // no filter, no sort, move to first page
@@ -1237,7 +1237,7 @@ namespace MvvmLib.Navigation
             if (itemCount > 0)
                 this.MoveCurrentToPositionInternal(0);
             else
-                SetCurrent(-1, null);
+                SetCurrent(-1, null); // check current changing ?
         }
 
         private void TakeItems(int startIndex, int count)
@@ -1401,9 +1401,9 @@ namespace MvvmLib.Navigation
             if (IsRefreshDeferred)
                 return;
 
-            // apply filter apply on all (internal list) => add only items from source collection that pass filter => require to reset list then filter
+            // apply filter apply on all  => add only items from source collection that pass filter => require to reset list then filter
             ApplyFilter();
-            // apply sort on all items (internal list)
+            // apply sort on all items
             ApplySort();
 
             this.totalCount = shadowCollection.Count;
@@ -1666,6 +1666,9 @@ namespace MvvmLib.Navigation
 
         private void RemoveInternal(int position, object item)
         {
+            if(!this.canRemove)
+                throw new InvalidOperationException("Remove item is not supported");
+
             int oldPageIndex = pageIndex;
             int oldPosition = this.currentPosition;
 
