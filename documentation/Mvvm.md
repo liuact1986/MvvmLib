@@ -867,18 +867,25 @@ public class MainWindowViewModel : BindableBase
         set { SetProperty(ref isBusy, value); }
     }
 
-    public AsyncCommand MyCommand { get; set; }
-
-    public MainWindowViewModel()
+    private IAsyncCommand myCommand;
+    public IAsyncCommand MyCommand
     {
-        MyCommand = new AsyncCommand(ExecuteMyCommand);
+        get
+        {
+            if (myCommand == null)
+                myCommand = new AsyncCommand(ExecuteMyCommand);
+            return myCommand;
+        }
     }
 
     private async Task ExecuteMyCommand()
     {
         IsBusy = true;
 
-        await Task.Delay(3000);
+        if (MyCommand.IsCancellationRequested)
+            return;
+
+        await Task.Delay(3000); // do some work
 
         IsBusy = false;
     }
