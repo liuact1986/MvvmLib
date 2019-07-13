@@ -895,22 +895,22 @@ public class MainWindowViewModel : BindableBase
 Supports cancellation:
 
 ```cs
-MyCommand.Cancel(); 
+myCommand.Cancel(); 
 // other sample 
-MyCommand.CancellationTokenSource.CancelAfter(500);
+myCommand.CancellationTokenSource.CancelAfter(500);
 ```
 
 Checks cancellation
 
 ```cs
-if (MyCommand.IsCancellationRequested)
+if (myCommand.IsCancellationRequested)
     return;
 ```
 
 Handle exception
 
 ```cs
-MyCommand = new AsyncCommand(ExecuteMyCommand, ex => { });
+myCommand = new AsyncCommand(ExecuteMyCommand, ex => { });
 ```
 
 ## Sync Data

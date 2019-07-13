@@ -976,18 +976,18 @@ public class ApplicationCommands : IApplicationCommands
 </code></pre>
 
 <p>Supports cancellation:</p>
-<pre><code class="cs">MyCommand.Cancel(); 
+<pre><code class="cs">myCommand.Cancel(); 
 // other sample 
-MyCommand.CancellationTokenSource.CancelAfter(500);
+myCommand.CancellationTokenSource.CancelAfter(500);
 </code></pre>
 
 <p>Checks cancellation</p>
-<pre><code class="cs">if (MyCommand.IsCancellationRequested)
+<pre><code class="cs">if (myCommand.IsCancellationRequested)
     return;
 </code></pre>
 
 <p>Handle exception</p>
-<pre><code class="cs">MyCommand = new AsyncCommand(ExecuteMyCommand, ex =&gt; { });
+<pre><code class="cs">myCommand = new AsyncCommand(ExecuteMyCommand, ex =&gt; { });
 </code></pre>
 
 <h2 id="sync-data">Sync Data<a class="headerlink" href="#sync-data" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
