@@ -882,9 +882,6 @@ public class MainWindowViewModel : BindableBase
     {
         IsBusy = true;
 
-        if (MyCommand.IsCancellationRequested)
-            return;
-
         await Task.Delay(3000); // do some work
 
         IsBusy = false;
