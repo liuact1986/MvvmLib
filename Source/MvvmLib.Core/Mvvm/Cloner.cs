@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
 
 namespace MvvmLib.Mvvm
 {
@@ -94,15 +95,6 @@ namespace MvvmLib.Mvvm
 
             this.cloneGenericDictionaryMethod = typeof(Cloner).GetMethod("CloneGenericDictionary", BindingFlags.Instance | BindingFlags.NonPublic);
             this.cloneGenericListOrCollectionMethod = typeof(Cloner).GetMethod("CloneGenericListOrCollection", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        }
-
-        private Delegate CloneDelegate(Delegate @delegate)
-        {
-            var method = @delegate.Method;
-            var target = @delegate.Target;
-            var clone = Delegate.CreateDelegate(@delegate.GetType(), target, method);
-            return clone;
         }
 
         private object CreateInstance(Type type)
@@ -196,7 +188,7 @@ namespace MvvmLib.Mvvm
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine($"Failed to create instance of type '{type.Name}'. Exception'{ex.Message}' '{ex}'");
+                Debug.WriteLine($"Failed to create instance of type '{type.Name}'. Exception'{ex.Message}' '{ex}'");
             }
             return null;
         }
@@ -205,6 +197,14 @@ namespace MvvmLib.Mvvm
         {
             var instance = Activator.CreateInstance(type, nonPublicConstructors);
             return instance;
+        }
+
+        private Delegate CloneDelegate(Delegate @delegate)
+        {
+            var method = @delegate.Method;
+            var target = @delegate.Target;
+            var clone = Delegate.CreateDelegate(@delegate.GetType(), target, method);
+            return clone;
         }
 
         private IDictionary CloneDictionary(IDictionary items)
@@ -320,9 +320,9 @@ namespace MvvmLib.Mvvm
                     var fields = ReflectionUtils.GetFields(type, true);
                     foreach (var field in fields)
                     {
-                        if (!blackList.Contains(field.Name))
+                        var fieldValue = field.GetValue(originalInstance);
+                        if (fieldValue != null && !blackList.Contains(field.Name))
                         {
-                            var fieldValue = field.GetValue(originalInstance);
                             var clonedFieldValue = DoDeepClone(fieldValue);
                             field.SetValue(clonedInstance, clonedFieldValue);
                         }
@@ -336,6 +336,7 @@ namespace MvvmLib.Mvvm
                     if (property.CanRead && property.CanWrite)
                     {
                         var propertyValue = property.GetValue(originalInstance);
+                        // ignore ICommand
                         if (propertyValue != null && !blackList.Contains(property.Name))
                         {
                             var clonedPropertyValue = DoDeepClone(propertyValue);
@@ -350,12 +351,12 @@ namespace MvvmLib.Mvvm
             switch (errorHandling)
             {
                 case ClonerErrorHandling.Continue:
-                    //Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and continue cloning with \"ObjectNonClonableHandling.Continue\"");
+                    Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and continue cloning with \"ObjectNonClonableHandling.Continue\"");
                     break;
                 case ClonerErrorHandling.Throw:
                     throw new NotSupportedException($"Unable to clone '{type.Name}' '{Environment.StackTrace}'");
                 case ClonerErrorHandling.UseOriginalValue:
-                    //Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and return original value with \"ObjectNonClonableHandling.UseOriginalValue\"");
+                    Debug.WriteLine($"Unable to clone \"{type.Name}\". Ignoring and return original value with \"ObjectNonClonableHandling.UseOriginalValue\"");
                     return originalInstance;
             }
 

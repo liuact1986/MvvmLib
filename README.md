@@ -14,12 +14,11 @@ ___
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
-* **ChangeTracker**: allows to track object changes.
-* **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
-* **Commands** and **composite** command
-* **SyncUtils** Allows to **sync lists and collections** 
-* **Singleton**
+* **RelayCommand**, **AsyncCommand** and **CompositeCommand**
 * **EventAggregator** : allows to **subscribe**, **publish** and filter messages
+* **ChangeTracker**: allows to track object changes.
+* **Singleton**
+* **SyncUtils** Allows to **sync lists and collections** 
 
 
 ## MvvmLib.IoC (Dependency Injection) [netstandard 2.0, net 4.5]

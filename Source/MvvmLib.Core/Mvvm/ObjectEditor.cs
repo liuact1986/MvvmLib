@@ -1,84 +1,104 @@
-﻿using System;
+﻿using MvvmLib.Utils;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// Allows to clone and restore objects.
+    /// Allows to restore objects with original values.
     /// </summary>
     public class ObjectEditor
     {
         private object originalSource;
-        private object trackedValue;
-        private readonly IEnumerable<PropertyInfo> properties;
-
+        private Dictionary<string, TrackedProperty> trackedProperties;
         private readonly Cloner cloner;
+        private readonly List<string> propertiesToIgnore;
+
         /// <summary>
-        /// The cloner.
+        /// Checks if a original source is provided and can restore.
         /// </summary>
-        public Cloner Cloner
+        public bool CanRestore
         {
-            get { return cloner; }
+            get { return originalSource != null; }
         }
 
         /// <summary>
-        /// Creates the editable object service.
+        /// Creates the <see cref="ObjectEditor"/>.
         /// </summary>
-        /// <param name="type">The type of original source</param>
         /// <param name="propertiesToIgnore">The properties to ignore</param>
-        public ObjectEditor(Type type, List<string> propertiesToIgnore)
+        public ObjectEditor(List<string> propertiesToIgnore)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            if (propertiesToIgnore == null)
-                throw new ArgumentNullException(nameof(propertiesToIgnore));
-
             this.cloner = new Cloner();
-
-            var properties = type.GetProperties()
-                .Where(p => p.CanRead && p.CanWrite && !propertiesToIgnore.Contains(p.Name));
-            this.properties = properties;
+            this.propertiesToIgnore = propertiesToIgnore;
         }
 
         /// <summary>
-        /// Creates the editable object service.
+        /// Creates the <see cref="ObjectEditor"/>.
         /// </summary>
-        /// <param name="type">The type of original source</param>
-        public ObjectEditor(Type type)
-            : this(type, new List<string>())
+        public ObjectEditor()
+            : this(null)
         { }
 
+        private bool IsValueTypeExtended(Type type)
+        {
+            return type.IsValueType || type == typeof(string) || type == typeof(Uri);
+        }
 
         /// <summary>
-        /// Clones and stores the cloned value.
+        /// Stores the original values.
         /// </summary>
-        /// <param name="originalSource">The value to store</param>
+        /// <param name="originalSource">The original source</param>
         public void Store(object originalSource)
         {
             if (originalSource == null)
                 throw new ArgumentNullException(nameof(originalSource));
 
-            this.trackedValue = originalSource;
-            this.originalSource = this.cloner.DeepClone(originalSource);
+            this.originalSource = originalSource;
+            this.trackedProperties = new Dictionary<string, TrackedProperty>();
+
+            var type = originalSource.GetType();
+            var properties = type.GetProperties();
+            foreach (var property in properties)
+            {
+                if (property.CanRead && property.CanWrite && (propertiesToIgnore == null || !propertiesToIgnore.Contains(property.Name)))
+                {
+                    var propertyType = property.PropertyType;
+                    if (IsValueTypeExtended(propertyType))
+                    {
+                        var value = property.GetValue(originalSource);
+                        this.trackedProperties[property.Name] = new TrackedProperty(property, value);
+                    }
+                    else if (ReflectionUtils.IsEnumerableType(propertyType))
+                    {
+                        var value = property.GetValue(originalSource);
+                        var clonedValue = this.cloner.DeepClone(value);
+                        this.trackedProperties[property.Name] = new TrackedProperty(property, clonedValue);
+                    }
+                    else
+                    {
+                        var value = property.GetValue(originalSource);
+                        if (!(ReflectionUtils.IsCommandType(propertyType)))
+                        {
+                            var clonedValue = this.cloner.DeepClone(value);
+                            this.trackedProperties[property.Name] = new TrackedProperty(property, clonedValue);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Restore the target with the cloned source.
+        /// Restores the <see cref="originalSource"/> with the original values.
         /// </summary>
         public void Restore()
         {
             if (this.originalSource == null)
                 throw new InvalidOperationException("No original source provided. Call \"Store\" method to set the orinal source to track.");
 
-            foreach (var property in properties)
+            foreach (var trackedProperty in trackedProperties)
             {
-                if (property.CanRead && property.CanWrite)
-                {
-                    var value = property.GetValue(this.originalSource);
-                    property.SetValue(this.trackedValue, value);
-                }
+                trackedProperty.Value.RestoreValue(this.originalSource);
             }
         }
 
@@ -88,8 +108,54 @@ namespace MvvmLib.Mvvm
         public void Clean()
         {
             this.originalSource = null;
-            this.trackedValue = null;
+            this.trackedProperties.Clear();
         }
     }
 
+    /// <summary>
+    /// A class with property and original value.
+    /// </summary>
+    public class TrackedProperty
+    {
+        private PropertyInfo property;
+        /// <summary>
+        /// The property.
+        /// </summary>
+        public PropertyInfo Property
+        {
+            get { return property; }
+        }
+
+        private object clonedValue;
+        /// <summary>
+        /// The cloned value.
+        /// </summary>
+        public object ClonedValue
+        {
+            get { return clonedValue; }
+        }
+
+        /// <summary>
+        /// Creates the <see cref="TrackedProperty"/>.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <param name="clonedValue">The cloned value</param>
+        public TrackedProperty(PropertyInfo property, object clonedValue)
+        {
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+
+            this.property = property;
+            this.clonedValue = clonedValue;
+        }
+
+        /// <summary>
+        /// Restores the object with the cloned value.
+        /// </summary>
+        /// <param name="obj">The object</param>
+        public void RestoreValue(object obj)
+        {
+            Property.SetValue(obj, ClonedValue);
+        }
+    }
 }

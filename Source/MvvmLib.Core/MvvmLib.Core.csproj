@@ -3,30 +3,30 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.4.2.0</Version>
+    <Version>0.4.3.2</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
 * BindableBase, Editable, Validatable and ModelWrapper base classes for Models and ViewModels
-* Commands and composite command
-* EventAggregator : allows to subscribe, publish and filter messages
-* ChangeTracker: allows to track object changes.
+* RelayCommand, AsyncCommand and CompositeCommand
+* EventAggregator : allows to publish and filter messages
+* ChangeTracker: allows to track object changes
+* Cloner: allows to clone objects
 * Singleton
-* NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver: allows to observe and filter an object that implements INotifyPropertyChanged
-* Sync extensions for list and collections. Allows to sync data</Description>
+* Sync utils for lists and collections</Description>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/romagny13/MvvmLib</PackageProjectUrl>
     <Authors>romagny13</Authors>
     <PackageIconUrl>https://res.cloudinary.com/romagny13/image/upload/v1553188957/mvvm_logo_xxv5gn.png</PackageIconUrl>
-    <PackageTags>mvvm, library, wpf, uwp, windows, validation, commands, eventaggregator</PackageTags>
+    <PackageTags>mvvm, wpf, uwp, validation, commands, eventaggregator</PackageTags>
     <Product>MvvmLib.Core</Product>
     <PackageId>MvvmLib.Core</PackageId>
-    <PackageReleaseNotes>* AsynCommand</PackageReleaseNotes>
+    <PackageReleaseNotes>ChangeTracker, ObjectEditor, Commands</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>C:\Projects\MvvmLib\Source\MvvmLib.Core\MvvmLib.Core.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\vx1\MvvmLib\Source\MvvmLib.Core\MvvmLib.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

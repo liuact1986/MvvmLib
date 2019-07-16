@@ -12,12 +12,12 @@ namespace MvvmLib.Commands
         /// Subscribe to property changed of the owner.
         /// </summary>
         /// <param name="onPropertyChangedCallback">The callback invoked on property changed</param>
-        void SubscribeToPropertyChanged(Action<PropertyChangedEventArgs> onPropertyChangedCallback);
+        void Subscribe(Action<PropertyChangedEventArgs> onPropertyChangedCallback);
 
         /// <summary>
         /// Unsubscribe to property changed of the owner.
         /// </summary>
-        void UnsubscribeToPropertyChanged();
+        void Unsubscribe();
     }
 
 }

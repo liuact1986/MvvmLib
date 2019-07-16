@@ -34,7 +34,7 @@ namespace MvvmLib.Mvvm
             this.propertyCache = new Dictionary<string, PropertyInfo>();
 
             this.model = model;
-            this.editor = new ObjectEditor(typeof(TModel));
+            this.editor = new ObjectEditor();
             this.Validator = new ObjectValidator(model, (propertyName) => DoCustomValidations(propertyName));
         }
 

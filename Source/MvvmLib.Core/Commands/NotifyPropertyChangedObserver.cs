@@ -24,14 +24,17 @@ namespace MvvmLib.Commands
         /// <param name="owner">The owner class to observe</param>
         public NotifyPropertyChangedObserver(INotifyPropertyChanged owner)
         {
-            this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            if (owner == null)
+                throw new ArgumentNullException(nameof(owner));
+
+            this.owner = owner;
         }
 
         /// <summary>
         /// Subscribe to property changed of the owner.
         /// </summary>
         /// <param name="onPropertyChangedCallback">The callback invoked on property changed</param>
-        public virtual void SubscribeToPropertyChanged(Action<PropertyChangedEventArgs> onPropertyChangedCallback)
+        public virtual void Subscribe(Action<PropertyChangedEventArgs> onPropertyChangedCallback)
         {
             this.onPropertyChangedCallback = onPropertyChangedCallback;
             this.owner.PropertyChanged += OnPropertyChanged;
@@ -40,7 +43,7 @@ namespace MvvmLib.Commands
         /// <summary>
         /// Unsubscribe to property changed of the owner.
         /// </summary>
-        public virtual void UnsubscribeToPropertyChanged()
+        public virtual void Unsubscribe()
         {
             this.onPropertyChangedCallback = null;
             this.owner.PropertyChanged -= OnPropertyChanged;

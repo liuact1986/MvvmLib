@@ -1,12 +1,11 @@
 # Mvvm
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
-* **ChangeTracker**: allows to track object changes.
-* **NotifyPropertyChangedObserver** and **FilterableNotifyPropertyChangedObserver**: allows to observe and filter an object that implements INotifyPropertyChanged
-* **Commands** and **composite** command
-* **SyncUtils** Allows to **sync lists and collections** 
-* **Singleton**
+* **RelayCommand**, **AsyncCommand** and **CompositeCommand**
 * **EventAggregator** : allows to **subscribe**, **publish** and filter messages
+* **ChangeTracker**: allows to track object changes.
+* **Singleton**
+* **SyncUtils** Allows to **sync lists and collections** 
 
 ## BindableBase
 
@@ -80,7 +79,6 @@ public class User : BindableBase
     }
 }
 ```
-
 
 ## Editable 
 
@@ -195,8 +193,6 @@ user.Reset();
 
 // reset the errors, is submitted and the model
 user.CancelEdit();
-
-
 
 // etc.
 ```
@@ -378,190 +374,6 @@ And use it
 <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" Foreground="Red"></TextBlock>
 ```
 
-## ChangeTracker
-
-> Usefull for example with a TabItem with an asterisk that indicates changes
-
-### UseReflection (default)
-
-```cs
-public class Person : BindableBase
-{
-    private string firstName;
-    public string FirstName
-    {
-        get { return firstName; }
-        set { SetProperty(ref firstName, value); }
-    }
-
-    private string lastName;
-    public string LastName
-    {
-        get { return lastName; }
-        set { SetProperty(ref lastName, value); }
-    }
-
-    // or ObservableCollection, etc.
-    public List<Friend> Friends { get; set; }
-
-    public Person()
-    {
-        this.Friends = new List<Friend>();
-    }
-}
-
-public class Friend : BindableBase
-{
-    private string email;
-    public string Email
-    {
-        get { return email; }
-        set { SetProperty(ref email, value); }
-    }
-}
-```
-
-```cs
-this.Person = new Person();
-this.Tracker = new ChangeTracker(this.Person);
-
-// handle property changed
-this.Person.PropertyChanged += OnPersonPropertyChanged;
-```
-
-```cs
-private void OnPersonPropertyChanged(object sender, PropertyChangedEventArgs e)
-{
-    this.Tracker.CheckChanges();
-}
-// for list or collection, create a command and invoke this.Tracker.CheckChanges()
-private void AddFriend(Friend friend)
-{
-    this.Person.Friends.Add(friend);
-    this.Tracker.CheckChanges();
-}
-```
-
-TabControl with asterisk for example
-
-```xml
-<TabControl ItemsSource="{Binding TabItemsSource.Items}" 
-            SelectedItem="{Binding TabItemsSource.SelectedItem}" 
-            Grid.Row="1">
-    <TabControl.ItemTemplate>
-        <DataTemplate>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Title}" Margin="10,0"/>
-                <TextBlock Text="*" VerticalAlignment="Top"
-                            Visibility="{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            </StackPanel>
-        </DataTemplate>
-    </TabControl.ItemTemplate>
-</TabControl>
-```
-
-### UseEquals
-
-```cs
-public class Person
-{
-    public string FirstName { get; set; }
-
-    public string LastName { get; set; }
-
-    public ObservableCollection<Friend> Friends { get; set; }
-
-    public Person()
-    {
-        Friends = new ObservableCollection<Friend>();
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is Person other)
-        {
-            // properties
-            var propertiesEqual = other.FirstName.Equals(FirstName) && other.LastName.Equals(LastName);
-            if (!propertiesEqual)
-                return false;
-
-            // list / collection
-            if (Friends == null)
-            {
-                if (other.Friends != null)
-                    return false;
-            }
-            else if (other.Friends == null)
-            {
-                if (Friends != null)
-                    return false;
-            }
-            if (Friends.Count != other.Friends.Count)
-                return false;
-
-            for (int i = 0; i < Friends.Count; i++)
-            {
-                if (!Friends[i].Equals(other.Friends[i]))
-                    return false;
-            }
-            return true;
-        }
-
-        return false;
-    }
-}
-```
-
-```cs
-this.Person = new Person();
-this.Tracker = new ChangeTracker(this.Person);
-this.Tracker.TrackerMode = ChangeTrackerMode.UseEquals;
-
-// handle changes with control event (TextBox text Changed for example) or with a Behavior 
-// and invoke this.Tracker.CheckChanges();
-
-// for list or collection, create a command and invoke this.Tracker.CheckChanges()
-```
-
-## NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver
-
-> Allows to observe and filter an object that implements INotifyPropertyChanged
-
-Example 1:
-
-```cs
-var owner = new User();
-var propertyName = "FirstName";
-
-// the callback is invoked only if the property name is "FirstName" for example
-var filter = new Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool>((s, e) => e.PropertyName == propertyName);
-
-var propertyChangedObserver = new FilterableNotifyPropertyChangedObserver(owner, filter);
-propertyChangedObserver.SubscribeToPropertyChanged((e) => RaiseCanExecuteChanged());
-```
-
-Example 2:
-The owner can be any object that implements INotifyPropertyChanged. Example with the ItemCollection of a TabControl. Notification on tab item count changed.
-
-```cs
-var observer = new NotifyPropertyChangedObserver(MyTabControl.Items);
-observer.SubscribeToPropertyChanged((e) =>
-{
-    MessageBox.Show(e.PropertyName);
-});
-```
-
-We can use PropertyDescriptor in Wpf.
-
-```cs
-DependencyPropertyDescriptor
-    .FromProperty(TabControl.HasItemsProperty, typeof(TabControl))
-    .AddValueChanged(MyTabControl, (s, e) =>
-    {
-        MessageBox.Show(e.ToString()); // raised when the tab items collection is empty
-    });
-```
-
 ## Relay command
 
 Example
@@ -677,6 +489,63 @@ public class TabViewModel : BindableBase
 }
 ```
 
+## AsyncCommand
+
+
+Example
+
+```cs
+public class MainWindowViewModel : BindableBase
+{
+    private bool isBusy;
+    public bool IsBusy
+    {
+        get { return isBusy; }
+        set { SetProperty(ref isBusy, value); }
+    }
+
+    private IAsyncCommand myCommand;
+    public IAsyncCommand MyCommand
+    {
+        get
+        {
+            if (myCommand == null)
+                myCommand = new AsyncCommand(ExecuteMyCommand);
+            return myCommand;
+        }
+    }
+
+    private async Task ExecuteMyCommand()
+    {
+        IsBusy = true;
+
+        await Task.Delay(3000); // do some work
+
+        IsBusy = false;
+    }
+}
+```
+
+Supports cancellation:
+
+```cs
+myCommand.Cancel(); 
+// other sample 
+myCommand.CancellationTokenSource.CancelAfter(500);
+```
+
+Checks cancellation
+
+```cs
+if (myCommand.IsCancellationRequested)
+    return;
+```
+
+Handle exception
+
+```cs
+myCommand = new AsyncCommand(ExecuteMyCommand, ex => { });
+```
 
 ## Composite command
 
@@ -852,62 +721,99 @@ Bind the composite command in the Shell
 </Window>
 ```
 
-## AsyncCommand
 
+## ChangeTracker
 
-Example
+> Usefull for example with a TabItem with an asterisk that indicates changes. Allows to track changes for list/ collections or Objects.
+
+Properties:
+
+* HasChanges: updated when the source has changed.
+
+Methods:
+
+* TrackChanges
+* CheckChanges for all or only for a property
+* AcceptChanges
 
 ```cs
-public class MainWindowViewModel : BindableBase
+public class Person : BindableBase
 {
-    private bool isBusy;
-    public bool IsBusy
+    private string firstName;
+    public string FirstName
     {
-        get { return isBusy; }
-        set { SetProperty(ref isBusy, value); }
+        get { return firstName; }
+        set { SetProperty(ref firstName, value); }
     }
 
-    private IAsyncCommand myCommand;
-    public IAsyncCommand MyCommand
+    private string lastName;
+    public string LastName
     {
-        get
-        {
-            if (myCommand == null)
-                myCommand = new AsyncCommand(ExecuteMyCommand);
-            return myCommand;
-        }
+        get { return lastName; }
+        set { SetProperty(ref lastName, value); }
     }
 
-    private async Task ExecuteMyCommand()
+    // or ObservableCollection, etc.
+    public List<Friend> Friends { get; set; }
+
+    public Person()
     {
-        IsBusy = true;
+        this.Friends = new List<Friend>();
+    }
+}
 
-        await Task.Delay(3000); // do some work
-
-        IsBusy = false;
+public class Friend : BindableBase
+{
+    private string email;
+    public string Email
+    {
+        get { return email; }
+        set { SetProperty(ref email, value); }
     }
 }
 ```
 
-Supports cancellation:
-
 ```cs
-myCommand.Cancel(); 
-// other sample 
-myCommand.CancellationTokenSource.CancelAfter(500);
+this.Person = new Person();
+
+this.Tracker = new ChangeTracker();
+this.Tracker.TrackChanges(this.Person);
 ```
 
-Checks cancellation
+for list or collection, create a command and invoke this.Tracker.CheckChanges() or observe INotifyCollectionChanged for ObservableCollection for example.
 
 ```cs
-if (myCommand.IsCancellationRequested)
-    return;
+private void AddFriend(Friend friend)
+{
+    this.Person.Friends.Add(friend);
+    this.Tracker.CheckChanges();
+}
 ```
 
-Handle exception
+TabControl with asterisk for example
+
+```xml
+<TabControl ItemsSource="{Binding TabItemsSource.Items}" 
+            SelectedItem="{Binding TabItemsSource.SelectedItem}" 
+            Grid.Row="1">
+    <TabControl.ItemTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Title}" Margin="10,0"/>
+                <TextBlock Text="*" VerticalAlignment="Top"
+                            Visibility="{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </DataTemplate>
+    </TabControl.ItemTemplate>
+</TabControl>
+```
+
+## Singleton
+
+Example:
 
 ```cs
-myCommand = new AsyncCommand(ExecuteMyCommand, ex => { });
+Singleton<MyService>.Instance.DoSomething();
 ```
 
 ## Sync Data
@@ -987,13 +893,6 @@ SyncUtils.Sync(oldItems, newItems);
 // item 4 added
 ```
 
-## Singleton
-
-Example:
-
-```cs
-Singleton<MyService>.Instance.DoSomething();
-```
 
 ## EventAggregator
 

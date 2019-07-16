@@ -26,7 +26,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public Validatable()
         {
-            this.editor = new ObjectEditor(this.GetType(), propertiesToIgnore);
+            this.editor = new ObjectEditor(propertiesToIgnore);
             this.Validator = new ObjectValidator(this, (propertyName) => DoCustomValidations(propertyName));
         }
 

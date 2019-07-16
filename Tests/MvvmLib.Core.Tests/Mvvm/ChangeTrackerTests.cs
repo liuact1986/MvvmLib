@@ -1,14 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmLib.Commands;
 using MvvmLib.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace MvvmLib.Core.Tests.Mvvm
 {
     [TestClass]
     public class ChangeTrackerTests
     {
+        // value not supported
         //[TestMethod]
         //public void TrackValue()
         //{
@@ -33,7 +36,8 @@ namespace MvvmLib.Core.Tests.Mvvm
                 MyString = "My string value"
             };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -43,6 +47,48 @@ namespace MvvmLib.Core.Tests.Mvvm
             // back
             item.MyString = "My string value";
             Assert.IsFalse(tracker.CheckChanges());
+        }
+
+
+        [TestMethod]
+        public void Ignore_Property()
+        {
+            var item = new MyTrackedItem
+            {
+                MyInt = 10,
+                MyString = "My string value"
+            };
+
+            var tracker = new ChangeTracker(new List<string> { "MyInt" });
+            tracker.TrackChanges(item);
+            Assert.IsFalse(tracker.CheckChanges());
+
+            // change
+            item.MyInt = 100;
+            Assert.IsFalse(tracker.CheckChanges());
+
+            // back
+            item.MyString = "My new value";
+            Assert.IsTrue(tracker.CheckChanges());
+        }
+
+        [TestMethod]
+        public void Ignore_Command()
+        {
+            var item = new MyChangeTrackedItem
+            {
+                MyString = "My string value"
+            };
+
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
+            Assert.IsFalse(tracker.CheckChanges());
+
+            item.MyCommand = new RelayCommand(() => { });
+            Assert.IsFalse(tracker.CheckChanges());
+
+            item.MyString = "My new value";
+            Assert.IsTrue(tracker.CheckChanges());
         }
 
         [TestMethod]
@@ -57,7 +103,8 @@ namespace MvvmLib.Core.Tests.Mvvm
                 }
             };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -74,7 +121,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithInnerObject();
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -102,7 +150,8 @@ namespace MvvmLib.Core.Tests.Mvvm
                 }
             };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -123,7 +172,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithList();
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -140,7 +190,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithList { MyItems = new List<string> { "A", "B" } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -175,7 +226,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithList { MyItems = new List<string> { "A", "B" } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             item.MyItems.Add("C");
@@ -185,9 +237,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_List_With_Count_Change()
         {
-            var items =  new List<string> { "A", "B" } ;
+            var items = new List<string> { "A", "B" };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             items.Add("C");
@@ -199,7 +252,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithList { MyItems = new List<string> { "A", "B" } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -214,9 +268,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_List_That_Value_Changed()
         {
-            var items =  new List<string> { "A", "B" };
+            var items = new List<string> { "A", "B" };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -233,7 +288,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var items = new MyCollectionOfString { "A", "B" };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -250,7 +306,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var items = new MyIListOfString { "A", "B" };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -269,7 +326,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             item.MyItems[0] = "A";
             item.MyItems[1] = "B";
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             //// "redimensionnement" du tableau
@@ -291,7 +349,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithArray { MyItems = new string[] { "A", "B" } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -310,7 +369,8 @@ namespace MvvmLib.Core.Tests.Mvvm
             items[0] = "A";
             items[1] = "B";
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -325,9 +385,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_Array_That_Value_Changed()
         {
-            var items =  new string[] { "A", "B" } ;
+            var items = new string[] { "A", "B" };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -344,7 +405,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithDictionary { MyItems = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -359,9 +421,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_Dictionary()
         {
-            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } } ;
+            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -378,7 +441,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithDictionary { MyItems = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -393,9 +457,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_Dictionary_With_Count()
         {
-            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } } ;
+            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", "v2" } };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -412,7 +477,8 @@ namespace MvvmLib.Core.Tests.Mvvm
         {
             var item = new MyTrackedItemWithDictionary { MyItems = new Dictionary<string, string> { { "k1", "v1" }, { "k2", null } } };
 
-            var tracker = new ChangeTracker(item);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -427,9 +493,10 @@ namespace MvvmLib.Core.Tests.Mvvm
         [TestMethod]
         public void Track_Dictionary_With_Null()
         {
-            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", null } } ;
+            var items = new Dictionary<string, string> { { "k1", "v1" }, { "k2", null } };
 
-            var tracker = new ChangeTracker(items);
+            var tracker = new ChangeTracker();
+            tracker.TrackChanges(items);
             Assert.IsFalse(tracker.CheckChanges());
 
             // change
@@ -468,4 +535,20 @@ namespace MvvmLib.Core.Tests.Mvvm
         public Dictionary<string, string> MyItems { get; set; }
     }
 
+
+    public class MyChangeTrackedItem
+    {
+        public string MyString { get; set; }
+        public ICommand MyCommand { get; set; }
+
+        public MyChangeTrackedItem()
+        {
+            MyCommand = new RelayCommand(DoWork);
+        }
+
+        private void DoWork()
+        {
+            
+        }
+    }
 }

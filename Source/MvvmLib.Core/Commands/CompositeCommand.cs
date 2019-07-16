@@ -8,7 +8,7 @@ namespace MvvmLib.Commands
     /// <summary>
     /// A command that can execute multiples commands simultaneously.
     /// </summary>
-    public class CompositeCommand : ICommand
+    public class CompositeCommand : ICompositeCommand
     {
         private readonly List<ICommand> commands;
         /// <summary>
@@ -48,13 +48,14 @@ namespace MvvmLib.Commands
         }
 
         /// <summary>
-        /// Removes the command from commands list.
+        /// Removes the command from the commands list.
         /// </summary>
         /// <param name="command">The command</param>
+        /// <returns>True if removed</returns>
         public virtual bool Remove(ICommand command)
         {
             if (command == null)
-                throw new ArgumentNullException(nameof(command)); 
+                throw new ArgumentNullException(nameof(command));
 
             if (commands.Contains(command))
             {

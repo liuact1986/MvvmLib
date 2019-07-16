@@ -166,6 +166,7 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.eventAggregator = eventAggregator;
             this.fakePeopleService = fakePeopleService;
+            this.tracker = new ChangeTracker();
 
             SaveCommand = new RelayCommand<object>(Save);
         }
@@ -217,8 +218,7 @@ namespace NavigationSample.Wpf.ViewModels
                 var person = new Person();
                 this.Person = person;
             }
-
-            this.tracker = new ChangeTracker(person);
+            this.tracker.TrackChanges(person);
         }
 
         public bool IsTarget(Type viewType, object parameter)
@@ -252,7 +252,8 @@ namespace NavigationSample.Wpf.ViewModels
                 }
             }
 
-            tracker.AcceptChanges();
+            if (canDeactivate)
+                tracker.AcceptChanges();
             continuationCallback(canDeactivate);
         }
     }

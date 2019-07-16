@@ -41,19 +41,17 @@
 
 <li class="tocentry"><a href="#modelwrapper">ModelWrapper</a></li>
 
-<li class="tocentry"><a href="#changetracker">ChangeTracker</a></li>
-
-<li class="tocentry"><a href="#notifypropertychangedobserver-and-filterablenotifypropertychangedobserver">NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver</a></li>
-
 <li class="tocentry"><a href="#relay-command">Relay command</a></li>
-
-<li class="tocentry"><a href="#composite-command">Composite command</a></li>
 
 <li class="tocentry"><a href="#asynccommand">AsyncCommand</a></li>
 
-<li class="tocentry"><a href="#sync-data">Sync Data</a></li>
+<li class="tocentry"><a href="#composite-command">Composite command</a></li>
+
+<li class="tocentry"><a href="#changetracker">ChangeTracker</a></li>
 
 <li class="tocentry"><a href="#singleton">Singleton</a></li>
+
+<li class="tocentry"><a href="#sync-data">Sync Data</a></li>
 
 <li class="tocentry"><a href="#eventaggregator">EventAggregator</a></li>
 
@@ -102,12 +100,11 @@
 <h1 id="mvvm">Mvvm<a class="headerlink" href="#mvvm" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h1>
 <ul>
 <li><strong>BindableBase</strong>, <strong>Editable</strong>, <strong>Validatable</strong> and <strong>ModelWrapper</strong> base classes for <em>Models and ViewModels</em></li>
-<li><strong>ChangeTracker</strong>: allows to track object changes.</li>
-<li><strong>NotifyPropertyChangedObserver</strong> and <strong>FilterableNotifyPropertyChangedObserver</strong>: allows to observe and filter an object that implements INotifyPropertyChanged</li>
-<li><strong>Commands</strong> and <strong>composite</strong> command</li>
-<li><strong>SyncUtils</strong> Allows to <strong>sync lists and collections</strong> </li>
-<li><strong>Singleton</strong></li>
+<li><strong>RelayCommand</strong>, <strong>AsyncCommand</strong> and <strong>CompositeCommand</strong></li>
 <li><strong>EventAggregator</strong> : allows to <strong>subscribe</strong>, <strong>publish</strong> and filter messages</li>
+<li><strong>ChangeTracker</strong>: allows to track object changes.</li>
+<li><strong>Singleton</strong></li>
+<li><strong>SyncUtils</strong> Allows to <strong>sync lists and collections</strong> </li>
 </ul>
 <h2 id="bindablebase">BindableBase<a class="headerlink" href="#bindablebase" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
@@ -343,8 +340,6 @@ user.Reset();
 // reset the errors, is submitted and the model
 user.CancelEdit();
 
-
-
 // etc.
 </code></pre>
 
@@ -508,175 +503,6 @@ user.CancelEdit();
 &lt;TextBlock Text=&quot;{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}&quot; Foreground=&quot;Red&quot;&gt;&lt;/TextBlock&gt;
 </code></pre>
 
-<h2 id="changetracker">ChangeTracker<a class="headerlink" href="#changetracker" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<blockquote>
-<p>Usefull for example with a TabItem with an asterisk that indicates changes</p>
-</blockquote>
-<h3 id="usereflection-default">UseReflection (default)<a class="headerlink" href="#usereflection-default" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
-<pre><code class="cs">public class Person : BindableBase
-{
-    private string firstName;
-    public string FirstName
-    {
-        get { return firstName; }
-        set { SetProperty(ref firstName, value); }
-    }
-
-    private string lastName;
-    public string LastName
-    {
-        get { return lastName; }
-        set { SetProperty(ref lastName, value); }
-    }
-
-    // or ObservableCollection, etc.
-    public List&lt;Friend&gt; Friends { get; set; }
-
-    public Person()
-    {
-        this.Friends = new List&lt;Friend&gt;();
-    }
-}
-
-public class Friend : BindableBase
-{
-    private string email;
-    public string Email
-    {
-        get { return email; }
-        set { SetProperty(ref email, value); }
-    }
-}
-</code></pre>
-
-<pre><code class="cs">this.Person = new Person();
-this.Tracker = new ChangeTracker(this.Person);
-
-// handle property changed
-this.Person.PropertyChanged += OnPersonPropertyChanged;
-</code></pre>
-
-<pre><code class="cs">private void OnPersonPropertyChanged(object sender, PropertyChangedEventArgs e)
-{
-    this.Tracker.CheckChanges();
-}
-// for list or collection, create a command and invoke this.Tracker.CheckChanges()
-private void AddFriend(Friend friend)
-{
-    this.Person.Friends.Add(friend);
-    this.Tracker.CheckChanges();
-}
-</code></pre>
-
-<p>TabControl with asterisk for example</p>
-<pre><code class="xml">&lt;TabControl ItemsSource=&quot;{Binding TabItemsSource.Items}&quot; 
-            SelectedItem=&quot;{Binding TabItemsSource.SelectedItem}&quot; 
-            Grid.Row=&quot;1&quot;&gt;
-    &lt;TabControl.ItemTemplate&gt;
-        &lt;DataTemplate&gt;
-            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
-                &lt;TextBlock Text=&quot;{Binding Title}&quot; Margin=&quot;10,0&quot;/&gt;
-                &lt;TextBlock Text=&quot;*&quot; VerticalAlignment=&quot;Top&quot;
-                            Visibility=&quot;{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}&quot;/&gt;
-            &lt;/StackPanel&gt;
-        &lt;/DataTemplate&gt;
-    &lt;/TabControl.ItemTemplate&gt;
-&lt;/TabControl&gt;
-</code></pre>
-
-<h3 id="useequals">UseEquals<a class="headerlink" href="#useequals" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
-<pre><code class="cs">public class Person
-{
-    public string FirstName { get; set; }
-
-    public string LastName { get; set; }
-
-    public ObservableCollection&lt;Friend&gt; Friends { get; set; }
-
-    public Person()
-    {
-        Friends = new ObservableCollection&lt;Friend&gt;();
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is Person other)
-        {
-            // properties
-            var propertiesEqual = other.FirstName.Equals(FirstName) &amp;&amp; other.LastName.Equals(LastName);
-            if (!propertiesEqual)
-                return false;
-
-            // list / collection
-            if (Friends == null)
-            {
-                if (other.Friends != null)
-                    return false;
-            }
-            else if (other.Friends == null)
-            {
-                if (Friends != null)
-                    return false;
-            }
-            if (Friends.Count != other.Friends.Count)
-                return false;
-
-            for (int i = 0; i &lt; Friends.Count; i++)
-            {
-                if (!Friends[i].Equals(other.Friends[i]))
-                    return false;
-            }
-            return true;
-        }
-
-        return false;
-    }
-}
-</code></pre>
-
-<pre><code class="cs">this.Person = new Person();
-this.Tracker = new ChangeTracker(this.Person);
-this.Tracker.TrackerMode = ChangeTrackerMode.UseEquals;
-
-// handle changes with control event (TextBox text Changed for example) or with a Behavior 
-// and invoke this.Tracker.CheckChanges();
-
-// for list or collection, create a command and invoke this.Tracker.CheckChanges()
-</code></pre>
-
-<h2 id="notifypropertychangedobserver-and-filterablenotifypropertychangedobserver">NotifyPropertyChangedObserver and FilterableNotifyPropertyChangedObserver<a class="headerlink" href="#notifypropertychangedobserver-and-filterablenotifypropertychangedobserver" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<blockquote>
-<p>Allows to observe and filter an object that implements INotifyPropertyChanged</p>
-</blockquote>
-<p>Example 1:</p>
-<pre><code class="cs">var owner = new User();
-var propertyName = &quot;FirstName&quot;;
-
-// the callback is invoked only if the property name is &quot;FirstName&quot; for example
-var filter = new Func&lt;INotifyPropertyChanged, PropertyChangedEventArgs, bool&gt;((s, e) =&gt; e.PropertyName == propertyName);
-
-var propertyChangedObserver = new FilterableNotifyPropertyChangedObserver(owner, filter);
-propertyChangedObserver.SubscribeToPropertyChanged((e) =&gt; RaiseCanExecuteChanged());
-</code></pre>
-
-<p>Example 2:
-The owner can be any object that implements INotifyPropertyChanged. Example with the ItemCollection of a TabControl. Notification on tab item count changed.</p>
-<pre><code class="cs">var observer = new NotifyPropertyChangedObserver(MyTabControl.Items);
-observer.SubscribeToPropertyChanged((e) =&gt;
-{
-    MessageBox.Show(e.PropertyName);
-});
-</code></pre>
-
-<p>We can use PropertyDescriptor in Wpf.</p>
-<pre><code class="cs">DependencyPropertyDescriptor
-    .FromProperty(TabControl.HasItemsProperty, typeof(TabControl))
-    .AddValueChanged(MyTabControl, (s, e) =&gt;
-    {
-        MessageBox.Show(e.ToString()); // raised when the tab items collection is empty
-    });
-</code></pre>
-
 <h2 id="relay-command">Relay command<a class="headerlink" href="#relay-command" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Example</p>
 <pre><code class="cs">public class PageAViewModel : ViewModel
@@ -778,6 +604,54 @@ observer.SubscribeToPropertyChanged((e) =&gt;
         return canSave;
     }  
 }
+</code></pre>
+
+<h2 id="asynccommand">AsyncCommand<a class="headerlink" href="#asynccommand" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example</p>
+<pre><code class="cs">public class MainWindowViewModel : BindableBase
+{
+    private bool isBusy;
+    public bool IsBusy
+    {
+        get { return isBusy; }
+        set { SetProperty(ref isBusy, value); }
+    }
+
+    private IAsyncCommand myCommand;
+    public IAsyncCommand MyCommand
+    {
+        get
+        {
+            if (myCommand == null)
+                myCommand = new AsyncCommand(ExecuteMyCommand);
+            return myCommand;
+        }
+    }
+
+    private async Task ExecuteMyCommand()
+    {
+        IsBusy = true;
+
+        await Task.Delay(3000); // do some work
+
+        IsBusy = false;
+    }
+}
+</code></pre>
+
+<p>Supports cancellation:</p>
+<pre><code class="cs">myCommand.Cancel(); 
+// other sample 
+myCommand.CancellationTokenSource.CancelAfter(500);
+</code></pre>
+
+<p>Checks cancellation</p>
+<pre><code class="cs">if (myCommand.IsCancellationRequested)
+    return;
+</code></pre>
+
+<p>Handle exception</p>
+<pre><code class="cs">myCommand = new AsyncCommand(ExecuteMyCommand, ex =&gt; { });
 </code></pre>
 
 <h2 id="composite-command">Composite command<a class="headerlink" href="#composite-command" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -939,52 +813,89 @@ public class ApplicationCommands : IApplicationCommands
 &lt;/Window&gt;
 </code></pre>
 
-<h2 id="asynccommand">AsyncCommand<a class="headerlink" href="#asynccommand" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Example</p>
-<pre><code class="cs">public class MainWindowViewModel : BindableBase
+<h2 id="changetracker">ChangeTracker<a class="headerlink" href="#changetracker" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<blockquote>
+<p>Usefull for example with a TabItem with an asterisk that indicates changes. Allows to track changes for list/ collections or Objects.</p>
+</blockquote>
+<p>Properties:</p>
+<ul>
+<li>HasChanges: updated when the source has changed.</li>
+</ul>
+<p>Methods:</p>
+<ul>
+<li>TrackChanges</li>
+<li>CheckChanges for all or only for a property</li>
+<li>AcceptChanges</li>
+</ul>
+<pre><code class="cs">public class Person : BindableBase
 {
-    private bool isBusy;
-    public bool IsBusy
+    private string firstName;
+    public string FirstName
     {
-        get { return isBusy; }
-        set { SetProperty(ref isBusy, value); }
+        get { return firstName; }
+        set { SetProperty(ref firstName, value); }
     }
 
-    private IAsyncCommand myCommand;
-    public IAsyncCommand MyCommand
+    private string lastName;
+    public string LastName
     {
-        get
-        {
-            if (myCommand == null)
-                myCommand = new AsyncCommand(ExecuteMyCommand);
-            return myCommand;
-        }
+        get { return lastName; }
+        set { SetProperty(ref lastName, value); }
     }
 
-    private async Task ExecuteMyCommand()
+    // or ObservableCollection, etc.
+    public List&lt;Friend&gt; Friends { get; set; }
+
+    public Person()
     {
-        IsBusy = true;
+        this.Friends = new List&lt;Friend&gt;();
+    }
+}
 
-        await Task.Delay(3000); // do some work
-
-        IsBusy = false;
+public class Friend : BindableBase
+{
+    private string email;
+    public string Email
+    {
+        get { return email; }
+        set { SetProperty(ref email, value); }
     }
 }
 </code></pre>
 
-<p>Supports cancellation:</p>
-<pre><code class="cs">myCommand.Cancel(); 
-// other sample 
-myCommand.CancellationTokenSource.CancelAfter(500);
+<pre><code class="cs">this.Person = new Person();
+
+this.Tracker = new ChangeTracker();
+this.Tracker.TrackChanges(this.Person);
 </code></pre>
 
-<p>Checks cancellation</p>
-<pre><code class="cs">if (myCommand.IsCancellationRequested)
-    return;
+<p>for list or collection, create a command and invoke this.Tracker.CheckChanges() or observe INotifyCollectionChanged for ObservableCollection for example.</p>
+<pre><code class="cs">private void AddFriend(Friend friend)
+{
+    this.Person.Friends.Add(friend);
+    this.Tracker.CheckChanges();
+}
 </code></pre>
 
-<p>Handle exception</p>
-<pre><code class="cs">myCommand = new AsyncCommand(ExecuteMyCommand, ex =&gt; { });
+<p>TabControl with asterisk for example</p>
+<pre><code class="xml">&lt;TabControl ItemsSource=&quot;{Binding TabItemsSource.Items}&quot; 
+            SelectedItem=&quot;{Binding TabItemsSource.SelectedItem}&quot; 
+            Grid.Row=&quot;1&quot;&gt;
+    &lt;TabControl.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                &lt;TextBlock Text=&quot;{Binding Title}&quot; Margin=&quot;10,0&quot;/&gt;
+                &lt;TextBlock Text=&quot;*&quot; VerticalAlignment=&quot;Top&quot;
+                            Visibility=&quot;{Binding Tracker.HasChanges, Converter={StaticResource BooleanToVisibilityConverter}}&quot;/&gt;
+            &lt;/StackPanel&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/TabControl.ItemTemplate&gt;
+&lt;/TabControl&gt;
+</code></pre>
+
+<h2 id="singleton">Singleton<a class="headerlink" href="#singleton" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example:</p>
+<pre><code class="cs">Singleton&lt;MyService&gt;.Instance.DoSomething();
 </code></pre>
 
 <h2 id="sync-data">Sync Data<a class="headerlink" href="#sync-data" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
@@ -1058,11 +969,6 @@ SyncUtils.Sync(oldItems, newItems);
 // item 2 updated
 // item 3 not updated
 // item 4 added
-</code></pre>
-
-<h2 id="singleton">Singleton<a class="headerlink" href="#singleton" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
-<p>Example:</p>
-<pre><code class="cs">Singleton&lt;MyService&gt;.Instance.DoSomething();
 </code></pre>
 
 <h2 id="eventaggregator">EventAggregator<a class="headerlink" href="#eventaggregator" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>

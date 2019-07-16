@@ -4,7 +4,7 @@ namespace MvvmLib.Message
 {
 
     /// <summary>
-    /// Subscriber options class.
+    /// The subscriber options class.
     /// </summary>
     public class SubscriberOptions : ISubscriberOptions
     {

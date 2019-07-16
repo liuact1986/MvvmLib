@@ -21,7 +21,7 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public Editable()
         {
-            this.objectEditor = new ObjectEditor(this.GetType());
+            this.objectEditor = new ObjectEditor();
         }
 
         /// <summary>

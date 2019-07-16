@@ -23,14 +23,14 @@ namespace NavigationSample.Wpf.Controls
         private ItemsControl numericButtons;
         private string groupName;
 
-        public IPagedSource PagedSource
+        public IPagedCollectionView PagedSource
         {
-            get { return (IPagedSource)GetValue(PagedSourceProperty); }
+            get { return (IPagedCollectionView)GetValue(PagedSourceProperty); }
             set { SetValue(PagedSourceProperty, value); }
         }
 
         public static readonly DependencyProperty PagedSourceProperty =
-            DependencyProperty.Register("PagedSource", typeof(IPagedSource), typeof(DataPager), new PropertyMetadata(null));
+            DependencyProperty.Register("PagedSource", typeof(IPagedCollectionView), typeof(DataPager), new PropertyMetadata(null));
 
         public int NumericButtonCount
         {
@@ -110,7 +110,9 @@ namespace NavigationSample.Wpf.Controls
 
                 Refresh();
 
-                this.PagedSource.Refreshed += OnRefreshed;
+                if (this.PagedSource is IPagedSource)
+                    ((IPagedSource)this.PagedSource).Refreshed += OnRefreshed;
+
                 this.PagedSource.PageChanged += OnPageChanged;
             }
         }

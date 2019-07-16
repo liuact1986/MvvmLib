@@ -7,41 +7,29 @@ using System.Reflection;
 
 namespace MvvmLib.Mvvm
 {
+
     /// <summary>
     /// Allows to track object changes.
     /// </summary>
     public class ChangeTracker : INotifyPropertyChanged
     {
+        private object originalSource;
+        private Dictionary<string, ChangeTrackedProperty> trackedProperties;
         private readonly Cloner cloner;
-        private readonly Dictionary<Type, PropertyInfo[]> propertyCache;
-        private object originalValue;
-        private readonly bool keepAlive;
-        private object trackedValue;
-        private WeakReference trackedValueRef;
-
-        private bool nonPublicProperties;
-        /// <summary>
-        /// Allows to include non public properties.
-        /// </summary>
-        public bool NonPublicProperties
-        {
-            get { return nonPublicProperties; }
-            set { nonPublicProperties = value; }
-        }
+        private readonly List<string> propertiesToIgnore;
+        private bool isEnumerableSource;
+        private TrackedSource trackedSource;
 
         private bool hasChanges;
         /// <summary>
-        /// Checks if the value has changed.
+        /// Checks if the source provived has changes.
         /// </summary>
         public bool HasChanges
         {
-            get
-            {
-                return hasChanges;
-            }
+            get { return hasChanges; }
             private set
             {
-                if (value != hasChanges)
+                if (hasChanges != value)
                 {
                     hasChanges = value;
                     OnPropertyChanged(nameof(HasChanges));
@@ -49,43 +37,35 @@ namespace MvvmLib.Mvvm
             }
         }
 
-        private ChangeTrackerMode trackerMode;
         /// <summary>
-        /// The <see cref="ChangeTrackerMode"/> (<see cref="ChangeTrackerMode.UseReflection"/> by default).
+        /// Checks if a source is provided.
         /// </summary>
-        public ChangeTrackerMode TrackerMode
+        public bool CanCheckChanges
         {
-            get { return trackerMode; }
-            set { trackerMode = value; }
+            get { return this.originalSource != null; }
         }
 
         /// <summary>
-        /// Used for <see cref="HasChanges"/>.
+        /// Invoked on property changed.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Creates the <see cref="ChangeTracker"/>.
         /// </summary>
-        /// <param name="originalValue">The original value</param>
-        /// <param name="keepAlive">Use a <see cref="WeakReference"/> if False</param>
-        public ChangeTracker(object originalValue, bool keepAlive = true)
+        /// <param name="propertiesToIgnore">The properties to ignore</param>
+        public ChangeTracker(List<string> propertiesToIgnore)
         {
-            if (originalValue == null)
-                throw new ArgumentNullException(nameof(originalValue));
-
             this.cloner = new Cloner();
-            this.propertyCache = new Dictionary<Type, PropertyInfo[]>();
-            this.nonPublicProperties = true;
-            this.trackerMode = ChangeTrackerMode.UseReflection;
-            this.keepAlive = keepAlive;
-
-            this.originalValue = cloner.DeepClone(originalValue);
-            if (keepAlive)
-                this.trackedValue = originalValue;
-            else
-                this.trackedValueRef = new WeakReference(originalValue);
+            this.propertiesToIgnore = propertiesToIgnore;
         }
+
+        /// <summary>
+        /// Creates the <see cref="ChangeTracker"/>.
+        /// </summary>
+        public ChangeTracker()
+            : this(null)
+        { }
 
         private void OnPropertyChanged(string propertyName)
         {
@@ -97,23 +77,169 @@ namespace MvvmLib.Mvvm
             return type.IsValueType || type == typeof(string) || type == typeof(Uri);
         }
 
-        private PropertyInfo[] GetProperties(Type type)
+        /// <summary>
+        /// Starts tracking changes.
+        /// </summary>
+        /// <param name="originalSource">The original source</param>
+        public void TrackChanges(object originalSource)
         {
-            if (propertyCache.TryGetValue(type, out PropertyInfo[] properties))
+            // clone and track properties
+            if (originalSource == null)
+                throw new ArgumentNullException(nameof(originalSource));
+
+            if (this.originalSource != null)
+                UnhandlePropertyChange();
+
+            var type = originalSource.GetType();
+            // value ?
+            if (IsValueTypeExtended(type))
+                throw new NotSupportedException("Only enumerables and objects are supported for original source");
+
+            this.isEnumerableSource = false;
+            this.trackedSource = null;
+            if (this.trackedProperties != null)
+                this.trackedProperties.Clear();
+
+            this.originalSource = originalSource;
+
+            // enumerable
+            if (ReflectionUtils.IsEnumerableType(type))
             {
-                return properties;
+                var clonedValue = this.cloner.DeepClone(originalSource);
+                this.isEnumerableSource = true;
+                this.trackedSource = new TrackedSource(originalSource, clonedValue);
             }
             else
             {
-                properties = ReflectionUtils.GetProperties(type, nonPublicProperties);
-                propertyCache[type] = properties;
-                return properties;
+                this.trackedProperties = new Dictionary<string, ChangeTrackedProperty>();
+                var properties = type.GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.CanRead && property.CanWrite && (propertiesToIgnore == null || !propertiesToIgnore.Contains(property.Name)))
+                    {
+                        var propertyType = property.PropertyType;
+                        if (IsValueTypeExtended(propertyType))
+                        {
+                            var value = property.GetValue(originalSource);
+                            this.trackedProperties[property.Name] = new ChangeTrackedProperty(property, value, ChangeTrackedPropertyType.Value);
+                        }
+                        else if (ReflectionUtils.IsEnumerableType(propertyType))
+                        {
+                            var value = property.GetValue(originalSource);
+                            var clonedValue = value == null ? null : this.cloner.DeepClone(value);
+                            this.trackedProperties[property.Name] = new ChangeTrackedProperty(property, clonedValue, ChangeTrackedPropertyType.Enumerable);
+                        }
+                        else
+                        {
+                            var value = property.GetValue(originalSource);
+                            if (!(ReflectionUtils.IsCommandType(propertyType)))
+                            {
+                                var clonedValue = value == null ? null : this.cloner.DeepClone(value);
+                                this.trackedProperties[property.Name] = new ChangeTrackedProperty(property, clonedValue, ChangeTrackedPropertyType.Object);
+                            }
+                        }
+                    }
+                }
+                HandlePropertyChange();
+            }
+        }
+
+        /// <summary>
+        /// Handles <see cref="INotifyPropertyChanged"/> for the original source provided.
+        /// </summary>
+        public void HandlePropertyChange()
+        {
+            if (originalSource is INotifyPropertyChanged)
+            {
+                ((INotifyPropertyChanged)originalSource).PropertyChanged += OnPropertyChanged;
+            }
+        }
+
+        /// <summary>
+        /// Unhandles <see cref="INotifyPropertyChanged"/> for the original source provided.
+        /// </summary>
+        public void UnhandlePropertyChange()
+        {
+            if (originalSource is INotifyPropertyChanged)
+            {
+                ((INotifyPropertyChanged)originalSource).PropertyChanged -= OnPropertyChanged;
+            }
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            CheckChanges(e.PropertyName);
+        }
+
+        private void CheckObjectHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            bool hasChanged = ObjectHasChanged(trackedProperty);
+            TryUpdateHasChanges(hasChanged);
+        }
+
+        private void CheckEnumerableHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            bool hasChanged = EnumerableHasChanged(trackedProperty);
+            TryUpdateHasChanges(hasChanged);
+        }
+
+        private void CheckValueHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            bool hasChanged = ValueHasChanged(trackedProperty);
+            TryUpdateHasChanges(hasChanged);
+        }
+
+        private bool ObjectHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            var newValue = trackedProperty.Property.GetValue(this.originalSource);
+            var oldValue = trackedProperty.ClonedValue;
+            var hasChanged = ObjectHasChanged(oldValue, newValue);
+            trackedProperty.HasChanges = hasChanged;
+            return hasChanged;
+        }
+
+        private bool EnumerableHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            var newValue = trackedProperty.Property.GetValue(this.originalSource);
+            var oldValue = trackedProperty.ClonedValue;
+            var hasChanged = EnumerableHasChanged(oldValue, newValue);
+            trackedProperty.HasChanges = hasChanged;
+            return hasChanged;
+        }
+
+        private bool ValueHasChanged(ChangeTrackedProperty trackedProperty)
+        {
+            var newValue = trackedProperty.Property.GetValue(this.originalSource);
+            var oldValue = trackedProperty.ClonedValue;
+            var hasChanged = ValueHasChanged(oldValue, newValue);
+            trackedProperty.HasChanges = hasChanged;
+            return hasChanged;
+        }
+
+        private void TryUpdateHasChanges(bool hasChanged)
+        {
+            if (hasChanged)
+            {
+                if (!HasChanges)
+                    HasChanges = true;
+            }
+            else
+            {
+                if (HasChanges)
+                {
+                    foreach (var trackedProperty in trackedProperties)
+                    {
+                        if (trackedProperty.Value.HasChanges)
+                            return;
+                    }
+                    HasChanges = false;
+                }
             }
         }
 
         private bool ValueHasChanged(object oldValue, object newValue)
         {
-            if(newValue == null)
+            if (newValue == null)
                 return !(oldValue == null);
 
             var equals = newValue.Equals(oldValue);
@@ -124,26 +250,22 @@ namespace MvvmLib.Mvvm
         {
             // 1. null ?
             if (oldValue == null)
-            {
                 return !(newValue == null);
-            }
             else if (newValue == null)
-            {
                 return !(oldValue == null);
-            }
 
-            // 2. Count
-
+            // 2. Count 
             var type = oldValue.GetType();
             var isArray = type.IsArray;
             if (!isArray)
             {
-                var countProperty = type.GetProperty("Count");
-                if (countProperty != null)
+                var sizePropertyName = "Count";
+                var sizeProperty = type.GetProperty(sizePropertyName);
+                if (sizeProperty != null)
                 {
-                    var oldCount = countProperty.GetValue(oldValue);
-                    var newCount = countProperty.GetValue(newValue);
-                    if (!oldCount.Equals(newCount))
+                    var oldSize = sizeProperty.GetValue(oldValue);
+                    var newSize = sizeProperty.GetValue(newValue);
+                    if (!oldSize.Equals(newSize))
                         return true;
                 }
             }
@@ -170,7 +292,6 @@ namespace MvvmLib.Mvvm
 
                 if (AnyHasChanged(nextOldValue, nextNewValue))
                     return true;
-
             }
 
             return false;
@@ -187,20 +308,20 @@ namespace MvvmLib.Mvvm
                 return !(oldValue == null);
             }
 
-            var properties = GetProperties(oldValue.GetType());
+            var properties = oldValue.GetType().GetProperties();
             foreach (var property in properties)
             {
-                var type = property.PropertyType;
+                var propertyType = property.PropertyType;
                 var nextOldValue = property.GetValue(oldValue);
                 var nextNewValue = property.GetValue(newValue);
 
-                if (IsValueTypeExtended(type))
+                if (IsValueTypeExtended(propertyType))
                 {
                     // value comparison
                     if (ValueHasChanged(nextOldValue, nextNewValue))
                         return true;
                 }
-                else if (ReflectionUtils.IsEnumerableType(type))
+                else if (ReflectionUtils.IsEnumerableType(propertyType))
                 {
 
                     if (EnumerableHasChanged(nextOldValue, nextNewValue))
@@ -208,9 +329,12 @@ namespace MvvmLib.Mvvm
                 }
                 else
                 {
-                    // can be null
-                    if (ObjectHasChanged(nextOldValue, nextNewValue))
-                        return true;
+                    if (!(ReflectionUtils.IsCommandType(propertyType)))
+                    {
+                        // can be null
+                        if (ObjectHasChanged(nextOldValue, nextNewValue))
+                            return true;
+                    }
                 }
             }
             return false;
@@ -236,7 +360,6 @@ namespace MvvmLib.Mvvm
             }
             else if (ReflectionUtils.IsEnumerableType(type))
             {
-
                 if (EnumerableHasChanged(oldValue, newValue))
                     return true;
             }
@@ -251,24 +374,70 @@ namespace MvvmLib.Mvvm
 
         private bool CheckChangesWithReflection()
         {
-            bool changed = false;
-            var type = this.originalValue.GetType();
-            var trackedValue = keepAlive ? this.trackedValue : this.trackedValueRef.Target;
-            if (IsValueTypeExtended(type))
-                throw new NotSupportedException($"Type \"{type.Name}\" not supported");
-            else if (ReflectionUtils.IsEnumerableType(type))
-                changed = EnumerableHasChanged(this.originalValue, trackedValue);
-            else
-                changed = ObjectHasChanged(this.originalValue, trackedValue);
+            if (!this.CanCheckChanges)
+                throw new InvalidOperationException("No source provided. Cannot check changes. Call 'TrackChanges' to provide an original source");
 
-            return changed;
+            if (this.isEnumerableSource)
+            {
+                var oldValue = this.trackedSource.ClonedValue;
+                var newValue = this.trackedSource.Value;
+
+                var hasChanged = EnumerableHasChanged(oldValue, newValue);
+                this.HasChanges = hasChanged;
+                return hasChanged;
+            }
+            else
+            {
+                foreach (var trackedProperty in trackedProperties.Values)
+                {
+                    switch (trackedProperty.PropertyType)
+                    {
+                        case ChangeTrackedPropertyType.Value:
+                            if (ValueHasChanged(trackedProperty))
+                                return true;
+                            break;
+                        case ChangeTrackedPropertyType.Enumerable:
+                            if (EnumerableHasChanged(trackedProperty))
+                                return true;
+                            break;
+                        case ChangeTrackedPropertyType.Object:
+                            if (ObjectHasChanged(trackedProperty))
+                                return true;
+                            break;
+                    }
+                }
+            }
+            return false;
         }
 
-        private bool CheckChangesWithEquals()
+        /// <summary>
+        /// Checks changes for the property.
+        /// </summary>
+        /// <returns>True if has changes</returns>
+        public bool CheckChanges(string propertyName)
         {
-            var trackedValue = keepAlive ? this.trackedValue : this.trackedValueRef.Target;
-            var equals = this.originalValue.Equals(trackedValue);
-            return !equals;
+            if (!this.CanCheckChanges)
+                throw new InvalidOperationException("No source provided. Cannot check changes. Call 'TrackChanges' to provide an original source");
+            if (this.isEnumerableSource)
+                throw new InvalidOperationException("The source is enumerable");
+
+            if (this.trackedProperties.TryGetValue(propertyName, out ChangeTrackedProperty trackedProperty))
+            {
+                switch (trackedProperty.PropertyType)
+                {
+                    case ChangeTrackedPropertyType.Value:
+                        CheckValueHasChanged(trackedProperty);
+                        break;
+                    case ChangeTrackedPropertyType.Enumerable:
+                        CheckEnumerableHasChanged(trackedProperty);
+                        break;
+                    case ChangeTrackedPropertyType.Object:
+                        CheckObjectHasChanged(trackedProperty);
+                        break;
+                }
+            }
+
+            return hasChanges;
         }
 
         /// <summary>
@@ -277,22 +446,9 @@ namespace MvvmLib.Mvvm
         /// <returns>True if has changes</returns>
         public bool CheckChanges()
         {
-            bool changed = false;
-            switch (trackerMode)
-            {
-                case ChangeTrackerMode.UseEquals:
-                    changed = CheckChangesWithEquals();
-                    break;
-                case ChangeTrackerMode.UseReflection:
-                    changed = CheckChangesWithReflection();
-                    break;
-                default:
-                    throw new NotSupportedException("Unexpected TrackerMode");
-            }
-
-            this.HasChanges = changed;
-
-            return changed;
+            bool hasChanged = CheckChangesWithReflection();
+            TryUpdateHasChanges(hasChanged);
+            return hasChanged;
         }
 
         /// <summary>
@@ -300,23 +456,122 @@ namespace MvvmLib.Mvvm
         /// </summary>
         public void AcceptChanges()
         {
-            this.originalValue = cloner.DeepClone(trackedValue);
+            TrackChanges(this.originalSource);
             this.HasChanges = false;
         }
     }
 
     /// <summary>
-    /// The tracker Mode
+    /// The tracked property type.
     /// </summary>
-    public enum ChangeTrackerMode
+    public enum ChangeTrackedPropertyType
     {
         /// <summary>
-        /// Use Equals.
+        /// Value
         /// </summary>
-        UseEquals,
+        Value,
         /// <summary>
-        /// Use Reflection.
+        /// Enumerable
         /// </summary>
-        UseReflection
+        Enumerable,
+        /// <summary>
+        /// Object
+        /// </summary>
+        Object
+    }
+
+    /// <summary>
+    /// A class with property and original value.
+    /// </summary>
+    public class ChangeTrackedProperty
+    {
+        private PropertyInfo property;
+        /// <summary>
+        /// The property.
+        /// </summary>
+        public PropertyInfo Property
+        {
+            get { return property; }
+        }
+
+        private object clonedValue;
+        /// <summary>
+        /// The cloned value.
+        /// </summary>
+        public object ClonedValue
+        {
+            get { return clonedValue; }
+        }
+
+        private bool hasChanges;
+        /// <summary>
+        /// Chekcs if the current property has changes.
+        /// </summary>
+        public bool HasChanges
+        {
+            get { return hasChanges; }
+            set { hasChanges = value; }
+        }
+
+        private ChangeTrackedPropertyType propertyType;
+        /// <summary>
+        /// The <see cref="ChangeTrackedPropertyType"/>.
+        /// </summary>
+        public ChangeTrackedPropertyType PropertyType
+        {
+            get { return propertyType; }
+        }
+
+        /// <summary>
+        /// Creates the <see cref="ChangeTrackedProperty"/>.
+        /// </summary>
+        /// <param name="property">The property</param>
+        /// <param name="clonedValue">The cloned value</param>
+        /// <param name="propertyType">The property type</param>
+        public ChangeTrackedProperty(PropertyInfo property, object clonedValue, ChangeTrackedPropertyType propertyType)
+        {
+            if (property == null)
+                throw new ArgumentNullException(nameof(property));
+
+            this.property = property;
+            this.clonedValue = clonedValue;
+            this.propertyType = propertyType;
+        }
+    }
+
+
+    /// <summary>
+    /// A tracked source.
+    /// </summary>
+    public class TrackedSource
+    {
+        private object value;
+        /// <summary>
+        /// The value.
+        /// </summary>
+        public object Value
+        {
+            get { return value; }
+        }
+
+        private object clonedValue;
+        /// <summary>
+        /// The cloned value.
+        /// </summary>
+        public object ClonedValue
+        {
+            get { return clonedValue; }
+        }
+
+        /// <summary>
+        /// Creates the <see cref="TrackedSource"/>.
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <param name="clonedValue">The cloned value</param>
+        public TrackedSource(object value, object clonedValue)
+        {
+            this.value = value;
+            this.clonedValue = clonedValue;
+        }
     }
 }

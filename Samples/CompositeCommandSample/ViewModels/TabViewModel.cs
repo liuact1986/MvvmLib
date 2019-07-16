@@ -60,14 +60,8 @@ namespace CompositeCommandSample.ViewModels
             applicationCommands.SaveAllCommand.Add(SaveCommand);
 
             this.Item = new MyItem { Title = title };
-            this.Tracker = new ChangeTracker(this.Item);
-
-            this.Item.PropertyChanged += OnItemPropertyChanged;
-        }
-
-        private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            this.Tracker.CheckChanges();
+            this.Tracker = new ChangeTracker();
+            this.Tracker.TrackChanges(this.Item);
         }
 
         private void OnSave()

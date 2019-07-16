@@ -6,26 +6,19 @@ using System.ComponentModel;
 namespace MvvmLib.Navigation
 {
     /// <summary>
-    /// A PagedSource is a Paged CollectionView.
+    /// The Paged CollectionView interface.
     /// </summary>
-    public interface IPagedSource : ICollectionView, IEditableCollectionViewAddNewItem, INotifyPropertyChanged
+    public interface IPagedCollectionView
     {
         /// <summary>
-        /// Allows to get the item at the index from current page.
+        /// Checks if can move to previous page.
         /// </summary>
-        /// <param name="index">The index</param>
-        /// <returns>The item</returns>
-        object this[int index] { get; }
+        bool CanMoveToPreviousPage { get; }
 
         /// <summary>
-        /// Allows to group by property name.
+        /// Checks if can move to previous page.
         /// </summary>
-        IRelayCommand SortByCommand { get; }
-
-        /// <summary>
-        /// Allows to group by property name.
-        /// </summary>
-        IRelayCommand SortByDescendingCommand { get; }
+        bool CanMoveToNextPage { get; }
 
         /// <summary>
         /// The total of items after applying the filter and sorting.
@@ -68,16 +61,6 @@ namespace MvvmLib.Navigation
         int End { get; }
 
         /// <summary>
-        /// Checks if can move to previous page.
-        /// </summary>
-        bool CanMoveToPreviousPage { get; }
-
-        /// <summary>
-        /// Checks if can move to previous page.
-        /// </summary>
-        bool CanMoveToNextPage { get; }
-
-        /// <summary>
         /// Allows to move to the first page.
         /// </summary>
         IRelayCommand MoveToFirstPageCommand { get; }
@@ -101,6 +84,65 @@ namespace MvvmLib.Navigation
         /// Allows to move to the page.
         /// </summary>
         IRelayCommand MoveToPageCommand { get; }
+
+        /// <summary>
+        /// Invoked on page changing.
+        /// </summary>
+        event EventHandler<PageChangeEventArgs> PageChanging;
+
+        /// <summary>
+        /// Invoked on page changed.
+        /// </summary>
+        event EventHandler<PageChangeEventArgs> PageChanged;
+
+        /// <summary>
+        /// Allows to move to the first page.
+        /// </summary>
+        bool MoveToFirstPage();
+
+        /// <summary>
+        /// Allows to move to the previous page.
+        /// </summary>
+        bool MoveToPreviousPage();
+
+        /// <summary>
+        /// Allows to move to the next page.
+        /// </summary>
+        bool MoveToNextPage();
+
+        /// <summary>
+        /// Allows to move to the last page.
+        /// </summary>
+        bool MoveToLastPage();
+
+        /// <summary>
+        /// Allows to move to the page.
+        /// </summary>
+        bool MoveToPage(int pageIndex);
+    }
+
+
+    /// <summary>
+    /// A PagedSource is a Paged CollectionView.
+    /// </summary>
+    public interface IPagedSource : IPagedCollectionView, ICollectionView, IEditableCollectionViewAddNewItem, INotifyPropertyChanged
+    {
+        /// <summary>
+        /// Allows to get the item at the index from current page.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <returns>The item</returns>
+        object this[int index] { get; }
+
+        /// <summary>
+        /// Allows to group by property name.
+        /// </summary>
+        IRelayCommand SortByCommand { get; }
+
+        /// <summary>
+        /// Allows to group by property name.
+        /// </summary>
+        IRelayCommand SortByDescendingCommand { get; }
 
         /// <summary>
         /// Checks if can move to previous item.
@@ -196,42 +238,7 @@ namespace MvvmLib.Navigation
         /// Invoked on refreshed.
         /// </summary>
         event EventHandler Refreshed;
-
-        /// <summary>
-        /// Invoked on page changing.
-        /// </summary>
-        event EventHandler<PageChangeEventArgs> PageChanging;
-
-        /// <summary>
-        /// Invoked on page changed.
-        /// </summary>
-        event EventHandler<PageChangeEventArgs> PageChanged;
-
-        /// <summary>
-        /// Allows to move to the first page.
-        /// </summary>
-        bool MoveToFirstPage();
-
-        /// <summary>
-        /// Allows to move to the previous page.
-        /// </summary>
-        bool MoveToPreviousPage();
-
-        /// <summary>
-        /// Allows to move to the next page.
-        /// </summary>
-        bool MoveToNextPage();
-
-        /// <summary>
-        /// Allows to move to the last page.
-        /// </summary>
-        bool MoveToLastPage();
-
-        /// <summary>
-        /// Allows to move to the page.
-        /// </summary>
-        bool MoveToPage(int pageIndex);
-
+   
         /// <summary>
         /// Clears the filter.
         /// </summary>
