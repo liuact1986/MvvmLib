@@ -72,7 +72,7 @@ namespace MvvmLib.Mvvm
                     else if (ReflectionUtils.IsEnumerableType(propertyType))
                     {
                         var value = property.GetValue(originalSource);
-                        var clonedValue = this.cloner.DeepClone(value);
+                        var clonedValue = value == null ? null : this.cloner.DeepClone(value);
                         this.trackedProperties[property.Name] = new TrackedProperty(property, clonedValue);
                     }
                     else
@@ -80,7 +80,7 @@ namespace MvvmLib.Mvvm
                         var value = property.GetValue(originalSource);
                         if (!(ReflectionUtils.IsCommandType(propertyType)))
                         {
-                            var clonedValue = this.cloner.DeepClone(value);
+                            var clonedValue = value == null ? null : this.cloner.DeepClone(value);
                             this.trackedProperties[property.Name] = new TrackedProperty(property, clonedValue);
                         }
                     }

@@ -300,13 +300,9 @@ namespace MvvmLib.Mvvm
         private bool ObjectHasChanged(object oldValue, object newValue)
         {
             if (oldValue == null)
-            {
                 return !(newValue == null);
-            }
             else if (newValue == null)
-            {
                 return !(oldValue == null);
-            }
 
             var properties = oldValue.GetType().GetProperties();
             foreach (var property in properties)

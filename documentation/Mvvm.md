@@ -780,7 +780,7 @@ this.Tracker = new ChangeTracker();
 this.Tracker.TrackChanges(this.Person);
 ```
 
-for list or collection, create a command and invoke this.Tracker.CheckChanges() or observe INotifyCollectionChanged for ObservableCollection for example.
+For list or collection, create a command and invoke this.Tracker.CheckChanges() or observe INotifyCollectionChanged for ObservableCollection for example.
 
 ```cs
 private void AddFriend(Friend friend)

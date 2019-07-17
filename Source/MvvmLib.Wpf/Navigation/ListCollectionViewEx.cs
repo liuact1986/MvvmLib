@@ -544,7 +544,7 @@ namespace MvvmLib.Navigation
         public void Cancel()
         {
             if (this.IsAddingNew)
-                this.CancelNew();
+                    this.CancelNew();
             else if (this.IsEditingItem && this.CanCancelEdit)
                 this.CancelEdit();
         }

@@ -798,9 +798,6 @@ namespace MvvmLib.Navigation
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
-            if (this.currentIndex >= 0)
-                this.OnNavigating(this.entries[currentIndex], NavigationType.New);
-
             var navigationContext = new NavigationContext(sourceType, parameter);
 
             var selectable = NavigationHelper.FindSelectable(sources, sourceType, parameter);

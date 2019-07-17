@@ -50,8 +50,8 @@ using System.Windows.Markup;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de build et de révision par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.11.7.0")]
-[assembly: AssemblyFileVersion("0.11.7.0")]
+[assembly: AssemblyVersion("0.11.8.1")]
+[assembly: AssemblyFileVersion("0.11.8.1")]
 
 [assembly: XmlnsDefinition("http://mvvmlib.com/", "MvvmLib.Navigation")]
 [assembly: XmlnsDefinition("http://mvvmlib.com/", "MvvmLib.Animation")]
