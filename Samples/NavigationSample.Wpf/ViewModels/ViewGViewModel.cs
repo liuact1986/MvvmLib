@@ -1,6 +1,7 @@
 ﻿using MvvmLib.Mvvm;
 using MvvmLib.Navigation;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -19,16 +20,16 @@ namespace NavigationSample.Wpf.ViewModels
             Message = "Default ViewG Message";
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             var canActivate = MessageBox.Show("ACTIVATE ViewG [ViewModel]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            continuationCallback(canActivate);
+            return Task.FromResult(canActivate);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             var canDeactivate = MessageBox.Show("DEACTIVATE ViewG [ViewModel]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            continuationCallback(canDeactivate);
+            return Task.FromResult(canDeactivate);
         }
     }
 }

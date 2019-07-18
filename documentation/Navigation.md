@@ -16,6 +16,12 @@
 * **Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**
 * **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
+
+* Content control that requires only navigation => **NavigationSource**
+* Items control that does not require filtering or sorting (TabControl for example) => SharedSource or ObservableCollection + SelectedItem + NavigationHelper
+* Items control/ custom control/ etc. that requires **filtering, sorting, edition**, ... => **ListCollectionView** or **ListCollectionViewEx**
+* Items control/ custom control/ etc. that requires **paging** (DataGrid for example) => **PagedSource**
+
 ## Create a Bootstrapper
 
 Create a new Wpf application. Remove the MainWindow. Create a "Views" directory and a Window named "Shell".
@@ -133,6 +139,8 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | MoveToNext | Navigates to the next source |
 | MoveToLast | Move to the last or the source |
 | MoveTo | Move to the index or the (existing) source |
+| SuspendNotifications | Suspends notification on current changed |
+| ResumeNotifications | Resumes notification on current changed |
 | Sync | Synchronizes the history and sources with the navigation source provided |
 
 | Property | Description |
@@ -723,16 +731,33 @@ Useful when the user want to leave a page or close a tabitem for example.
 public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
 
-    public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+    public Task<bool> CanActivate(NavigationContext navigationContext)
     {
-        var canActivate = MessageBox.Show("Can activate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        continuationCallback(canActivate);
+        var canActivate = MessageBox.Show("Activate?", "Confirmation", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        return Task.FromResult(canActivate);
     }
 
-    public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+    public Task<bool> CanDeactivate(NavigationContext navigationContext)
     {
-        var canDeactivate = MessageBox.Show("Can deactivate?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        continuationCallback(canDeactivate);
+        var canDeactivate = MessageBox.Show("Deactivate?", "Confirmation", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        return Task.FromResult(canDeactivate);
+    }
+}
+```
+
+Async example:
+
+```cs
+public class ViewAViewModel : ICanActivate
+{
+
+    public async Task<bool> CanActivate(NavigationContext navigationContext)
+    {
+        var canActivate = MessageBox.Show("Activate?", "Confirmation", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+
+        await Task.Delay(2000).ConfigureAwait(false);
+
+        return canActivate;
     }
 }
 ```
@@ -1171,6 +1196,54 @@ using (collectionView.DeferRefresh())
 }
 ```
 
+## PredicateBuilder and filters
+
+Predicate builder sample
+
+```cs
+var builder = new PredicateBuilder();
+// filter on FirstName starts with "A"
+var expression = builder.CreatePredicateExpression<Person>("FirstName", PredicateOperator.StartsWith, "A");
+var predicate = expression.Compile(); // Predicate<Person>
+```
+
+FilteringExpression
+
+```cs
+var collectionView = new ListCollectionView(people);
+
+var filteringExpression = new FilteringExpression<Person>("Age", PredicateOperator.IsGreaterThan, 30);
+collectionView.Filter = filteringExpression.Filter;
+```
+
+The filter is refreshed if the operator or the value is changed
+
+
+```cs
+// explicitly call refresh 
+filteringExpression.IsCaseSensitive = true; // example change case sensitive or CultureInfo
+filteringExpression.Refresh(); // and refresh
+```
+
+Composite filter
+
+```cs
+var compositeFilter = new CompositeFilteringExpression<Person>();
+compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
+compositeFilter.AddFilter(new FilteringExpression<Person>("Age", PredicateOperator.IsGreaterThan, 30));
+compositeFilter.Refresh();
+collectionView.Filter = filteringExpression.Filter;
+```
+
+Example 2 with Logical Operator OR
+
+```cs
+var compositeFilter = new CompositeFilteringExpression<Person>(LogicalOperator.Or);
+compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
+compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "B"));
+compositeFilter.Refresh();
+collectionView.Filter = filteringExpression.Filter;
+```
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior
 
@@ -1424,6 +1497,55 @@ public class ViewAViewModel : BindableBase
     }
 }
 ```
+
+
+## BindingProxy
+
+Example:
+
+```xml
+<DataGrid x:Name="DataGrid1" ItemsSource="{Binding CollectionView}" AutoGenerateColumns="False" IsReadOnly="True">
+    <DataGrid.Resources>
+        <!-- 1. Adds the Proxy in control or window resources-->
+        <mvvmLib:BindingProxy x:Key="Proxy"  Context="{Binding}"/>
+    </DataGrid.Resources>
+    <DataGrid.Columns>
+        <DataGridTextColumn Binding="{Binding FirstName}" Width="*">
+            <DataGridTextColumn.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Name" />
+
+                    <local:DropDownButton Grid.Column="1">
+                        <local:DropDownButton.DropDownContent>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- code -->
+
+                                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                    <!-- 2. Use the Proxy as Source and bind with The Context dependency property -->
+                                    <Button Content="Filter" Command="{Binding Context.FilterFirstNameCommand, Source={StaticResource Proxy}}" />
+                                </StackPanel>
+                            </Grid>
+                        </local:DropDownButton.DropDownContent>
+                    </local:DropDownButton>
+                </Grid>
+            </DataGridTextColumn.Header>
+        </DataGridTextColumn>
+
+        <!-- other columns -->
+    </DataGrid.Columns>
+</DataGrid>
+```
+
 
 ## Modules
 

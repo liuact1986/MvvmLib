@@ -13,9 +13,10 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// The navigation source base class.
     /// </summary>
-    public class NavigationSource : IMovableSource, INotifyPropertyChanged
+    public class NavigationSource : INotifyPropertyChanged
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
+        private bool notifyOnCurrentChanged;
 
         private ILogger logger;
         /// <summary>
@@ -61,7 +62,7 @@ namespace MvvmLib.Navigation
         public int CurrentIndex
         {
             get { return currentIndex; }
-            set
+            set 
             {
                 if (!Equals(currentIndex, value))
                     MoveTo(value);
@@ -78,15 +79,13 @@ namespace MvvmLib.Navigation
             set { clearSourcesOnNavigate = value; }
         }
 
-
-        private bool notifyOnCurrentChanged;
+        private bool isNavigating;
         /// <summary>
-        /// Allows to cancel <see cref="INotifyPropertyChanged"/>. Usefull sometimes with animations.
+        /// Checks if is navigating.
         /// </summary>
-        public bool NotifyOnCurrentChanged
+        public bool IsNavigating
         {
-            get { return notifyOnCurrentChanged; }
-            set { notifyOnCurrentChanged = value; }
+            get { return isNavigating; }
         }
 
         /// <summary>
@@ -586,6 +585,7 @@ namespace MvvmLib.Navigation
 
         #endregion // Sources management
 
+
         /// <summary>
         /// Sets the <see cref="Current"/> value with the new value. Can be override to apply other behaviors.
         /// </summary>
@@ -651,51 +651,71 @@ namespace MvvmLib.Navigation
             this.OnNavigated(navigationContext.SourceType, source, navigationContext.Parameter, NavigationType.New);
         }
 
-        internal void Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
+        internal bool Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
         {
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
+
+            bool success = true;
+
+            SetIsNavigating(true);
 
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
             var navigationContext = new NavigationContext(sourceType, parameter);
-            NavigationHelper.CanDeactivate(current, navigationContext, canDeactivate =>
+
+            var canDeactivate = NavigationHelper.CanDeactivate(current, navigationContext);
+            if (canDeactivate)
             {
-                if (canDeactivate)
+                var selectable = NavigationHelper.FindSelectable(sources, sourceType, parameter);
+                if (selectable != null)
                 {
-                    var selectable = NavigationHelper.FindSelectable(sources, sourceType, parameter);
-                    if (selectable != null)
-                    {
-                        NavigationHelper.CanActivate(selectable, navigationContext, canActivate =>
-                        {
-                            if (canActivate)
-                                ExecuteNavigationWithSelectable(selectable, navigationContext);
-                            else
-                                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
-                        });
-                    }
+                    var canActivate = NavigationHelper.CanActivate(selectable, navigationContext);
+                    if (canActivate)
+                        ExecuteNavigationWithSelectable(selectable, navigationContext);
                     else
                     {
-                        var source = resolveSource(sourceType);
-                        NavigationHelper.CanActivate(source, navigationContext, canActivate =>
-                        {
-                            if (canActivate)
-                            {
-                                var view = source as FrameworkElement;
-                                if (view != null)
-                                    ExecuteNavigationNew(source, view.DataContext, navigationContext);
-                                else
-                                    ExecuteNavigationNew(source, source, navigationContext);
-                            }
-                            else
-                                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
-                        });
+                        success = false;
+                        this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
                     }
                 }
                 else
-                    this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
-            });
+                {
+                    var source = resolveSource(sourceType);
+                    var canActivate = NavigationHelper.CanActivate(source, navigationContext);
+                    if (canActivate)
+                    {
+                        var view = source as FrameworkElement;
+                        if (view != null)
+                            ExecuteNavigationNew(source, view.DataContext, navigationContext);
+                        else
+                            ExecuteNavigationNew(source, source, navigationContext);
+                    }
+                    else
+                    {
+                        success = false;
+                        this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+                    }
+                }
+            }
+            else
+            {
+                success = false;
+                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, NavigationType.New);
+            }
+
+
+            SetIsNavigating(false);
+
+            return success;
+        }
+
+        private void SetIsNavigating(bool isNavigating)
+        {
+            this.isNavigating = isNavigating;
+            OnPropertyChanged(nameof(IsNavigating));
+
         }
 
         /// <summary>
@@ -703,18 +723,18 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        public void Navigate(Type sourceType, object parameter)
+        public bool Navigate(Type sourceType, object parameter)
         {
-            this.Navigate(sourceType, parameter, NavigationHelper.ResolveSource);
+            return this.Navigate(sourceType, parameter, NavigationHelper.ResolveSource);
         }
 
         /// <summary>
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        public void Navigate(Type sourceType)
+        public bool Navigate(Type sourceType)
         {
-            this.Navigate(sourceType, null);
+            return this.Navigate(sourceType, null);
         }
 
         /// <summary>
@@ -722,10 +742,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <param name="parameter">The parameter</param>
-        public void Navigate(string sourceName, object parameter)
+        public bool Navigate(string sourceName, object parameter)
         {
             if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
-                this.Navigate(sourceType, parameter);
+                return this.Navigate(sourceType, parameter);
             else
                 throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
         }
@@ -735,9 +755,9 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <returns>True on navigation success</returns>
-        public void Navigate(string sourceName)
+        public bool Navigate(string sourceName)
         {
-            this.Navigate(sourceName, null);
+            return this.Navigate(sourceName, null);
         }
 
         /// <summary>
@@ -745,7 +765,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
-        public void Redirect(Type sourceType, object parameter)
+        public bool Redirect(Type sourceType, object parameter)
         {
             // remove current
             var index = this.currentIndex;
@@ -754,16 +774,16 @@ namespace MvvmLib.Navigation
                 this.RemoveAtInternal(index);
                 this.currentIndex = index - 1;
             }
-            this.Navigate(sourceType, parameter);
+            return this.Navigate(sourceType, parameter);
         }
 
         /// <summary>
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceType">The source type</param>
-        public void Redirect(Type sourceType)
+        public bool Redirect(Type sourceType)
         {
-            this.Redirect(sourceType, null);
+            return this.Redirect(sourceType, null);
         }
 
         /// <summary>
@@ -771,10 +791,10 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <param name="parameter">The parameter</param>
-        public void Redirect(string sourceName, object parameter)
+        public bool Redirect(string sourceName, object parameter)
         {
             if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
-                this.Redirect(sourceType, parameter);
+                return this.Redirect(sourceType, parameter);
             else
                 throw new ArgumentException($"No type found for the source name '{sourceName}'. Use 'SourceResolver.RegisterTypeForNavigation' to register the types for names");
         }
@@ -783,9 +803,9 @@ namespace MvvmLib.Navigation
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceName">The source name</param>
-        public void Redirect(string sourceName)
+        public bool Redirect(string sourceName)
         {
-            this.Redirect(sourceName, null);
+            return this.Redirect(sourceName, null);
         }
 
         /// <summary>
@@ -795,6 +815,8 @@ namespace MvvmLib.Navigation
         /// <param name="parameter">The parameter</param>
         public void NavigateFast(Type sourceType, object parameter)
         {
+            SetIsNavigating(true);
+
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], NavigationType.New);
 
@@ -812,6 +834,8 @@ namespace MvvmLib.Navigation
                 else
                     ExecuteNavigationNew(source, source, navigationContext);
             }
+
+            SetIsNavigating(false);
         }
 
         /// <summary>
@@ -847,8 +871,12 @@ namespace MvvmLib.Navigation
 
         #region Move
 
-        private void MoveToInternal(int index, NavigationType navigationType)
+        private bool MoveToInternal(int index, NavigationType navigationType)
         {
+            bool success = true;
+
+            SetIsNavigating(true);
+
             if (this.currentIndex >= 0)
                 this.OnNavigating(this.entries[currentIndex], navigationType);
 
@@ -856,27 +884,33 @@ namespace MvvmLib.Navigation
             var source = this.sources[index];
 
             var navigationContext = new NavigationContext(entry.SourceType, entry.Parameter);
-            NavigationHelper.CanDeactivate(current, navigationContext, canDeactivate =>
+            var canDeactivate = NavigationHelper.CanDeactivate(current, navigationContext);
+            if (canDeactivate)
             {
-                if (canDeactivate)
+                var canActivate = NavigationHelper.CanActivate(source, navigationContext);
+                if (canActivate)
                 {
-                    NavigationHelper.CanActivate(source, navigationContext, canActivate =>
-                    {
-                        if (canActivate)
-                        {
-                            var view = source as FrameworkElement;
-                            if (view != null)
-                                ExecuteMove(index, source, view.DataContext, navigationContext, navigationType);
-                            else
-                                ExecuteMove(index, source, source, navigationContext, navigationType);
-                        }
-                        else
-                            this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, navigationType);
-                    });
+                    var view = source as FrameworkElement;
+                    if (view != null)
+                        ExecuteMove(index, source, view.DataContext, navigationContext, navigationType);
+                    else
+                        ExecuteMove(index, source, source, navigationContext, navigationType);
                 }
                 else
+                {
+                    success = false;
                     this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, navigationType);
-            });
+                }
+            }
+            else
+            {
+                success = false;
+                this.OnNavigationFailed(navigationContext.SourceType, navigationContext.Parameter, navigationType);
+            }
+
+            SetIsNavigating(false);
+
+            return success;
         }
 
         private void ExecuteMove(int index, object source, object context, NavigationContext navigationContext, NavigationType navigationType)
@@ -905,63 +939,89 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first source.
         /// </summary>
-        public void MoveToFirst()
+        public bool MoveToFirst()
         {
             if (CanMoveToPrevious)
-                this.MoveToInternal(0, NavigationType.Root);
+                return this.MoveToInternal(0, NavigationType.Root);
+            else
+                return false;
         }
 
         /// <summary>
         /// Allows to move to the previous source.
         /// </summary>
-        public void MoveToPrevious()
+        public bool MoveToPrevious()
         {
             if (CanMoveToPrevious)
-                this.MoveToInternal(this.currentIndex - 1, NavigationType.Back);
+                return this.MoveToInternal(this.currentIndex - 1, NavigationType.Back);
+            else
+                return false;
         }
 
         /// <summary>
         /// Allows to move to the next source.
         /// </summary>
-        public void MoveToNext()
+        public bool MoveToNext()
         {
             if (CanMoveToNext)
-                this.MoveToInternal(this.currentIndex + 1, NavigationType.Forward);
+                return this.MoveToInternal(this.currentIndex + 1, NavigationType.Forward);
+            else
+                return false;
         }
 
         /// <summary>
         /// Allows to move to the last source.
         /// </summary>
-        public void MoveToLast()
+        public bool MoveToLast()
         {
             if (CanMoveToNext)
-                this.MoveToInternal(this.sources.Count - 1, NavigationType.Forward);
+                return this.MoveToInternal(this.sources.Count - 1, NavigationType.Forward);
+            else
+                return false;
         }
 
         /// <summary>
         /// Allows to move to the source at the index.
         /// </summary>
         /// <param name="index">The index</param>
-        public void MoveTo(int index)
+        public bool MoveTo(int index)
         {
             if (index >= 0 && index < this.sources.Count)
             {
                 var navigationType = this.currentIndex > index ? NavigationType.Back : NavigationType.Forward;
-                MoveToInternal(index, navigationType);
+                return MoveToInternal(index, navigationType);
             }
+            else
+                return false;
         }
 
         /// <summary>
         /// Allows to move to the source.
         /// </summary>
         /// <param name="source">The source</param>
-        public void MoveTo(object source)
+        public bool MoveTo(object source)
         {
             var index = this.sources.IndexOf(source);
-            this.MoveTo(index);
+            return this.MoveTo(index);
         }
 
         #endregion // Move
+
+        /// <summary>
+        /// Suspends notification on current changed.
+        /// </summary>
+        public void SuspendNotifications()
+        {
+            this.notifyOnCurrentChanged = false;
+        }
+
+        /// <summary>
+        /// Resumes notification on current changed.
+        /// </summary>
+        public void ResumeNotifications()
+        {
+            this.notifyOnCurrentChanged = true;
+        }
 
         /// <summary>
         /// Synchronizes the navigation source with the navigation source provided.

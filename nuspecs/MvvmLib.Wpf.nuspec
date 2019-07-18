@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.11.8.1</version>
+    <version>0.12.0.1</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -27,10 +27,11 @@
 * BootstrapperBase: base class for Bootstrapper
 * ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
+    <releaseNotes>NavigationGuards, PredicateBuilder, FilteringExpression and CompositeFilteringExpression</releaseNotes>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>
-      <dependency id="MvvmLib.Core" version="0.4.3.0" />
+      <dependency id="MvvmLib.Core" version="0.4.3.3" />
     </dependencies>
   </metadata>
   <files>

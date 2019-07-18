@@ -80,11 +80,13 @@
     <Compile Include="Modules\ModuleManager.cs" />
     <Compile Include="Modules\ModulesConfigurationSection.cs" />
     <Compile Include="Mvvm\BindableObject.cs" />
+    <Compile Include="Mvvm\BindingProxy.cs" />
     <Compile Include="Mvvm\ReadOnlyCollection.cs" />
     <Compile Include="Navigation\BootstrapperBase.cs" />
     <Compile Include="Navigation\CanMoveToEventArgs.cs" />
     <Compile Include="Navigation\ContentControlNavigationSource.cs" />
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
+    <Compile Include="Navigation\FilteringExpression.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Navigation\PageChangeEventArgs.cs" />
     <Compile Include="Navigation\PagedSource.cs" />
     <Compile Include="Navigation\ListCollectionViewEx.cs" />
+    <Compile Include="Navigation\PredicateBuilder.cs" />
     <Compile Include="Navigation\SelectionHandling.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceSelectedItemChangedEventArgs.cs" />

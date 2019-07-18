@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace MvvmLib.Navigation
@@ -20,46 +21,38 @@ namespace MvvmLib.Navigation
             return isFrameworkELementType;
         }
 
-        private static void CanDeactivateStep2(object source, NavigationContext navigationContext, Action<bool> continuationCallback)
-        {
-            if (source is ICanDeactivate)
-                ((ICanDeactivate)source).CanDeactivate(navigationContext, continuationCallback);
-            else
-                continuationCallback(true);
-        }
-
         /// <summary>
         /// Checks deactivation for views and view models that implement <see cref="ICanDeactivate"/>.
         /// </summary>
         /// <param name="source">The source</param>
         /// <param name="navigationContext">The navigation context</param>
-        /// <param name="continuationCallback">The continuation callback</param>
-        public static void CanDeactivate(object source, NavigationContext navigationContext, Action<bool> continuationCallback)
+        public static bool CanDeactivate(object source, NavigationContext navigationContext)
         {
             var view = source as FrameworkElement;
             if (view != null)
+            {
                 if (view is ICanDeactivate)
                 {
-                    ((ICanDeactivate)view).CanDeactivate(navigationContext, canDeactivate =>
-                    {
-                        if (canDeactivate)
-                            CanDeactivateStep2(view.DataContext, navigationContext, continuationCallback);
-                        else
-                            continuationCallback(false);
-                    });
+                    if (!((ICanDeactivate)view).CanDeactivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
                 }
-                else
-                    CanDeactivateStep2(view.DataContext, navigationContext, continuationCallback);
-            else
-                CanDeactivateStep2(source, navigationContext, continuationCallback);
-        }
 
-        private static void CanActivateStep2(object source, NavigationContext navigationContext, Action<bool> continuationCallback)
-        {
-            if (source is ICanActivate)
-                ((ICanActivate)source).CanActivate(navigationContext, continuationCallback);
+                if (view.DataContext is ICanDeactivate)
+                {
+                    if (!((ICanDeactivate)view.DataContext).CanDeactivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
+                }
+            }
             else
-                continuationCallback(true);
+            {
+                if (source is ICanDeactivate)
+                {
+                    if (!((ICanDeactivate)source).CanDeactivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -67,26 +60,104 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="source">The source</param>
         /// <param name="navigationContext">The navigation context</param>
-        /// <param name="continuationCallback">The continuation callback</param>
-        public static void CanActivate(object source, NavigationContext navigationContext, Action<bool> continuationCallback)
+        public static bool CanActivate(object source, NavigationContext navigationContext)
         {
             var view = source as FrameworkElement;
             if (view != null)
+            {
                 if (view is ICanActivate)
                 {
-                    ((ICanActivate)view).CanActivate(navigationContext, canActivate =>
-                    {
-                        if (canActivate)
-                            CanActivateStep2(view.DataContext, navigationContext, continuationCallback);
-                        else
-                            continuationCallback(false);
-                    });
+                    if (!((ICanActivate)view).CanActivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
                 }
-                else
-                    CanActivateStep2(view.DataContext, navigationContext, continuationCallback);
+
+                if (view.DataContext is ICanActivate)
+                {
+                    if (!((ICanActivate)view.DataContext).CanActivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
+                }
+            }
             else
-                CanActivateStep2(source, navigationContext, continuationCallback);
+            {
+                if (source is ICanActivate)
+                {
+                    if (!((ICanActivate)source).CanActivate(navigationContext).GetAwaiter().GetResult())
+                        return false;
+                }
+            }
+
+            return true;
         }
+
+
+        ///// <summary>
+        ///// Checks deactivation for views and view models that implement <see cref="ICanDeactivate"/>.
+        ///// </summary>
+        ///// <param name="source">The source</param>
+        ///// <param name="navigationContext">The navigation context</param>
+        //public static async Task<bool> CanDeactivate(object source, NavigationContext navigationContext)
+        //{
+        //    var view = source as FrameworkElement;
+        //    if (view != null)
+        //    {
+        //        if (view is ICanDeactivate)
+        //        {
+        //            if (!await ((ICanDeactivate)view).CanDeactivate(navigationContext))
+        //                return false;
+        //        }
+
+        //        if (view.DataContext is ICanDeactivate)
+        //        {
+        //            if (!await ((ICanDeactivate)view.DataContext).CanDeactivate(navigationContext))
+        //                return false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (source is ICanDeactivate)
+        //        {
+        //            if (!await ((ICanDeactivate)source).CanDeactivate(navigationContext))
+        //                return false;
+        //        }
+        //    }
+
+        //    return true;
+        //}
+
+        ///// <summary>
+        ///// Checks activation for views and view models that implement <see cref="ICanActivate"/>.
+        ///// </summary>
+        ///// <param name="source">The source</param>
+        ///// <param name="navigationContext">The navigation context</param>
+        //public static async Task<bool> CanActivate(object source, NavigationContext navigationContext)
+        //{
+        //    var view = source as FrameworkElement;
+        //    if (view != null)
+        //    {
+        //        if (view is ICanActivate)
+        //        {
+        //            if (!await ((ICanActivate)view).CanActivate(navigationContext))
+        //                return false;
+        //        }
+
+        //        if (view.DataContext is ICanActivate)
+        //        {
+        //            if (!await ((ICanActivate)view.DataContext).CanActivate(navigationContext))
+        //                return false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (source is ICanActivate)
+        //        {
+        //            if (!await ((ICanActivate)source).CanActivate(navigationContext))
+        //                return false;
+        //        }
+        //    }
+
+        //    return true;
+        //}
+
 
         /// <summary>
         /// Tries to find existing source that implement <see cref="ISelectable"/> and that is target.

@@ -4,6 +4,7 @@ using MvvmLib.Wpf.Tests.ViewModels;
 using MvvmLib.Wpf.Tests.Views;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,7 +24,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             view.CActivate = false;
-            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p"), t => { success = t; }); // false
+            success = NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p")); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p", view.P);
             Assert.AreEqual(false, viewModel.IsCanActivateInvoked);
@@ -34,7 +35,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             viewModel.Reset();
             success = null;
             viewModel.CActivate = false;
-            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p2"), t => { success = t; }); // false
+            success = NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p2")); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p2", view.P);
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
@@ -44,7 +45,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             success = null;
-            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p3"), t => { success = t; }); // true
+            success = NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivate), "p3")); // true
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p3", view.P);
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
@@ -60,15 +61,45 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             viewModel.Reset();
             viewModel.CActivate = false;
-            NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p"), t => { success = t; }); // false
+            success = NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p")); // false
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
             Assert.AreEqual("p", viewModel.P);
             Assert.AreEqual(false, success);
 
             viewModel.Reset();
-            NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p2"), t => { success = t; }); // true
+            success = NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p2")); // true
             Assert.AreEqual(true, viewModel.IsCanActivateInvoked);
             Assert.AreEqual("p2", viewModel.P);
+            Assert.AreEqual(true, success);
+        }
+
+        [TestMethod]
+        public void Delayed_CanActivate()
+        {
+            var viewModel = new DelayedViewModel();
+            bool? success = null;
+
+            viewModel.CActivate = false;
+            success = NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p")); // false
+            Assert.AreEqual(false, success);
+
+            viewModel.CActivate = true;
+            success = NavigationHelper.CanActivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p2")); // true
+            Assert.AreEqual(true, success);
+        }
+
+        [TestMethod]
+        public void Delayed_CanDeactivate()
+        {
+            var viewModel = new DelayedViewModel();
+            bool? success = null;
+
+            viewModel.CDeactivate = false;
+            success = NavigationHelper.CanDeactivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p")); // false
+            Assert.AreEqual(false, success);
+
+            viewModel.CDeactivate = true;
+            success = NavigationHelper.CanDeactivate(viewModel, new NavigationContext(typeof(MyViewModelCanActivate), "p2")); // true
             Assert.AreEqual(true, success);
         }
 
@@ -80,13 +111,13 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             view.Reset();
             view.CActivate = false;
-            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p"), t => { success = t; }); // false
+            success = NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p")); // false
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p", view.P);
             Assert.AreEqual(false, success);
 
             view.Reset();
-            NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p2"), t => { success = t; }); // true
+            success = NavigationHelper.CanActivate(view, new NavigationContext(typeof(MyViewCanActivateWithoutContext), "p2")); // true
             Assert.AreEqual(true, view.IsCanActivateInvoked);
             Assert.AreEqual("p2", view.P);
             Assert.AreEqual(true, success);
@@ -101,7 +132,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
             view.Reset();
             view.CDeactivate = false;
-            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p"), t => { success = t; }); // false
+            success = NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p")); // false
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(false, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(false, success);
@@ -110,7 +141,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             viewModel.Reset();
             success = null;
             viewModel.CDeactivate = false;
-            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p2"), t => { success = t; }); // false
+            success = NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p2")); // false
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(true, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(false, success);
@@ -118,7 +149,7 @@ namespace MvvmLib.Wpf.Tests.Navigation
             view.Reset();
             viewModel.Reset();
             success = null;
-            NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p3"), t => { success = t; }); ; // true
+            success = NavigationHelper.CanDeactivate(view, new NavigationContext(typeof(MyViewCanDeactivate), "p3")); ; // true
             Assert.AreEqual(true, view.IsCanDeactivateInvoked);
             Assert.AreEqual(true, viewModel.IsCanDeactivateInvoked);
             Assert.AreEqual(true, success);
@@ -282,16 +313,16 @@ namespace MvvmLib.Wpf.Tests.Navigation
             DataContext = new MyViewModelThatChangeParameter();
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             navigationContext.Parameter = navigationContext.Parameter + "-canactivateview-";
-            continuationCallback(true);
+            return Task.FromResult(true);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             navigationContext.Parameter = navigationContext.Parameter + "-candeactivateview-";
-            continuationCallback(true);
+            return Task.FromResult(true);
         }
     }
 
@@ -299,18 +330,18 @@ namespace MvvmLib.Wpf.Tests.Navigation
     {
         public static string Parameter = null;
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             navigationContext.Parameter = navigationContext.Parameter + "-canactivateviewmodel-";
             Parameter = (string)navigationContext.Parameter;
-            continuationCallback(true);
+            return Task.FromResult(true);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             navigationContext.Parameter = navigationContext.Parameter + "-candeactivateviewmodel-";
             Parameter = (string)navigationContext.Parameter;
-            continuationCallback(true);
+            return Task.FromResult(true);
         }
 
         public void OnNavigatingFrom(NavigationContext navigationContext)
@@ -330,6 +361,133 @@ namespace MvvmLib.Wpf.Tests.Navigation
         {
             navigationContext.Parameter = navigationContext.Parameter + "-navigatedtoviewmodel-";
             Parameter = (string)navigationContext.Parameter;
+        }
+    }
+
+
+    public class DelayedViewModel : ICanActivate, ICanDeactivate, INavigationAware
+    {
+        public bool CActivate { get; set; }
+        public bool IsCanActivateInvoked { get; private set; }
+        public bool IsCanDeactivateInvoked { get; private set; }
+        public object PCanDeactivate { get; private set; }
+        public object PCanActivate { get; private set; }
+        public bool CDeactivate { get; set; }
+        public bool IsOnNavigatedToInvoked { get; private set; }
+        public object POnNavigatedTo { get; private set; }
+        public bool IsOnNavigatingFromInvoked { get; private set; }
+        public bool IsOnNavigatingToInvoked { get; private set; }
+        public object POnNavigatingTo { get; private set; }
+
+        public void Reset()
+        {
+            CActivate = true;
+            IsCanActivateInvoked = false;
+            PCanActivate = null;
+            IsCanDeactivateInvoked = false;
+            PCanDeactivate = null;
+            IsOnNavigatedToInvoked = false;
+            POnNavigatedTo = null;
+            IsOnNavigatingFromInvoked = false;
+            IsOnNavigatingToInvoked = false;
+            POnNavigatingTo = null;
+        }
+
+        public async Task<bool> CanActivate(NavigationContext navigationContext)
+        {
+            IsCanActivateInvoked = true;
+            PCanActivate = navigationContext.Parameter;
+            await Task.Delay(1000).ConfigureAwait(false);
+            return CActivate;
+        }
+
+        public async Task<bool> CanDeactivate(NavigationContext navigationContext)
+        {
+            IsCanDeactivateInvoked = true;
+            PCanDeactivate = navigationContext.Parameter;
+            await Task.Delay(1000).ConfigureAwait(false);
+            return CDeactivate;
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            IsOnNavigatedToInvoked = true;
+            POnNavigatedTo = navigationContext.Parameter;
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+            IsOnNavigatingFromInvoked = true;
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            IsOnNavigatingToInvoked = true;
+            POnNavigatingTo = navigationContext.Parameter;
+        }
+    }
+
+
+    public class DelayedViewModelStatic : ICanActivate, ICanDeactivate, INavigationAware
+    {
+       public static bool CActivate { get; set; }
+       public static bool IsCanActivateInvoked { get; private set; }
+       public static bool IsCanDeactivateInvoked { get; private set; }
+       public static object PCanDeactivate { get; private set; }
+       public static object PCanActivate { get; private set; }
+       public static bool CDeactivate { get; set; }
+       public static bool IsOnNavigatedToInvoked { get; private set; }
+       public static object POnNavigatedTo { get; private set; }
+       public static bool IsOnNavigatingFromInvoked { get; private set; }
+       public static bool IsOnNavigatingToInvoked { get; private set; }
+       public static object POnNavigatingTo { get; private set; }
+
+        public static void Reset()
+        {
+            CActivate = true;
+            CDeactivate = true;
+            IsCanActivateInvoked = false;
+            PCanActivate = null;
+            IsCanDeactivateInvoked = false;
+            PCanDeactivate = null;
+            IsOnNavigatedToInvoked = false;
+            POnNavigatedTo = null;
+            IsOnNavigatingFromInvoked = false;
+            IsOnNavigatingToInvoked = false;
+            POnNavigatingTo = null;
+        }
+
+        public async Task<bool> CanActivate(NavigationContext navigationContext)
+        {
+            IsCanActivateInvoked = true;
+            PCanActivate = navigationContext.Parameter;
+            await Task.Delay(1000).ConfigureAwait(false);
+            return CActivate;
+        }
+
+        public async Task<bool> CanDeactivate(NavigationContext navigationContext)
+        {
+            IsCanDeactivateInvoked = true;
+            PCanDeactivate = navigationContext.Parameter;
+            await Task.Delay(1000).ConfigureAwait(false);
+            return CDeactivate;
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            IsOnNavigatedToInvoked = true;
+            POnNavigatedTo = navigationContext.Parameter;
+        }
+
+        public void OnNavigatingFrom(NavigationContext navigationContext)
+        {
+            IsOnNavigatingFromInvoked = true;
+        }
+
+        public void OnNavigatingTo(NavigationContext navigationContext)
+        {
+            IsOnNavigatingToInvoked = true;
+            POnNavigatingTo = navigationContext.Parameter;
         }
     }
 
@@ -365,11 +523,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -427,11 +585,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -489,11 +647,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             this.IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -541,11 +699,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             this.DataContext = new MyViewModelCanActivate();
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             this.IsCanActivateInvoked = true;
             P = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
     }
 
@@ -563,11 +721,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
 
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             this.IsCanActivateInvoked = true;
             P = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
     }
 
@@ -581,9 +739,9 @@ namespace MvvmLib.Wpf.Tests.Navigation
             CDeactivate = true;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
 
         public MyViewCanDeactivate()
@@ -606,11 +764,11 @@ namespace MvvmLib.Wpf.Tests.Navigation
             P = null;
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             this.IsCanActivateInvoked = true;
             P = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
     }
 
@@ -630,10 +788,10 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             this.IsCanDeactivateInvoked = true;
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
     }
 
@@ -729,17 +887,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             IsCanDeactivateInvoked = true;
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -790,17 +948,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             IsCanDeactivateInvoked = true;
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -855,17 +1013,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             IsCanDeactivateInvoked = false;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             IsCanDeactivateInvoked = true;
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

@@ -8,6 +8,7 @@ using NavigationSample.Wpf.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -229,7 +230,7 @@ namespace NavigationSample.Wpf.ViewModels
             return false;
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             bool canDeactivate = true;
             if (person.Id > 0)
@@ -246,15 +247,16 @@ namespace NavigationSample.Wpf.ViewModels
                 if (canDeactivate)
                 {
                     var navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
-                    navigation.NotifyOnCurrentChanged = false;
+
+                    navigation.SuspendNotifications();
                     navigation.RemoveSourceAt(navigation.CurrentIndex);
-                    navigation.NotifyOnCurrentChanged = true;
+                    navigation.ResumeNotifications();
                 }
             }
 
             if (canDeactivate)
                 tracker.AcceptChanges();
-            continuationCallback(canDeactivate);
+            return Task.FromResult(canDeactivate);
         }
     }
 

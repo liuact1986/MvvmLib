@@ -107,10 +107,10 @@ namespace NavigationSample.Wpf.ViewModels
             detailsSource.Remove(this);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             var result = MessageBox.Show($"Close {baseName}?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            continuationCallback(result);
+            return Task.FromResult(result);
         }
     }
 

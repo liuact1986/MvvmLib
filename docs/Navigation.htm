@@ -57,6 +57,8 @@
 
 <li class="tocentry"><a href="#pagedsource">PagedSource</a></li>
 
+<li class="tocentry"><a href="#predicatebuilder-and-filters">PredicateBuilder and filters</a></li>
+
 <li class="tocentry"><a href="#iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior</a></li>
 
 <li class="tocentry"><a href="#animatablecontentcontrol">AnimatableContentControl</a></li>
@@ -68,6 +70,8 @@
 <li class="tocentry"><a href="#eventtocommandbehavior">EventToCommandBehavior</a></li>
 
 <li class="tocentry"><a href="#eventtomethodbehavior">EventToMethodBehavior</a></li>
+
+<li class="tocentry"><a href="#bindingproxy">BindingProxy</a></li>
 
 <li class="tocentry"><a href="#modules">Modules</a></li>
 
@@ -123,7 +127,15 @@
 <li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
 <li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
 <li><strong>Behaviors</strong>: <strong>SelectionSyncBehavior</strong>, <strong>EventToCommandBehavior</strong>,<strong>EventToMethodBehavior</strong></li>
-<li><strong>ModuleManager</strong>: allows to manage modules/assemblies loaded &quot;on demand&quot;</li>
+<li>
+<p><strong>ModuleManager</strong>: allows to manage modules/assemblies loaded &quot;on demand&quot;</p>
+</li>
+<li>
+<p>Content control that requires only navigation =&gt; <strong>NavigationSource</strong></p>
+</li>
+<li>Items control that does not require filtering or sorting (TabControl for example) =&gt; SharedSource or ObservableCollection + SelectedItem + NavigationHelper</li>
+<li>Items control/ custom control/ etc. that requires <strong>filtering, sorting, edition</strong>, ... =&gt; <strong>ListCollectionView</strong> or <strong>ListCollectionViewEx</strong></li>
+<li>Items control/ custom control/ etc. that requires <strong>paging</strong> (DataGrid for example) =&gt; <strong>PagedSource</strong></li>
 </ul>
 <h2 id="create-a-bootstrapper">Create a Bootstrapper<a class="headerlink" href="#create-a-bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Create a new Wpf application. Remove the MainWindow. Create a &quot;Views&quot; directory and a Window named &quot;Shell&quot;.</p>
@@ -259,6 +271,14 @@ namespace NavigationSample.Wpf.Startup
 <tr>
 	<td>MoveTo</td>
 	<td>Move to the index or the (existing) source</td>
+</tr>
+<tr>
+	<td>SuspendNotifications</td>
+	<td>Suspends notification on current changed</td>
+</tr>
+<tr>
+	<td>ResumeNotifications</td>
+	<td>Resumes notification on current changed</td>
 </tr>
 <tr>
 	<td>Sync</td>
@@ -935,16 +955,31 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 <pre><code class="cs">public class ViewAViewModel : ICanActivate, ICanDeactivate
 {
 
-    public void CanActivate(NavigationContext navigationContext, Action&lt;bool&gt; continuationCallback)
+    public Task&lt;bool&gt; CanActivate(NavigationContext navigationContext)
     {
-        var canActivate = MessageBox.Show(&quot;Can activate?&quot;, &quot;Question&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        continuationCallback(canActivate);
+        var canActivate = MessageBox.Show(&quot;Activate?&quot;, &quot;Confirmation&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        return Task.FromResult(canActivate);
     }
 
-    public void CanDeactivate(NavigationContext navigationContext, Action&lt;bool&gt; continuationCallback)
+    public Task&lt;bool&gt; CanDeactivate(NavigationContext navigationContext)
     {
-        var canDeactivate = MessageBox.Show(&quot;Can deactivate?&quot;, &quot;Question&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-        continuationCallback(canDeactivate);
+        var canDeactivate = MessageBox.Show(&quot;Deactivate?&quot;, &quot;Confirmation&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+        return Task.FromResult(canDeactivate);
+    }
+}
+</code></pre>
+
+<p>Async example:</p>
+<pre><code class="cs">public class ViewAViewModel : ICanActivate
+{
+
+    public async Task&lt;bool&gt; CanActivate(NavigationContext navigationContext)
+    {
+        var canActivate = MessageBox.Show(&quot;Activate?&quot;, &quot;Confirmation&quot;, MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+
+        await Task.Delay(2000).ConfigureAwait(false);
+
+        return canActivate;
     }
 }
 </code></pre>
@@ -1330,6 +1365,43 @@ using (collectionView.DeferRefresh())
 }
 </code></pre>
 
+<h2 id="predicatebuilder-and-filters">PredicateBuilder and filters<a class="headerlink" href="#predicatebuilder-and-filters" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Predicate builder sample</p>
+<pre><code class="cs">var builder = new PredicateBuilder();
+// filter on FirstName starts with &quot;A&quot;
+var expression = builder.CreatePredicateExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;);
+var predicate = expression.Compile(); // Predicate&lt;Person&gt;
+</code></pre>
+
+<p>FilteringExpression</p>
+<pre><code class="cs">var collectionView = new ListCollectionView(people);
+
+var filteringExpression = new FilteringExpression&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30);
+collectionView.Filter = filteringExpression.Filter;
+</code></pre>
+
+<p>The filter is refreshed if the operator or the value is changed</p>
+<pre><code class="cs">// explicitly call refresh 
+filteringExpression.IsCaseSensitive = true; // example change case sensitive or CultureInfo
+filteringExpression.Refresh(); // and refresh
+</code></pre>
+
+<p>Composite filter</p>
+<pre><code class="cs">var compositeFilter = new CompositeFilteringExpression&lt;Person&gt;();
+compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
+compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30));
+compositeFilter.Refresh();
+collectionView.Filter = filteringExpression.Filter;
+</code></pre>
+
+<p>Example 2 with Logical Operator OR</p>
+<pre><code class="cs">var compositeFilter = new CompositeFilteringExpression&lt;Person&gt;(LogicalOperator.Or);
+compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
+compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
+compositeFilter.Refresh();
+collectionView.Filter = filteringExpression.Filter;
+</code></pre>
+
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Bind the Items collection and the SelectedItem of the SharedSource is easy.</p>
 <p><strong>IIsSelected</strong> allows to be notified from ViewModel of selection.</p>
@@ -1557,6 +1629,50 @@ using (collectionView.DeferRefresh())
         Message = $&quot;MyMethod invoked witth parameter '{parameter}' {DateTime.Now.ToLongTimeString()}&quot;;
     }
 }
+</code></pre>
+
+<h2 id="bindingproxy">BindingProxy<a class="headerlink" href="#bindingproxy" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<p>Example:</p>
+<pre><code class="xml">&lt;DataGrid x:Name=&quot;DataGrid1&quot; ItemsSource=&quot;{Binding CollectionView}&quot; AutoGenerateColumns=&quot;False&quot; IsReadOnly=&quot;True&quot;&gt;
+    &lt;DataGrid.Resources&gt;
+        &lt;!-- 1. Adds the Proxy in control or window resources--&gt;
+        &lt;mvvmLib:BindingProxy x:Key=&quot;Proxy&quot;  Context=&quot;{Binding}&quot;/&gt;
+    &lt;/DataGrid.Resources&gt;
+    &lt;DataGrid.Columns&gt;
+        &lt;DataGridTextColumn Binding=&quot;{Binding FirstName}&quot; Width=&quot;*&quot;&gt;
+            &lt;DataGridTextColumn.Header&gt;
+                &lt;Grid&gt;
+                    &lt;Grid.ColumnDefinitions&gt;
+                        &lt;ColumnDefinition/&gt;
+                        &lt;ColumnDefinition Width=&quot;Auto&quot; /&gt;
+                    &lt;/Grid.ColumnDefinitions&gt;
+
+                    &lt;TextBlock Text=&quot;Name&quot; /&gt;
+
+                    &lt;local:DropDownButton Grid.Column=&quot;1&quot;&gt;
+                        &lt;local:DropDownButton.DropDownContent&gt;
+                            &lt;Grid&gt;
+                                &lt;Grid.RowDefinitions&gt;
+                                    &lt;RowDefinition /&gt;
+                                    &lt;RowDefinition Height=&quot;Auto&quot;/&gt;
+                                &lt;/Grid.RowDefinitions&gt;
+
+                                &lt;!-- code --&gt;
+
+                                &lt;StackPanel Orientation=&quot;Horizontal&quot; Grid.Row=&quot;1&quot;&gt;
+                                    &lt;!-- 2. Use the Proxy as Source and bind with The Context dependency property --&gt;
+                                    &lt;Button Content=&quot;Filter&quot; Command=&quot;{Binding Context.FilterFirstNameCommand, Source={StaticResource Proxy}}&quot; /&gt;
+                                &lt;/StackPanel&gt;
+                            &lt;/Grid&gt;
+                        &lt;/local:DropDownButton.DropDownContent&gt;
+                    &lt;/local:DropDownButton&gt;
+                &lt;/Grid&gt;
+            &lt;/DataGridTextColumn.Header&gt;
+        &lt;/DataGridTextColumn&gt;
+
+        &lt;!-- other columns --&gt;
+    &lt;/DataGrid.Columns&gt;
+&lt;/DataGrid&gt;
 </code></pre>
 
 <h2 id="modules">Modules<a class="headerlink" href="#modules" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>

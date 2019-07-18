@@ -803,17 +803,17 @@ namespace MvvmLib.Wpf.Tests.Navigation
             PCanActivate = null;
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             IsCanActivateInvoked = true;
             PCanActivate = navigationContext.Parameter;
-            c(CActivate);
+            return Task.FromResult(CActivate);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> c)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
             IsCanDeactivateInvoked = true;
-            c(CDeactivate);
+            return Task.FromResult(CDeactivate);
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

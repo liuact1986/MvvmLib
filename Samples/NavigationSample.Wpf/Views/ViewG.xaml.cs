@@ -1,5 +1,6 @@
 ﻿using MvvmLib.Navigation;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,16 +13,17 @@ namespace NavigationSample.Wpf.Views
             InitializeComponent();
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
-            var canActivate = MessageBox.Show("ACTIVATE ViewG [Code-Behind]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            continuationCallback(canActivate);
+            var canActivate = MessageBox.Show("ACTIVATE ViewG [code-behind]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+            return Task.FromResult(canActivate);
         }
 
-        public void CanDeactivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanDeactivate(NavigationContext navigationContext)
         {
-            var canDeactivate = MessageBox.Show("DEACTIVATE ViewG [Code-Behind]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
-            continuationCallback(canDeactivate);
+            var canDeactivate = MessageBox.Show("DEACTIVATE ViewG [code-behind]?", "Question", MessageBoxButton.OKCancel) == MessageBoxResult.OK;
+            return Task.FromResult(canDeactivate);
         }
     }
 }

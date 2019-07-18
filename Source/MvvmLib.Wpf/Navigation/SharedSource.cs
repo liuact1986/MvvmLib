@@ -32,6 +32,15 @@ namespace MvvmLib.Navigation
             set { logger = value; }
         }
 
+        /// <summary>
+        /// Gets the item at the index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        public T this[int index]
+        {
+            get { return this.items[index]; }
+        }
+
         private ObservableCollection<T> items;
         /// <summary>
         /// The items collection.
@@ -65,7 +74,6 @@ namespace MvvmLib.Navigation
                 }
             }
         }
-
 
         private int selectedIndex;
         /// <summary>
@@ -576,11 +584,9 @@ namespace MvvmLib.Navigation
             }
 
             var navigationContext = new NavigationContext(type, parameter);
-            NavigationHelper.CanActivate(item, navigationContext, canActivate =>
-            {
-                if (canActivate)
-                    InsertItemInternal(index, type, item, navigationContext);
-            });
+            var canActivate = NavigationHelper.CanActivate(item, navigationContext);
+            if (canActivate)
+                InsertItemInternal(index, type, item, navigationContext);
         }
 
         /// <summary>
@@ -716,23 +722,21 @@ namespace MvvmLib.Navigation
 
             var entry = this.entries[index];
             var navigationContext = new NavigationContext(entry.SourceType, entry.Parameter);
-            NavigationHelper.CanDeactivate(item, navigationContext, canDeactivate =>
+            var canDeactivate = NavigationHelper.CanDeactivate(item, navigationContext);
+            if (canDeactivate)
             {
-                if (canDeactivate)
-                {
-                    var oldCanMoveToPrevious = CanMoveToPrevious;
-                    var oldCanMoveToNext = CanMoveToNext;
+                var oldCanMoveToPrevious = CanMoveToPrevious;
+                var oldCanMoveToNext = CanMoveToNext;
 
-                    NavigationHelper.OnNavigatingFrom(item, navigationContext);
+                NavigationHelper.OnNavigatingFrom(item, navigationContext);
 
-                    this.items.RemoveAt(index);
-                    this.entries.RemoveAt(index);
+                this.items.RemoveAt(index);
+                this.entries.RemoveAt(index);
 
-                    SelectItemAfterDeletion(index);
+                SelectItemAfterDeletion(index);
 
-                    CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
-                }
-            });
+                CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
+            }
         }
 
         /// <summary>
@@ -778,45 +782,41 @@ namespace MvvmLib.Navigation
             var oldItem = items[index];
             var type = newItem.GetType();
             var navigationContext = new NavigationContext(type, parameter);
-            NavigationHelper.CanDeactivate(oldItem, navigationContext, canDeactivate =>
-             {
-                 if (canDeactivate)
-                 {
-                     NavigationHelper.CanActivate(newItem, navigationContext, canActivate =>
-                     {
-                         if (canActivate)
-                         {
-                             var view = newItem as FrameworkElement;
-                             if (view != null)
-                             {
-                                 NavigationHelper.OnNavigatingFrom(oldItem, navigationContext);
+            var canDeactivate = NavigationHelper.CanDeactivate(oldItem, navigationContext);
+            if (canDeactivate)
+            {
+                var canActivate = NavigationHelper.CanActivate(newItem, navigationContext);
+                if (canActivate)
+                {
+                    var view = newItem as FrameworkElement;
+                    if (view != null)
+                    {
+                        NavigationHelper.OnNavigatingFrom(oldItem, navigationContext);
 
-                                 NavigationHelper.OnNavigatingTo(view.DataContext, navigationContext);
+                        NavigationHelper.OnNavigatingTo(view.DataContext, navigationContext);
 
-                                 this.items[index] = newItem;
-                                 this.entries[index] = new NavigationEntry(type, navigationContext.Parameter);
+                        this.items[index] = newItem;
+                        this.entries[index] = new NavigationEntry(type, navigationContext.Parameter);
 
-                                 TrySelectItem(index);
+                        TrySelectItem(index);
 
-                                 NavigationHelper.OnNavigatedTo(view.DataContext, navigationContext);
-                             }
-                             else
-                             {
-                                 NavigationHelper.OnNavigatingFrom(oldItem, navigationContext);
+                        NavigationHelper.OnNavigatedTo(view.DataContext, navigationContext);
+                    }
+                    else
+                    {
+                        NavigationHelper.OnNavigatingFrom(oldItem, navigationContext);
 
-                                 NavigationHelper.OnNavigatingTo(newItem, navigationContext);
+                        NavigationHelper.OnNavigatingTo(newItem, navigationContext);
 
-                                 this.items[index] = newItem;
-                                 this.entries[index] = new NavigationEntry(type, navigationContext.Parameter);
+                        this.items[index] = newItem;
+                        this.entries[index] = new NavigationEntry(type, navigationContext.Parameter);
 
-                                 TrySelectItem(index);
+                        TrySelectItem(index);
 
-                                 NavigationHelper.OnNavigatedTo(newItem, navigationContext);
-                             }
-                         }
-                     });
-                 }
-             });
+                        NavigationHelper.OnNavigatedTo(newItem, navigationContext);
+                    }
+                }
+            }
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using MvvmLib.Navigation;
 using NavigationSample.Wpf.Views;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NavigationSample.Wpf.ViewModels
@@ -50,21 +51,21 @@ namespace NavigationSample.Wpf.ViewModels
 
         }
 
-        public void CanActivate(NavigationContext navigationContext, Action<bool> continuationCallback)
+        public Task<bool> CanActivate(NavigationContext navigationContext)
         {
             if (!IsLoggedIn())
             {
-                continuationCallback(false);
                 var navigationParameters = new Dictionary<string, object>
                 {
                     { "redirectTo",typeof(ViewE) },
                     { "parameter", navigationContext.Parameter }
                 };
                 Navigation.NavigateFast(typeof(LoginView), navigationParameters);
+                return Task.FromResult(false);
             }
             else
             {
-                continuationCallback(true);
+                return Task.FromResult(true);
             }
         }
     }
