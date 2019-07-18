@@ -16,11 +16,12 @@
 * **Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**
 * **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
+_Usage:_
 
-* Content control that requires only navigation => **NavigationSource**
-* Items control that does not require filtering or sorting (TabControl for example) => SharedSource or ObservableCollection + SelectedItem + NavigationHelper
-* Items control/ custom control/ etc. that requires **filtering, sorting, edition**, ... => **ListCollectionView** or **ListCollectionViewEx**
-* Items control/ custom control/ etc. that requires **paging** (DataGrid for example) => **PagedSource**
+* Content control that requires only navigation: **NavigationSource**
+* Items control that does not require filtering or sorting (TabControl for example): SharedSource or ObservableCollection + SelectedItem + NavigationHelper
+* Items control/ custom control/ etc. that requires **filtering, sorting, edition**, ...: **ListCollectionView** or **ListCollectionViewEx**
+* Items control/ custom control/ etc. that requires **paging** (DataGrid for example): **PagedSource**
 
 ## Create a Bootstrapper
 
