@@ -20,8 +20,8 @@ _Usage:_
 
 * Content control that requires only navigation: **NavigationSource**
 * Items control that does not require filtering or sorting (TabControl for example): SharedSource or ObservableCollection + SelectedItem + NavigationHelper
-* Items control/ custom control/ etc. that requires **filtering, sorting, edition**, ...: **ListCollectionView** or **ListCollectionViewEx**
-* Items control/ custom control/ etc. that requires **paging** (DataGrid for example): **PagedSource**
+* Items control/ custom control/ etc. that require **filtering, sorting, edition**, ...: **ListCollectionView** or **ListCollectionViewEx**
+* Items control/ custom control/ etc. that require **paging** (DataGrid for example): **PagedSource**
 
 ## Create a Bootstrapper
 
