@@ -1227,7 +1227,7 @@ propertyFilter.IsCaseSensitive = true; // example change case sensitive or Cultu
 propertyFilter.Refresh(); // and refresh
 ```
 
-With property path. Example a type sub item
+With property path. Example a sub item
 
 ```cs
 var propertyFilter = new PropertyFilter<Person>("SubItem.MyString", PredicateOperator.IsEqual, "A");
