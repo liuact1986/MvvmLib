@@ -1415,16 +1415,16 @@ propertyFilter.Refresh(); // and refresh
 </ul>
 <p>Composite filter</p>
 <pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;();
-compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
-compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;
 </code></pre>
 
 <p>Example 2 with Logical Operator OR</p>
 <pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;(LogicalOperator.Or);
-compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
-compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;
 </code></pre>

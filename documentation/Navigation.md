@@ -1261,8 +1261,8 @@ Composite filter
 
 ```cs
 var compositeFilter = new CompositeFilter<Person>();
-compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
-compositeFilter.AddFilter(new FilteringExpression<Person>("Age", PredicateOperator.IsGreaterThan, 30));
+compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.StartsWith, "A"));
+compositeFilter.AddFilter(new PropertyFilter<Person>("Age", PredicateOperator.IsGreaterThan, 30));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;
 ```
@@ -1271,8 +1271,8 @@ Example 2 with Logical Operator OR
 
 ```cs
 var compositeFilter = new CompositeFilter<Person>(LogicalOperator.Or);
-compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
-compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "B"));
+compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.StartsWith, "A"));
+compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.StartsWith, "B"));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;
 ```
