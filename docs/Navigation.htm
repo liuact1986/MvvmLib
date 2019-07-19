@@ -1387,7 +1387,7 @@ propertyFilter.IsCaseSensitive = true; // example change case sensitive or Cultu
 propertyFilter.Refresh(); // and refresh
 </code></pre>
 
-<p>With sub item</p>
+<p>With property path. Example a type sub item</p>
 <pre><code class="cs">var propertyFilter = new PropertyFilter&lt;Person&gt;(&quot;SubItem.MyString&quot;, PredicateOperator.IsEqual, &quot;A&quot;);
 </code></pre>
 
@@ -1405,7 +1405,10 @@ propertyFilter.Refresh(); // and refresh
 <li>IsLessThanOrEqualTo</li>
 <li>IsGreaterThan</li>
 <li>IsGreaterThanOrEqualTo</li>
-<li>StartsWith</li>
+</ul>
+<p>Only available for strings:</p>
+<ul>
+<li>StartsWith </li>
 <li>EndsWith</li>
 <li>Contains</li>
 <li>DoesNotContain</li>

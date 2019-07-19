@@ -1227,7 +1227,7 @@ propertyFilter.IsCaseSensitive = true; // example change case sensitive or Cultu
 propertyFilter.Refresh(); // and refresh
 ```
 
-With sub item
+With property path. Example a type sub item
 
 ```cs
 var propertyFilter = new PropertyFilter<Person>("SubItem.MyString", PredicateOperator.IsEqual, "A");
@@ -1249,7 +1249,10 @@ Predicate operators:
 * IsLessThanOrEqualTo
 * IsGreaterThan
 * IsGreaterThanOrEqualTo
-* StartsWith
+
+Only available for strings:
+
+* StartsWith 
 * EndsWith
 * Contains
 * DoesNotContain
