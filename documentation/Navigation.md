@@ -1281,7 +1281,7 @@ Example 3 with not null and starts with
 
 ```cs
 var compositeFilter = new CompositeFilter<Person>(LogicalOperator.Or);
-compositeFilter.AddFilter(new PropertyFilter<MyFilteredItem>("FirstName", PredicateOperator.IsNotEqual, null));
+compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.IsNotEqual, null));
 compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.StartsWith, "B"));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;

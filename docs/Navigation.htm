@@ -1431,7 +1431,7 @@ collectionView.Filter = compositeFilter.Filter;
 
 <p>Example 3 with not null and starts with</p>
 <pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;(LogicalOperator.Or);
-compositeFilter.AddFilter(new PropertyFilter&lt;MyFilteredItem&gt;(&quot;FirstName&quot;, PredicateOperator.IsNotEqual, null));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.IsNotEqual, null));
 compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
 compositeFilter.Refresh();
 collectionView.Filter = compositeFilter.Filter;
