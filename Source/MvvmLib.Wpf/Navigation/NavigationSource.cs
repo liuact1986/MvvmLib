@@ -723,6 +723,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Navigate(Type sourceType, object parameter)
         {
             return this.Navigate(sourceType, parameter, NavigationHelper.ResolveSource);
@@ -732,6 +733,7 @@ namespace MvvmLib.Navigation
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
         /// <param name="sourceType">The source type</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Navigate(Type sourceType)
         {
             return this.Navigate(sourceType, null);
@@ -742,6 +744,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <param name="parameter">The parameter</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Navigate(string sourceName, object parameter)
         {
             if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
@@ -754,7 +757,7 @@ namespace MvvmLib.Navigation
         /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
         /// </summary>
         /// <param name="sourceName">The source name</param>
-        /// <returns>True on navigation success</returns>
+        /// <returns>True if navigation succeeds</returns>
         public bool Navigate(string sourceName)
         {
             return this.Navigate(sourceName, null);
@@ -765,6 +768,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceType">The source type</param>
         /// <param name="parameter">The parameter</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Redirect(Type sourceType, object parameter)
         {
             // remove current
@@ -781,6 +785,7 @@ namespace MvvmLib.Navigation
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceType">The source type</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Redirect(Type sourceType)
         {
             return this.Redirect(sourceType, null);
@@ -791,6 +796,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="sourceName">The source name</param>
         /// <param name="parameter">The parameter</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Redirect(string sourceName, object parameter)
         {
             if (SourceResolver.TypesForNavigation.TryGetValue(sourceName, out Type sourceType))
@@ -803,6 +809,7 @@ namespace MvvmLib.Navigation
         /// Redirects and remove the previous entry from the history.
         /// </summary>
         /// <param name="sourceName">The source name</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool Redirect(string sourceName)
         {
             return this.Redirect(sourceName, null);
@@ -939,6 +946,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first source.
         /// </summary>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveToFirst()
         {
             if (CanMoveToPrevious)
@@ -950,6 +958,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the previous source.
         /// </summary>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveToPrevious()
         {
             if (CanMoveToPrevious)
@@ -961,6 +970,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the next source.
         /// </summary>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveToNext()
         {
             if (CanMoveToNext)
@@ -972,6 +982,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the last source.
         /// </summary>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveToLast()
         {
             if (CanMoveToNext)
@@ -984,6 +995,7 @@ namespace MvvmLib.Navigation
         /// Allows to move to the source at the index.
         /// </summary>
         /// <param name="index">The index</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveTo(int index)
         {
             if (index >= 0 && index < this.sources.Count)
@@ -999,6 +1011,7 @@ namespace MvvmLib.Navigation
         /// Allows to move to the source.
         /// </summary>
         /// <param name="source">The source</param>
+        /// <returns>True if navigation succeeds</returns>
         public bool MoveTo(object source)
         {
             var index = this.sources.IndexOf(source);

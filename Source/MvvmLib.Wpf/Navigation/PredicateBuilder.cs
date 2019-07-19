@@ -37,14 +37,30 @@ namespace MvvmLib.Navigation
         /// Creates a <see cref="MemberExpression"/>.
         /// </summary>
         /// <param name="parameter">The parameter expression</param>
-        /// <param name="propertyName">The property name</param>
+        /// <param name="propertyPath">The property path</param>
         /// <returns>The member expression created</returns>
-        public MemberExpression CreateMember(Expression parameter, string propertyName)
+        public MemberExpression CreateMember(Expression parameter, string propertyPath)
         {
             // p.FirstName
-            var memberExpression = Expression.Property(parameter, propertyName);
-            return memberExpression;
+            var propertyNames = propertyPath.Split('.');
+            if (propertyNames.Length == 1)
+            {
+                var memberExpression = Expression.Property(parameter, propertyPath);
+                return memberExpression;
+            }
+            else
+            {
+                // p.SubItem.SubSubItem.MyProperty
+                MemberExpression property = null;
+                foreach (string propertyName in propertyNames)
+                {
+                    var tmp = property == null ? parameter : property;
+                    property = Expression.Property(tmp, propertyName);
+                }
+                return property;
+            }
         }
+
 
         /// <summary>
         /// Creates a <see cref="ConstantExpression"/>.
@@ -64,6 +80,7 @@ namespace MvvmLib.Navigation
         /// <param name="operator">The operator</param>
         /// <param name="left">The left expression</param>
         /// <param name="right">The right expression</param>
+        /// <param name="isCaseSensitive">Checks if is case sensitive</param>
         /// <returns>The expression created</returns>
         public Expression CreateBody(PredicateOperator @operator, Expression left, Expression right, bool isCaseSensitive)
         {
@@ -201,6 +218,7 @@ namespace MvvmLib.Navigation
         /// <param name="operator">The operator</param>
         /// <param name="value">The value</param>
         /// <param name="culture">The culture</param>
+        /// <param name="isCaseSensitive">Checks if is case sensitive</param>
         /// <returns>The predicate expresion</returns>
         public Expression<Predicate<T>> CreatePredicateExpression<T>(string propertyName, PredicateOperator @operator, object value, CultureInfo culture, bool isCaseSensitive)
         {

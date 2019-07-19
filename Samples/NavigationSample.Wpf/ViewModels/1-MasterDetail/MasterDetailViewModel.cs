@@ -40,6 +40,7 @@ namespace NavigationSample.Wpf.ViewModels
             AddCommand = new RelayCommand(Add);
             DeleteCommand = new RelayCommand(Delete, () => PeopleListSource.SelectedIndex != -1);
             PeopleListSource.SelectedItemChanged += PeopleListSource_SelectedItemChanged;
+
         }
 
         private void PeopleListSource_SelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)

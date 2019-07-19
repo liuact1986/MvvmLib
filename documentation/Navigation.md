@@ -198,7 +198,7 @@ this.Navigation = new NavigationSource();
 Navigation
 
 ```cs
-var  navigation = NavigationManager.CreateNavigationSource("Main");
+var  navigation = NavigationManager.CreateDefaultNavigationSource("Main");
 
 navigation.Navigate(typeof(ViewA));
 
@@ -1205,45 +1205,83 @@ Predicate builder sample
 var builder = new PredicateBuilder();
 // filter on FirstName starts with "A"
 var expression = builder.CreatePredicateExpression<Person>("FirstName", PredicateOperator.StartsWith, "A");
+// or with culture and case sensitive
+// var expression = builder.CreatePredicateExpression<Person>("FirstName", PredicateOperator.StartsWith, "A", CultureInfo.GetCultureInfo("fr"), isCaseSensitive:true);
 var predicate = expression.Compile(); // Predicate<Person>
 ```
 
-FilteringExpression
+PropertyFilter
 
 ```cs
 var collectionView = new ListCollectionView(people);
 
-var filteringExpression = new FilteringExpression<Person>("Age", PredicateOperator.IsGreaterThan, 30);
-collectionView.Filter = filteringExpression.Filter;
+var propertyFilter = new PropertyFilter<Person>("Age", PredicateOperator.IsGreaterThan, 30);
+collectionView.Filter = propertyFilter.Filter;
 ```
 
 The filter is refreshed if the operator or the value is changed
 
-
 ```cs
 // explicitly call refresh 
-filteringExpression.IsCaseSensitive = true; // example change case sensitive or CultureInfo
-filteringExpression.Refresh(); // and refresh
+propertyFilter.IsCaseSensitive = true; // example change case sensitive or CultureInfo
+propertyFilter.Refresh(); // and refresh
 ```
+
+With sub item
+
+```cs
+var propertyFilter = new PropertyFilter<Person>("SubItem.MyString", PredicateOperator.IsEqual, "A");
+```
+
+Supports value conversion . Example converts string to double
+
+```cs
+ var propertyFilter = new PropertyFilter<MyFilteredItem>("MyDouble", PredicateOperator.IsEqual, "10.5");
+// with culture
+ var propertyFilter = new PropertyFilter<MyFilteredItem>("MyDouble", PredicateOperator.IsEqual, "10,5", CultureInfo.GetCultureInfo("fr"));
+```
+
+Predicate operators:
+
+* IsEqual
+* IsNotEqual
+* IsLessThan
+* IsLessThanOrEqualTo
+* IsGreaterThan
+* IsGreaterThanOrEqualTo
+* StartsWith
+* EndsWith
+* Contains
+* DoesNotContain
 
 Composite filter
 
 ```cs
-var compositeFilter = new CompositeFilteringExpression<Person>();
+var compositeFilter = new CompositeFilter<Person>();
 compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
 compositeFilter.AddFilter(new FilteringExpression<Person>("Age", PredicateOperator.IsGreaterThan, 30));
 compositeFilter.Refresh();
-collectionView.Filter = filteringExpression.Filter;
+collectionView.Filter = compositeFilter.Filter;
 ```
 
 Example 2 with Logical Operator OR
 
 ```cs
-var compositeFilter = new CompositeFilteringExpression<Person>(LogicalOperator.Or);
+var compositeFilter = new CompositeFilter<Person>(LogicalOperator.Or);
 compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "A"));
 compositeFilter.AddFilter(new FilteringExpression<Person>("FirstName", PredicateOperator.StartsWith, "B"));
 compositeFilter.Refresh();
-collectionView.Filter = filteringExpression.Filter;
+collectionView.Filter = compositeFilter.Filter;
+```
+
+Example 3 with not null and starts with
+
+```cs
+var compositeFilter = new CompositeFilter<Person>(LogicalOperator.Or);
+compositeFilter.AddFilter(new PropertyFilter<MyFilteredItem>("FirstName", PredicateOperator.IsNotEqual, null));
+compositeFilter.AddFilter(new PropertyFilter<Person>("FirstName", PredicateOperator.StartsWith, "B"));
+compositeFilter.Refresh();
+collectionView.Filter = compositeFilter.Filter;
 ```
 
 ## IIsSelected, ISelectable and SelectionSyncBehavior

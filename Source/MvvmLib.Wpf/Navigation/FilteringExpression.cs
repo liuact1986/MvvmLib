@@ -47,7 +47,6 @@ namespace MvvmLib.Navigation
             get { return protectedFilter; }
         }
 
-
         /// <summary>
         /// Creates the <see cref="FilteringExpressionBase{T}"/>.
         /// </summary>
@@ -57,7 +56,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Refresh the filter.
+        /// Refreshes the filter.
         /// </summary>
         public abstract void Refresh();
 
@@ -94,7 +93,7 @@ namespace MvvmLib.Navigation
     /// A simple filter with property name, operator and value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class FilteringExpression<T> : FilteringExpressionBase<T>
+    public class PropertyFilter<T> : FilteringExpressionBase<T>
     {
         private readonly CultureInfo DefaultCulture = CultureInfo.InvariantCulture;
 
@@ -110,7 +109,7 @@ namespace MvvmLib.Navigation
 
         private bool isCaseSensitive;
         /// <summary>
-        /// Allows to change case case sensitive.
+        /// Allows to change case sensitive.
         /// </summary>
         public bool IsCaseSensitive
         {
@@ -118,13 +117,13 @@ namespace MvvmLib.Navigation
             set { isCaseSensitive = value; }
         }
 
-        private readonly string propertyName;
+        private readonly string propertyPath;
         /// <summary>
-        /// The property name.
+        /// The property path.
         /// </summary>
-        public string PropertyName
+        public string PropertyPath
         {
-            get { return propertyName; }
+            get { return propertyPath; }
         }
 
         private PredicateOperator @operator;
@@ -162,29 +161,65 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Creates the <see cref="FilteringExpression{T}"/>.
+        /// Creates the <see cref="PropertyFilter{T}"/>.
         /// </summary>
-        /// <param name="propertyName">The property name</param>
+        /// <param name="propertyPath">The property path</param>
         /// <param name="operator">The operator</param>
         /// <param name="value">The value</param>
-        public FilteringExpression(string propertyName, PredicateOperator @operator, object value)
+        /// <param name="culture">The culture</param>
+        /// <param name="isCaseSensitive"></param>
+        public PropertyFilter(string propertyPath, PredicateOperator @operator, object value, CultureInfo culture, bool isCaseSensitive)
         {
-            if (propertyName == null)
-                throw new ArgumentNullException(nameof(propertyName));
+            if (propertyPath == null)
+                throw new ArgumentNullException(nameof(propertyPath));
 
-            this.propertyName = propertyName;
+            this.propertyPath = propertyPath;
             this.@operator = @operator;
             this.value = value;
+            this.culture = culture;
+            this.isCaseSensitive = isCaseSensitive;
             this.Refresh();
         }
 
         /// <summary>
-        /// Refresh the filter.
+        /// Creates the <see cref="PropertyFilter{T}"/>.
+        /// </summary>
+        /// <param name="propertyPath">The property path</param>
+        /// <param name="operator">The operator</param>
+        /// <param name="value">The value</param>
+        /// <param name="culture">The culture</param>
+        public PropertyFilter(string propertyPath, PredicateOperator @operator, object value, CultureInfo culture)
+              : this(propertyPath, @operator, value, culture, false)
+        { }
+
+        /// <summary>
+        /// Creates the <see cref="PropertyFilter{T}"/>.
+        /// </summary>
+        /// <param name="propertyPath">The property path</param>
+        /// <param name="operator">The operator</param>
+        /// <param name="value">The value</param>
+        /// <param name="isCaseSensitive"></param>
+        public PropertyFilter(string propertyPath, PredicateOperator @operator, object value, bool isCaseSensitive)
+               : this(propertyPath, @operator, value, null, isCaseSensitive)
+        { }
+
+        /// <summary>
+        /// Creates the <see cref="PropertyFilter{T}"/>.
+        /// </summary>
+        /// <param name="propertyPath">The property path</param>
+        /// <param name="operator">The operator</param>
+        /// <param name="value">The value</param>
+        public PropertyFilter(string propertyPath, PredicateOperator @operator, object value)
+            :this(propertyPath, @operator, value, null, false)
+        { }
+
+        /// <summary>
+        /// Refreshes the filter.
         /// </summary>
         public override void Refresh()
         {
             var builder = new PredicateBuilder();
-            var expression = builder.CreatePredicateExpression<T>(propertyName, @operator, value, Culture, isCaseSensitive);
+            var expression = builder.CreatePredicateExpression<T>(propertyPath, @operator, value, Culture, isCaseSensitive);
             var compiled = expression.Compile();
 
             this.expression = expression;
@@ -196,7 +231,7 @@ namespace MvvmLib.Navigation
     /// A composite filter.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CompositeFilteringExpression<T> : FilteringExpressionBase<T>
+    public class CompositeFilter<T> : FilteringExpressionBase<T>
     {
         private readonly List<FilteringExpressionBase<T>> filters;
         /// <summary>
@@ -225,19 +260,19 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// creates the <see cref="CompositeFilteringExpression{T}"/>.
+        /// creates the <see cref="CompositeFilter{T}"/>.
         /// </summary>
         /// <param name="logicalOperator">The logical operator</param>
-        public CompositeFilteringExpression(LogicalOperator logicalOperator)
+        public CompositeFilter(LogicalOperator logicalOperator)
         {
             this.filters = new List<FilteringExpressionBase<T>>();
             this.logicalOperator = logicalOperator;
         }
 
         /// <summary>
-        /// creates the <see cref="CompositeFilteringExpression{T}"/> with AND operator.
+        /// creates the <see cref="CompositeFilter{T}"/> with AND operator.
         /// </summary>
-        public CompositeFilteringExpression()
+        public CompositeFilter()
             : this(LogicalOperator.And)
         { }
 
@@ -279,7 +314,7 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
-        /// Refresh the filter.
+        /// Refreshes the filter.
         /// </summary>
         public override void Refresh()
         {

@@ -389,7 +389,7 @@ namespace NavigationSample.Wpf.Startup
 </code></pre>
 
 <p>Navigation</p>
-<pre><code class="cs">var  navigation = NavigationManager.CreateNavigationSource(&quot;Main&quot;);
+<pre><code class="cs">var  navigation = NavigationManager.CreateDefaultNavigationSource(&quot;Main&quot;);
 
 navigation.Navigate(typeof(ViewA));
 
@@ -1369,36 +1369,69 @@ using (collectionView.DeferRefresh())
 <pre><code class="cs">var builder = new PredicateBuilder();
 // filter on FirstName starts with &quot;A&quot;
 var expression = builder.CreatePredicateExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;);
+// or with culture and case sensitive
+// var expression = builder.CreatePredicateExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;, CultureInfo.GetCultureInfo(&quot;fr&quot;), isCaseSensitive:true);
 var predicate = expression.Compile(); // Predicate&lt;Person&gt;
 </code></pre>
 
-<p>FilteringExpression</p>
+<p>PropertyFilter</p>
 <pre><code class="cs">var collectionView = new ListCollectionView(people);
 
-var filteringExpression = new FilteringExpression&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30);
-collectionView.Filter = filteringExpression.Filter;
+var propertyFilter = new PropertyFilter&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30);
+collectionView.Filter = propertyFilter.Filter;
 </code></pre>
 
 <p>The filter is refreshed if the operator or the value is changed</p>
 <pre><code class="cs">// explicitly call refresh 
-filteringExpression.IsCaseSensitive = true; // example change case sensitive or CultureInfo
-filteringExpression.Refresh(); // and refresh
+propertyFilter.IsCaseSensitive = true; // example change case sensitive or CultureInfo
+propertyFilter.Refresh(); // and refresh
 </code></pre>
 
+<p>With sub item</p>
+<pre><code class="cs">var propertyFilter = new PropertyFilter&lt;Person&gt;(&quot;SubItem.MyString&quot;, PredicateOperator.IsEqual, &quot;A&quot;);
+</code></pre>
+
+<p>Supports value conversion . Example converts string to double</p>
+<pre><code class="cs"> var propertyFilter = new PropertyFilter&lt;MyFilteredItem&gt;(&quot;MyDouble&quot;, PredicateOperator.IsEqual, &quot;10.5&quot;);
+// with culture
+ var propertyFilter = new PropertyFilter&lt;MyFilteredItem&gt;(&quot;MyDouble&quot;, PredicateOperator.IsEqual, &quot;10,5&quot;, CultureInfo.GetCultureInfo(&quot;fr&quot;));
+</code></pre>
+
+<p>Predicate operators:</p>
+<ul>
+<li>IsEqual</li>
+<li>IsNotEqual</li>
+<li>IsLessThan</li>
+<li>IsLessThanOrEqualTo</li>
+<li>IsGreaterThan</li>
+<li>IsGreaterThanOrEqualTo</li>
+<li>StartsWith</li>
+<li>EndsWith</li>
+<li>Contains</li>
+<li>DoesNotContain</li>
+</ul>
 <p>Composite filter</p>
-<pre><code class="cs">var compositeFilter = new CompositeFilteringExpression&lt;Person&gt;();
+<pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;();
 compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
 compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;Age&quot;, PredicateOperator.IsGreaterThan, 30));
 compositeFilter.Refresh();
-collectionView.Filter = filteringExpression.Filter;
+collectionView.Filter = compositeFilter.Filter;
 </code></pre>
 
 <p>Example 2 with Logical Operator OR</p>
-<pre><code class="cs">var compositeFilter = new CompositeFilteringExpression&lt;Person&gt;(LogicalOperator.Or);
+<pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;(LogicalOperator.Or);
 compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;A&quot;));
 compositeFilter.AddFilter(new FilteringExpression&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
 compositeFilter.Refresh();
-collectionView.Filter = filteringExpression.Filter;
+collectionView.Filter = compositeFilter.Filter;
+</code></pre>
+
+<p>Example 3 with not null and starts with</p>
+<pre><code class="cs">var compositeFilter = new CompositeFilter&lt;Person&gt;(LogicalOperator.Or);
+compositeFilter.AddFilter(new PropertyFilter&lt;MyFilteredItem&gt;(&quot;FirstName&quot;, PredicateOperator.IsNotEqual, null));
+compositeFilter.AddFilter(new PropertyFilter&lt;Person&gt;(&quot;FirstName&quot;, PredicateOperator.StartsWith, &quot;B&quot;));
+compositeFilter.Refresh();
+collectionView.Filter = compositeFilter.Filter;
 </code></pre>
 
 <h2 id="iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior<a class="headerlink" href="#iisselected-iselectable-and-selectionsyncbehavior" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>

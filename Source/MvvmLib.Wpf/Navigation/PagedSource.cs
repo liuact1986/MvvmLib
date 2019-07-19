@@ -65,7 +65,7 @@ namespace MvvmLib.Navigation
 
         private int totalCount;
         /// <summary>
-        /// The total of items after applying the filter and sorting
+        /// The total of items after applying the filter and sorting.
         /// </summary>
         public int TotalCount
         {
@@ -1331,7 +1331,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <typeparam name="T">The item type</typeparam>
         /// <param name="filter">The filter</param>
-        public void FilterBy<T>(Func<T, bool> filter)
+        public void FilterBy<T>(Predicate<T> filter)
         {
             if (filter == null)
                 throw new ArgumentNullException(nameof(filter));

@@ -249,7 +249,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <typeparam name="T">The item type</typeparam>
         /// <param name="filter">The filter</param>
-        void FilterBy<T>(Func<T, bool> filter);
+        void FilterBy<T>(Predicate<T> filter);
 
         /// <summary>
         /// Allows to add a sort description.

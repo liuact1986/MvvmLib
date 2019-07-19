@@ -471,7 +471,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <typeparam name="T">The item type</typeparam>
         /// <param name="filter">The filter</param>
-        public void FilterBy<T>(Func<T, bool> filter)
+        public void FilterBy<T>(Predicate<T> filter)
         {
             if (filter == null)
                 throw new ArgumentNullException(nameof(filter));

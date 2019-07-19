@@ -57,6 +57,7 @@
     <Compile Include="Common\convention.cs" />
     <Compile Include="Modules\ModuleManagerTests.cs" />
     <Compile Include="NavigationBrowser.cs" />
+    <Compile Include="Navigation\CompositeFilterTests.cs" />
     <Compile Include="Navigation\ContentControlNavigationSourceTests.cs" />
     <Compile Include="Navigation\NavigationHelperTests.cs" />
     <Compile Include="Navigation\NavigationManagerTests.cs" />
