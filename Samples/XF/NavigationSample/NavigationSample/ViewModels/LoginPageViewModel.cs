@@ -15,7 +15,7 @@ namespace NavigationSample.ViewModels
         {
             this.navigationManager = navigationManager;
 
-            LoginCommand = new RelayCommand(() =>
+            LoginCommand = new DelegateCommand(() =>
             {
                 User.IsLoggedIn = true;
                 navigationManager.GetDefault().PushAsync(typeof(HomePage), "Your are logged in.");

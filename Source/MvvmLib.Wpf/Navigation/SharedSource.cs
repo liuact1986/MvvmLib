@@ -123,86 +123,86 @@ namespace MvvmLib.Navigation
         }
 
 
-        private IRelayCommand moveToFirstCommand;
+        private IDelegateCommand moveToFirstCommand;
         /// <summary>
         /// Allows to move to the first source.
         /// </summary>
-        public IRelayCommand MoveToFirstCommand
+        public IDelegateCommand MoveToFirstCommand
         {
             get
             {
                 if (moveToFirstCommand == null)
-                    moveToFirstCommand = new RelayCommand(ExecuteMoveToFirstCommand, CanExecuteMoveToFirstCommand);
+                    moveToFirstCommand = new DelegateCommand(ExecuteMoveToFirstCommand, CanExecuteMoveToFirstCommand);
                 return moveToFirstCommand;
             }
         }
 
-        private IRelayCommand moveToPreviousCommand;
+        private IDelegateCommand moveToPreviousCommand;
         /// <summary>
         /// Allows to move to the previous source.
         /// </summary>
-        public IRelayCommand MoveToPreviousCommand
+        public IDelegateCommand MoveToPreviousCommand
         {
             get
             {
                 if (moveToPreviousCommand == null)
-                    moveToPreviousCommand = new RelayCommand(ExecuteMoveToPreviousCommand, CanExecuteMoveToPreviousCommand);
+                    moveToPreviousCommand = new DelegateCommand(ExecuteMoveToPreviousCommand, CanExecuteMoveToPreviousCommand);
                 return moveToPreviousCommand;
             }
         }
 
-        private IRelayCommand moveToNextCommand;
+        private IDelegateCommand moveToNextCommand;
         /// <summary>
         /// Allows to move to the next source.
         /// </summary>
-        public IRelayCommand MoveToNextCommand
+        public IDelegateCommand MoveToNextCommand
         {
             get
             {
                 if (moveToNextCommand == null)
-                    moveToNextCommand = new RelayCommand(ExecuteMoveToNextCommand, CanExecuteMoveToNextCommand);
+                    moveToNextCommand = new DelegateCommand(ExecuteMoveToNextCommand, CanExecuteMoveToNextCommand);
                 return moveToNextCommand;
             }
         }
 
-        private IRelayCommand moveToLastCommand;
+        private IDelegateCommand moveToLastCommand;
         /// <summary>
         /// Allows to move to the last source.
         /// </summary>
-        public IRelayCommand MoveToLastCommand
+        public IDelegateCommand MoveToLastCommand
         {
             get
             {
                 if (moveToLastCommand == null)
-                    moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
+                    moveToLastCommand = new DelegateCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
                 return moveToLastCommand;
             }
         }
 
-        private IRelayCommand moveToIndexCommand;
+        private IDelegateCommand moveToIndexCommand;
         /// <summary>
         /// Allows to move to the index.
         /// </summary>
-        public IRelayCommand MoveToIndexCommand
+        public IDelegateCommand MoveToIndexCommand
         {
             get
             {
                 if (moveToIndexCommand == null)
-                    moveToIndexCommand = new RelayCommand<object>(ExecuteMoveToIndexCommand);
+                    moveToIndexCommand = new DelegateCommand<object>(ExecuteMoveToIndexCommand);
                 return moveToIndexCommand;
             }
         }
 
-        private IRelayCommand moveToCommand;
+        private IDelegateCommand moveToCommand;
         /// <summary>
         /// Allows to move to the source.
         /// </summary>
-        public IRelayCommand MoveToCommand
+        public IDelegateCommand MoveToCommand
         {
             get
             {
                 if (moveToCommand == null)
-                    moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
+                    moveToCommand = new DelegateCommand<object>(ExecuteMoveToCommand);
                 return moveToCommand;
             }
         }
@@ -308,7 +308,8 @@ namespace MvvmLib.Navigation
 
         private void OnSelectedItemChanged(int index, object item)
         {
-            SelectedItemChanged?.Invoke(this, new SharedSourceSelectedItemChangedEventArgs(index, item));
+            if (handleSelectionChanged)
+                SelectedItemChanged?.Invoke(this, new SharedSourceSelectedItemChangedEventArgs(index, item));
         }
 
 
@@ -928,6 +929,22 @@ namespace MvvmLib.Navigation
         }
 
         /// <summary>
+        /// Suspends notification on selection changed.
+        /// </summary>
+        public void SuspendNotifications()
+        {
+            this.handleSelectionChanged = false;
+        }
+
+        /// <summary>
+        /// Resumes notification on selection changed.
+        /// </summary>
+        public void ResumeNotifications()
+        {
+            this.handleSelectionChanged = true;
+        }
+
+        /// <summary>
         /// Synchronizes the shared source with the shared source provided.
         /// </summary>
         public void Sync(SharedSource<T> sharedSource)
@@ -955,6 +972,6 @@ namespace MvvmLib.Navigation
             this.handleSelectionChanged = true;
             if (selectedIndex >= 0 && this.items.Count > 0)
                 TrySelectItem(selectedIndex);
-        }
+        }   
     }
 }

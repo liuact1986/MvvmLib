@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmLib.Wpf</id>
-    <version>0.12.1</version>
+    <version>0.13.0</version>
     <title>MvvmLib.Wpf</title>
     <authors>romagny13</authors>
     <owners>romagny13</owners>
@@ -21,17 +21,17 @@
 * INavigationAware: allows view models to be notified on navigate
 * ICanActivate, ICanDeactivate: allow to cancel navigation
 * IIsSelected, ISelectable, SelectionSyncBehavior: allow to select a view 
-* Behaviors: SelectionSyncBehavior, EventToCommandBehavior, EventToMethodBehavior
+* Triggers, TriggerActions and Behaviors: EventTrigger, DataTrigger, CallMethodeAction, SelectionSyncBehavior, EventToCommandBehavior,EventToMethodBehavior, etc.
 * ViewModelLocator: allows to resolve ViewModel for views
 * IIsLoaded: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * BootstrapperBase: base class for Bootstrapper
 * ModuleManager: allows to manage modules/assemblies loaded "on demand"</description>
     <summary>MvvmLib Navigation, UI Composition and Mvvm classes.</summary>
-    <releaseNotes>Rename filters to PropertyFilter and CompositeFilter, supports property path</releaseNotes>
+    <releaseNotes>Triggers, TriggerActions and Behaviors</releaseNotes>
     <copyright>Romagny13 - Copyright 2019</copyright>
     <tags>navigation, composition, mvvm</tags>
     <dependencies>
-      <dependency id="MvvmLib.Core" version="0.4.3.3" />
+      <dependency id="MvvmLib.Core" version="0.4.4" />
     </dependencies>
   </metadata>
   <files>

@@ -33,10 +33,10 @@ namespace NavigationSample.Wpf.ViewModels
 
             this.MyItemsSource = new SharedSource<ItemDetailsViewModel>();
 
-            this.AddCommand = new RelayCommand(Add);
-            this.InsertCommand = new RelayCommand(Insert);
-            this.ClearCommand = new RelayCommand(Clear);
-            this.CancelCommand = new RelayCommand(Cancel);
+            this.AddCommand = new DelegateCommand(Add);
+            this.InsertCommand = new DelegateCommand(Insert);
+            this.ClearCommand = new DelegateCommand(Clear);
+            this.CancelCommand = new DelegateCommand(Cancel);
 
             eventAggregator.GetEvent<ItemDeletedEvent>().Subscribe(OnDeleteItemEventFired);
         }
@@ -121,7 +121,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ItemDetailsViewModel(IEventAggregator eventAggregator)
         {
-            this.DeleteItemCommand = new RelayCommand(Delete);
+            this.DeleteItemCommand = new DelegateCommand(Delete);
             this.eventAggregator = eventAggregator;
         }
 

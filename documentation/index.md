@@ -7,7 +7,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 ## MvvmLib.Core [netstandard 2.0, net 4.5]
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
-* **RelayCommand**, **AsyncCommand** and **CompositeCommand**
+* **DelegateCommand**, **AsyncCommand** and **CompositeCommand**
 * **EventAggregator** : allows to **subscribe**, **publish** and filter messages
 * **ChangeTracker**: allows to track object changes.
 * **Singleton**
@@ -31,7 +31,8 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
-* **Navigation Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**, **EventToMethodBehavior**
+* **Triggers**, **TriggerActions** and **Behaviors**: **EventTrigger**, **DataTrigger**, **CallMethodeAction**, **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**, etc.
+* **PropertyFilter** and **CompositeFilter**: allow to generate predicates.
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property
 * **BootstrapperBase**: base class for Bootstrapper

@@ -63,27 +63,27 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first page.
         /// </summary>
-        IRelayCommand MoveToFirstPageCommand { get; }
+        IDelegateCommand MoveToFirstPageCommand { get; }
 
         /// <summary>
         /// Allows to move to the previous page.
         /// </summary>
-        IRelayCommand MoveToPreviousPageCommand { get; }
+        IDelegateCommand MoveToPreviousPageCommand { get; }
 
         /// <summary>
         /// Allows to move to the next page.
         /// </summary>
-        IRelayCommand MoveToNextPageCommand { get; }
+        IDelegateCommand MoveToNextPageCommand { get; }
 
         /// <summary>
         /// Allows to move to the last page.
         /// </summary>
-        IRelayCommand MoveToLastPageCommand { get; }
+        IDelegateCommand MoveToLastPageCommand { get; }
 
         /// <summary>
         /// Allows to move to the page.
         /// </summary>
-        IRelayCommand MoveToPageCommand { get; }
+        IDelegateCommand MoveToPageCommand { get; }
 
         /// <summary>
         /// Invoked on page changing.
@@ -137,12 +137,12 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to group by property name.
         /// </summary>
-        IRelayCommand SortByCommand { get; }
+        IDelegateCommand SortByCommand { get; }
 
         /// <summary>
         /// Allows to group by property name.
         /// </summary>
-        IRelayCommand SortByDescendingCommand { get; }
+        IDelegateCommand SortByDescendingCommand { get; }
 
         /// <summary>
         /// Checks if can move to previous item.
@@ -167,37 +167,37 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first item.
         /// </summary>
-        IRelayCommand MoveCurrentToFirstCommand { get; }
+        IDelegateCommand MoveCurrentToFirstCommand { get; }
 
         /// <summary>
         /// Allows to move to the previous item.
         /// </summary>
-        IRelayCommand MoveCurrentToPreviousCommand { get; }
+        IDelegateCommand MoveCurrentToPreviousCommand { get; }
 
         /// <summary>
         /// Allows to move to the next item.
         /// </summary>
-        IRelayCommand MoveCurrentToNextCommand { get; }
+        IDelegateCommand MoveCurrentToNextCommand { get; }
 
         /// <summary>
         /// Allows to move to the last item.
         /// </summary>
-        IRelayCommand MoveCurrentToLastCommand { get; }
+        IDelegateCommand MoveCurrentToLastCommand { get; }
 
         /// <summary>
         /// Allows to move to the position.
         /// </summary>
-        IRelayCommand MoveCurrentToPositionCommand { get; }
+        IDelegateCommand MoveCurrentToPositionCommand { get; }
 
         /// <summary>
         /// Allows to move to the rank (index + 1).
         /// </summary>
-        IRelayCommand MoveCurrentToRankCommand { get; }
+        IDelegateCommand MoveCurrentToRankCommand { get; }
 
         /// <summary>
         /// Allows to move to the item.
         /// </summary>
-        IRelayCommand MoveCurrentToCommand { get; }
+        IDelegateCommand MoveCurrentToCommand { get; }
 
         /// <summary>
         /// Checks if can edit item.
@@ -207,27 +207,27 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to add a new item.
         /// </summary>
-        IRelayCommand AddNewCommand { get; }
+        IDelegateCommand AddNewCommand { get; }
 
         /// <summary>
         /// Allows to begin edit the current item.
         /// </summary>
-        IRelayCommand EditCommand { get; }
+        IDelegateCommand EditCommand { get; }
 
         /// <summary>
         /// Allows to delete the current item.
         /// </summary>
-        IRelayCommand DeleteCommand { get; }
+        IDelegateCommand DeleteCommand { get; }
 
         /// <summary>
         /// Allows to save changes for current item.
         /// </summary>
-        IRelayCommand SaveCommand { get; }
+        IDelegateCommand SaveCommand { get; }
 
         /// <summary>
         /// Allows to cancel add new or edit item.
         /// </summary>
-        IRelayCommand CancelCommand { get; }
+        IDelegateCommand CancelCommand { get; }
 
         /// <summary>
         /// Gets a value that indicates if DeferRefresh() is in use.

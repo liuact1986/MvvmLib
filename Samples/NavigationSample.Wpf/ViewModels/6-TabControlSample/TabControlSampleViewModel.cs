@@ -12,8 +12,8 @@ namespace NavigationSample.Wpf.ViewModels
 
         public SharedSource<IDetailViewModel> DetailsSource { get; }
 
-        public IRelayCommand AddCommand { get; }
-        public IRelayCommand AddViewModelCommand { get; }
+        public IDelegateCommand AddCommand { get; }
+        public IDelegateCommand AddViewModelCommand { get; }
 
         public TabControlSampleViewModel(IEventAggregator eventAggregator)
         {
@@ -21,7 +21,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
 
-            AddCommand = new RelayCommand<Type>(AddItem);
+            AddCommand = new DelegateCommand<Type>(AddItem);
         }
 
         private void AddItem(Type sourceType)

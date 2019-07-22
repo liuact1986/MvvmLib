@@ -49,12 +49,12 @@ namespace NavigationSample.Wpf.ViewModels
             };
             this.selectedDuration = this.Durations[0];
 
-            NavigateCommand = new RelayCommand<Type>((sourceType) =>
+            NavigateCommand = new DelegateCommand<Type>((sourceType) =>
             {
                 Navigation.Navigate(sourceType);
             });
 
-            CancelAnimationsCommand = new RelayCommand(() =>
+            CancelAnimationsCommand = new DelegateCommand(() =>
             {
                 IsCancelled = true;
                 IsCancelled = false;

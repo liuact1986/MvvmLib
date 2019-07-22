@@ -26,7 +26,7 @@ namespace NavigationSample.Windows.ViewModels
         {
             this.navigationManager = navigationManager;
 
-            LoginCommand = new RelayCommand(async () =>
+            LoginCommand = new DelegateCommand(async () =>
             {
                 User.IsLoggedIn = true;
                 await navigationManager.GetDefault().RedirectAsync(redirectToViewType, parameter);

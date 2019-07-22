@@ -58,13 +58,25 @@
     <Compile Include="Animation\TransitioningContentControl.cs" />
     <Compile Include="Animation\TransitioningItemsControl.cs" />
     <Compile Include="Interactivity\AttachableCollection.cs" />
+    <Compile Include="Interactivity\Behavior.cs" />
+    <Compile Include="Interactivity\BehaviorCollection.cs" />
+    <Compile Include="Interactivity\CallMethodAction.cs" />
+    <Compile Include="Interactivity\ChangePropertyAction.cs" />
+    <Compile Include="Interactivity\DataTrigger.cs" />
+    <Compile Include="Utils\DesignModeHelper.cs" />
     <Compile Include="Interactivity\EventToCommandBehavior.cs" />
-    <Compile Include="Interactivity\EventToMethodBehavior.cs" />
+    <Compile Include="Interactivity\EventTrigger.cs" />
+    <Compile Include="Interactivity\GoToStateAction.cs" />
     <Compile Include="Interactivity\IAssociatedObject.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Interactivity\NavigationBehavior.cs" />
-    <Compile Include="Interactivity\NavigationBehaviorCollection.cs" />
+    <Compile Include="Interactivity\InvokeCommandAction.cs" />
     <Compile Include="Interactivity\SelectionSyncBehavior.cs" />
+    <Compile Include="Interactivity\TriggerAction.cs" />
+    <Compile Include="Interactivity\TriggerActionCollection.cs" />
+    <Compile Include="Interactivity\TriggerBase.cs" />
+    <Compile Include="Interactivity\TriggerCollection.cs" />
+    <Compile Include="Utils\PropertyPathHelper.cs" />
+    <Compile Include="Utils\TypeConversionHelper.cs" />
     <Compile Include="Logger\Category.cs" />
     <Compile Include="Logger\DebugLogger.cs" />
     <Compile Include="Logger\ILogger.cs" />
@@ -86,7 +98,7 @@
     <Compile Include="Navigation\CanMoveToEventArgs.cs" />
     <Compile Include="Navigation\ContentControlNavigationSource.cs" />
     <Compile Include="Navigation\CurrentSourceChangedEventArgs.cs" />
-    <Compile Include="Navigation\FilteringExpression.cs" />
+    <Compile Include="Mvvm\FilterBase.cs" />
     <Compile Include="Navigation\ICanActivate.cs" />
     <Compile Include="Navigation\ICanDeactivate.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
@@ -110,7 +122,7 @@
     <Compile Include="Navigation\PageChangeEventArgs.cs" />
     <Compile Include="Navigation\PagedSource.cs" />
     <Compile Include="Navigation\ListCollectionViewEx.cs" />
-    <Compile Include="Navigation\PredicateBuilder.cs" />
+    <Compile Include="Mvvm\PredicateBuilder.cs" />
     <Compile Include="Navigation\SelectionHandling.cs" />
     <Compile Include="Navigation\SharedSource.cs" />
     <Compile Include="Navigation\SharedSourceSelectedItemChangedEventArgs.cs" />
@@ -132,7 +144,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Utils\EnumerableHelper.cs" />
-    <Compile Include="Utils\XamlHelper.cs" />
+    <Compile Include="Utils\TreeHelper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

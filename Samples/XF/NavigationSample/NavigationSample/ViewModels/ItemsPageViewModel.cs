@@ -37,7 +37,7 @@ namespace NavigationSample.ViewModels
                 new Item{Name="Item B"}
             };
 
-            SelectCommand = new RelayCommand<SelectedItemChangedEventArgs>((t) =>
+            SelectCommand = new DelegateCommand<SelectedItemChangedEventArgs>((t) =>
             {
                 navigationManager.GetNamed("MasterDetail").PushAsync(typeof(ItemDetailPage), parameter: t.SelectedItem);
             });

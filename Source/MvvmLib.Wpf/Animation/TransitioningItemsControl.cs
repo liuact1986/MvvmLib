@@ -325,11 +325,11 @@ namespace MvvmLib.Animation
             InsertItem(index, item);
             if (canAnimate && EntranceAnimation != null && item != null)
             {
-                var newContent = XamlHelper.FindChild(item.GetType(), innerItemsControl, index);
+                var newContent = TreeHelper.FindChild(item.GetType(), innerItemsControl, index);
                 if (newContent == null)
                 {
                     // try to find ContentPresenter for item that is ViewModel
-                    newContent = XamlHelper.FindChild<ContentPresenter>(innerItemsControl, index);
+                    newContent = TreeHelper.FindChild<ContentPresenter>(innerItemsControl, index);
                 }
 
                 if (newContent is FrameworkElement newElement)
@@ -356,7 +356,7 @@ namespace MvvmLib.Animation
             if (canAnimate && ExitAnimation != null)
             {
                 var innerItemsControlItem = innerItemsControl.Items[index];
-                var oldContent = XamlHelper.FindChild<ContentPresenter>(innerItemsControl, index);
+                var oldContent = TreeHelper.FindChild<ContentPresenter>(innerItemsControl, index);
                 if (oldContent is FrameworkElement)
                 {
                     var oldElement = oldContent as FrameworkElement;
@@ -396,7 +396,7 @@ namespace MvvmLib.Animation
                 if (canAnimate && ExitAnimation != null)
                 {
                     var innerItemsControlItem = innerItemsControl.Items[index];
-                    var oldContent = XamlHelper.FindChild<ContentPresenter>(innerItemsControl, index);
+                    var oldContent = TreeHelper.FindChild<ContentPresenter>(innerItemsControl, index);
                     if (oldContent is FrameworkElement)
                     {
                         var oldElement = oldContent as FrameworkElement;
@@ -559,7 +559,7 @@ namespace MvvmLib.Animation
         /// <returns>The index or -1</returns>
         public int FindControlIndex(UIElement element)
         {
-            var target = XamlHelper.FindParent<ContentPresenter>(element);
+            var target = TreeHelper.FindParent<ContentPresenter>(element);
             if (target != null)
                 return EnumerableHelper.IndexOf(innerItemsControl.Items, target);
 
@@ -573,7 +573,7 @@ namespace MvvmLib.Animation
         /// <returns>The index or -1</returns>
         public int FindContextIndex(UIElement element)
         {
-            var target = XamlHelper.FindParent<ContentPresenter>(element);
+            var target = TreeHelper.FindParent<ContentPresenter>(element);
             if (target != null)
             {
                 var context = target.DataContext;

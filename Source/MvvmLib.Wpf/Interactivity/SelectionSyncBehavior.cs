@@ -1,5 +1,7 @@
 ﻿using MvvmLib.Navigation;
+using MvvmLib.Utils;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -9,12 +11,12 @@ namespace MvvmLib.Interactivity
     /// <summary>
     /// Allows to handle the <see cref="Selector.SelectionChanged"/> event for a <see cref="Selector"/> and set <see cref="IIsSelected"/> for items collection.
     /// </summary>
-    public class SelectionSyncBehavior : NavigationBehavior
+    public class SelectionSyncBehavior : Behavior
     {
         /// <summary>
-        /// Creates the <see cref="Freezable"/>.
+        /// Creates the <see cref="SelectionSyncBehavior"/>.
         /// </summary>
-        /// <returns>An instance of the <see cref="SelectionSyncBehavior"/></returns>
+        /// <returns>The Freezable</returns>
         protected override Freezable CreateInstanceCore()
         {
             return new SelectionSyncBehavior();
@@ -25,11 +27,11 @@ namespace MvvmLib.Interactivity
         /// </summary>
         protected override void OnAttach()
         {
-            if (!IsInDesignMode(this))
-            {
-                CheckAssociatedObjectType();
-                ((Selector)associatedObject).SelectionChanged += OnSelectionChanged;
-            }
+            if (!IsSelector())
+                throw new InvalidOperationException($"Selector (ListBox, TabControl, etc.) is expected for the SelectionSyncBehavior. Current \"{associatedObject.GetType().Name}\"");
+
+            EvaluateAllItems();
+            ((Selector)associatedObject).SelectionChanged += OnSelectionChanged;
         }
 
         /// <summary>
@@ -39,20 +41,27 @@ namespace MvvmLib.Interactivity
         {
             if (associatedObject != null)
             {
-                CheckAssociatedObjectType();
                 ((Selector)associatedObject).SelectionChanged -= OnSelectionChanged;
             }
         }
 
-        private void CheckAssociatedObjectType()
+        /// <summary>
+        /// Checks if the AssociatedObject is Selector.
+        /// </summary>
+        /// <returns></returns>
+        protected bool IsSelector()
         {
-            if (!(associatedObject is Selector))
-                throw new InvalidOperationException($"Selector (ListBox, TabControl, etc.) is expected for the SelectionSyncBehavior. Current \"{associatedObject.GetType().Name}\"");
+            return associatedObject is Selector;
         }
 
-        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Sets IsSelected for changes.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The selection changed event args</param>
+        protected virtual void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // inactive
+            // non selected items
             var items = ((Selector)associatedObject).Items;
             foreach (var removedItem in e.RemovedItems)
             {
@@ -66,18 +75,49 @@ namespace MvvmLib.Interactivity
                 }
             }
 
-            // active
-            foreach (var selectedItem in e.AddedItems)
+            // selected items
+            foreach (var addedItem in e.AddedItems)
             {
                 foreach (var item in items)
                 {
-                    if (item == selectedItem)
+                    if (item == addedItem)
                         TrySetSelected(item, true);
                 }
             }
         }
 
-        private void TrySetSelected(object item, bool isSelected)
+        /// <summary>
+        /// Checks all items for AssociatedObject.
+        /// </summary>
+        protected virtual void EvaluateAllItems()
+        {
+            var items = ((Selector)associatedObject).Items;
+            var selectedItems = associatedObject is ListBox ?
+                ((ListBox)associatedObject).SelectedItems 
+                : new List<object> { ((Selector)associatedObject).SelectedItem };
+
+            foreach (var item in items)
+            {
+                if (item != null)
+                {
+                    if (selectedItems.Contains(item))
+                    {
+                        TrySetSelected(item, true);
+                    }
+                    else
+                    {
+                        TrySetSelected(item, false);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tries to set selected.
+        /// </summary>
+        /// <param name="item">The item</param>
+        /// <param name="isSelected">Is Selected</param>
+        protected void TrySetSelected(object item, bool isSelected)
         {
             var view = item as FrameworkElement;
             if (view != null)
@@ -92,5 +132,4 @@ namespace MvvmLib.Interactivity
             }
         }
     }
-
 }

@@ -13,7 +13,8 @@
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
 * **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
-* **Behaviors**: **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**
+* **Triggers**, **TriggerActions** and **Behaviors**: **EventTrigger**, **DataTrigger**, **CallMethodeAction**, **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**, etc.
+* **PropertyFilter** and **CompositeFilter**: allow to generate predicates.
 * **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
 
 _Usage:_
@@ -1471,7 +1472,54 @@ The "ControlledAnimation" avoid to set the target and the target property of the
 </mvvmLib:TransitioningItemsControl>
 ```
 
-## EventToCommandBehavior
+## Triggers and TriggerActions
+
+Example:
+
+```xml
+<Button x:Name="Button1" Content="Click!">
+    <mvvmLib:Interaction.Triggers>
+        <mvvmLib:EventTrigger EventName="Click">
+            <mvvmLib:CallMethodAction TargetObject="{Binding}" MethodName="SayHello" Parameter="My parameter" />
+            <mvvmLib:InvokeCommandAction Command="{Binding MyCommand}" CommandParameter="My parameter"/>
+            <mvvmLib:ChangePropertyAction TargetObject="{Binding ElementName=Button1}" PropertyPath="Foreground" Value="Red"/>
+        </mvvmLib:EventTrigger>
+    </mvvmLib:Interaction.Triggers>
+</Button>
+```
+
+DataTrigger sample
+
+```xml
+<TextBlock x:Name="TextBlock1" Text="{Binding MyValue}">
+    <mvvmLib:Interaction.Triggers>
+        <mvvmLib:DataTrigger Binding="{Binding MyValue}" Value="My value">
+            <mvvmLib:ChangePropertyAction TargetObject="{Binding ElementName=TextBlock1}" PropertyPath="Foreground" Value="Red"/>
+        </mvvmLib:DataTrigger>
+        <mvvmLib:DataTrigger Binding="{Binding MyValue}" Comparison="NotEqual" Value="My value">
+            <mvvmLib:ChangePropertyAction TargetObject="{Binding ElementName=TextBlock1}" PropertyPath="Foreground" Value="Blue"/>
+        </mvvmLib:DataTrigger>
+    </mvvmLib:Interaction.Triggers>
+</TextBlock>
+```
+
+Triggers:
+
+* EventTrigger
+* DataTrigger
+
+TriggerActions:
+
+* CallMethodAction
+* InvokeCommandAction
+* ChangePropertyAction
+* GoToStateAction
+
+Easy to create our owns Triggers (inherit from TriggerBase) and TriggerActions (inherit from TriggerAction and inmplement Invoke method).
+
+## Behaviors
+
+### EventToCommandBehavior
 
 > Allows to bind an event to a command.
 
@@ -1507,35 +1555,6 @@ public class ViewAViewModel : BindableBase
     private void SayHello(string value)
     {
         Message = $"Hello {value}! {DateTime.Now.ToLongTimeString()}";
-    }
-}
-```
-
-## EventToMethodBehavior
-
-Example: on button click, call the method "MyMethod" of the ViewModel (current DataContext) with a parameter
-
-```xml
-<Button Content="Click!" HorizontalAlignment="Left" Margin="5">
-    <mvvmLib:Interaction.Behaviors>
-        <mvvmLib:EventToMethodBehavior EventName="Click" TargetObject="{Binding}" MethodName="MyMethod" Parameter="MvvmLib!"/>
-    </mvvmLib:Interaction.Behaviors>
-</Button>
-```
-
-```cs
-public class ViewAViewModel : BindableBase
-{
-    private string message;
-    public string Message
-    {
-        get { return message; }
-        set { SetProperty(ref message, value); }
-    }
-
-    private void MyMethod(object parameter)
-    {
-        Message = $"MyMethod invoked witth parameter '{parameter}' {DateTime.Now.ToLongTimeString()}";
     }
 }
 ```

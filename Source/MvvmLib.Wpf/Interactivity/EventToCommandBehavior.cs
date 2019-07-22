@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MvvmLib.Utils;
+using System;
+using System.Globalization;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
@@ -10,24 +12,9 @@ namespace MvvmLib.Interactivity
     /// <summary>
     /// Allows to bind an event to a command.
     /// </summary>
-    public class EventToCommandBehavior : NavigationBehavior
+    public class EventToCommandBehavior : Behavior
     {
         private Delegate eventHandler;
-
-        /// <summary>
-        /// The command.
-        /// </summary>
-        public ICommand Command
-        {
-            get { return (ICommand)GetValue(CommandProperty); }
-            set { SetValue(CommandProperty, value); }
-        }
-
-        /// <summary>
-        /// The command.
-        /// </summary>
-        public static readonly DependencyProperty CommandProperty =
-            DependencyProperty.Register("Command", typeof(ICommand), typeof(EventToCommandBehavior), new PropertyMetadata(null));
 
         /// <summary>
         /// The event name.
@@ -43,6 +30,22 @@ namespace MvvmLib.Interactivity
         /// </summary>
         public static readonly DependencyProperty EventNameProperty =
             DependencyProperty.Register("EventName", typeof(string), typeof(EventToCommandBehavior), new PropertyMetadata(null));
+
+
+        /// <summary>
+        /// The command.
+        /// </summary>
+        public ICommand Command
+        {
+            get { return (ICommand)GetValue(CommandProperty); }
+            set { SetValue(CommandProperty, value); }
+        }
+
+        /// <summary>
+        /// The command.
+        /// </summary>
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register("Command", typeof(ICommand), typeof(EventToCommandBehavior), new PropertyMetadata(null));
 
         /// <summary>
         /// The command parameter.
@@ -75,6 +78,36 @@ namespace MvvmLib.Interactivity
             DependencyProperty.Register("Converter", typeof(IValueConverter), typeof(EventToCommandBehavior), new PropertyMetadata(null));
 
         /// <summary>
+        /// The converter parameter.
+        /// </summary>
+        public object ConverterParameter
+        {
+            get { return (object)GetValue(ConverterParameterProperty); }
+            set { SetValue(ConverterParameterProperty, value); }
+        }
+
+        /// <summary>
+        /// The converter parameter.
+        /// </summary>
+        public static readonly DependencyProperty ConverterParameterProperty =
+            DependencyProperty.Register("ConverterParameter", typeof(object), typeof(EventToCommandBehavior), new PropertyMetadata(null));
+
+        /// <summary>
+        /// The converter culture.
+        /// </summary>
+        public CultureInfo ConverterCulture
+        {
+            get { return (CultureInfo)GetValue(ConverterCultureProperty); }
+            set { SetValue(ConverterCultureProperty, value); }
+        }
+
+        /// <summary>
+        /// The converter culture.
+        /// </summary>
+        public static readonly DependencyProperty ConverterCultureProperty =
+            DependencyProperty.Register("ConverterCulture", typeof(CultureInfo), typeof(EventToCommandBehavior), new PropertyMetadata(null));
+
+        /// <summary>
         /// Creates the <see cref="Freezable"/>.
         /// </summary>
         /// <returns>An instance of the <see cref="EventToCommandBehavior"/></returns>
@@ -88,10 +121,7 @@ namespace MvvmLib.Interactivity
         /// </summary>
         protected override void OnAttach()
         {
-            if (!IsInDesignMode(this))
-            {
-                RegisterEvent();
-            }
+            HandleEvent();
         }
 
         /// <summary>
@@ -99,10 +129,10 @@ namespace MvvmLib.Interactivity
         /// </summary>
         protected override void OnDetach()
         {
-            UnregisterEvent();
+            UnhandleEvent();
         }
 
-        private void RegisterEvent()
+        private void HandleEvent()
         {
             if (EventName == null)
                 throw new InvalidOperationException("The EventName is not provided");
@@ -116,25 +146,7 @@ namespace MvvmLib.Interactivity
             eventInfo.AddEventHandler(associatedObject, eventHandler);
         }
 
-        private void OnEvent(object sender, object eventArgs)
-        {
-            if (Command == null)
-                return;
-
-            object parameter;
-            if (CommandParameter != null)
-                parameter = CommandParameter;
-            else if (Converter != null)
-                parameter = Converter.Convert(eventArgs, typeof(object), null, null);
-            else
-                parameter = eventArgs;
-
-
-            if (Command.CanExecute(parameter))
-                Command.Execute(parameter);
-        }
-
-        private void UnregisterEvent()
+        private void UnhandleEvent()
         {
             if (EventName == null || eventHandler == null)
                 return;
@@ -146,5 +158,26 @@ namespace MvvmLib.Interactivity
             eventInfo.RemoveEventHandler(AssociatedObject, eventHandler);
             eventHandler = null;
         }
+
+        /// <summary>
+        /// Executes the command.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="eventArgs">The event args</param>
+        protected virtual void OnEvent(object sender, object eventArgs)
+        {
+            if (Command == null)
+                return;
+
+            object parameter = null;
+            if (Converter != null)
+                parameter = Converter.Convert(CommandParameter, typeof(object), ConverterParameter, ConverterCulture);
+            else if (CommandParameter != null)
+                parameter = CommandParameter;
+
+            if (Command.CanExecute(parameter))
+                Command.Execute(parameter);
+        }
+
     }
 }

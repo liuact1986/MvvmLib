@@ -43,65 +43,65 @@ namespace MvvmLib.Navigation
             get { return this.navigationSources.Count; }
         }
 
-        private readonly IRelayCommand navigateCommand;
+        private readonly IDelegateCommand navigateCommand;
         /// <summary>
         /// Allows to navigate to the source with the source type provided for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand NavigateCommand
+        public IDelegateCommand NavigateCommand
         {
             get { return navigateCommand; }
         }
 
-        private readonly IRelayCommand moveToFirstCommand;
+        private readonly IDelegateCommand moveToFirstCommand;
         /// <summary>
         /// Allows to move to the first source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToFirstCommand
+        public IDelegateCommand MoveToFirstCommand
         {
             get { return moveToFirstCommand; }
         }
 
-        private readonly IRelayCommand moveToPreviousCommand;
+        private readonly IDelegateCommand moveToPreviousCommand;
         /// <summary>
         /// Allows to move to the previous source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToPreviousCommand
+        public IDelegateCommand MoveToPreviousCommand
         {
             get { return moveToPreviousCommand; }
         }
 
-        private readonly IRelayCommand moveToNextCommand;
+        private readonly IDelegateCommand moveToNextCommand;
         /// <summary>
         /// Allows to move to the next source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToNextCommand
+        public IDelegateCommand MoveToNextCommand
         {
             get { return moveToNextCommand; }
         }
 
-        private readonly IRelayCommand moveToLastCommand;
+        private readonly IDelegateCommand moveToLastCommand;
         /// <summary>
         /// Allows to move to the last source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToLastCommand
+        public IDelegateCommand MoveToLastCommand
         {
             get { return moveToLastCommand; }
         }
 
-        private readonly IRelayCommand moveToIndexCommand;
+        private readonly IDelegateCommand moveToIndexCommand;
         /// <summary>
         /// Allows to move to the index for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToIndexCommand
+        public IDelegateCommand MoveToIndexCommand
         {
             get { return moveToIndexCommand; }
         }
 
-        private readonly IRelayCommand moveToCommand;
+        private readonly IDelegateCommand moveToCommand;
         /// <summary>
         /// Allows to move to the source for all <see cref="NavigationSources"/>.
         /// </summary>
-        public IRelayCommand MoveToCommand
+        public IDelegateCommand MoveToCommand
         {
             get { return moveToCommand; }
         }
@@ -114,13 +114,13 @@ namespace MvvmLib.Navigation
         {
             navigationSources = new List<NavigationSource>();
 
-            navigateCommand = new RelayCommand<Type>(ExecuteNavigateCommand);
-            moveToFirstCommand = new RelayCommand(ExecuteMoveToFirstCommand);
-            moveToPreviousCommand = new RelayCommand(ExecuteMoveToPreviousCommand);
-            moveToNextCommand = new RelayCommand(ExecuteMoveToNextCommand);
-            moveToLastCommand = new RelayCommand(ExecuteMoveToLastCommand);
-            moveToIndexCommand = new RelayCommand<object>(ExecuteMoveToIndexCommand);
-            moveToCommand = new RelayCommand<object>(ExecuteMoveToCommand);
+            navigateCommand = new DelegateCommand<Type>(ExecuteNavigateCommand);
+            moveToFirstCommand = new DelegateCommand(ExecuteMoveToFirstCommand);
+            moveToPreviousCommand = new DelegateCommand(ExecuteMoveToPreviousCommand);
+            moveToNextCommand = new DelegateCommand(ExecuteMoveToNextCommand);
+            moveToLastCommand = new DelegateCommand(ExecuteMoveToLastCommand);
+            moveToIndexCommand = new DelegateCommand<object>(ExecuteMoveToIndexCommand);
+            moveToCommand = new DelegateCommand<object>(ExecuteMoveToCommand);
         }
 
         #region Commands

@@ -41,7 +41,7 @@ namespace AdaptiveSample.Windows
         {
             get
             {
-                return new RelayCommand<object>(async (r) =>
+                return new DelegateCommand<object>(async (r) =>
                 {
                     var dialog = new MessageDialog("Clicked on : " + ((VariableItem)r).Title);
                     await dialog.ShowAsync();

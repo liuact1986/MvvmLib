@@ -29,7 +29,7 @@ namespace NavigationSample.ViewModels
             this.dialogService = dialogService;
             this.navigationManager = navigationManager;            
 
-            NavigateCommand = new RelayCommand(() =>
+            NavigateCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PushAsync(typeof(PageB), "PageB message");
             });

@@ -74,7 +74,7 @@ namespace MvvmLib.Commands
             this.canExecute = canExecute;
             this.onException = onException;
             this.cancellationTokenSource = new CancellationTokenSource();
-            this.cancelCommand = new RelayCommand(Cancel);
+            this.cancelCommand = new DelegateCommand(Cancel);
         }
 
         /// <summary>

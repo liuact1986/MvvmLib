@@ -13,7 +13,6 @@ namespace NavigationSample.Wpf.ViewModels
     public class ShellViewModel : BindableBase, IIsLoaded
     {
         private readonly IEventAggregator eventAggregator;
-        private bool handleSelectionChanged;
 
         private string title;
         public string Title
@@ -29,7 +28,6 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.eventAggregator = eventAggregator;
             OnTitleChanged("Navigation Sample [WPF]");
-            handleSelectionChanged = true;
 
             this.Navigation = NavigationManager.GetDefaultNavigationSource("Main");
             this.MenuItemsSource = NavigationManager.GetSharedSource<MenuItem>();
@@ -61,13 +59,10 @@ namespace NavigationSample.Wpf.ViewModels
 
         private void OnMenuItemsSelectionChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
         {
-            if (handleSelectionChanged)
+            var selectedMenuItem = e.SelectedItem as MenuItem;
+            if (selectedMenuItem != null && selectedMenuItem.Action != null)
             {
-                var selectedMenuItem = e.SelectedItem as MenuItem;
-                if (selectedMenuItem != null && selectedMenuItem.Action != null)
-                {
-                    selectedMenuItem.Action.Invoke();
-                }
+                selectedMenuItem.Action.Invoke();
             }
         }
 
@@ -90,9 +85,9 @@ namespace NavigationSample.Wpf.ViewModels
                 var menuItem = MenuItemsSource.Items.FirstOrDefault(m => m.Tag == pageName);
                 if (menuItem != null)
                 {
-                    handleSelectionChanged = false;
+                    this.MenuItemsSource.SuspendNotifications();
                     MenuItemsSource.SelectedItem = menuItem;
-                    handleSelectionChanged = true;
+                    this.MenuItemsSource.ResumeNotifications();
                 }
             }
         }

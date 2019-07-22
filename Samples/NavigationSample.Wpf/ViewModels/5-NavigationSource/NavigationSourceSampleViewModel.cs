@@ -31,8 +31,8 @@ namespace NavigationSample.Wpf.ViewModels
 
             Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
 
-            InsertCommand = new RelayCommand(Insert);
-            RemoveFirstCommand = new RelayCommand(RemoveFirst);
+            InsertCommand = new DelegateCommand(Insert);
+            RemoveFirstCommand = new DelegateCommand(RemoveFirst);
         }
 
         private void RemoveFirst()

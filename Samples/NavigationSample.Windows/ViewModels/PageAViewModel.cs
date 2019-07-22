@@ -30,13 +30,13 @@ namespace NavigationSample.Windows.ViewModels
             set { SetProperty(ref count, value); }
         }
 
-        public RelayCommand UpdateMessageCommand { get; }
+        public DelegateCommand UpdateMessageCommand { get; }
 
         public PageAViewModel(IMyService myService)
         {
             message = myService.GetMessage("PageAViewModel");
 
-            UpdateMessageCommand = new RelayCommand(() =>
+            UpdateMessageCommand = new DelegateCommand(() =>
             {
                 Message += "!";
             });

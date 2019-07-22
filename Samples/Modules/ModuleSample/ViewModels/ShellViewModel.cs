@@ -28,7 +28,7 @@ namespace ModuleSample.ViewModels
 
             this.Navigation = new NavigationSource();
 
-            NavigateCommand = new RelayCommand<string>(NavigateToModule);
+            NavigateCommand = new DelegateCommand<string>(NavigateToModule);
 
             moduleManager.ModuleLoaded += OnModuleLoaded;
 

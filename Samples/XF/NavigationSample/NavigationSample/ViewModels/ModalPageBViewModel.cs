@@ -28,7 +28,7 @@ namespace NavigationSample.ViewModels
             this.dialogService = dialogService;
             this.navigationManager = navigationManager;
 
-            GoBackCommand = new RelayCommand(() =>
+            GoBackCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PopModalAsync("GoBack Modal message");
             });

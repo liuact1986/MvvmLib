@@ -3,13 +3,13 @@
 namespace MvvmLib.Interactivity
 {
     /// <summary>
-    /// Allows to provide a dependency object to the bahavior.
+    /// Allows to provide an associated object.
     /// </summary>
     public interface IAssociatedObject
     {
         /// <summary>
-        /// The dependency object / control.
+        /// The associated object.
         /// </summary>
-        DependencyObject AssociatedObject { get; set; }
+        DependencyObject AssociatedObject { get; }
     }
 }

@@ -21,13 +21,13 @@ namespace NavigationSample.Windows.ViewModels
             set { SetProperty(ref count, value); }
         }
 
-        public RelayCommand UpdateMessageCommand { get; }
+        public DelegateCommand UpdateMessageCommand { get; }
 
         public PageBViewModel()
         {
             message = "Default PageB message";
 
-            UpdateMessageCommand = new RelayCommand(() =>
+            UpdateMessageCommand = new DelegateCommand(() =>
             {
                 Message += "!";
             });

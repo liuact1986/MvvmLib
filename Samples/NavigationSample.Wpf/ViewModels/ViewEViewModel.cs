@@ -81,7 +81,7 @@ namespace NavigationSample.Wpf.ViewModels
         public LoginViewModel()
         {
             this.Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
-            LoginCommand = new RelayCommand(Login);
+            LoginCommand = new DelegateCommand(Login);
         }
 
         private void Login()

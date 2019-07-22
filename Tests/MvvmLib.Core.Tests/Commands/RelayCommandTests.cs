@@ -5,14 +5,14 @@ namespace MvvmLib.Core.Tests.Commands
 {
 
     [TestClass]
-    public class RelayCommandTests
+    public class DelegateCommandTests
     {
         [TestMethod]
-        public void TestRelayCommand()
+        public void TestDelegateCommand()
         {
             bool isCalled = false;
 
-            var command = new RelayCommand(() =>
+            var command = new DelegateCommand(() =>
             {
                 isCalled = true;
             });
@@ -28,7 +28,7 @@ namespace MvvmLib.Core.Tests.Commands
             bool isCalled = false;
             bool isChecked = false;
 
-            var command = new RelayCommand(() =>
+            var command = new DelegateCommand(() =>
             {
                 isCalled = true;
             }, () =>
@@ -52,7 +52,7 @@ namespace MvvmLib.Core.Tests.Commands
             bool isCalled = false;
             bool isChecked = false;
 
-            var command = new RelayCommand(() =>
+            var command = new DelegateCommand(() =>
             {
                 isCalled = true;
             }, () =>
@@ -74,15 +74,15 @@ namespace MvvmLib.Core.Tests.Commands
     }
 
     [TestClass]
-    public class RelayCommandGenericTests
+    public class DelegateCommandGenericTests
     {
         [TestMethod]
-        public void TestRelayCommand()
+        public void TestDelegateCommand()
         {
             bool isCalled = false;
             string result = "";
 
-            var command = new RelayCommand<string>((value) =>
+            var command = new DelegateCommand<string>((value) =>
             {
                 isCalled = true;
                 result = value;
@@ -105,7 +105,7 @@ namespace MvvmLib.Core.Tests.Commands
             string result = "";
             string checkresult = "";
 
-            var command = new RelayCommand<string>((value) =>
+            var command = new DelegateCommand<string>((value) =>
             {
                 isCalled = true;
                 result = value;
@@ -136,7 +136,7 @@ namespace MvvmLib.Core.Tests.Commands
             string result = "";
             string checkresult = "";
 
-            var command = new RelayCommand<string>((value) =>
+            var command = new DelegateCommand<string>((value) =>
             {
                 isCalled = true;
                 result = value;

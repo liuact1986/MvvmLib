@@ -24,7 +24,7 @@ namespace NavigationSample.Wpf.ViewModels
         public NavigationSource Navigation { get; } // for content control
 
         public ICommand AddCommand { get; set; }
-        public IRelayCommand DeleteCommand { get; set; }
+        public IDelegateCommand DeleteCommand { get; set; }
 
         public SubscriberOptions<PersonEventArgs> PersonAddedSubscriberOptions { get; private set; }
         public SubscriberOptions<PersonEventArgs> PersonUpdatedSubscriberOptions { get; private set; }
@@ -37,10 +37,9 @@ namespace NavigationSample.Wpf.ViewModels
             Navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
             PeopleListSource = new SharedSource<NavigationItemViewModel>();
 
-            AddCommand = new RelayCommand(Add);
-            DeleteCommand = new RelayCommand(Delete, () => PeopleListSource.SelectedIndex != -1);
+            AddCommand = new DelegateCommand(Add);
+            DeleteCommand = new DelegateCommand(Delete, () => PeopleListSource.SelectedIndex != -1);
             PeopleListSource.SelectedItemChanged += PeopleListSource_SelectedItemChanged;
-
         }
 
         private void PeopleListSource_SelectedItemChanged(object sender, SharedSourceSelectedItemChangedEventArgs e)
@@ -170,7 +169,7 @@ namespace NavigationSample.Wpf.ViewModels
             this.fakePeopleService = fakePeopleService;
             this.tracker = new ChangeTracker();
 
-            SaveCommand = new RelayCommand<object>(Save);
+            SaveCommand = new DelegateCommand<object>(Save);
         }
 
         private void Save(object value)

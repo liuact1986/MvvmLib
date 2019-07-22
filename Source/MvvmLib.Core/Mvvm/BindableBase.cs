@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace MvvmLib.Mvvm
 {
     /// <summary>
-    /// The Base class for models and view models. Implements <see cref="INotifyPropertyChanged"/>.
+    /// Base class for Models or ViewModels that require to notify property changed <see cref="INotifyPropertyChanged"/>.
     /// </summary>
     public class BindableBase : INotifyPropertyChanged
     {
@@ -16,7 +16,7 @@ namespace MvvmLib.Mvvm
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Sets the value of the property and raise <see cref="INotifyPropertyChanged.PropertyChanged"/> event if value is not equal to the storage value.
+        /// Sets the value of the property and raises the <see cref="INotifyPropertyChanged.PropertyChanged"/> event handler.
         /// </summary>
         /// <typeparam name="T">The type of the property</typeparam>
         /// <param name="storage">The field</param>
@@ -36,21 +36,25 @@ namespace MvvmLib.Mvvm
         }
 
         /// <summary>
-        /// Notifies that a property has changed.
+        /// Notifies that the property changed.
         /// </summary>
         /// <param name="propertyName">The property name</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+
         /// <summary>
-        /// Notifies that a property has changed.
+        /// Notifies that the property changed.
         /// </summary>
         /// <typeparam name="T">The property type</typeparam>
         /// <param name="expression">The Linq expression</param>
         protected virtual void OnPropertyChanged<T>(Expression<Func<T>> expression)
         {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
             var memberExpression = expression.Body as MemberExpression;
             if (memberExpression != null)
             {

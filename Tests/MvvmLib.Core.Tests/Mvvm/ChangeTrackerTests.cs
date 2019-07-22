@@ -84,7 +84,7 @@ namespace MvvmLib.Core.Tests.Mvvm
             tracker.TrackChanges(item);
             Assert.IsFalse(tracker.CheckChanges());
 
-            item.MyCommand = new RelayCommand(() => { });
+            item.MyCommand = new DelegateCommand(() => { });
             Assert.IsFalse(tracker.CheckChanges());
 
             item.MyString = "My new value";
@@ -543,7 +543,7 @@ namespace MvvmLib.Core.Tests.Mvvm
 
         public MyChangeTrackedItem()
         {
-            MyCommand = new RelayCommand(DoWork);
+            MyCommand = new DelegateCommand(DoWork);
         }
 
         private void DoWork()

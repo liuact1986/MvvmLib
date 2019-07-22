@@ -51,8 +51,8 @@ namespace NavigationSample.Wpf.ViewModels
 
             Navigation = NavigationManager.GetDefaultNavigationSource("Main");
 
-            SayHelloCommand = new RelayCommand<string>(SayHello);
-            SelectPersonCommand = new RelayCommand<Person>(ShowPersonDetails);
+            SayHelloCommand = new DelegateCommand<string>(SayHello);
+            SelectPersonCommand = new DelegateCommand<Person>(ShowPersonDetails);
         }
 
         private void SetTitle()

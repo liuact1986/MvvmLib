@@ -1,7 +1,7 @@
 # Mvvm
 
 * **BindableBase**, **Editable**, **Validatable** and **ModelWrapper** base classes for _Models and ViewModels_
-* **RelayCommand**, **AsyncCommand** and **CompositeCommand**
+* **DelegateCommand**, **AsyncCommand** and **CompositeCommand**
 * **EventAggregator** : allows to **subscribe**, **publish** and filter messages
 * **ChangeTracker**: allows to track object changes.
 * **Singleton**
@@ -39,7 +39,7 @@ public class UserViewModel : BindableBase
         set
         {
             SetProperty(ref firstName, value);
-            OnPropertyChanged("FullName");
+            OnPropertyChanged(nameof(FullName));
         }
     }
 
@@ -50,7 +50,7 @@ public class UserViewModel : BindableBase
         set
         {
             SetProperty(ref lastName, value);
-            OnPropertyChanged("FullName");
+            OnPropertyChanged(nameof(FullName));
         }
     }
 
@@ -284,8 +284,8 @@ public class UserDetailViewModel : BindableBase
 
         this.user.BeginEdit();
 
-        SaveCommand = new RelayCommand(OnSave);
-        ResetCommand = new RelayCommand(OnReset);
+        SaveCommand = new DelegateCommand(OnSave);
+        ResetCommand = new DelegateCommand(OnReset);
     }
 
     private void OnSave()
@@ -374,18 +374,18 @@ And use it
 <TextBlock Text="{Binding User.Errors[FirstName], Converter={StaticResource FirstErrorConverter}}" Foreground="Red"></TextBlock>
 ```
 
-## Relay command
+## DelegateCommand
 
 Example
 
 ```cs
 public class PageAViewModel : ViewModel
 {
-        public IRelayCommand MyCommand { get; }
+        public IDelegateCommand MyCommand { get; }
 
         public PageAViewModel()
         {     
-            this.MyCommand = new RelayCommand(() => {  /* do something */ });
+            this.MyCommand = new DelegateCommand(() => {  /* do something */ });
         }
 }
 ```
@@ -401,12 +401,12 @@ Other example **with parameter and condition**
 ```cs
 public class PageAViewModel
 {
-        public ICommand MyCommand { get; }
+    public ICommand MyCommand { get; }
 
-        public PageAViewModel()
-        {     
-            this.MyCommand = new RelayCommand<string>((value) =>{  /* do something */ }, (value) => true);
-        }
+    public PageAViewModel()
+    {     
+        this.MyCommand = new DelegateCommand<string>((value) =>{  /* do something */ }, (value) => true);
+    }
 }
 ```
 
@@ -432,12 +432,12 @@ public class TabViewModel : BindableBase
         }
     }
 
-    public IRelayCommand SaveCommand { get; set; }
+    public IDelegateCommand SaveCommand { get; set; }
 
     public TabViewModel()
     {
         canSave = true;
-        SaveCommand = new RelayCommand(OnSave, CheckCanSave);
+        SaveCommand = new DelegateCommand(OnSave, CheckCanSave);
     }
 
     private void OnSave()
@@ -466,12 +466,12 @@ public class TabViewModel : BindableBase
         set { SetProperty(ref canSave, value); }
     }
 
-    public IRelayCommand SaveCommand { get; set; }
+    public IDelegateCommand SaveCommand { get; set; }
 
     public TabViewModel()
     {
         canSave = true;
-        SaveCommand = new RelayCommand(OnSave, CheckCanSave)
+        SaveCommand = new DelegateCommand(OnSave, CheckCanSave)
             .ObserveProperty(() => CanSave); // <=
     }
 
@@ -556,8 +556,8 @@ The command is executed only if all conditions are true
 var compositeCommand = new CompositeCommand();
 
 // create commands
-var commandA = new RelayCommand(() => {  /* do something */ });
-var commandB = new RelayCommand(() => {  /* do something */ });
+var commandA = new DelegateCommand(() => {  /* do something */ });
+var commandB = new DelegateCommand(() => {  /* do something */ });
 
 // add commands to the composite command
 compositeCommand.Add(commandA);
@@ -609,12 +609,12 @@ public class TabViewModel : BindableBase, INavigatable
         }
     }
 
-    public IRelayCommand SaveCommand { get; set; }
+    public IDelegateCommand SaveCommand { get; set; }
 
     public TabViewModel(IApplicationCommands applicationCommands)
     {
         canSave = true;
-        SaveCommand = new RelayCommand(OnSave, CheckCanSave);
+        SaveCommand = new DelegateCommand(OnSave, CheckCanSave);
 
         // add the command to the composite command
         applicationCommands.SaveAllCommand.Add(SaveCommand);

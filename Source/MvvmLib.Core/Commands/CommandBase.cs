@@ -8,73 +8,83 @@ namespace MvvmLib.Commands
     /// <summary>
     /// The base class for commands.
     /// </summary>
-    public abstract class CommandBase : IRelayCommand
+    public abstract class CommandBase : IDelegateCommand
     {
-        private readonly Dictionary<string, INotifyPropertyChangedObserver> observedProperties;
-        /// <summary>
-        /// The observed properties.
-        /// </summary>
-        public Dictionary<string, INotifyPropertyChangedObserver> ObservedProperties
-        {
-            get { return observedProperties; }
-        }
+        private readonly HashSet<string> observedProperties;
+        private INotifyPropertyChanged inpc;
 
         /// <summary>
         /// Invoked on can execute changed.
         /// </summary>
         public event EventHandler CanExecuteChanged;
 
-
         /// <summary>
         /// Creates the <see cref="CommandBase"/>.
         /// </summary>
         public CommandBase()
         {
-            observedProperties = new Dictionary<string, INotifyPropertyChangedObserver>();
+            observedProperties = new HashSet<string>();
         }
 
         /// <summary>
-        /// Observes <see cref="INotifyPropertyChanged"/> event for a property and raises <see cref="RaiseCanExecuteChanged"/> automatically.
+        /// Observes the property and raises <see cref="CanExecuteChanged"/> automatically.
         /// </summary>
         /// <typeparam name="T">The type of property</typeparam>
-        /// <param name="propertyExpression">The property expression</param>
+        /// <param name="expression">The property expression</param>
         /// <returns>The command</returns>
-        protected internal void ObservePropertyInternal<T>(Expression<Func<T>> propertyExpression)
+        protected internal void ObservePropertyInternal<T>(Expression<Func<T>> expression)
         {
-            if (propertyExpression == null)
-                throw new ArgumentNullException(nameof(propertyExpression));
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
 
-            var memberExpression = propertyExpression.Body as MemberExpression;
-            if (memberExpression != null)
+            var memberExpression = expression.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new ArgumentException($"MemberExpression expected. Actual '{expression.Body}'");
+
+            var constantExpression = memberExpression.Expression as ConstantExpression;
+            if (constantExpression == null)
+                throw new ArgumentException($"ConstantExpression expected. Actual '{memberExpression.Expression}'");
+
+            if (inpc == null)
             {
-                var propertyName = memberExpression.Member.Name;
+                // the owner
+                var inpc = constantExpression.Value as INotifyPropertyChanged;
+                if (inpc == null)
+                    throw new InvalidOperationException($"Unable to handle INotifyPropertyChanged for {constantExpression.Value}");
 
-                if (observedProperties.ContainsKey(propertyName))
-                    return;
+                this.inpc = inpc;
+                inpc.PropertyChanged += OnInpcPropertyChanged;
+            }
 
-                var constantExpression = memberExpression.Expression as ConstantExpression;
-                if (constantExpression == null)
-                    throw new NotSupportedException("Only constant expression is supported for the owner type");
+            var propertyName = memberExpression.Member.Name;
+            observedProperties.Add(propertyName);
+        }
 
-                var owner = constantExpression.Value;
-                if (owner is INotifyPropertyChanged ownerAsINotifyPropertyChanged)
-                {
-                    var filter = new Func<INotifyPropertyChanged, PropertyChangedEventArgs, bool>((s, e) => e.PropertyName == propertyName);
-
-                    var propertyChangedObserver = new FilterableNotifyPropertyChangedObserver(ownerAsINotifyPropertyChanged, filter);
-                    propertyChangedObserver.Subscribe(e => RaiseCanExecuteChanged());
-
-                    observedProperties[propertyName] = propertyChangedObserver;
-                }
+        private void OnInpcPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (observedProperties.Contains(e.PropertyName))
+            {
+                RaiseCanExecuteChanged();
             }
         }
 
         /// <summary>
-        /// Observes <see cref="INotifyPropertyChanged"/> event for a property and raises <see cref="RaiseCanExecuteChanged"/> automatically.
+        /// Unhandles <see cref="INotifyPropertyChanged"/> for observed properties.
+        /// </summary>
+        public void UnhandleInpcForObservedProperties()
+        {
+            if (inpc != null)
+            {
+                inpc.PropertyChanged -= OnInpcPropertyChanged;
+            }
+        }
+
+        /// <summary>
+        /// Observes the property and raises <see cref="RaiseCanExecuteChanged"/> automatically.
         /// </summary>
         /// <typeparam name="T">The type of property</typeparam>
         /// <param name="propertyExpression">The property expression</param>
-        public IRelayCommand ObserveProperty<T>(Expression<Func<T>> propertyExpression)
+        public IDelegateCommand ObserveProperty<T>(Expression<Func<T>> propertyExpression)
         {
             this.ObservePropertyInternal(propertyExpression);
             return this;

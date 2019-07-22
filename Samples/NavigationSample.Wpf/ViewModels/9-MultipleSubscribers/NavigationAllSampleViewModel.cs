@@ -42,8 +42,8 @@ namespace NavigationSample.Wpf.ViewModels
             Navigation[1].ClearSourcesOnNavigate = false;
             Navigation[2].ClearSourcesOnNavigate = false;
 
-            InsertCommand = new RelayCommand(Insert);
-            ClearCommand = new RelayCommand(Clear);
+            InsertCommand = new DelegateCommand(Insert);
+            ClearCommand = new DelegateCommand(Clear);
         }
 
         private void Clear()

@@ -30,7 +30,7 @@ namespace NavigationSample.ViewModels
             this.dialogService = dialogService;
             this.navigationManager = navigationManager;
 
-            NavigateCommand = new RelayCommand(() =>
+            NavigateCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetNamed("tabNav").PushAsync(typeof(ChildPageB), "Child PageB message");
             });

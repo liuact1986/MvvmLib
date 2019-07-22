@@ -26,7 +26,7 @@ namespace MvvmLib.Core.Tests.Mvvm
             set
             {
                 this._lastName = value;
-                this.OnPropertyChanged(); // raise current property
+                this.OnPropertyChanged(nameof(LastName)); // raise current property
                 this.OnPropertyChanged("FullName"); // raise other property
             }
         }

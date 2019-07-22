@@ -53,12 +53,12 @@ namespace NavigationSample.ViewModels
             this.dialogService = dialogService;
             this.navigationManager = navigationManager;
 
-            GoBackCommand = new RelayCommand(() =>
+            GoBackCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PopAsync("My GoBack message", true);
             });
 
-            NavigateCommand = new RelayCommand(() =>
+            NavigateCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PopToRootAsync("My RootPage message", true);
             });

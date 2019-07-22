@@ -22,7 +22,7 @@ namespace NavigationSample.Wpf.ViewModels
         public ViewModelBase()
         {
             DetailsSource = NavigationManager.GetSharedSource<IDetailViewModel>();
-            CloseCommand = new RelayCommand<IDetailViewModel>(OnCloseItem);
+            CloseCommand = new DelegateCommand<IDetailViewModel>(OnCloseItem);
         }
 
         private void OnCloseItem(IDetailViewModel item)

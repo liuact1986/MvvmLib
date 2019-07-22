@@ -21,32 +21,32 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first item.
         /// </summary>
-        IRelayCommand MoveToFirstCommand { get; }
+        IDelegateCommand MoveToFirstCommand { get; }
 
         /// <summary>
         /// Allows to move to the previous item.
         /// </summary>
-        IRelayCommand MoveToPreviousCommand { get; }
+        IDelegateCommand MoveToPreviousCommand { get; }
 
         /// <summary>
         /// Allows to move to the next item.
         /// </summary>
-        IRelayCommand MoveToNextCommand { get; }
+        IDelegateCommand MoveToNextCommand { get; }
 
         /// <summary>
         /// Allows to move to the last item.
         /// </summary>
-        IRelayCommand MoveToLastCommand { get; }
+        IDelegateCommand MoveToLastCommand { get; }
 
         /// <summary>
         /// Allows to move to the index.
         /// </summary>
-        IRelayCommand MoveToIndexCommand { get; }
+        IDelegateCommand MoveToIndexCommand { get; }
 
         /// <summary>
         /// Allows to move to the item.
         /// </summary>
-        IRelayCommand MoveToCommand { get; }
+        IDelegateCommand MoveToCommand { get; }
 
         /// <summary>
         /// Invoked on <see cref="CanMoveToPrevious"/> changed.

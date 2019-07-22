@@ -14,11 +14,11 @@ namespace MvvmLib.Core.Tests.Commands
 
             var composite = new CompositeCommand();
 
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command1Called = true;
             }));
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command2Called = true;
             }));
@@ -38,12 +38,12 @@ namespace MvvmLib.Core.Tests.Commands
 
             var composite = new CompositeCommand();
 
-            composite.Add(new RelayCommand<string>((value) =>
+            composite.Add(new DelegateCommand<string>((value) =>
             {
                 command1Result = value;
                 command1Called = true;
             }));
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command2Called = true;
             }));
@@ -64,7 +64,7 @@ namespace MvvmLib.Core.Tests.Commands
 
             var composite = new CompositeCommand();
 
-            composite.Add(new RelayCommand<string>((value) =>
+            composite.Add(new DelegateCommand<string>((value) =>
             {
                 command1Result = value;
                 command1Called = true;
@@ -95,7 +95,7 @@ namespace MvvmLib.Core.Tests.Commands
 
             var composite = new CompositeCommand();
 
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command1Called = true;
             }, () =>
@@ -103,7 +103,7 @@ namespace MvvmLib.Core.Tests.Commands
                  isCheck1 = true;
                  return false;
              }));
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command2Called = true;
             },()=>
@@ -133,7 +133,7 @@ namespace MvvmLib.Core.Tests.Commands
 
             var composite = new CompositeCommand();
 
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command1Called = true;
             }, () =>
@@ -141,7 +141,7 @@ namespace MvvmLib.Core.Tests.Commands
                 isCheck1 = true;
                 return true;
             }));
-            composite.Add(new RelayCommand(() =>
+            composite.Add(new DelegateCommand(() =>
             {
                 command2Called = true;
             }, () =>

@@ -85,7 +85,7 @@ namespace ValidationSample.ViewModels
 
         public ICommand SaveCommand { get; }
         public ICommand AddPetCommand { get; }
-        public IRelayCommand RemovePetCommand { get; }
+        public IDelegateCommand RemovePetCommand { get; }
         public ICommand ResetCommand { get; }
 
         public ViewModelValidatableSamplePageViewModel()
@@ -105,10 +105,10 @@ namespace ValidationSample.ViewModels
 
             Summary = new ObservableCollection<string>();
 
-            SaveCommand = new RelayCommand(OnSave);
-            AddPetCommand = new RelayCommand(AddPet);
-            RemovePetCommand = new RelayCommand(RemovePet, CanRemovePet);
-            ResetCommand = new RelayCommand(OnReset);
+            SaveCommand = new DelegateCommand(OnSave);
+            AddPetCommand = new DelegateCommand(AddPet);
+            RemovePetCommand = new DelegateCommand(RemovePet, CanRemovePet);
+            ResetCommand = new DelegateCommand(OnReset);
         }
 
         private void OnPetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

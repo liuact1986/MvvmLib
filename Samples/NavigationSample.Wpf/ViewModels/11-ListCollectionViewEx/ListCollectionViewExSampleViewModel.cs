@@ -62,11 +62,11 @@ namespace NavigationSample.Wpf.ViewModels
 
             this.CollectionView = new ListCollectionViewEx(People);
 
-            SelectImageCommand = new RelayCommand(SelectImage);
-            FilterCommand = new RelayCommand<string>(Filter);
-            SortCommand = new RelayCommand(Sort);
-            SaveCommand = new RelayCommand(Save);
-            DeleteCommand = new RelayCommand(Delete);
+            SelectImageCommand = new DelegateCommand(SelectImage);
+            FilterCommand = new DelegateCommand<string>(Filter);
+            SortCommand = new DelegateCommand(Sort);
+            SaveCommand = new DelegateCommand(Save);
+            DeleteCommand = new DelegateCommand(Delete);
         }
 
         private void Sort()

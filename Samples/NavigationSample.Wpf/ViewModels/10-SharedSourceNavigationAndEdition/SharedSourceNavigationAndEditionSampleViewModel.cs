@@ -44,9 +44,9 @@ namespace NavigationSample.Wpf.ViewModels
 
             this.PeopleSource = NavigationManager.GetOrCreateSharedSource<PersonViewModel>();
 
-            AddCommand = new RelayCommand(Add);
-            UpdateCommand = new RelayCommand(Update);
-            DeleteCommand = new RelayCommand(Delete);
+            AddCommand = new DelegateCommand(Add);
+            UpdateCommand = new DelegateCommand(Update);
+            DeleteCommand = new DelegateCommand(Delete);
         }
 
         private void SetTitle()
@@ -219,9 +219,9 @@ namespace NavigationSample.Wpf.ViewModels
         {
             this.eventAggregator = eventAggregator;
 
-            SelectImageCommand = new RelayCommand(SelectImage);
-            SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
+            SelectImageCommand = new DelegateCommand(SelectImage);
+            SaveCommand = new DelegateCommand(Save);
+            CancelCommand = new DelegateCommand(Cancel);
         }
 
         private void SelectImage()

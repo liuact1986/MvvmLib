@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.4.3.3</Version>
+    <Version>0.4.4</Version>
     <Company>romagny13</Company>
     <Description>MvvmLib Shared classes.
 
 * BindableBase, Editable, Validatable and ModelWrapper base classes for Models and ViewModels
-* RelayCommand, AsyncCommand and CompositeCommand
+* DelegateCommand, AsyncCommand and CompositeCommand
 * EventAggregator : allows to publish and filter messages
 * ChangeTracker: allows to track object changes
 * Cloner: allows to clone objects
@@ -21,7 +21,7 @@
     <PackageTags>mvvm, wpf, uwp, validation, commands, eventaggregator</PackageTags>
     <Product>MvvmLib.Core</Product>
     <PackageId>MvvmLib.Core</PackageId>
-    <PackageReleaseNotes>ChangeTracker, ObjectEditor, Commands</PackageReleaseNotes>
+    <PackageReleaseNotes>DelegateCommand and BindingBase updated</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 

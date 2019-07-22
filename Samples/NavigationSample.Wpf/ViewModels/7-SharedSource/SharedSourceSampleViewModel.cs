@@ -25,7 +25,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             DetailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
 
-            AddCommand = new RelayCommand(Add);
+            AddCommand = new DelegateCommand(Add);
         }
 
         private void Load()
@@ -99,7 +99,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             detailsSource = NavigationManager.GetOrCreateSharedSource<MyItemDetailsViewModel>();
 
-            CloseCommand = new RelayCommand(Close);
+            CloseCommand = new DelegateCommand(Close);
         }
 
         private void Close()

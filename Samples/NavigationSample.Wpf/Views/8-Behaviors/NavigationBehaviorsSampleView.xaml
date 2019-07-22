@@ -40,11 +40,13 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1">
-            <TextBlock Text="EventToMethodBehavior:" FontWeight="SemiBold" FontStyle="Italic" Grid.Row="3" Margin="5"/>
+            <TextBlock Text="CallMethodAction:" FontWeight="SemiBold" FontStyle="Italic" Grid.Row="3" Margin="5"/>
             <Button Content="Click!" HorizontalAlignment="Left" Margin="5">
-                <mvvmLib:Interaction.Behaviors>
-                    <mvvmLib:EventToMethodBehavior EventName="Click" TargetObject="{Binding}" MethodName="MyMethod" Parameter="MvvmLib!"/>
-                </mvvmLib:Interaction.Behaviors>
+                <mvvmLib:Interaction.Triggers>
+                    <mvvmLib:EventTrigger EventName="Click">
+                        <mvvmLib:CallMethodAction TargetObject="{Binding}" MethodName="MyMethod" Parameter="MvvmLib!"/>
+                    </mvvmLib:EventTrigger>
+                </mvvmLib:Interaction.Triggers>
             </Button>
             <TextBlock Text="{Binding Message3}" Margin="5"/>
         </StackPanel>

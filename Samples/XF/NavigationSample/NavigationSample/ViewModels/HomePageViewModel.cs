@@ -39,22 +39,22 @@ namespace NavigationSample.ViewModels
             this.dialogService = dialogService;
             this.navigationManager = navigationManager;
 
-            NavigateCommand = new RelayCommand(() =>
+            NavigateCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PushAsync(typeof(PageA), "PageA message");
             });
 
-            NavigateToTabbedPageCommand = new RelayCommand(() =>
+            NavigateToTabbedPageCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PushAsync(typeof(MyTabbedPage));
             });
 
-            ShowModalPageCommand = new RelayCommand(() =>
+            ShowModalPageCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PushModalAsync(typeof(ModalPageA));
             });
 
-            MasterDetailPageCommand = new RelayCommand(() =>
+            MasterDetailPageCommand = new DelegateCommand(() =>
             {
                 navigationManager.GetDefault().PushAsync(typeof(MyMasterDetailPage));
             });

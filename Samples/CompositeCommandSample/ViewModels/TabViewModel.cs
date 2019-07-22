@@ -43,7 +43,7 @@ namespace CompositeCommandSample.ViewModels
             }
         }
 
-        public IRelayCommand SaveCommand { get; set; }
+        public IDelegateCommand SaveCommand { get; set; }
         public ChangeTracker Tracker { get; set; }
 
         public TabViewModel()
@@ -54,7 +54,7 @@ namespace CompositeCommandSample.ViewModels
         public TabViewModel(IApplicationCommands applicationCommands, string title)
         {
             canSave = true;
-            SaveCommand = new RelayCommand(OnSave, CheckCanSave)
+            SaveCommand = new DelegateCommand(OnSave, CheckCanSave)
                 .ObserveProperty(() => CanSave);
 
             applicationCommands.SaveAllCommand.Add(SaveCommand);

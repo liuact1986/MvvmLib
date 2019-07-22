@@ -185,11 +185,6 @@
             The base class for commands.
             </summary>
         </member>
-        <member name="P:MvvmLib.Commands.CommandBase.ObservedProperties">
-            <summary>
-            The observed properties.
-            </summary>
-        </member>
         <member name="E:MvvmLib.Commands.CommandBase.CanExecuteChanged">
             <summary>
             Invoked on can execute changed.
@@ -202,15 +197,20 @@
         </member>
         <member name="M:MvvmLib.Commands.CommandBase.ObservePropertyInternal``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
-            Observes <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> event for a property and raises <see cref="M:MvvmLib.Commands.CommandBase.RaiseCanExecuteChanged"/> automatically.
+            Observes the property and raises <see cref="E:MvvmLib.Commands.CommandBase.CanExecuteChanged"/> automatically.
             </summary>
             <typeparam name="T">The type of property</typeparam>
-            <param name="propertyExpression">The property expression</param>
+            <param name="expression">The property expression</param>
             <returns>The command</returns>
+        </member>
+        <member name="M:MvvmLib.Commands.CommandBase.UnhandleInpcForObservedProperties">
+            <summary>
+            Unhandles <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> for observed properties.
+            </summary>
         </member>
         <member name="M:MvvmLib.Commands.CommandBase.ObserveProperty``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
-            Observes <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> event for a property and raises <see cref="M:MvvmLib.Commands.CommandBase.RaiseCanExecuteChanged"/> automatically.
+            Observes the property and raises <see cref="M:MvvmLib.Commands.CommandBase.RaiseCanExecuteChanged"/> automatically.
             </summary>
             <typeparam name="T">The type of property</typeparam>
             <param name="propertyExpression">The property expression</param>
@@ -276,6 +276,69 @@
         <member name="M:MvvmLib.Commands.CompositeCommand.Execute(System.Object)">
             <summary>
             Invokes the execute method for all <see cref="P:MvvmLib.Commands.CompositeCommand.Commands"/>.
+            </summary>
+            <param name="parameter">The parameter</param>
+        </member>
+        <member name="T:MvvmLib.Commands.DelegateCommand">
+            <summary>
+            A command without parameter.
+            </summary>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand.#ctor(System.Action,System.Func{System.Boolean})">
+            <summary>
+            Creates the <see cref="T:MvvmLib.Commands.DelegateCommand"/>.
+            </summary>
+            <param name="executeMethod">The method to execute</param>
+            <param name="canExecuteMethod">The method used to check if <see cref="M:MvvmLib.Commands.DelegateCommand.Execute(System.Object)"/> can be invoked</param>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand.#ctor(System.Action)">
+            <summary>
+            Creates the <see cref="T:MvvmLib.Commands.DelegateCommand"/>.
+            </summary>
+            <param name="executeMethod">The method to execute</param>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand.CanExecute(System.Object)">
+            <summary>
+            Checks if <see cref="M:MvvmLib.Commands.DelegateCommand.Execute(System.Object)"/> can be invoked.
+            </summary>
+            <param name="parameter">The parameter is not used</param>
+            <returns>True if command have to be executed</returns>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand.Execute(System.Object)">
+            <summary>
+            Invokes the <see cref="F:MvvmLib.Commands.DelegateCommand.executeMethod"/>.
+            </summary>
+            <param name="parameter">The parameter is not used</param>
+        </member>
+        <member name="T:MvvmLib.Commands.DelegateCommand`1">
+            <summary>
+            A command with a generic parameter.
+            </summary>
+            <typeparam name="T">The type of the parameter</typeparam>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand`1.#ctor(System.Action{`0},System.Func{`0,System.Boolean})">
+            <summary>
+            Creates the <see cref="T:MvvmLib.Commands.DelegateCommand"/>.
+            </summary>
+            <param name="executeMethod">The method to execute</param>
+            <param name="canExecuteMethod">The method used to check if <see cref="M:MvvmLib.Commands.DelegateCommand`1.Execute(System.Object)"/> can be invoked</param>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand`1.#ctor(System.Action{`0})">
+            <summary>
+            Creates the <see cref="T:MvvmLib.Commands.DelegateCommand"/>.
+            </summary>
+            <param name="executeMethod">The method to execute</param>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand`1.CanExecute(System.Object)">
+            <summary>
+            Checks if <see cref="M:MvvmLib.Commands.DelegateCommand`1.Execute(System.Object)"/> can be invoked.
+            </summary>
+            <param name="parameter">The parameter</param>
+            <returns>True if command have to be executed</returns>
+        </member>
+        <member name="M:MvvmLib.Commands.DelegateCommand`1.Execute(System.Object)">
+            <summary>
+            Invokes the <see cref="F:MvvmLib.Commands.DelegateCommand`1.executeMethod"/>.
             </summary>
             <param name="parameter">The parameter</param>
         </member>
@@ -386,169 +449,27 @@
             <param name="command">The command</param>
             <returns>True if removed</returns>
         </member>
-        <member name="T:MvvmLib.Commands.INotifyPropertyChangedObserver">
-            <summary>
-            Allows to subscribe and notify on property changed for an object that implements <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.INotifyPropertyChangedObserver.Subscribe(System.Action{System.ComponentModel.PropertyChangedEventArgs})">
-            <summary>
-            Subscribe to property changed of the owner.
-            </summary>
-            <param name="onPropertyChangedCallback">The callback invoked on property changed</param>
-        </member>
-        <member name="M:MvvmLib.Commands.INotifyPropertyChangedObserver.Unsubscribe">
-            <summary>
-            Unsubscribe to property changed of the owner.
-            </summary>
-        </member>
-        <member name="T:MvvmLib.Commands.IRelayCommand">
+        <member name="T:MvvmLib.Commands.IDelegateCommand">
             <summary>
             The relay command interface.
             </summary>
         </member>
-        <member name="P:MvvmLib.Commands.IRelayCommand.ObservedProperties">
+        <member name="M:MvvmLib.Commands.IDelegateCommand.ObserveProperty``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
-            The observed properties.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.IRelayCommand.ObserveProperty``1(System.Linq.Expressions.Expression{System.Func{``0}})">
-            <summary>
-            Observes <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> event for a property and raises <see cref="M:MvvmLib.Commands.IRelayCommand.RaiseCanExecuteChanged"/> automatically.
+            Observes the property and raises CanExecuteChanged automatically.
             </summary>
             <typeparam name="T">The type of property</typeparam>
             <param name="propertyExpression">The property expression</param>
         </member>
-        <member name="M:MvvmLib.Commands.IRelayCommand.RaiseCanExecuteChanged">
+        <member name="M:MvvmLib.Commands.IDelegateCommand.RaiseCanExecuteChanged">
             <summary>
             Raises the CanExecuteChanged event.
             </summary>
         </member>
-        <member name="T:MvvmLib.Commands.NotifyPropertyChangedObserver">
+        <member name="M:MvvmLib.Commands.IDelegateCommand.UnhandleInpcForObservedProperties">
             <summary>
-            Allows to subscribe and notify on property changed for an object that implements <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>.
+            Unhandles <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> for observed properties.
             </summary>
-        </member>
-        <member name="F:MvvmLib.Commands.NotifyPropertyChangedObserver.owner">
-            <summary>
-            The owner class.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Commands.NotifyPropertyChangedObserver.onPropertyChangedCallback">
-            <summary>
-            The callback.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.NotifyPropertyChangedObserver.#ctor(System.ComponentModel.INotifyPropertyChanged)">
-            <summary>
-            Creates the property changed observer.
-            </summary>
-            <param name="owner">The owner class to observe</param>
-        </member>
-        <member name="M:MvvmLib.Commands.NotifyPropertyChangedObserver.Subscribe(System.Action{System.ComponentModel.PropertyChangedEventArgs})">
-            <summary>
-            Subscribe to property changed of the owner.
-            </summary>
-            <param name="onPropertyChangedCallback">The callback invoked on property changed</param>
-        </member>
-        <member name="M:MvvmLib.Commands.NotifyPropertyChangedObserver.Unsubscribe">
-            <summary>
-            Unsubscribe to property changed of the owner.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.NotifyPropertyChangedObserver.OnPropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
-            <summary>
-            The method invoked on property changed to notify the subscribers.
-            </summary>
-            <param name="sender">The sender</param>
-            <param name="e">The PropertyChangedEventArgs</param>
-        </member>
-        <member name="T:MvvmLib.Commands.FilterableNotifyPropertyChangedObserver">
-            <summary>
-            Allows to filter on property changed with the base class <see cref="T:MvvmLib.Commands.NotifyPropertyChangedObserver"/>.
-            </summary>
-        </member>
-        <member name="F:MvvmLib.Commands.FilterableNotifyPropertyChangedObserver.filter">
-            <summary>
-            The filter to use.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.FilterableNotifyPropertyChangedObserver.#ctor(System.ComponentModel.INotifyPropertyChanged,System.Func{System.ComponentModel.INotifyPropertyChanged,System.ComponentModel.PropertyChangedEventArgs,System.Boolean})">
-            <summary>
-            Creates the filterable notify property changed observer class.
-            </summary>
-            <param name="owner">The owner class</param>
-            <param name="filter">The filter</param>
-        </member>
-        <member name="M:MvvmLib.Commands.FilterableNotifyPropertyChangedObserver.OnPropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
-            <summary>
-            The method invoked on property changed to notify the subscribers.
-            </summary>
-            <param name="sender">The sender</param>
-            <param name="e">The PropertyChangedEventArgs</param>
-        </member>
-        <member name="T:MvvmLib.Commands.RelayCommand">
-            <summary>
-            A command without parameter.
-            </summary>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand.#ctor(System.Action,System.Func{System.Boolean})">
-            <summary>
-            Creates the <see cref="T:MvvmLib.Commands.RelayCommand"/>.
-            </summary>
-            <param name="executeMethod">The method to execute</param>
-            <param name="canExecuteMethod">The method used to check if <see cref="M:MvvmLib.Commands.RelayCommand.Execute(System.Object)"/> can be invoked</param>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand.#ctor(System.Action)">
-            <summary>
-            Creates the <see cref="T:MvvmLib.Commands.RelayCommand"/>.
-            </summary>
-            <param name="executeMethod">The method to execute</param>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand.CanExecute(System.Object)">
-            <summary>
-            Checks if <see cref="M:MvvmLib.Commands.RelayCommand.Execute(System.Object)"/> can be invoked.
-            </summary>
-            <param name="parameter">The parameter is not used</param>
-            <returns>True if command have to be executed</returns>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand.Execute(System.Object)">
-            <summary>
-            Invokes the <see cref="F:MvvmLib.Commands.RelayCommand.executeMethod"/>.
-            </summary>
-            <param name="parameter">The parameter is not used</param>
-        </member>
-        <member name="T:MvvmLib.Commands.RelayCommand`1">
-            <summary>
-            A command with a generic parameter.
-            </summary>
-            <typeparam name="T">The type of the parameter</typeparam>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand`1.#ctor(System.Action{`0},System.Func{`0,System.Boolean})">
-            <summary>
-            Creates the <see cref="T:MvvmLib.Commands.RelayCommand"/>.
-            </summary>
-            <param name="executeMethod">The method to execute</param>
-            <param name="canExecuteMethod">The method used to check if <see cref="M:MvvmLib.Commands.RelayCommand`1.Execute(System.Object)"/> can be invoked</param>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand`1.#ctor(System.Action{`0})">
-            <summary>
-            Creates the <see cref="T:MvvmLib.Commands.RelayCommand"/>.
-            </summary>
-            <param name="executeMethod">The method to execute</param>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand`1.CanExecute(System.Object)">
-            <summary>
-            Checks if <see cref="M:MvvmLib.Commands.RelayCommand`1.Execute(System.Object)"/> can be invoked.
-            </summary>
-            <param name="parameter">The parameter</param>
-            <returns>True if command have to be executed</returns>
-        </member>
-        <member name="M:MvvmLib.Commands.RelayCommand`1.Execute(System.Object)">
-            <summary>
-            Invokes the <see cref="F:MvvmLib.Commands.RelayCommand`1.executeMethod"/>.
-            </summary>
-            <param name="parameter">The parameter</param>
         </member>
         <member name="T:MvvmLib.Message.EmptyEvent">
             <summary>
@@ -961,7 +882,7 @@
         </member>
         <member name="T:MvvmLib.Mvvm.BindableBase">
             <summary>
-            The Base class for models and view models. Implements <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>.
+            Base class for Models or ViewModels that require to notify property changed <see cref="T:System.ComponentModel.INotifyPropertyChanged"/>.
             </summary>
         </member>
         <member name="E:MvvmLib.Mvvm.BindableBase.PropertyChanged">
@@ -971,7 +892,7 @@
         </member>
         <member name="M:MvvmLib.Mvvm.BindableBase.SetProperty``1(``0@,``0,System.String)">
             <summary>
-            Sets the value of the property and raise <see cref="E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged"/> event if value is not equal to the storage value.
+            Sets the value of the property and raises the <see cref="E:System.ComponentModel.INotifyPropertyChanged.PropertyChanged"/> event handler.
             </summary>
             <typeparam name="T">The type of the property</typeparam>
             <param name="storage">The field</param>
@@ -981,13 +902,13 @@
         </member>
         <member name="M:MvvmLib.Mvvm.BindableBase.OnPropertyChanged(System.String)">
             <summary>
-            Notifies that a property has changed.
+            Notifies that the property changed.
             </summary>
             <param name="propertyName">The property name</param>
         </member>
         <member name="M:MvvmLib.Mvvm.BindableBase.OnPropertyChanged``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
-            Notifies that a property has changed.
+            Notifies that the property changed.
             </summary>
             <typeparam name="T">The property type</typeparam>
             <param name="expression">The Linq expression</param>

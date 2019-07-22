@@ -37,227 +37,227 @@ namespace MvvmLib.Navigation
             get { return this.CurrentPosition < this.Count - 1; }
         }
 
-        private IRelayCommand moveCurrentToFirstCommand;
+        private IDelegateCommand moveCurrentToFirstCommand;
         /// <summary>
         /// Allows to move to the first item.
         /// </summary>
-        public IRelayCommand MoveCurrentToFirstCommand
+        public IDelegateCommand MoveCurrentToFirstCommand
         {
             get
             {
                 if (moveCurrentToFirstCommand == null)
-                    moveCurrentToFirstCommand = new RelayCommand(ExecuteMoveCurrentToFirstCommand, CanExecuteMoveCurrentToFirstCommand);
+                    moveCurrentToFirstCommand = new DelegateCommand(ExecuteMoveCurrentToFirstCommand, CanExecuteMoveCurrentToFirstCommand);
 
                 return moveCurrentToFirstCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToPreviousCommand;
+        private IDelegateCommand moveCurrentToPreviousCommand;
         /// <summary>
         /// Allows to move to the previous item.
         /// </summary>
-        public IRelayCommand MoveCurrentToPreviousCommand
+        public IDelegateCommand MoveCurrentToPreviousCommand
         {
             get
             {
                 if (moveCurrentToPreviousCommand == null)
-                    moveCurrentToPreviousCommand = new RelayCommand(ExecuteMoveCurrentToPreviousCommand, CanExecuteMoveToPreviousCommand);
+                    moveCurrentToPreviousCommand = new DelegateCommand(ExecuteMoveCurrentToPreviousCommand, CanExecuteMoveToPreviousCommand);
                 return moveCurrentToPreviousCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToNextCommand;
+        private IDelegateCommand moveCurrentToNextCommand;
         /// <summary>
         /// Allows to move to the next item.
         /// </summary>
-        public IRelayCommand MoveCurrentToNextCommand
+        public IDelegateCommand MoveCurrentToNextCommand
         {
             get
             {
                 if (moveCurrentToNextCommand == null)
-                    moveCurrentToNextCommand = new RelayCommand(ExecuteMoveCurrentToNextCommand, CanExecuteMoveToNextCommand);
+                    moveCurrentToNextCommand = new DelegateCommand(ExecuteMoveCurrentToNextCommand, CanExecuteMoveToNextCommand);
                 return moveCurrentToNextCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToLastCommand;
+        private IDelegateCommand moveCurrentToLastCommand;
         /// <summary>
         /// Allows to move to the last item.
         /// </summary>
-        public IRelayCommand MoveCurrentToLastCommand
+        public IDelegateCommand MoveCurrentToLastCommand
         {
             get
             {
                 if (moveCurrentToLastCommand == null)
-                    moveCurrentToLastCommand = new RelayCommand(ExecuteMoveCurrentToLastCommand, CanExecuteMoveCurrentToLastCommand);
+                    moveCurrentToLastCommand = new DelegateCommand(ExecuteMoveCurrentToLastCommand, CanExecuteMoveCurrentToLastCommand);
                 return moveCurrentToLastCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToPositionCommand;
+        private IDelegateCommand moveCurrentToPositionCommand;
         /// <summary>
         /// Allows to move to the position.
         /// </summary>
-        public IRelayCommand MoveCurrentToPositionCommand
+        public IDelegateCommand MoveCurrentToPositionCommand
         {
             get
             {
                 if (moveCurrentToPositionCommand == null)
-                    moveCurrentToPositionCommand = new RelayCommand<object>(ExecuteMoveCurrentToPositionCommand);
+                    moveCurrentToPositionCommand = new DelegateCommand<object>(ExecuteMoveCurrentToPositionCommand);
                 return moveCurrentToPositionCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToRankCommand;
+        private IDelegateCommand moveCurrentToRankCommand;
         /// <summary>
         /// Allows to move to the rank (index + 1).
         /// </summary>
-        public IRelayCommand MoveCurrentToRankCommand
+        public IDelegateCommand MoveCurrentToRankCommand
         {
             get
             {
                 if (moveCurrentToRankCommand == null)
-                    moveCurrentToRankCommand = new RelayCommand<object>(ExecuteMoveCurrentToRankCommand);
+                    moveCurrentToRankCommand = new DelegateCommand<object>(ExecuteMoveCurrentToRankCommand);
                 return moveCurrentToRankCommand;
             }
         }
 
-        private IRelayCommand moveCurrentToCommand;
+        private IDelegateCommand moveCurrentToCommand;
         /// <summary>
         /// Allows to move to the item.
         /// </summary>
-        public IRelayCommand MoveCurrentToCommand
+        public IDelegateCommand MoveCurrentToCommand
         {
             get
             {
                 if (moveCurrentToCommand == null)
-                    moveCurrentToCommand = new RelayCommand<object>(ExecuteMoveCurrentToCommand);
+                    moveCurrentToCommand = new DelegateCommand<object>(ExecuteMoveCurrentToCommand);
                 return moveCurrentToCommand;
             }
         }
 
-        private IRelayCommand addNewCommand;
+        private IDelegateCommand addNewCommand;
         /// <summary>
         /// Allows to add a new item.
         /// </summary>
-        public IRelayCommand AddNewCommand
+        public IDelegateCommand AddNewCommand
         {
             get
             {
                 if (addNewCommand == null)
-                    addNewCommand = new RelayCommand(ExecuteAddCommand);
+                    addNewCommand = new DelegateCommand(ExecuteAddCommand);
                 return addNewCommand;
             }
         }
 
-        private IRelayCommand editCommand;
+        private IDelegateCommand editCommand;
         /// <summary>
         /// Allows to begin edit the current item.
         /// </summary>
-        public IRelayCommand EditCommand
+        public IDelegateCommand EditCommand
         {
             get
             {
                 if (editCommand == null)
-                    editCommand = new RelayCommand(ExecuteEditCommand);
+                    editCommand = new DelegateCommand(ExecuteEditCommand);
                 return editCommand;
             }
         }
 
-        private IRelayCommand deleteCommand;
+        private IDelegateCommand deleteCommand;
         /// <summary>
         /// Allows to delete the current item.
         /// </summary>
-        public IRelayCommand DeleteCommand
+        public IDelegateCommand DeleteCommand
         {
             get
             {
                 if (deleteCommand == null)
-                    deleteCommand = new RelayCommand(ExecuteDeleteCommand);
+                    deleteCommand = new DelegateCommand(ExecuteDeleteCommand);
                 return deleteCommand;
             }
         }
 
-        private IRelayCommand saveCommand;
+        private IDelegateCommand saveCommand;
         /// <summary>
         /// Allows to save changes for current item.
         /// </summary>
-        public IRelayCommand SaveCommand
+        public IDelegateCommand SaveCommand
         {
             get
             {
                 if (saveCommand == null)
-                    saveCommand = new RelayCommand(ExecuteSaveCommand);
+                    saveCommand = new DelegateCommand(ExecuteSaveCommand);
                 return saveCommand;
             }
         }
 
-        private IRelayCommand cancelCommand;
+        private IDelegateCommand cancelCommand;
         /// <summary>
         /// Allows to cancel add new or edit item.
         /// </summary>
-        public IRelayCommand CancelCommand
+        public IDelegateCommand CancelCommand
         {
             get
             {
                 if (cancelCommand == null)
-                    cancelCommand = new RelayCommand(ExecuteCancelCommand);
+                    cancelCommand = new DelegateCommand(ExecuteCancelCommand);
                 return cancelCommand;
             }
         }
 
-        private IRelayCommand toggleGroupByCommand;
+        private IDelegateCommand toggleGroupByCommand;
         /// <summary>
         /// Allows to toggle grouping by property name.
         /// </summary>
-        public IRelayCommand ToggleGroupByCommand
+        public IDelegateCommand ToggleGroupByCommand
         {
             get
             {
                 if (toggleGroupByCommand == null)
-                    toggleGroupByCommand = new RelayCommand<string>(ExecuteToggleGroupByCommand);
+                    toggleGroupByCommand = new DelegateCommand<string>(ExecuteToggleGroupByCommand);
                 return toggleGroupByCommand;
             }
         }
 
-        private IRelayCommand groupByCommand;
+        private IDelegateCommand groupByCommand;
         /// <summary>
         /// Allows to group by property name.
         /// </summary>
-        public IRelayCommand GroupByCommand
+        public IDelegateCommand GroupByCommand
         {
             get
             {
                 if (groupByCommand == null)
-                    groupByCommand = new RelayCommand<string>(ExecuteGroupByCommand);
+                    groupByCommand = new DelegateCommand<string>(ExecuteGroupByCommand);
                 return groupByCommand;
             }
         }
 
-        private IRelayCommand sortByCommand;
+        private IDelegateCommand sortByCommand;
         /// <summary>
         /// Allows to group by property name.
         /// </summary>
-        public IRelayCommand SortByCommand
+        public IDelegateCommand SortByCommand
         {
             get
             {
                 if (sortByCommand == null)
-                    sortByCommand = new RelayCommand<string>(ExecuteSortByCommand);
+                    sortByCommand = new DelegateCommand<string>(ExecuteSortByCommand);
                 return sortByCommand;
             }
         }
 
-        private IRelayCommand sortByDescendingCommand;
+        private IDelegateCommand sortByDescendingCommand;
         /// <summary>
         /// Allows to group by property name.
         /// </summary>
-        public IRelayCommand SortByDescendingCommand
+        public IDelegateCommand SortByDescendingCommand
         {
             get
             {
                 if (sortByDescendingCommand == null)
-                    sortByDescendingCommand = new RelayCommand<string>(ExecuteSortByDescendingCommand);
+                    sortByDescendingCommand = new DelegateCommand<string>(ExecuteSortByDescendingCommand);
                 return sortByDescendingCommand;
             }
         }

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using MvvmLib.Utils;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Windows;
 
 namespace MvvmLib.Interactivity
 {
     /// <summary>
-    /// A collection that inherits from <see cref="FreezableCollection{T}"/>. The base class for <see cref="NavigationBehaviorCollection"/>.
+    /// A collection that inherits from <see cref="FreezableCollection{T}"/>. The base class for <see cref="TriggerCollection"/> and <see cref="BehaviorCollection"/>.
     /// </summary>
     /// <typeparam name="T">The parameter type</typeparam>
     public abstract class AttachableCollection<T> : FreezableCollection<T>, IAssociatedObject where T : DependencyObject
@@ -25,7 +25,6 @@ namespace MvvmLib.Interactivity
         public DependencyObject AssociatedObject
         {
             get { return this.associatedObject; }
-            set { associatedObject = value; }
         }
 
         internal AttachableCollection()
@@ -43,18 +42,18 @@ namespace MvvmLib.Interactivity
             if (dependencyObject == null)
                 throw new ArgumentNullException(nameof(dependencyObject));
 
-            if (dependencyObject != this.AssociatedObject)
+            if (!DesignModeHelper.IsInDesignMode(this))
             {
-                if (this.AssociatedObject != null)
-                    throw new InvalidOperationException();
-
-                if (!(bool)base.GetValue(DesignerProperties.IsInDesignModeProperty))
+                if (dependencyObject != this.AssociatedObject)
                 {
+                    if (this.AssociatedObject != null)
+                        throw new InvalidOperationException();
+
                     base.WritePreamble();
                     this.associatedObject = dependencyObject;
                     base.WritePostscript();
+                    this.OnAttached();
                 }
-                this.OnAttached();
             }
         }
 
@@ -117,10 +116,12 @@ namespace MvvmLib.Interactivity
 
         internal abstract void ItemAdded(T item);
         internal abstract void ItemRemoved(T item);
+
         /// <summary>
         /// Invoked on attach.
         /// </summary>
         protected abstract void OnAttached();
+
         /// <summary>
         /// Invoked on detach.
         /// </summary>

@@ -55,9 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\convention.cs" />
+    <Compile Include="Interactivity\BehaviorTests.cs" />
+    <Compile Include="Interactivity\TriggerTests.cs" />
+    <Compile Include="Interactivity\XmlReader.cs" />
     <Compile Include="Modules\ModuleManagerTests.cs" />
+    <Compile Include="Interactivity\TriggerActionTests.cs" />
     <Compile Include="NavigationBrowser.cs" />
-    <Compile Include="Navigation\CompositeFilterTests.cs" />
+    <Compile Include="Mvvm\CompositeFilterTests.cs" />
     <Compile Include="Navigation\ContentControlNavigationSourceTests.cs" />
     <Compile Include="Navigation\NavigationHelperTests.cs" />
     <Compile Include="Navigation\NavigationManagerTests.cs" />
@@ -67,6 +71,8 @@
     <Compile Include="Navigation\SharedSourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup\BootstrapperTests.cs" />
+    <Compile Include="Utils\PropertyPathHelperTests.cs" />
+    <Compile Include="Utils\TypeConversionHelperTests.cs" />
     <Compile Include="ViewModelResolution\ViewModelLocationProviderTests.cs" />
     <Compile Include="ViewResolution\SourceResolverTests.cs" />
   </ItemGroup>
@@ -87,6 +93,7 @@
       <Name>MyTestLibrary</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
