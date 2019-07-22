@@ -1515,7 +1515,7 @@ TriggerActions:
 * ChangePropertyAction
 * GoToStateAction
 
-Easy to create our owns Triggers (inherit from TriggerBase) and TriggerActions (inherit from TriggerAction and inmplement Invoke method).
+Easy to create our owns Triggers (inherit from TriggerBase) and TriggerActions (inherit from TriggerAction and implement Invoke method).
 
 ## Behaviors
 
