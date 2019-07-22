@@ -12,7 +12,7 @@
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
 * **IIsLoaded**: allows to notify view model that the view is loaded for a view that use resolve view model attached property.
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **AnimatingContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **Triggers**, **TriggerActions** and **Behaviors**: **EventTrigger**, **DataTrigger**, **CallMethodeAction**, **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**, etc.
 * **PropertyFilter** and **CompositeFilter**: allow to generate predicates.
 * **ModuleManager**: allows to manage modules/assemblies loaded "on demand"
@@ -1340,7 +1340,7 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
 </ListView>
 ```
 
-## AnimatableContentControl
+## AnimatingContentControl
 
 > Content Control that allows to animate on content change. 
 
@@ -1352,33 +1352,33 @@ public class ViewDViewModel : DetailsViewModelBase, ISelectable
 * CanAnimateOnLoad: allows to cancel animation on load
 
 ```xml
-<mvvmLib:AnimatableContentControl mvvmLib:NavigationManager.SourceName="Main">
-    <mvvmLib:AnimatableContentControl.EntranceAnimation>
+<mvvmLib:AnimatingContentControl mvvmLib:NavigationManager.SourceName="Main">
+    <mvvmLib:AnimatingContentControl.EntranceAnimation>
         <Storyboard>
             <!-- Target "CurrentContentPresenter"  -->
             <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                              From="400" To="0" Duration="0:0:0.4"  />
         </Storyboard>
-    </mvvmLib:AnimatableContentControl.EntranceAnimation>
-    <mvvmLib:AnimatableContentControl.ExitAnimation>
+    </mvvmLib:AnimatingContentControl.EntranceAnimation>
+    <mvvmLib:AnimatingContentControl.ExitAnimation>
         <Storyboard>
-            <!-- Target "CurrentContentPresenter" or with Simulatenous "PreviousContentPresenter" -->
+            <!-- Target "CurrentContentPresenter" or with Simultaneous "PreviousContentPresenter" -->
             <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                              Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
                              From="0" To="400" Duration="0:0:0.4"  />
         </Storyboard>
-    </mvvmLib:AnimatableContentControl.ExitAnimation>
-</mvvmLib:AnimatableContentControl>
+    </mvvmLib:AnimatingContentControl.ExitAnimation>
+</mvvmLib:AnimatingContentControl>
 ```
 
-Or Simulatneous
+Or Simultaneous
 
 ```xml
-  <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" 
+  <mvvmLib:AnimatingContentControl Content="{Binding Navigation.Current}" 
                                     Simultaneous="True"
                                     IsCancelled="{Binding IsCancelled}">
-    <mvvmLib:AnimatableContentControl.EntranceAnimation>
+    <mvvmLib:AnimatingContentControl.EntranceAnimation>
         <Storyboard>
             <DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
@@ -1389,8 +1389,8 @@ Or Simulatneous
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-    </mvvmLib:AnimatableContentControl.EntranceAnimation>
-    <mvvmLib:AnimatableContentControl.ExitAnimation>
+    </mvvmLib:AnimatingContentControl.EntranceAnimation>
+    <mvvmLib:AnimatingContentControl.ExitAnimation>
         <Storyboard>
             <DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
@@ -1401,8 +1401,52 @@ Or Simulatneous
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-    </mvvmLib:AnimatableContentControl.ExitAnimation>
-</mvvmLib:AnimatableContentControl>
+    </mvvmLib:AnimatingContentControl.ExitAnimation>
+</mvvmLib:AnimatingContentControl>
+```
+
+Other sample: animations in resources
+
+
+```xml
+<UserControl.Resources>
+    <Storyboard x:Key="EntranceAnimation1">
+        <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                         From="400" To="0" Duration="0:0:0.4"  />
+    </Storyboard>
+
+    <Storyboard x:Key="ExitAnimation1">
+        <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
+                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+                         From="0" To="-400" Duration="0:0:0.4"  />
+    </Storyboard>
+</UserControl.Resources>
+```
+
+```xml
+<mvvmLib:AnimatingContentControl Content="{Binding Navigation.Current}" 
+                                 EntranceAnimation="{StaticResource EntranceAnimation1}"
+                                 ExitAnimation="{StaticResource ExitAnimation1}">
+</mvvmLib:AnimatingContentControl>
+```
+
+Other sample: Change Animations dynamically and controlling when the animation is played with "CanAnimate". For a Schedule view for example.
+
+```xml
+<mvvmLib:AnimatingContentControl  Content="{Binding Navigation.Current}" 
+                                  CanAnimate="{Binding CanAnimate, Mode=OneWay}" 
+                                  CanAnimateOnLoad="False"
+                                  EntranceAnimation="{Binding EntranceAnimation, Mode=OneWay}"
+                                  ExitAnimation="{Binding ExitAnimation, Mode=OneWay}">
+
+    <mvvmLib:Interaction.Triggers>
+        <mvvmLib:EventTrigger EventName="AnimationCompleted">
+            <mvvmLib:CallMethodAction TargetObject="{Binding}" MethodName="CompleteChangingScheduleMode"/>
+        </mvvmLib:EventTrigger>
+    </mvvmLib:Interaction.Triggers>
+
+</mvvmLib:AnimatingContentControl>
 ```
 
 

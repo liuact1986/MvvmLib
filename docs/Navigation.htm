@@ -61,7 +61,7 @@
 
 <li class="tocentry"><a href="#iisselected-iselectable-and-selectionsyncbehavior">IIsSelected, ISelectable and SelectionSyncBehavior</a></li>
 
-<li class="tocentry"><a href="#animatablecontentcontrol">AnimatableContentControl</a></li>
+<li class="tocentry"><a href="#animatingcontentcontrol">AnimatingContentControl</a></li>
 
 <li class="tocentry"><a href="#transitioningcontentcontrol">TransitioningContentControl</a></li>
 
@@ -125,7 +125,7 @@
 <li><strong>ICanActivate</strong>, <strong>ICanDeactivate</strong>: allow to cancel navigation</li>
 <li><strong>IIsSelected</strong>, <strong>ISelectable</strong>, <strong>SelectionSyncBehavior</strong>: allow to select a view </li>
 <li><strong>IIsLoaded</strong>: allows to notify view model that the view is loaded for a view that use resolve view model attached property.</li>
-<li><strong>AnimatableContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
+<li><strong>AnimatingContentControl</strong>, <strong>TransitioningContentControl</strong>, <strong>TransitioningItemsControl</strong>: allow to animate content</li>
 <li><strong>Triggers</strong>, <strong>TriggerActions</strong> and <strong>Behaviors</strong>: <strong>EventTrigger</strong>, <strong>DataTrigger</strong>, <strong>CallMethodeAction</strong>, <strong>SelectionSyncBehavior</strong>, <strong>EventToCommandBehavior<strong>,</strong>EventToMethodBehavior</strong>, etc.</li>
 <li><strong>PropertyFilter</strong> and <strong>CompositeFilter</strong>: allow to generate predicates.</li>
 <li><strong>ModuleManager</strong>: allows to manage modules/assemblies loaded &quot;on demand&quot;</li>
@@ -1481,7 +1481,7 @@ collectionView.Filter = compositeFilter.Filter;
 &lt;/ListView&gt;
 </code></pre>
 
-<h2 id="animatablecontentcontrol">AnimatableContentControl<a class="headerlink" href="#animatablecontentcontrol" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
+<h2 id="animatingcontentcontrol">AnimatingContentControl<a class="headerlink" href="#animatingcontentcontrol" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <blockquote>
 <p>Content Control that allows to animate on content change. </p>
 </blockquote>
@@ -1492,31 +1492,31 @@ collectionView.Filter = compositeFilter.Filter;
 <li>Simultaneous (boolean) allows to play simultaneously the animations.</li>
 <li>CanAnimateOnLoad: allows to cancel animation on load</li>
 </ul>
-<pre><code class="xml">&lt;mvvmLib:AnimatableContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot;&gt;
-    &lt;mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
+<pre><code class="xml">&lt;mvvmLib:AnimatingContentControl mvvmLib:NavigationManager.SourceName=&quot;Main&quot;&gt;
+    &lt;mvvmLib:AnimatingContentControl.EntranceAnimation&gt;
         &lt;Storyboard&gt;
             &lt;!-- Target &quot;CurrentContentPresenter&quot;  --&gt;
             &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
                              Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
                              From=&quot;400&quot; To=&quot;0&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
         &lt;/Storyboard&gt;
-    &lt;/mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
-    &lt;mvvmLib:AnimatableContentControl.ExitAnimation&gt;
+    &lt;/mvvmLib:AnimatingContentControl.EntranceAnimation&gt;
+    &lt;mvvmLib:AnimatingContentControl.ExitAnimation&gt;
         &lt;Storyboard&gt;
-            &lt;!-- Target &quot;CurrentContentPresenter&quot; or with Simulatenous &quot;PreviousContentPresenter&quot; --&gt;
+            &lt;!-- Target &quot;CurrentContentPresenter&quot; or with Simultaneous &quot;PreviousContentPresenter&quot; --&gt;
             &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
                              Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
                              From=&quot;0&quot; To=&quot;400&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
         &lt;/Storyboard&gt;
-    &lt;/mvvmLib:AnimatableContentControl.ExitAnimation&gt;
-&lt;/mvvmLib:AnimatableContentControl&gt;
+    &lt;/mvvmLib:AnimatingContentControl.ExitAnimation&gt;
+&lt;/mvvmLib:AnimatingContentControl&gt;
 </code></pre>
 
-<p>Or Simulatneous</p>
-<pre><code class="xml">  &lt;mvvmLib:AnimatableContentControl Content=&quot;{Binding Navigation.Current}&quot; 
+<p>Or Simultaneous</p>
+<pre><code class="xml">  &lt;mvvmLib:AnimatingContentControl Content=&quot;{Binding Navigation.Current}&quot; 
                                     Simultaneous=&quot;True&quot;
                                     IsCancelled=&quot;{Binding IsCancelled}&quot;&gt;
-    &lt;mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
+    &lt;mvvmLib:AnimatingContentControl.EntranceAnimation&gt;
         &lt;Storyboard&gt;
             &lt;DoubleAnimation  Storyboard.TargetName=&quot;CurrentContentPresenter&quot;
                                 Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
@@ -1527,8 +1527,8 @@ collectionView.Filter = compositeFilter.Filter;
                 &lt;/DoubleAnimation.EasingFunction&gt;
             &lt;/DoubleAnimation&gt;
         &lt;/Storyboard&gt;
-    &lt;/mvvmLib:AnimatableContentControl.EntranceAnimation&gt;
-    &lt;mvvmLib:AnimatableContentControl.ExitAnimation&gt;
+    &lt;/mvvmLib:AnimatingContentControl.EntranceAnimation&gt;
+    &lt;mvvmLib:AnimatingContentControl.ExitAnimation&gt;
         &lt;Storyboard&gt;
             &lt;DoubleAnimation  Storyboard.TargetName=&quot;PreviousContentPresenter&quot;
                                 Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
@@ -1539,8 +1539,46 @@ collectionView.Filter = compositeFilter.Filter;
                 &lt;/DoubleAnimation.EasingFunction&gt;
             &lt;/DoubleAnimation&gt;
         &lt;/Storyboard&gt;
-    &lt;/mvvmLib:AnimatableContentControl.ExitAnimation&gt;
-&lt;/mvvmLib:AnimatableContentControl&gt;
+    &lt;/mvvmLib:AnimatingContentControl.ExitAnimation&gt;
+&lt;/mvvmLib:AnimatingContentControl&gt;
+</code></pre>
+
+<p>Other sample: animations in resources</p>
+<pre><code class="xml">&lt;UserControl.Resources&gt;
+    &lt;Storyboard x:Key=&quot;EntranceAnimation1&quot;&gt;
+        &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
+                         Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
+                         From=&quot;400&quot; To=&quot;0&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
+    &lt;/Storyboard&gt;
+
+    &lt;Storyboard x:Key=&quot;ExitAnimation1&quot;&gt;
+        &lt;DoubleAnimation Storyboard.TargetName=&quot;CurrentContentPresenter&quot; 
+                         Storyboard.TargetProperty=&quot;(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)&quot;
+                         From=&quot;0&quot; To=&quot;-400&quot; Duration=&quot;0:0:0.4&quot;  /&gt;
+    &lt;/Storyboard&gt;
+&lt;/UserControl.Resources&gt;
+</code></pre>
+
+<pre><code class="xml">&lt;mvvmLib:AnimatingContentControl Content=&quot;{Binding Navigation.Current}&quot; 
+                                 EntranceAnimation=&quot;{StaticResource EntranceAnimation1}&quot;
+                                 ExitAnimation=&quot;{StaticResource ExitAnimation1}&quot;&gt;
+&lt;/mvvmLib:AnimatingContentControl&gt;
+</code></pre>
+
+<p>Other sample: Change Animations dynamically and controlling when the animation is played with &quot;CanAnimate&quot;. For a Schedule view for example.</p>
+<pre><code class="xml">&lt;mvvmLib:AnimatingContentControl  Content=&quot;{Binding Navigation.Current}&quot; 
+                                  CanAnimate=&quot;{Binding CanAnimate, Mode=OneWay}&quot; 
+                                  CanAnimateOnLoad=&quot;False&quot;
+                                  EntranceAnimation=&quot;{Binding EntranceAnimation, Mode=OneWay}&quot;
+                                  ExitAnimation=&quot;{Binding ExitAnimation, Mode=OneWay}&quot;&gt;
+
+    &lt;mvvmLib:Interaction.Triggers&gt;
+        &lt;mvvmLib:EventTrigger EventName=&quot;AnimationCompleted&quot;&gt;
+            &lt;mvvmLib:CallMethodAction TargetObject=&quot;{Binding}&quot; MethodName=&quot;CompleteChangingScheduleMode&quot;/&gt;
+        &lt;/mvvmLib:EventTrigger&gt;
+    &lt;/mvvmLib:Interaction.Triggers&gt;
+
+&lt;/mvvmLib:AnimatingContentControl&gt;
 </code></pre>
 
 <h2 id="transitioningcontentcontrol">TransitioningContentControl<a class="headerlink" href="#transitioningcontentcontrol" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>

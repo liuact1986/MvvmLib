@@ -24,7 +24,7 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 
 * **NavigationSource**: source for _ContentControls_
 * **SharedSource**: source for _ItemsControls_, _Selectors_ (ListBox, TabControl, etc.)
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
+* **AnimatingContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **ListCollectionViewEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
@@ -61,10 +61,6 @@ This package is going to merge my 3 other projects ([WpfLib](https://github.com/
 * **DialogService**: allows to display alerts and action sheets
 * **BootstrapperBase**: bootstrapper base class
 * **EventToCommandBehavior** and **BehaviorBase**
-
-## MvvmLib.Animation.Wpf [wpf]
-
-* **AnimatableContentControl** and **animation** classes.
 
 ## MvvmLib.Adaptive.Wpf [net 4.5]
 

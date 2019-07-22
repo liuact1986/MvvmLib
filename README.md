@@ -70,10 +70,6 @@ ___
 * **BootstrapperBase**: bootstrapper base class
 * **EventToCommandBehavior** and **BehaviorBase**
 
-## MvvmLib.Animation.Wpf [wpf]
-
-* **AnimatableContentControl** and **animation** classes.
-
 ## MvvmLib.Adaptive.Wpf [net 4.5]
 
 * **BreakpointBinder**: allows to **bind controls** and make the page "**responsive**"
