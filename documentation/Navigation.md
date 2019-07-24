@@ -239,8 +239,8 @@ var navigationSources = NavigationManager.GetNavigationSources("Main");
 navigationSources.Navigate(typeof(ViewA), "My parameter");
 ```
 
-
-NavigationSourceContainerCommands provide commands for NavigationSourceContainer (these commands not check can go back / forward)
+NavigationSourceCommands provides commands for NavigationSource
+NavigationSourceContainerCommands provide commands for NavigationSourceContainer
 
 * NavigateCommand with source type
 * MoveToFirstCommand
