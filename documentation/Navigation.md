@@ -175,7 +175,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Navigated | Invoked after navigation ends |
 | NavigationFailed | Invoked on navigation cancelled |
 
-Commands: Use NavigationSourceCommands
+Commands: NavigationSourceCommands provides commands for NavigationSource
 
 * NavigateCommand with source type
 * MoveToFirstCommand
@@ -239,7 +239,6 @@ var navigationSources = NavigationManager.GetNavigationSources("Main");
 navigationSources.Navigate(typeof(ViewA), "My parameter");
 ```
 
-NavigationSourceCommands provides commands for NavigationSource
 NavigationSourceContainerCommands provide commands for NavigationSourceContainer
 
 * NavigateCommand with source type
