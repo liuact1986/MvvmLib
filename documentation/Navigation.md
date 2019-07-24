@@ -371,7 +371,7 @@ Events
 | CanMoveToPreviousChanged | Invoked on CanMoveToPrevious changed |
 | CanMoveToNextChanged | Invoked on CanMoveToNext changed |
 
-Commands
+Commands: Use SharedSourceCommands
 
 * MoveToFirstCommand
 * MoveToPreviousCommand
