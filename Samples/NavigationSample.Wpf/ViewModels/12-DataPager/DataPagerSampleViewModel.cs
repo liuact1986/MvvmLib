@@ -18,6 +18,7 @@ namespace NavigationSample.Wpf.ViewModels
 
         public ObservableCollection<PersonModel> People { get; private set; }
         public PagedSource PagedSource { get; private set; }
+        public PagedSourceCommands Commands { get; private set; }
 
         public ICommand FilterCommand { get; set; }
         public ICommand SortCommand { get; set; }
@@ -153,6 +154,7 @@ namespace NavigationSample.Wpf.ViewModels
             }
             People = new ObservableCollection<PersonModel>(list);
             this.PagedSource = new PagedSource(People, 10);
+            this.Commands = new PagedSourceCommands(this.PagedSource);
             this.PagedSource.CurrentChanged += PagedSource_CurrentChanged;
         }
 

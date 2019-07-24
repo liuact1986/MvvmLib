@@ -49,7 +49,7 @@
                         <DropShadowEffect BlurRadius="5" ShadowDepth="2" Color="{StaticResource ShadowColor}" />
                     </Grid.Effect>
 
-                    <Button Command="{Binding Navigation.MoveToPreviousCommand}"
+                    <Button Command="{Binding Commands.MoveToPreviousCommand}"
                             Visibility="{Binding Navigation.CanMoveToPrevious, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Width="60" Style="{StaticResource MaterialDesignFlatButton}">
                         <controls:MaterialDesignIcon Width="24" Height="24" Brush="{StaticResource MenuForeground}" Icon="ArrowLeft" />

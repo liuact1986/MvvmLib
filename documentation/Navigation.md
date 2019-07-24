@@ -5,6 +5,7 @@
 * **SharedSource**: Source for **Models** and **ViewModels** with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.
 * **ListCollectionViewEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
+* **Command providers**: NavigationSourceCommands, NavigationSourceContainerCommands, SharedSourceCommands, ListCollectionViewCommands, PagedSourceCommands
 * **ViewModelLocator**: is used by **NavigationSources** and **SharedSources** (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The **ResolveViewModel** attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.
 * **SourceResolver** is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
@@ -23,6 +24,14 @@ _Usage:_
 * Items control that does not require filtering or sorting (TabControl for example): SharedSource or ObservableCollection + SelectedItem + NavigationHelper
 * Items control/ custom control/ etc. that require **filtering, sorting, edition**, ...: **ListCollectionView** or **ListCollectionViewEx**
 * Items control/ custom control/ etc. that require **paging** (DataGrid for example): **PagedSource**
+
+_Command Providers:_
+
+* For NavigationSource: NavigationSourceCommands
+* For NavigationSourceContainer: NavigationSourceContainerCommands
+* For ListCollectionView: ListCollectionViewCommands
+* For PagedSource: PagedSourceCommands
+* For SharedSource: SharedSourceCommands
 
 ## Create a Bootstrapper
 
@@ -166,7 +175,7 @@ The method CreateNavigationSource creates a container (for navigation sources wi
 | Navigated | Invoked after navigation ends |
 | NavigationFailed | Invoked on navigation cancelled |
 
-Commands
+Commands: Use NavigationSourceCommands
 
 * NavigateCommand with source type
 * MoveToFirstCommand
@@ -231,7 +240,7 @@ navigationSources.Navigate(typeof(ViewA), "My parameter");
 ```
 
 
-The container provides some quick commands (these commands not check can go back / forward)
+NavigationSourceContainerCommands provide commands for NavigationSourceContainer (these commands not check can go back / forward)
 
 * NavigateCommand with source type
 * MoveToFirstCommand
@@ -242,24 +251,32 @@ The container provides some quick commands (these commands not check can go back
 
 Bind the NavigationSource **Current** property to a **ContentControl**
 
+```cs
+this.Commands = new NavigationSourceContainerCommands(navigation);
+```
+
 ```xml
 <ContentControl Content="{Binding Navigation.Current}" />
 ```
 
-The NavigationSource provides some quick Commands
+NavigationSourceCommands provides some quick Commands
+
+```cs
+this.Commands = new NavigationSourceCommands(navigation);
+```
 
 ```xml
 <!--Navigate command -->
-<Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
+<Button Content="View A" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" />
 
 <!--MoveToPrevious command -->
-<Button Content="Go Back" Command="{Binding Navigation.MoveToPreviousCommand}" />
+<Button Content="Go Back" Command="{Binding Commands.MoveToPreviousCommand}" />
 
 <!--MoveToNext command -->
-<Button Content="Go Forward" Command="{Binding Navigation.MoveToNextCommand}" />
+<Button Content="Go Forward" Command="{Binding Commands.MoveToNextCommand}" />
 
 <!--MoveToFirst command -->
-<Button Content="Root" Command="{Binding Navigation.MoveToFirstCommand}" />
+<Button Content="Root" Command="{Binding Commands.MoveToFirstCommand}" />
 ```
 
 Sources management
@@ -803,20 +820,21 @@ People = new  List<Person>
 };
 
 this.CollectionView = new ListCollectionViewEx(People);
+this.Commands = new ListCollectionViewCommands(CollectionView);
 ```
 
 Add buttons and bind commands
 
 ```xml
 <!-- move -->
-<Button Content="First" Command="{Binding CollectionView.MoveCurrentToFirstCommand}" />
-<Button Content="Previous" Command="{Binding CollectionView.MoveCurrentToPreviousCommand}" />
-<Button Content="Next" Command="{Binding CollectionView.MoveCurrentToNextCommand}" />
-<Button Content="Last" Command="{Binding CollectionView.MoveCurrentToLastCommand}" />
+<Button Content="First" Command="{Binding Commands.MoveCurrentToFirstCommand}" />
+<Button Content="Previous" Command="{Binding Commands.MoveCurrentToPreviousCommand}" />
+<Button Content="Next" Command="{Binding Commands.MoveCurrentToNextCommand}" />
+<Button Content="Last" Command="{Binding Commands.MoveCurrentToLastCommand}" />
 <TextBox x:Name="RankTextBox" Text="{Binding CollectionView.Rank, Mode=OneWay}" Width="30" TextAlignment="Center" VerticalContentAlignment="Center" Margin="2">
     <mvvmLib:Interaction.Behaviors>
         <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                        Command="{Binding CollectionView.MoveCurrentToRankCommand}"
+                                        Command="{Binding Commands.MoveCurrentToRankCommand}"
                                         CommandParameter="{Binding ElementName=RankTextBox, Path=Text}"
                                         />
     </mvvmLib:Interaction.Behaviors>
@@ -824,20 +842,20 @@ Add buttons and bind commands
 <TextBlock Text="{Binding CollectionView.Count, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
 
 <!-- group -->
-<Button Content="Group" Command="{Binding CollectionView.ToggleGroupByCommand}" CommandParameter="Type" />
+<Button Content="Group" Command="{Binding Commands.ToggleGroupByCommand}" CommandParameter="Type" />
 
 <!-- sort -->
-<Button Content="SORT (descending)" Command="{Binding CollectionView.SortByDescendingCommand}" CommandParameter="Name" />
+<Button Content="SORT (descending)" Command="{Binding Commands.SortByDescendingCommand}" CommandParameter="Name" />
 
 <!-- Add edit delete -->
-<Button Content="Add" Command="{Binding CollectionView.AddNewCommand}" />
-<Button Content="Edit" Command="{Binding CollectionView.EditCommand}" />
-<Button Content="Delete" Command="{Binding CollectionView.DeleteCommand}" />
+<Button Content="Add" Command="{Binding Commands.AddNewCommand}" />
+<Button Content="Edit" Command="{Binding Commands.EditCommand}" />
+<Button Content="Delete" Command="{Binding Commands.DeleteCommand}" />
 
 <!-- cancel new or edit -->
-<Button Content="Cancel" Command="{Binding CollectionView.CancelCommand}" />
+<Button Content="Cancel" Command="{Binding Commands.CancelCommand}" />
 <!-- commit new or commit edit -->
-<Button Content="Save" Command="{Binding CollectionView.SaveCommand}" />
+<Button Content="Save" Command="{Binding Commands.SaveCommand}" />
 ```
 
 Filter
@@ -962,7 +980,7 @@ this.PagedSource = new PagedSource(People, 10);
 </DataGrid>
 ```
 
-Commands
+Commands provided by **PagedSourceCommands**
 
 * MoveToFirstPageCommand
 * MoveToPreviousPageCommand
@@ -1012,7 +1030,7 @@ Properties
 * CanMoveCurrentToNext
 * etc.
 
-Commands
+Commands provided by **PagedSourceCommands**
 
 * MoveCurrentToFirstCommand
 * MoveCurrentToPreviousCommand
@@ -1098,13 +1116,17 @@ PagedSource.SortByDescending("Age", true);
 With commands
 
 ```cs
- <Button Content="Sort by age" Command="{Binding PagedSource.SortByCommand}" CommandParameter="Age" />
+this.Commands = new PagedSourceCommands(PagedSource);
+```
+
+```cs
+ <Button Content="Sort by age" Command="{Binding Commands.SortByCommand}" CommandParameter="Age" />
 ```
 
 ... or descending
 
 ```cs
- <Button Content="Sort by age" Command="{Binding PagedSource.SortByDescendingCommand}" CommandParameter="Age" />
+ <Button Content="Sort by age" Command="{Binding Commands.SortByDescendingCommand}" CommandParameter="Age" />
 ```
 
 
@@ -1132,7 +1154,7 @@ PagedSource.CustomSort = null;
 
 ### Edition
 
-Commands
+Commands provided by **PagedSourceCommands**
 
 * AddNewCommand
 * EditCommand

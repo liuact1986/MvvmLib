@@ -118,6 +118,7 @@
 <li><strong>SharedSource</strong>: Source for <strong>Models</strong> and <strong>ViewModels</strong> with a collection of Items and SelectedItem/SelectedIndex. It supports Views but its not the target. This is the source for ItemsControls, Selectors (ListBox, TabControl), etc.</li>
 <li><strong>ListCollectionViewEx</strong>: allows to browse, filter, sort, group, add, edit with lists and collections.</li>
 <li><strong>PagedSource</strong>: paging for DataGrid, etc.</li>
+<li><strong>Command providers</strong>: NavigationSourceCommands, NavigationSourceContainerCommands, SharedSourceCommands, ListCollectionViewCommands, PagedSourceCommands</li>
 <li><strong>ViewModelLocator</strong>: is used by <strong>NavigationSources</strong> and <strong>SharedSources</strong> (With CreateNew) to resolve the ViewModels for the Views. The default factory can be overridden and use an IoC Container to resolve dependencies. The <strong>ResolveViewModel</strong> attached property can be used on UserControls and Windows not used by the navigation to resolve the ViewModel and inject dependencies.</li>
 <li><strong>SourceResolver</strong> is the factory for the views (FrameworkElements). It has to always create a new instance (and not use singletons) to avoid binding troubles.</li>
 <li><strong>NavigationManager</strong>: allows to manage NavigationSources and SharedSources</li>
@@ -136,6 +137,14 @@
 <li>Items control that does not require filtering or sorting (TabControl for example): SharedSource or ObservableCollection + SelectedItem + NavigationHelper</li>
 <li>Items control/ custom control/ etc. that require <strong>filtering, sorting, edition</strong>, ...: <strong>ListCollectionView</strong> or <strong>ListCollectionViewEx</strong></li>
 <li>Items control/ custom control/ etc. that require <strong>paging</strong> (DataGrid for example): <strong>PagedSource</strong></li>
+</ul>
+<p><em>Command Providers:</em></p>
+<ul>
+<li>For NavigationSource: NavigationSourceCommands</li>
+<li>For NavigationSourceContainer: NavigationSourceContainerCommands</li>
+<li>For ListCollectionView: ListCollectionViewCommands</li>
+<li>For PagedSource: PagedSourceCommands</li>
+<li>For SharedSource: SharedSourceCommands</li>
 </ul>
 <h2 id="create-a-bootstrapper">Create a Bootstrapper<a class="headerlink" href="#create-a-bootstrapper" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h2>
 <p>Create a new Wpf application. Remove the MainWindow. Create a &quot;Views&quot; directory and a Window named &quot;Shell&quot;.</p>
@@ -366,7 +375,7 @@ namespace NavigationSample.Wpf.Startup
 </tr>
 </tbody>
 </table>
-<p>Commands</p>
+<p>Commands: Use NavigationSourceCommands</p>
 <ul>
 <li>NavigateCommand with source type</li>
 <li>MoveToFirstCommand</li>
@@ -417,7 +426,7 @@ NavigationManager.AddNavigationSource(&quot;Main&quot;, new KeyedNavigationSourc
 navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 </code></pre>
 
-<p>The container provides some quick commands (these commands not check can go back / forward)</p>
+<p>NavigationSourceContainerCommands provide commands for NavigationSourceContainer (these commands not check can go back / forward)</p>
 <ul>
 <li>NavigateCommand with source type</li>
 <li>MoveToFirstCommand</li>
@@ -427,21 +436,27 @@ navigationSources.Navigate(typeof(ViewA), &quot;My parameter&quot;);
 <li>MoveToIndexCommand and MoveToCommand</li>
 </ul>
 <p>Bind the NavigationSource <strong>Current</strong> property to a <strong>ContentControl</strong></p>
+<pre><code class="cs">this.Commands = new NavigationSourceContainerCommands(navigation);
+</code></pre>
+
 <pre><code class="xml">&lt;ContentControl Content=&quot;{Binding Navigation.Current}&quot; /&gt;
 </code></pre>
 
-<p>The NavigationSource provides some quick Commands</p>
+<p>NavigationSourceCommands provides some quick Commands</p>
+<pre><code class="cs">this.Commands = new NavigationSourceCommands(navigation);
+</code></pre>
+
 <pre><code class="xml">&lt;!--Navigate command --&gt;
-&lt;Button Content=&quot;View A&quot; Command=&quot;{Binding Navigation.NavigateCommand}&quot; CommandParameter=&quot;{x:Type views:ViewA}&quot; /&gt;
+&lt;Button Content=&quot;View A&quot; Command=&quot;{Binding Commands.NavigateCommand}&quot; CommandParameter=&quot;{x:Type views:ViewA}&quot; /&gt;
 
 &lt;!--MoveToPrevious command --&gt;
-&lt;Button Content=&quot;Go Back&quot; Command=&quot;{Binding Navigation.MoveToPreviousCommand}&quot; /&gt;
+&lt;Button Content=&quot;Go Back&quot; Command=&quot;{Binding Commands.MoveToPreviousCommand}&quot; /&gt;
 
 &lt;!--MoveToNext command --&gt;
-&lt;Button Content=&quot;Go Forward&quot; Command=&quot;{Binding Navigation.MoveToNextCommand}&quot; /&gt;
+&lt;Button Content=&quot;Go Forward&quot; Command=&quot;{Binding Commands.MoveToNextCommand}&quot; /&gt;
 
 &lt;!--MoveToFirst command --&gt;
-&lt;Button Content=&quot;Root&quot; Command=&quot;{Binding Navigation.MoveToFirstCommand}&quot; /&gt;
+&lt;Button Content=&quot;Root&quot; Command=&quot;{Binding Commands.MoveToFirstCommand}&quot; /&gt;
 </code></pre>
 
 <p>Sources management</p>
@@ -1019,18 +1034,19 @@ Navigation.NavigateFast(typeof(LoginView), navigationParameters);
 };
 
 this.CollectionView = new ListCollectionViewEx(People);
+this.Commands = new ListCollectionViewCommands(CollectionView);
 </code></pre>
 
 <p>Add buttons and bind commands</p>
 <pre><code class="xml">&lt;!-- move --&gt;
-&lt;Button Content=&quot;First&quot; Command=&quot;{Binding CollectionView.MoveCurrentToFirstCommand}&quot; /&gt;
-&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding CollectionView.MoveCurrentToPreviousCommand}&quot; /&gt;
-&lt;Button Content=&quot;Next&quot; Command=&quot;{Binding CollectionView.MoveCurrentToNextCommand}&quot; /&gt;
-&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding CollectionView.MoveCurrentToLastCommand}&quot; /&gt;
+&lt;Button Content=&quot;First&quot; Command=&quot;{Binding Commands.MoveCurrentToFirstCommand}&quot; /&gt;
+&lt;Button Content=&quot;Previous&quot; Command=&quot;{Binding Commands.MoveCurrentToPreviousCommand}&quot; /&gt;
+&lt;Button Content=&quot;Next&quot; Command=&quot;{Binding Commands.MoveCurrentToNextCommand}&quot; /&gt;
+&lt;Button Content=&quot;Last&quot; Command=&quot;{Binding Commands.MoveCurrentToLastCommand}&quot; /&gt;
 &lt;TextBox x:Name=&quot;RankTextBox&quot; Text=&quot;{Binding CollectionView.Rank, Mode=OneWay}&quot; Width=&quot;30&quot; TextAlignment=&quot;Center&quot; VerticalContentAlignment=&quot;Center&quot; Margin=&quot;2&quot;&gt;
     &lt;mvvmLib:Interaction.Behaviors&gt;
         &lt;mvvmLib:EventToCommandBehavior EventName=&quot;KeyUp&quot; 
-                                        Command=&quot;{Binding CollectionView.MoveCurrentToRankCommand}&quot;
+                                        Command=&quot;{Binding Commands.MoveCurrentToRankCommand}&quot;
                                         CommandParameter=&quot;{Binding ElementName=RankTextBox, Path=Text}&quot;
                                         /&gt;
     &lt;/mvvmLib:Interaction.Behaviors&gt;
@@ -1038,20 +1054,20 @@ this.CollectionView = new ListCollectionViewEx(People);
 &lt;TextBlock Text=&quot;{Binding CollectionView.Count, StringFormat='of {0}'}&quot; VerticalAlignment=&quot;Center&quot; Margin=&quot;5,0&quot;/&gt;
 
 &lt;!-- group --&gt;
-&lt;Button Content=&quot;Group&quot; Command=&quot;{Binding CollectionView.ToggleGroupByCommand}&quot; CommandParameter=&quot;Type&quot; /&gt;
+&lt;Button Content=&quot;Group&quot; Command=&quot;{Binding Commands.ToggleGroupByCommand}&quot; CommandParameter=&quot;Type&quot; /&gt;
 
 &lt;!-- sort --&gt;
-&lt;Button Content=&quot;SORT (descending)&quot; Command=&quot;{Binding CollectionView.SortByDescendingCommand}&quot; CommandParameter=&quot;Name&quot; /&gt;
+&lt;Button Content=&quot;SORT (descending)&quot; Command=&quot;{Binding Commands.SortByDescendingCommand}&quot; CommandParameter=&quot;Name&quot; /&gt;
 
 &lt;!-- Add edit delete --&gt;
-&lt;Button Content=&quot;Add&quot; Command=&quot;{Binding CollectionView.AddNewCommand}&quot; /&gt;
-&lt;Button Content=&quot;Edit&quot; Command=&quot;{Binding CollectionView.EditCommand}&quot; /&gt;
-&lt;Button Content=&quot;Delete&quot; Command=&quot;{Binding CollectionView.DeleteCommand}&quot; /&gt;
+&lt;Button Content=&quot;Add&quot; Command=&quot;{Binding Commands.AddNewCommand}&quot; /&gt;
+&lt;Button Content=&quot;Edit&quot; Command=&quot;{Binding Commands.EditCommand}&quot; /&gt;
+&lt;Button Content=&quot;Delete&quot; Command=&quot;{Binding Commands.DeleteCommand}&quot; /&gt;
 
 &lt;!-- cancel new or edit --&gt;
-&lt;Button Content=&quot;Cancel&quot; Command=&quot;{Binding CollectionView.CancelCommand}&quot; /&gt;
+&lt;Button Content=&quot;Cancel&quot; Command=&quot;{Binding Commands.CancelCommand}&quot; /&gt;
 &lt;!-- commit new or commit edit --&gt;
-&lt;Button Content=&quot;Save&quot; Command=&quot;{Binding CollectionView.SaveCommand}&quot; /&gt;
+&lt;Button Content=&quot;Save&quot; Command=&quot;{Binding Commands.SaveCommand}&quot; /&gt;
 </code></pre>
 
 <p>Filter</p>
@@ -1160,7 +1176,7 @@ this.PagedSource = new PagedSource(People, 10);
 &lt;/DataGrid&gt;
 </code></pre>
 
-<p>Commands</p>
+<p>Commands provided by <strong>PagedSourceCommands</strong></p>
 <ul>
 <li>MoveToFirstPageCommand</li>
 <li>MoveToPreviousPageCommand</li>
@@ -1209,7 +1225,7 @@ this.PagedSource = new PagedSource(People, 10);
 <li>CanMoveCurrentToNext</li>
 <li>etc.</li>
 </ul>
-<p>Commands</p>
+<p>Commands provided by <strong>PagedSourceCommands</strong></p>
 <ul>
 <li>MoveCurrentToFirstCommand</li>
 <li>MoveCurrentToPreviousCommand</li>
@@ -1280,11 +1296,14 @@ PagedSource.SortByDescending(&quot;Age&quot;, true);
 </code></pre>
 
 <p>With commands</p>
-<pre><code class="cs"> &lt;Button Content=&quot;Sort by age&quot; Command=&quot;{Binding PagedSource.SortByCommand}&quot; CommandParameter=&quot;Age&quot; /&gt;
+<pre><code class="cs">this.Commands = new PagedSourceCommands(PagedSource);
+</code></pre>
+
+<pre><code class="cs"> &lt;Button Content=&quot;Sort by age&quot; Command=&quot;{Binding Commands.SortByCommand}&quot; CommandParameter=&quot;Age&quot; /&gt;
 </code></pre>
 
 <p>... or descending</p>
-<pre><code class="cs"> &lt;Button Content=&quot;Sort by age&quot; Command=&quot;{Binding PagedSource.SortByDescendingCommand}&quot; CommandParameter=&quot;Age&quot; /&gt;
+<pre><code class="cs"> &lt;Button Content=&quot;Sort by age&quot; Command=&quot;{Binding Commands.SortByDescendingCommand}&quot; CommandParameter=&quot;Age&quot; /&gt;
 </code></pre>
 
 <p>With custom sort (has priority)</p>
@@ -1305,7 +1324,7 @@ PagedSource.SortByDescending(&quot;Age&quot;, true);
 </code></pre>
 
 <h3 id="edition">Edition<a class="headerlink" href="#edition" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
-<p>Commands</p>
+<p>Commands provided by <strong>PagedSourceCommands</strong></p>
 <ul>
 <li>AddNewCommand</li>
 <li>EditCommand</li>

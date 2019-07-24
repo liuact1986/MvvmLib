@@ -46,7 +46,7 @@
                             <TextBlock Text="SAVE" Margin="5,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding DataContext.CollectionView.CancelCommand, ElementName=ThisControl}">
+                    <Button Command="{Binding DataContext.Commands.CancelCommand, ElementName=ThisControl}">
                         <StackPanel Orientation="Horizontal">
                             <controls:MaterialDesignIcon Icon="Close" Brush="#2980b9"/>
                             <TextBlock Text="CANCEL" Margin="5,0" VerticalAlignment="Center"/>
@@ -92,29 +92,29 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <Button Command="{Binding CollectionView.MoveCurrentToFirstCommand}" >
+            <Button Command="{Binding Commands.MoveCurrentToFirstCommand}" >
                 <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding CollectionView.MoveCurrentToPreviousCommand}" >
+            <Button Command="{Binding Commands.MoveCurrentToPreviousCommand}" >
                 <controls:MaterialDesignIcon Icon="MenuLeft" Height="32" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding CollectionView.MoveCurrentToNextCommand}" >
+            <Button Command="{Binding Commands.MoveCurrentToNextCommand}" >
                 <controls:MaterialDesignIcon Icon="MenuRight" Height="32" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding CollectionView.MoveCurrentToLastCommand}" >
+            <Button Command="{Binding Commands.MoveCurrentToLastCommand}" >
                 <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
             </Button>
             <TextBox x:Name="RankTextBox" Text="{Binding CollectionView.Rank, Mode=OneWay}" MinWidth="50" TextAlignment="Center" VerticalContentAlignment="Center" Margin="5">
                 <mvvmLib:Interaction.Behaviors>
                     <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                                    Command="{Binding CollectionView.MoveCurrentToRankCommand}"
+                                                    Command="{Binding Commands.MoveCurrentToRankCommand}"
                                                     CommandParameter="{Binding ElementName=RankTextBox, Path=Text}"
                                                     />
                 </mvvmLib:Interaction.Behaviors>
             </TextBox>
             <TextBlock Text="{Binding CollectionView.Count, StringFormat='of {0}'}" VerticalAlignment="Center" Margin="5,0"/>
 
-            <Button Command="{Binding CollectionView.ToggleGroupByCommand}" CommandParameter="Type">
+            <Button Command="{Binding Commands.ToggleGroupByCommand}" CommandParameter="Type">
                 <StackPanel Orientation="Horizontal">
                     <controls:MaterialDesignIcon Icon="AccountMultiple" Brush="#2980b9"/>
                     <TextBlock Text="GROUP" Margin="5,0" VerticalAlignment="Center"/>
@@ -139,14 +139,14 @@
                 </StackPanel>
             </Button>
             
-            <Button Command="{Binding CollectionView.AddNewCommand}">
+            <Button Command="{Binding Commands.AddNewCommand}">
                 <StackPanel Orientation="Horizontal">
                     <controls:MaterialDesignIcon Icon="Plus" Brush="#2980b9"/>
                     <TextBlock Text="ADD" Margin="5,0" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <Button Command="{Binding CollectionView.EditCommand}">
+            <Button Command="{Binding Commands.EditCommand}">
                 <StackPanel Orientation="Horizontal">
                     <controls:MaterialDesignIcon Icon="Pencil" Brush="#2980b9"/>
                     <TextBlock Text="EDIT" Margin="5,0" VerticalAlignment="Center"/>

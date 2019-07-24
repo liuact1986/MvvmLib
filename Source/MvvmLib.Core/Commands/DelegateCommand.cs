@@ -3,7 +3,7 @@
 namespace MvvmLib.Commands
 {
     /// <summary>
-    /// A command without parameter.
+    /// DelegateCommand is an implementation of ICommand that allows to invoke manually CanExecuteChanged (does not use the CommandManager unlike the RoutedCommands).
     /// </summary>
     public class DelegateCommand : CommandBase
     {

@@ -15,6 +15,7 @@ namespace NavigationSample.Wpf.ViewModels
         private readonly IEventAggregator eventAggregator;
 
         public NavigationSourceContainer Navigation { get; }
+        public NavigationSourceContainerCommands Commands { get; }
         public KeyedNavigationSource TabControlNavigationSource { get; }
         public KeyedNavigationSource ListViewNavigationSource { get; }
 
@@ -26,6 +27,7 @@ namespace NavigationSample.Wpf.ViewModels
             this.eventAggregator = eventAggregator;
 
             Navigation = NavigationManager.GetNavigationSources("MultipleSubscribersSample");
+            this.Commands = new NavigationSourceContainerCommands(Navigation);
 
             // add sources 
             Navigation.AddNewSource(typeof(ViewC), "View C!");

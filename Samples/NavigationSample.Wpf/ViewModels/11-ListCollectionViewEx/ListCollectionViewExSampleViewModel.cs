@@ -22,6 +22,7 @@ namespace NavigationSample.Wpf.ViewModels
         // or list
         public List<PersonModel> People { get; set; } // the itemssource
         public ListCollectionViewEx CollectionView { get; }
+        public ListCollectionViewCommands Commands { get; }
 
         public ICommand FilterCommand { get; set; }
         public ICommand SortCommand { get; set; }
@@ -61,6 +62,7 @@ namespace NavigationSample.Wpf.ViewModels
             };
 
             this.CollectionView = new ListCollectionViewEx(People);
+            this.Commands = new ListCollectionViewCommands(this.CollectionView);
 
             SelectImageCommand = new DelegateCommand(SelectImage);
             FilterCommand = new DelegateCommand<string>(Filter);

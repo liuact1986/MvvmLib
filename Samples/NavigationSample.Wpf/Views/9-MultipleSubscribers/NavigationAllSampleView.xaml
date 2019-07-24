@@ -50,23 +50,23 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Command="{Binding Navigation.MoveToFirstCommand}" Margin="5" ToolTip="Root">
+            <Button Command="{Binding Commands.MoveToFirstCommand}" Margin="5" ToolTip="Root">
                 <controls:MaterialDesignIcon Icon="Home" Height="15" Brush="{StaticResource HighlightBrush}"/>
             </Button>
-            <Button Command="{Binding Navigation.MoveToPreviousCommand}" Margin="5" ToolTip="Back">
+            <Button Command="{Binding Commands.MoveToPreviousCommand}" Margin="5" ToolTip="Back">
                 <controls:MaterialDesignIcon Icon="ArrowLeftBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
             </Button>
-            <Button Command="{Binding Navigation.MoveToNextCommand}" Margin="5" ToolTip="Forward">
+            <Button Command="{Binding Commands.MoveToNextCommand}" Margin="5" ToolTip="Forward">
                 <controls:MaterialDesignIcon Icon="ArrowRightBold" Height="15" Brush="{StaticResource HighlightBrush}"/>
             </Button>
-            <Button Command="{Binding Navigation.MoveToLastCommand}" Margin="5" ToolTip="Last">
+            <Button Command="{Binding Commands.MoveToLastCommand}" Margin="5" ToolTip="Last">
                 <controls:MaterialDesignIcon Icon="ArrowRightBoldHexagonOutline" Brush="{StaticResource HighlightBrush}"/>
             </Button>
-            <Button Content="View A" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
-            <Button Content="View B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5"/>
-            <Button Content="View C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5"/>
-            <Button Content="ViewModel B" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewBViewModel}" Margin="5"/>
-            <Button Content="ViewModel C" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}" Margin="5" />
+            <Button Content="View A" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:ViewA}" Margin="5" />
+            <Button Content="View B" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:ViewB}" Margin="5"/>
+            <Button Content="View C" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:ViewC}" Margin="5"/>
+            <Button Content="ViewModel B" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewBViewModel}" Margin="5"/>
+            <Button Content="ViewModel C" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type viewModels:ViewCViewModel}" Margin="5" />
             
             <Button Content="Insert" Command="{Binding InsertCommand}" />
             <Button Content="Clear" Command="{Binding ClearCommand}" />

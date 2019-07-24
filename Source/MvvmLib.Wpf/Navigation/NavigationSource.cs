@@ -13,7 +13,7 @@ namespace MvvmLib.Navigation
     /// <summary>
     /// The navigation source base class.
     /// </summary>
-    public class NavigationSource : INotifyPropertyChanged
+    public class NavigationSource : IBrowsableSource, INotifyPropertyChanged
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
         private bool notifyOnCurrentChanged;
@@ -62,7 +62,7 @@ namespace MvvmLib.Navigation
         public int CurrentIndex
         {
             get { return currentIndex; }
-            set 
+            set
             {
                 if (!Equals(currentIndex, value))
                     MoveTo(value);
@@ -104,104 +104,6 @@ namespace MvvmLib.Navigation
             get { return this.currentIndex < this.sources.Count - 1; }
         }
 
-        private IDelegateCommand navigateCommand;
-        /// <summary>
-        /// Allows to navigate to the source with the source type provided.
-        /// </summary>
-        public IDelegateCommand NavigateCommand
-        {
-            get
-            {
-                if (navigateCommand == null)
-                    navigateCommand = new DelegateCommand<Type>(ExecuteNavigateCommand);
-                return navigateCommand;
-            }
-        }
-
-        private IDelegateCommand moveToFirstCommand;
-        /// <summary>
-        /// Allows to move to the first source.
-        /// </summary>
-        public IDelegateCommand MoveToFirstCommand
-        {
-            get
-            {
-                if (moveToFirstCommand == null)
-                    moveToFirstCommand = new DelegateCommand(ExecuteMoveToFirstCommand, CanExecuteMoveToFirstCommand);
-                return moveToFirstCommand;
-            }
-        }
-
-        private IDelegateCommand moveToPreviousCommand;
-        /// <summary>
-        /// Allows to move to the previous source.
-        /// </summary>
-        public IDelegateCommand MoveToPreviousCommand
-        {
-            get
-            {
-                if (moveToPreviousCommand == null)
-                    moveToPreviousCommand = new DelegateCommand(ExecuteMoveToPreviousCommand, CanExecuteMoveToPreviousCommand);
-                return moveToPreviousCommand;
-            }
-        }
-
-        private IDelegateCommand moveToNextCommand;
-        /// <summary>
-        /// Allows to move to the next source.
-        /// </summary>
-        public IDelegateCommand MoveToNextCommand
-        {
-            get
-            {
-                if (moveToNextCommand == null)
-                    moveToNextCommand = new DelegateCommand(ExecuteMoveToNextCommand, CanExecuteMoveToNextCommand);
-                return moveToNextCommand;
-            }
-        }
-
-        private IDelegateCommand moveToLastCommand;
-        /// <summary>
-        /// Allows to move to the last source.
-        /// </summary>
-        public IDelegateCommand MoveToLastCommand
-        {
-            get
-            {
-                if (moveToLastCommand == null)
-                    moveToLastCommand = new DelegateCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
-                return moveToLastCommand;
-            }
-        }
-
-        private IDelegateCommand moveToIndexCommand;
-        /// <summary>
-        /// Allows to move to the index.
-        /// </summary>
-        public IDelegateCommand MoveToIndexCommand
-        {
-            get
-            {
-                if (moveToIndexCommand == null)
-                    moveToIndexCommand = new DelegateCommand<object>(ExecuteMoveToIndexCommand);
-                return moveToIndexCommand;
-            }
-        }
-
-        private IDelegateCommand moveToCommand;
-        /// <summary>
-        /// Allows to move to the source.
-        /// </summary>
-        public IDelegateCommand MoveToCommand
-        {
-            get
-            {
-                if (moveToCommand == null)
-                    moveToCommand = new DelegateCommand<object>(ExecuteMoveToCommand);
-                return moveToCommand;
-            }
-        }
-
         /// <summary>
         /// Invoked on property changed.
         /// </summary>
@@ -228,7 +130,7 @@ namespace MvvmLib.Navigation
         public event EventHandler<NavigatedEventArgs> Navigated;
 
         /// <summary>
-        /// Invoked on navigation failed (cancelled or exception).
+        /// Invoked on navigation cancelled.
         /// </summary>
         public event EventHandler<NavigationEventArgs> NavigationFailed;
 
@@ -249,112 +151,75 @@ namespace MvvmLib.Navigation
             this.notifyOnCurrentChanged = true;
         }
 
-        #region Commands
-
-        private void ExecuteNavigateCommand(Type sourceType)
-        {
-            this.Navigate(sourceType, null);
-        }
-
-        private void ExecuteMoveToFirstCommand()
-        {
-            MoveToFirst();
-        }
-
-        private bool CanExecuteMoveToFirstCommand()
-        {
-            return CanMoveToPrevious;
-        }
-
-        private void ExecuteMoveToPreviousCommand()
-        {
-            MoveToPrevious();
-        }
-
-        private bool CanExecuteMoveToPreviousCommand()
-        {
-            return CanMoveToPrevious;
-        }
-
-        private void ExecuteMoveToNextCommand()
-        {
-            MoveToNext();
-        }
-
-        private bool CanExecuteMoveToNextCommand()
-        {
-            return CanMoveToNext;
-        }
-
-        private void ExecuteMoveToLastCommand()
-        {
-            MoveToLast();
-        }
-
-        private bool CanExecuteMoveToLastCommand()
-        {
-            return CanMoveToNext;
-        }
-
-        private void ExecuteMoveToIndexCommand(object args)
-        {
-            if (args != null)
-            {
-                if (int.TryParse(args.ToString(), out int position))
-                {
-                    MoveTo(position);
-                }
-            }
-        }
-
-        private void ExecuteMoveToCommand(object args)
-        {
-            MoveTo(args);
-        }
-
-        #endregion // Commands
 
         #region Events
 
-        private void OnPropertyChanged(string propertyName)
+        /// <summary>
+        /// Invokes the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void OnCanMoveToPreviousChanged(bool canMove)
+        /// <summary>
+        /// Invokes the <see cref="CanMoveToPreviousChanged"/> event.
+        /// </summary>
+        /// <param name="canMove">The value of can move</param>
+        protected void OnCanMoveToPreviousChanged(bool canMove)
         {
-            moveToFirstCommand?.RaiseCanExecuteChanged();
-            moveToPreviousCommand?.RaiseCanExecuteChanged();
-
             OnPropertyChanged(nameof(CanMoveToPrevious));
             CanMoveToPreviousChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
-        private void OnCanMoveToNextChanged(bool canMove)
+        /// <summary>
+        /// Invokes the <see cref="CanMoveToNextChanged"/> event.
+        /// </summary>
+        /// <param name="canMove">The value of can move</param>
+        protected void OnCanMoveToNextChanged(bool canMove)
         {
-            moveToLastCommand?.RaiseCanExecuteChanged();
-            moveToNextCommand?.RaiseCanExecuteChanged();
-
             OnPropertyChanged(nameof(CanMoveToNext));
             CanMoveToNextChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
-        private void OnNavigating(NavigationEntry entry, NavigationType navigationType)
+        /// <summary>
+        /// Invokes the <see cref="Navigating"/> event.
+        /// </summary>
+        /// <param name="entry">The entry</param>
+        /// <param name="navigationType">The navigation type</param>
+        protected void OnNavigating(NavigationEntry entry, NavigationType navigationType)
         {
             Navigating?.Invoke(this, new NavigationEventArgs(entry.SourceType, entry.Parameter, navigationType));
         }
 
-        private void OnNavigated(Type sourceType, object source, object parameter, NavigationType navigationType)
+        /// <summary>
+        /// Invokes the <see cref="Navigated"/> event.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="source">The source</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="navigationType">The navigation type</param>
+        protected void OnNavigated(Type sourceType, object source, object parameter, NavigationType navigationType)
         {
             Navigated?.Invoke(this, new NavigatedEventArgs(sourceType, source, parameter, navigationType));
         }
 
-        private void OnNavigationFailed(Type sourceType, object parameter, NavigationType navigationType)
+        /// <summary>
+        /// Invokes the <see cref="NavigationFailed"/> event.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="navigationType">The navigation type</param>
+        protected void OnNavigationFailed(Type sourceType, object parameter, NavigationType navigationType)
         {
             NavigationFailed?.Invoke(this, new NavigationEventArgs(sourceType, parameter, navigationType));
         }
 
-        private void OnCurrentChanged()
+        /// <summary>
+        /// Invokes the <see cref="CurrentChanged"/> event.
+        /// </summary>
+        protected void OnCurrentChanged()
         {
             CurrentChanged?.Invoke(this, new CurrentSourceChangedEventArgs(this.currentIndex, this.current));
         }
@@ -368,6 +233,12 @@ namespace MvvmLib.Navigation
             currentIndex = index;
             if (notifyOnCurrentChanged)
                 OnPropertyChanged(nameof(CurrentIndex));
+        }
+
+        private void SetIsNavigating(bool isNavigating)
+        {
+            this.isNavigating = isNavigating;
+            OnPropertyChanged(nameof(IsNavigating));
         }
 
         private void UpdateEntryParameter(int index, object parameter)
@@ -651,7 +522,14 @@ namespace MvvmLib.Navigation
             this.OnNavigated(navigationContext.SourceType, source, navigationContext.Parameter, NavigationType.New);
         }
 
-        internal bool Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
+        /// <summary>
+        /// Navigates to the source and notifies ViewModels that implements <see cref="INavigationAware"/>.
+        /// </summary>
+        /// <param name="sourceType">The source type</param>
+        /// <param name="parameter">The parameter</param>
+        /// <param name="resolveSource">The method used to resolve the source</param>
+        /// <returns>True if navigation succeeds</returns>
+        protected internal bool Navigate(Type sourceType, object parameter, Func<Type, object> resolveSource)
         {
             if (sourceType == null)
                 throw new ArgumentNullException(nameof(sourceType));
@@ -709,13 +587,6 @@ namespace MvvmLib.Navigation
             SetIsNavigating(false);
 
             return success;
-        }
-
-        private void SetIsNavigating(bool isNavigating)
-        {
-            this.isNavigating = isNavigating;
-            OnPropertyChanged(nameof(IsNavigating));
-
         }
 
         /// <summary>
@@ -878,7 +749,13 @@ namespace MvvmLib.Navigation
 
         #region Move
 
-        private bool MoveToInternal(int index, NavigationType navigationType)
+        /// <summary>
+        /// Moves to the index.
+        /// </summary>
+        /// <param name="index">The index</param>
+        /// <param name="navigationType">The navigation type</param>
+        /// <returns>True if navigation succeeds</returns>
+        protected bool MoveToInternal(int index, NavigationType navigationType)
         {
             bool success = true;
 

@@ -150,13 +150,25 @@ namespace MvvmLib.Animation
         private void SetEntranceTransitionResource()
         {
             if (EntranceTransition != null)
-                this.mainGrid.Resources[EntranceTransitionStoryboardName] = EntranceTransition;
+            {
+                if (this.mainGrid.Resources.Contains(EntranceTransition))
+                    this.mainGrid.Resources.Remove(EntranceTransitionStoryboardName);
+
+                var transitionClone = EntranceTransition.Clone();
+                this.mainGrid.Resources[EntranceTransitionStoryboardName] = transitionClone;
+            }
         }
 
         private void SetExitTransitionResource()
         {
             if (ExitTransition != null)
-                this.mainGrid.Resources[ExitTransitionStoryboardName] = ExitTransition;
+            {
+                if (this.mainGrid.Resources.Contains(ExitTransition))
+                    this.mainGrid.Resources.Remove(ExitTransitionStoryboardName);
+
+                var transitionClone = ExitTransition.Clone();
+                this.mainGrid.Resources[ExitTransitionStoryboardName] = transitionClone;
+            }
         }
 
         private Storyboard GetEntranceTransitionStoryboardInResources()

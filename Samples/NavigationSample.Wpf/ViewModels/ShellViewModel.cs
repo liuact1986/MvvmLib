@@ -22,6 +22,7 @@ namespace NavigationSample.Wpf.ViewModels
         }
 
         public NavigationSource Navigation { get; }
+        public NavigationSourceCommands Commands { get; }
         public SharedSource<MenuItem> MenuItemsSource { get; }
 
         public ShellViewModel(IEventAggregator eventAggregator)
@@ -30,6 +31,7 @@ namespace NavigationSample.Wpf.ViewModels
             OnTitleChanged("Navigation Sample [WPF]");
 
             this.Navigation = NavigationManager.GetDefaultNavigationSource("Main");
+            this.Commands = new NavigationSourceCommands(Navigation);
             this.MenuItemsSource = NavigationManager.GetSharedSource<MenuItem>();
 
             this.Navigation.Navigated += OnNavigated;

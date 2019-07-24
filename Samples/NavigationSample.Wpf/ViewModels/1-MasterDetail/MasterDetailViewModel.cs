@@ -21,6 +21,7 @@ namespace NavigationSample.Wpf.ViewModels
         private IFakePeopleLookupService fakePeopleLookupService;
 
         public SharedSource<NavigationItemViewModel> PeopleListSource { get; } // for listview
+        public SharedSourceCommands Commands { get; }
         public NavigationSource Navigation { get; } // for content control
 
         public ICommand AddCommand { get; set; }
@@ -36,6 +37,7 @@ namespace NavigationSample.Wpf.ViewModels
 
             Navigation = NavigationManager.GetDefaultNavigationSource("MasterDetails");
             PeopleListSource = new SharedSource<NavigationItemViewModel>();
+            this.Commands = new SharedSourceCommands(PeopleListSource);
 
             AddCommand = new DelegateCommand(Add);
             DeleteCommand = new DelegateCommand(Delete, () => PeopleListSource.SelectedIndex != -1);

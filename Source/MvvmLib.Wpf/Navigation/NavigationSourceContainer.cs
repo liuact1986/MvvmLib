@@ -42,127 +42,15 @@ namespace MvvmLib.Navigation
         {
             get { return this.navigationSources.Count; }
         }
-
-        private readonly IDelegateCommand navigateCommand;
-        /// <summary>
-        /// Allows to navigate to the source with the source type provided for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand NavigateCommand
-        {
-            get { return navigateCommand; }
-        }
-
-        private readonly IDelegateCommand moveToFirstCommand;
-        /// <summary>
-        /// Allows to move to the first source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToFirstCommand
-        {
-            get { return moveToFirstCommand; }
-        }
-
-        private readonly IDelegateCommand moveToPreviousCommand;
-        /// <summary>
-        /// Allows to move to the previous source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToPreviousCommand
-        {
-            get { return moveToPreviousCommand; }
-        }
-
-        private readonly IDelegateCommand moveToNextCommand;
-        /// <summary>
-        /// Allows to move to the next source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToNextCommand
-        {
-            get { return moveToNextCommand; }
-        }
-
-        private readonly IDelegateCommand moveToLastCommand;
-        /// <summary>
-        /// Allows to move to the last source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToLastCommand
-        {
-            get { return moveToLastCommand; }
-        }
-
-        private readonly IDelegateCommand moveToIndexCommand;
-        /// <summary>
-        /// Allows to move to the index for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToIndexCommand
-        {
-            get { return moveToIndexCommand; }
-        }
-
-        private readonly IDelegateCommand moveToCommand;
-        /// <summary>
-        /// Allows to move to the source for all <see cref="NavigationSources"/>.
-        /// </summary>
-        public IDelegateCommand MoveToCommand
-        {
-            get { return moveToCommand; }
-        }
-
-
+     
         /// <summary>
         /// Creates the <see cref="NavigationSourceContainer"/>.
         /// </summary>
         public NavigationSourceContainer()
         {
             navigationSources = new List<NavigationSource>();
-
-            navigateCommand = new DelegateCommand<Type>(ExecuteNavigateCommand);
-            moveToFirstCommand = new DelegateCommand(ExecuteMoveToFirstCommand);
-            moveToPreviousCommand = new DelegateCommand(ExecuteMoveToPreviousCommand);
-            moveToNextCommand = new DelegateCommand(ExecuteMoveToNextCommand);
-            moveToLastCommand = new DelegateCommand(ExecuteMoveToLastCommand);
-            moveToIndexCommand = new DelegateCommand<object>(ExecuteMoveToIndexCommand);
-            moveToCommand = new DelegateCommand<object>(ExecuteMoveToCommand);
         }
 
-        #region Commands
-
-        private void ExecuteNavigateCommand(Type sourceType)
-        {
-            this.Navigate(sourceType, null);
-        }
-
-        private void ExecuteMoveToFirstCommand()
-        {
-            MoveToFirst();
-        }
-
-        private void ExecuteMoveToPreviousCommand()
-        {
-            MoveToPrevious();
-        }
-
-
-        private void ExecuteMoveToNextCommand()
-        {
-            MoveToNext();
-        }
-
-        private void ExecuteMoveToLastCommand()
-        {
-            MoveToLast();
-        }
-
-
-        private void ExecuteMoveToIndexCommand(object args)
-        {
-            MoveTo(args);
-        }
-
-        private void ExecuteMoveToCommand(object args)
-        {
-            MoveTo(args);
-        }
-
-        #endregion // Commands
 
         #region Collection management
 

@@ -17,7 +17,7 @@ namespace MvvmLib.Navigation
     /// The SelectedItem can be binded to the content of ContentControls.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SharedSource<T> : IMovableSource, INotifyPropertyChanged, ISharedSource
+    public class SharedSource<T> : IBrowsableSource, INotifyPropertyChanged, ISharedSource
     {
         private readonly ILogger DefaultLogger = new DebugLogger();
         private bool handleSelectionChanged;
@@ -122,91 +122,6 @@ namespace MvvmLib.Navigation
             get { return this.selectedIndex < this.items.Count - 1; }
         }
 
-
-        private IDelegateCommand moveToFirstCommand;
-        /// <summary>
-        /// Allows to move to the first source.
-        /// </summary>
-        public IDelegateCommand MoveToFirstCommand
-        {
-            get
-            {
-                if (moveToFirstCommand == null)
-                    moveToFirstCommand = new DelegateCommand(ExecuteMoveToFirstCommand, CanExecuteMoveToFirstCommand);
-                return moveToFirstCommand;
-            }
-        }
-
-        private IDelegateCommand moveToPreviousCommand;
-        /// <summary>
-        /// Allows to move to the previous source.
-        /// </summary>
-        public IDelegateCommand MoveToPreviousCommand
-        {
-            get
-            {
-                if (moveToPreviousCommand == null)
-                    moveToPreviousCommand = new DelegateCommand(ExecuteMoveToPreviousCommand, CanExecuteMoveToPreviousCommand);
-                return moveToPreviousCommand;
-            }
-        }
-
-        private IDelegateCommand moveToNextCommand;
-        /// <summary>
-        /// Allows to move to the next source.
-        /// </summary>
-        public IDelegateCommand MoveToNextCommand
-        {
-            get
-            {
-                if (moveToNextCommand == null)
-                    moveToNextCommand = new DelegateCommand(ExecuteMoveToNextCommand, CanExecuteMoveToNextCommand);
-                return moveToNextCommand;
-            }
-        }
-
-        private IDelegateCommand moveToLastCommand;
-        /// <summary>
-        /// Allows to move to the last source.
-        /// </summary>
-        public IDelegateCommand MoveToLastCommand
-        {
-            get
-            {
-                if (moveToLastCommand == null)
-                    moveToLastCommand = new DelegateCommand(ExecuteMoveToLastCommand, CanExecuteMoveToLastCommand);
-                return moveToLastCommand;
-            }
-        }
-
-        private IDelegateCommand moveToIndexCommand;
-        /// <summary>
-        /// Allows to move to the index.
-        /// </summary>
-        public IDelegateCommand MoveToIndexCommand
-        {
-            get
-            {
-                if (moveToIndexCommand == null)
-                    moveToIndexCommand = new DelegateCommand<object>(ExecuteMoveToIndexCommand);
-                return moveToIndexCommand;
-            }
-        }
-
-        private IDelegateCommand moveToCommand;
-        /// <summary>
-        /// Allows to move to the source.
-        /// </summary>
-        public IDelegateCommand MoveToCommand
-        {
-            get
-            {
-                if (moveToCommand == null)
-                    moveToCommand = new DelegateCommand<object>(ExecuteMoveToCommand);
-                return moveToCommand;
-            }
-        }
-
         /// <summary>
         /// Invoked on property changed.
         /// </summary>
@@ -239,66 +154,6 @@ namespace MvvmLib.Navigation
             this.selectedIndex = -1;
         }
 
-        #region Commands
-
-        private void ExecuteMoveToFirstCommand()
-        {
-            MoveToFirst();
-        }
-
-        private bool CanExecuteMoveToFirstCommand()
-        {
-            return CanMoveToPrevious;
-        }
-
-        private void ExecuteMoveToPreviousCommand()
-        {
-            MoveToPrevious();
-        }
-
-        private bool CanExecuteMoveToPreviousCommand()
-        {
-            return CanMoveToPrevious;
-        }
-
-        private void ExecuteMoveToNextCommand()
-        {
-            MoveToNext();
-        }
-
-        private bool CanExecuteMoveToNextCommand()
-        {
-            return CanMoveToNext;
-        }
-
-        private void ExecuteMoveToLastCommand()
-        {
-            MoveToLast();
-        }
-
-        private bool CanExecuteMoveToLastCommand()
-        {
-            return CanMoveToNext;
-        }
-
-        private void ExecuteMoveToIndexCommand(object args)
-        {
-            if (args != null)
-            {
-                if (int.TryParse(args.ToString(), out int position))
-                {
-                    MoveTo(position);
-                }
-            }
-        }
-
-        private void ExecuteMoveToCommand(object args)
-        {
-            MoveTo(args);
-        }
-
-        #endregion // Commands
-
         #region Events
 
         private void OnPropertyChanged(string propertyName)
@@ -312,20 +167,13 @@ namespace MvvmLib.Navigation
                 SelectedItemChanged?.Invoke(this, new SharedSourceSelectedItemChangedEventArgs(index, item));
         }
 
-
         private void OnCanMoveToPreviousChanged(bool canMove)
         {
-            moveToFirstCommand?.RaiseCanExecuteChanged();
-            moveToPreviousCommand?.RaiseCanExecuteChanged();
-
             CanMoveToPreviousChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
         private void OnCanMoveToNextChanged(bool canMove)
         {
-            moveToNextCommand?.RaiseCanExecuteChanged();
-            moveToLastCommand?.RaiseCanExecuteChanged();
-
             CanMoveToNextChanged?.Invoke(this, new CanMoveToEventArgs(canMove));
         }
 
@@ -865,44 +713,61 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to move to the first item.
         /// </summary>
-        public void MoveToFirst()
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveToFirst()
         {
             if (CanMoveToPrevious)
-                this.MoveTo(0);
+            {
+                return this.MoveTo(0);
+            }
+            return false;
         }
 
         /// <summary>
         /// Allows to move to the previous item.
         /// </summary>
-        public void MoveToPrevious()
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveToPrevious()
         {
             if (CanMoveToPrevious)
-                this.MoveTo(this.selectedIndex - 1);
+            {
+                return this.MoveTo(this.selectedIndex - 1);
+            }
+            return false;
         }
 
         /// <summary>
         /// Allows to move to the next item.
         /// </summary>
-        public void MoveToNext()
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveToNext()
         {
             if (CanMoveToNext)
-                this.MoveTo(this.selectedIndex + 1);
+            {
+                return this.MoveTo(this.selectedIndex + 1);
+            }
+            return false;
         }
 
         /// <summary>
         /// Allows to move to the last item.
         /// </summary>
-        public void MoveToLast()
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveToLast()
         {
             if (CanMoveToNext)
-                this.MoveTo(this.items.Count - 1);
+            {
+                return this.MoveTo(this.items.Count - 1);
+            }
+            return false;
         }
 
         /// <summary>
         /// Allows to move to the item at the index.
         /// </summary>
         /// <param name="index">The index</param>
-        public void MoveTo(int index)
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveTo(int index)
         {
             if (index >= 0 && index < this.items.Count)
             {
@@ -912,20 +777,24 @@ namespace MvvmLib.Navigation
                 this.SetSelectedIndex(index);
 
                 CheckCanMoveTo(oldCanMoveToPrevious, oldCanMoveToNext);
+                return true;
             }
+            return false;
         }
 
         /// <summary>
         /// Allows to move to the item.
         /// </summary>
         /// <param name="item">The item</param>
-        public void MoveTo(object item)
+        /// <returns>True if navigation succeeds</returns>
+        public bool MoveTo(object item)
         {
             if (item is T)
             {
                 var index = this.items.IndexOf((T)item);
-                this.MoveTo(index);
+                return this.MoveTo(index);
             }
+            return false;
         }
 
         /// <summary>
@@ -972,6 +841,6 @@ namespace MvvmLib.Navigation
             this.handleSelectionChanged = true;
             if (selectedIndex >= 0 && this.items.Count > 0)
                 TrySelectItem(selectedIndex);
-        }   
+        }
     }
 }

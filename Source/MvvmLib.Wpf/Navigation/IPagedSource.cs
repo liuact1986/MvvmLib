@@ -58,32 +58,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The position of the last item of the page.
         /// </summary>
-        int End { get; }
-
-        /// <summary>
-        /// Allows to move to the first page.
-        /// </summary>
-        IDelegateCommand MoveToFirstPageCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the previous page.
-        /// </summary>
-        IDelegateCommand MoveToPreviousPageCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the next page.
-        /// </summary>
-        IDelegateCommand MoveToNextPageCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the last page.
-        /// </summary>
-        IDelegateCommand MoveToLastPageCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the page.
-        /// </summary>
-        IDelegateCommand MoveToPageCommand { get; }
+        int End { get; } 
 
         /// <summary>
         /// Invoked on page changing.
@@ -135,16 +110,6 @@ namespace MvvmLib.Navigation
         object this[int index] { get; }
 
         /// <summary>
-        /// Allows to group by property name.
-        /// </summary>
-        IDelegateCommand SortByCommand { get; }
-
-        /// <summary>
-        /// Allows to group by property name.
-        /// </summary>
-        IDelegateCommand SortByDescendingCommand { get; }
-
-        /// <summary>
         /// Checks if can move to previous item.
         /// </summary>
         bool CanMoveCurrentToPrevious { get; }
@@ -165,69 +130,9 @@ namespace MvvmLib.Navigation
         int Rank { get; }
 
         /// <summary>
-        /// Allows to move to the first item.
-        /// </summary>
-        IDelegateCommand MoveCurrentToFirstCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the previous item.
-        /// </summary>
-        IDelegateCommand MoveCurrentToPreviousCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the next item.
-        /// </summary>
-        IDelegateCommand MoveCurrentToNextCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the last item.
-        /// </summary>
-        IDelegateCommand MoveCurrentToLastCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the position.
-        /// </summary>
-        IDelegateCommand MoveCurrentToPositionCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the rank (index + 1).
-        /// </summary>
-        IDelegateCommand MoveCurrentToRankCommand { get; }
-
-        /// <summary>
-        /// Allows to move to the item.
-        /// </summary>
-        IDelegateCommand MoveCurrentToCommand { get; }
-
-        /// <summary>
         /// Checks if can edit item.
         /// </summary>
         bool CanEditItem { get; }
-
-        /// <summary>
-        /// Allows to add a new item.
-        /// </summary>
-        IDelegateCommand AddNewCommand { get; }
-
-        /// <summary>
-        /// Allows to begin edit the current item.
-        /// </summary>
-        IDelegateCommand EditCommand { get; }
-
-        /// <summary>
-        /// Allows to delete the current item.
-        /// </summary>
-        IDelegateCommand DeleteCommand { get; }
-
-        /// <summary>
-        /// Allows to save changes for current item.
-        /// </summary>
-        IDelegateCommand SaveCommand { get; }
-
-        /// <summary>
-        /// Allows to cancel add new or edit item.
-        /// </summary>
-        IDelegateCommand CancelCommand { get; }
 
         /// <summary>
         /// Gets a value that indicates if DeferRefresh() is in use.

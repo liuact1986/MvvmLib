@@ -16,7 +16,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="View H (busy)" Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:ViewH}"/>
+            <Button Content="View H (busy)" Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:ViewH}"/>
         </StackPanel>
 
         <ContentControl Content="{Binding Navigation.Current}" Grid.Row="1"/>

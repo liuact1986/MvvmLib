@@ -50,7 +50,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\AnimatableContentControl.cs" />
+    <Compile Include="Animation\AnimatingContentControl.cs" />
     <Compile Include="Animation\AnimationTargetPropertyType.cs" />
     <Compile Include="Animation\ControlledAnimation.cs" />
     <Compile Include="Animation\ParallelAnimation.cs" />
@@ -63,6 +63,14 @@
     <Compile Include="Interactivity\CallMethodAction.cs" />
     <Compile Include="Interactivity\ChangePropertyAction.cs" />
     <Compile Include="Interactivity\DataTrigger.cs" />
+    <Compile Include="Navigation\CollectionCommandProvider.cs" />
+    <Compile Include="Navigation\IBrowsableSource.cs" />
+    <Compile Include="Navigation\ListCollectionViewCommands.cs" />
+    <Compile Include="Navigation\NavigationCommandProvider.cs" />
+    <Compile Include="Navigation\NavigationSourceCommands.cs" />
+    <Compile Include="Navigation\NavigationSourceContainerCommands.cs" />
+    <Compile Include="Navigation\PagedSourceCommands.cs" />
+    <Compile Include="Navigation\SharedSourceCommands.cs" />
     <Compile Include="Utils\DesignModeHelper.cs" />
     <Compile Include="Interactivity\EventToCommandBehavior.cs" />
     <Compile Include="Interactivity\EventTrigger.cs" />
@@ -103,7 +111,6 @@
     <Compile Include="Navigation\ICanDeactivate.cs" />
     <Compile Include="Navigation\IIsLoaded.cs" />
     <Compile Include="Navigation\IIsSelected.cs" />
-    <Compile Include="Navigation\IMovableSource.cs" />
     <Compile Include="Navigation\INavigationAware.cs" />
     <Compile Include="Navigation\InitItemCollection.cs" />
     <Compile Include="Navigation\IPagedSource.cs" />
@@ -161,7 +168,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Themes\AnimatableContentControl.xaml">
+    <Page Include="Themes\AnimatingContentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

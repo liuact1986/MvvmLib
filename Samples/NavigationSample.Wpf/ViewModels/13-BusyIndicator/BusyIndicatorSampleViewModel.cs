@@ -11,11 +11,13 @@ namespace NavigationSample.Wpf.ViewModels
         private IEventAggregator eventAggregator;
 
         public NavigationSource Navigation { get; }
+        public NavigationSourceCommands Commands { get; }
 
         public BusyIndicatorSampleViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
             this.Navigation = new NavigationSource();
+            this.Commands = new NavigationSourceCommands(Navigation);
         }
 
         private void SetTitle()

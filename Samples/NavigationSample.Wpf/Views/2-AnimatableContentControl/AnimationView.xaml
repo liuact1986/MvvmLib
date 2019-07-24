@@ -50,13 +50,13 @@
             </StackPanel>
         </StackPanel>
 
-        <mvvmLib:AnimatableContentControl x:Name="AnimatableContentControl1" 
+        <mvvmLib:AnimatingContentControl x:Name="AnimatableContentControl1" 
                                           Content="{Binding Navigation.Current}" 
                                           Simultaneous="True"
                                           IsCancelled="{Binding IsCancelled}"
                                           CanAnimateOnLoad="False"
                                           Grid.Row="1">
-            <mvvmLib:AnimatableContentControl.ExitAnimation>
+            <mvvmLib:AnimatingContentControl.ExitAnimation>
                 <Storyboard>
                     <!-- 1. translate -->
                     <!--<DoubleAnimation  Storyboard.TargetName="PreviousContentPresenter"
@@ -82,8 +82,8 @@
                                      Storyboard.TargetProperty="(UIElement.Opacity)" 
                                      From="1" To="0" Duration="{Binding SelectedDuration}"/>
                 </Storyboard>
-            </mvvmLib:AnimatableContentControl.ExitAnimation>
-            <mvvmLib:AnimatableContentControl.EntranceAnimation>
+            </mvvmLib:AnimatingContentControl.ExitAnimation>
+            <mvvmLib:AnimatingContentControl.EntranceAnimation>
                 <Storyboard>
                     <!-- 1. translate -->
                     <!--<DoubleAnimation  Storyboard.TargetName="CurrentContentPresenter"
@@ -100,8 +100,8 @@
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" 
                                      From="300" To="0" Duration="{Binding SelectedDuration}"/>
                 </Storyboard>
-            </mvvmLib:AnimatableContentControl.EntranceAnimation>
-        </mvvmLib:AnimatableContentControl>
+            </mvvmLib:AnimatingContentControl.EntranceAnimation>
+        </mvvmLib:AnimatingContentControl>
 
     </Grid>
 </UserControl>

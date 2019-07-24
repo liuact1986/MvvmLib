@@ -34,7 +34,10 @@ namespace MvvmLib.Animation
         /// <param name="storyboard">The storyboard</param>
         public StoryboardAccessor(Storyboard storyboard)
         {
-            this.storyboard = storyboard ?? throw new ArgumentNullException(nameof(storyboard));
+            if (storyboard == null)
+                throw new ArgumentNullException(nameof(storyboard));
+
+            this.storyboard = storyboard;
         }
 
         /// <summary>

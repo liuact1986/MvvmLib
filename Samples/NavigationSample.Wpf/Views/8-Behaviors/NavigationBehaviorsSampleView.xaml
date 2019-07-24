@@ -54,7 +54,7 @@
         <StackPanel Grid.Row="2">
             <TextBlock Text="SelectionSyncBehavior:" FontWeight="SemiBold" FontStyle="Italic" Grid.Row="3" Margin="5"/>
             <TextBlock Margin="5">
-             <Hyperlink Command="{Binding Navigation.NavigateCommand}" CommandParameter="{x:Type views:SharedSourceSampleView}">ListView Sample</Hyperlink>
+             <Hyperlink Command="{Binding Commands.NavigateCommand}" CommandParameter="{x:Type views:SharedSourceSampleView}">ListView Sample</Hyperlink>
             </TextBlock>
         </StackPanel>
 

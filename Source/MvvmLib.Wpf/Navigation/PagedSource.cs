@@ -1,5 +1,4 @@
-﻿using MvvmLib.Commands;
-using MvvmLib.Utils;
+﻿using MvvmLib.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Globalization;
 
 namespace MvvmLib.Navigation
 {
-
     /// <summary>
     /// A PagedSource is a Paged CollectionView.
     /// </summary>
@@ -20,8 +18,6 @@ namespace MvvmLib.Navigation
         private ArrayList internalList;
         private bool handleCollectionChanged;
         private Type elementType;
-        private bool oldCanMoveCurrentToPrevious;
-        private bool oldCanMoveCurrentToNext;
 
         /// <summary>
         /// Allows to get the item at the index from current page.
@@ -31,34 +27,6 @@ namespace MvvmLib.Navigation
         public object this[int index]
         {
             get { return internalList[index]; }
-        }
-
-        private IDelegateCommand sortByCommand;
-        /// <summary>
-        /// Allows to group by property name.
-        /// </summary>
-        public IDelegateCommand SortByCommand
-        {
-            get
-            {
-                if (sortByCommand == null)
-                    sortByCommand = new DelegateCommand<string>(ExecuteSortByCommand);
-                return sortByCommand;
-            }
-        }
-
-        private IDelegateCommand sortByDescendingCommand;
-        /// <summary>
-        /// Allows to group by property name.
-        /// </summary>
-        public IDelegateCommand SortByDescendingCommand
-        {
-            get
-            {
-                if (sortByDescendingCommand == null)
-                    sortByDescendingCommand = new DelegateCommand<string>(ExecuteSortByDescendingCommand);
-                return sortByDescendingCommand;
-            }
         }
 
         #region Paging
@@ -157,77 +125,6 @@ namespace MvvmLib.Navigation
         public bool CanMoveToNextPage
         {
             get { return this.pageIndex < this.pageCount - 1; }
-        }
-
-        private IDelegateCommand moveToFirstPageCommand;
-        /// <summary>
-        /// Allows to move to the first page.
-        /// </summary>
-        public IDelegateCommand MoveToFirstPageCommand
-        {
-            get
-            {
-                if (moveToFirstPageCommand == null)
-                    moveToFirstPageCommand = new DelegateCommand(ExecuteMoveToFirstPageCommand, CanExecuteMoveToFirstPageCommand);
-
-                return moveToFirstPageCommand;
-            }
-        }
-
-        private IDelegateCommand moveToPreviousPageCommand;
-        /// <summary>
-        /// Allows to move to the previous page.
-        /// </summary>
-        public IDelegateCommand MoveToPreviousPageCommand
-        {
-            get
-            {
-                if (moveToPreviousPageCommand == null)
-                    moveToPreviousPageCommand = new DelegateCommand(ExecuteMoveToPreviousPageCommand, CanExecuteMoveToPreviousPageCommand);
-                return moveToPreviousPageCommand;
-            }
-        }
-
-        private IDelegateCommand moveToNextPageCommand;
-        /// <summary>
-        /// Allows to move to the next page.
-        /// </summary>
-        public IDelegateCommand MoveToNextPageCommand
-        {
-            get
-            {
-                if (moveToNextPageCommand == null)
-                    moveToNextPageCommand = new DelegateCommand(ExecuteMoveToNextPageCommand, CanExecuteMoveToNextPageCommand);
-                return moveToNextPageCommand;
-            }
-        }
-
-        private IDelegateCommand moveToLastPageCommand;
-        /// <summary>
-        /// Allows to move to the last page.
-        /// </summary>
-        public IDelegateCommand MoveToLastPageCommand
-        {
-            get
-            {
-                if (moveToLastPageCommand == null)
-                    moveToLastPageCommand = new DelegateCommand(ExecuteMoveToLastPageCommand, CanExecuteMoveToLastPageCommand);
-                return moveToLastPageCommand;
-            }
-        }
-
-        private IDelegateCommand moveToPageCommand;
-        /// <summary>
-        /// Allows to move to the page.
-        /// </summary>
-        public IDelegateCommand MoveToPageCommand
-        {
-            get
-            {
-                if (moveToPageCommand == null)
-                    moveToPageCommand = new DelegateCommand<object>(ExecuteMoveToPageCommand);
-                return moveToPageCommand;
-            }
         }
 
         #endregion // Paging
@@ -350,7 +247,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Checks if grouping is available.
         /// </summary>
-        public bool CanGroup
+        public virtual bool CanGroup
         {
             get { return false; }
         }
@@ -358,7 +255,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The group descriptions.
         /// </summary>
-        public ObservableCollection<GroupDescription> GroupDescriptions
+        public virtual ObservableCollection<GroupDescription> GroupDescriptions
         {
             get { return null; }
         }
@@ -366,7 +263,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// The groups.
         /// </summary>
-        public ReadOnlyObservableCollection<object> Groups
+        public virtual ReadOnlyObservableCollection<object> Groups
         {
             get { throw new NotImplementedException(); }
         }
@@ -404,106 +301,6 @@ namespace MvvmLib.Navigation
         public int CurrentPosition
         {
             get { return currentPosition; }
-        }
-
-        private IDelegateCommand moveCurrentToFirstCommand;
-        /// <summary>
-        /// Allows to move to the first item.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToFirstCommand
-        {
-            get
-            {
-                if (moveCurrentToFirstCommand == null)
-                    moveCurrentToFirstCommand = new DelegateCommand(ExecuteMoveCurrentToFirstCommand, CanExecuteMoveCurrentToFirstCommand);
-
-                return moveCurrentToFirstCommand;
-            }
-        }
-
-        private IDelegateCommand moveCurrentToPreviousCommand;
-        /// <summary>
-        /// Allows to move to the previous item.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToPreviousCommand
-        {
-            get
-            {
-                if (moveCurrentToPreviousCommand == null)
-                    moveCurrentToPreviousCommand = new DelegateCommand(ExecuteMoveCurrentToPreviousCommand, CanExecuteMoveToPreviousCommand);
-                return moveCurrentToPreviousCommand;
-            }
-        }
-
-        private IDelegateCommand moveCurrentToNextCommand;
-        /// <summary>
-        /// Allows to move to the next item.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToNextCommand
-        {
-            get
-            {
-                if (moveCurrentToNextCommand == null)
-                    moveCurrentToNextCommand = new DelegateCommand(ExecuteMoveCurrentToNextCommand, CanExecuteMoveToNextCommand);
-                return moveCurrentToNextCommand;
-            }
-        }
-
-
-        private IDelegateCommand moveCurrentToLastCommand;
-        /// <summary>
-        /// Allows to move to the last item.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToLastCommand
-        {
-            get
-            {
-                if (moveCurrentToLastCommand == null)
-                    moveCurrentToLastCommand = new DelegateCommand(ExecuteMoveCurrentToLastCommand, CanExecuteMoveCurrentToLastCommand);
-                return moveCurrentToLastCommand;
-            }
-        }
-
-        private IDelegateCommand moveCurrentToPositionCommand;
-        /// <summary>
-        /// Allows to move to the position.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToPositionCommand
-        {
-            get
-            {
-                if (moveCurrentToPositionCommand == null)
-                    moveCurrentToPositionCommand = new DelegateCommand<object>(ExecuteMoveCurrentToPositionCommand);
-                return moveCurrentToPositionCommand;
-            }
-        }
-
-        private IDelegateCommand moveCurrentToRankCommand;
-        /// <summary>
-        /// Allows to move to the rank (index + 1).
-        /// </summary>
-        public IDelegateCommand MoveCurrentToRankCommand
-        {
-            get
-            {
-                if (moveCurrentToRankCommand == null)
-                    moveCurrentToRankCommand = new DelegateCommand<object>(ExecuteMoveCurrentToRankCommand);
-                return moveCurrentToRankCommand;
-            }
-        }
-
-        private IDelegateCommand moveCurrentToCommand;
-        /// <summary>
-        /// Allows to move to the item.
-        /// </summary>
-        public IDelegateCommand MoveCurrentToCommand
-        {
-            get
-            {
-                if (moveCurrentToCommand == null)
-                    moveCurrentToCommand = new DelegateCommand<object>(ExecuteMoveCurrentToCommand);
-                return moveCurrentToCommand;
-            }
         }
 
         /// <summary>
@@ -618,76 +415,6 @@ namespace MvvmLib.Navigation
             get { return !IsEditingItem; }
         }
 
-        private IDelegateCommand addNewCommand;
-        /// <summary>
-        /// Allows to add a new item.
-        /// </summary>
-        public IDelegateCommand AddNewCommand
-        {
-            get
-            {
-                if (addNewCommand == null)
-                    addNewCommand = new DelegateCommand(ExecuteAddCommand);
-                return addNewCommand;
-            }
-        }
-
-        private IDelegateCommand editCommand;
-        /// <summary>
-        /// Allows to begin edit the current item.
-        /// </summary>
-        public IDelegateCommand EditCommand
-        {
-            get
-            {
-                if (editCommand == null)
-                    editCommand = new DelegateCommand(ExecuteEditCommand);
-                return editCommand;
-            }
-        }
-
-        private IDelegateCommand deleteCommand;
-        /// <summary>
-        /// Allows to delete the current item.
-        /// </summary>
-        public IDelegateCommand DeleteCommand
-        {
-            get
-            {
-                if (deleteCommand == null)
-                    deleteCommand = new DelegateCommand(ExecuteDeleteCommand);
-                return deleteCommand;
-            }
-        }
-
-        private IDelegateCommand saveCommand;
-        /// <summary>
-        /// Allows to save changes for current item.
-        /// </summary>
-        public IDelegateCommand SaveCommand
-        {
-            get
-            {
-                if (saveCommand == null)
-                    saveCommand = new DelegateCommand(ExecuteSaveCommand);
-                return saveCommand;
-            }
-        }
-
-        private IDelegateCommand cancelCommand;
-        /// <summary>
-        /// Allows to cancel add new or edit item.
-        /// </summary>
-        public IDelegateCommand CancelCommand
-        {
-            get
-            {
-                if (cancelCommand == null)
-                    cancelCommand = new DelegateCommand(ExecuteCancelCommand);
-                return cancelCommand;
-            }
-        }
-
         #endregion // Editing
 
         /// <summary>
@@ -745,7 +472,12 @@ namespace MvvmLib.Navigation
             Initialize(sourceCollection, pageSize);
         }
 
-        private void Initialize(IEnumerable sourceCollection, int pageSize)
+        /// <summary>
+        /// Initializes the <see cref="PagedSource"/>.
+        /// </summary>
+        /// <param name="sourceCollection">The source collection</param>
+        /// <param name="pageSize">The page size</param>
+        protected virtual void Initialize(IEnumerable sourceCollection, int pageSize)
         {
             if (sourceCollection == null)
                 throw new ArgumentNullException(nameof(sourceCollection));
@@ -799,214 +531,88 @@ namespace MvvmLib.Navigation
             MoveToPageInternal(0);
         }
 
-        private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        /// <summary>
+        /// Invoked on collection changed for a <see cref="SourceCollection"/> that implements <see cref="INotifyCollectionChanged"/>.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event args</param>
+        protected virtual void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (this.handleCollectionChanged)
                 this.Refresh();
         }
 
-        private void OnSortDesciptionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        /// <summary>
+        /// Invoked on <see cref="SortDescriptions"/> changed.
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">The event args</param>
+        protected virtual void OnSortDesciptionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             this.Refresh();
         }
 
         #region Events
 
-        private void OnPropertyChanged(string propertyName)
+        /// <summary>
+        /// Invokes the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        /// <summary>
+        /// Invokes the <see cref="CollectionChanged"/> event.
+        /// </summary>
+        /// <param name="notifyCollectionChangedEventArgs"></param>
+        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             this.CollectionChanged?.Invoke(this, notifyCollectionChangedEventArgs);
         }
 
-        private void OnRefreshed()
+        /// <summary>
+        /// Invokes the <see cref="Refreshed"/> event.
+        /// </summary>
+        protected void OnRefreshed()
         {
             this.Refreshed?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Invokes the <see cref="PageChanged"/> event.
+        /// </summary>
+        /// <param name="pageIndex">The page index</param>
         private void OnPageChanged(int pageIndex)
         {
             PageChanged?.Invoke(this, new PageChangeEventArgs(pageIndex));
         }
 
-        private void OnPageChanging(int pageIndex)
+        /// <summary>
+        /// Invokes the <see cref="PageChanging"/> event.
+        /// </summary>
+        /// <param name="pageIndex">The page index</param>
+        protected void OnPageChanging(int pageIndex)
         {
             PageChanging?.Invoke(this, new PageChangeEventArgs(pageIndex));
         }
 
-        private void OnCurrentChanged()
+        /// <summary>
+        /// Invokes the <see cref="CurrentChanged"/> event.
+        /// </summary>
+        protected void OnCurrentChanged()
         {
             this.CurrentChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion // Events
 
-        #region Commands
-
-        private void ExecuteSortByCommand(string args)
-        {
-            SortBy(args, true);
-        }
-
-        private void ExecuteSortByDescendingCommand(string args)
-        {
-            SortByDescending(args, true);
-        }
-
-        private void ExecuteMoveToFirstPageCommand()
-        {
-            this.MoveToFirstPage();
-        }
-
-        private bool CanExecuteMoveToFirstPageCommand()
-        {
-            return CanMoveToPreviousPage;
-        }
-
-        private void ExecuteMoveToPreviousPageCommand()
-        {
-            this.MoveToPreviousPage();
-        }
-
-        private bool CanExecuteMoveToPreviousPageCommand()
-        {
-            return CanMoveToPreviousPage;
-        }
-
-        private void ExecuteMoveToNextPageCommand()
-        {
-            this.MoveToNextPage();
-        }
-
-        private bool CanExecuteMoveToNextPageCommand()
-        {
-            return CanMoveToNextPage;
-        }
-
-        private void ExecuteMoveToLastPageCommand()
-        {
-            this.MoveToLastPage();
-        }
-
-        private bool CanExecuteMoveToLastPageCommand()
-        {
-            return CanMoveToNextPage;
-        }
-
-        private void ExecuteMoveToPageCommand(object args)
-        {
-            if (args != null)
-            {
-                if (int.TryParse(args.ToString(), out int currentPage))
-                {
-                    MoveToPage(currentPage - 1);
-                }
-            }
-        }
-
-        private void ExecuteMoveCurrentToFirstCommand()
-        {
-            this.MoveCurrentToFirst();
-        }
-
-        private bool CanExecuteMoveCurrentToFirstCommand()
-        {
-            return CanMoveCurrentToPrevious;
-        }
-
-        private void ExecuteMoveCurrentToPreviousCommand()
-        {
-            this.MoveCurrentToPrevious();
-        }
-
-        private bool CanExecuteMoveToPreviousCommand()
-        {
-            return CanMoveCurrentToPrevious;
-        }
-
-        private void ExecuteMoveCurrentToNextCommand()
-        {
-            this.MoveCurrentToNext();
-        }
-
-        private bool CanExecuteMoveToNextCommand()
-        {
-            return CanMoveCurrentToNext;
-        }
-
-        private void ExecuteMoveCurrentToLastCommand()
-        {
-            this.MoveCurrentToLast();
-        }
-
-        private bool CanExecuteMoveCurrentToLastCommand()
-        {
-            return CanMoveCurrentToNext;
-        }
-
-        private void ExecuteMoveCurrentToCommand(object args)
-        {
-            MoveCurrentTo(args);
-        }
-
-        private void ExecuteMoveCurrentToPositionCommand(object args)
-        {
-            if (args != null)
-            {
-                if (int.TryParse(args.ToString(), out int position))
-                {
-                    MoveCurrentToPosition(position);
-                }
-            }
-        }
-
-        private void ExecuteMoveCurrentToRankCommand(object args)
-        {
-            if (args != null)
-            {
-                if (int.TryParse(args.ToString(), out int rank))
-                {
-                    MoveCurrentToPosition(rank - 1);
-                }
-            }
-        }
-
-        private void ExecuteAddCommand()
-        {
-            AddNew();
-        }
-
-        private void ExecuteEditCommand()
-        {
-            EditCurrentItem();
-        }
-
-        private void ExecuteDeleteCommand()
-        {
-            if (this.currentPosition != -1)
-                RemoveAt(currentPosition);
-        }
-
-        private void ExecuteSaveCommand()
-        {
-            Save();
-        }
-
-        private void ExecuteCancelCommand()
-        {
-            Cancel();
-        }
-
-        #endregion // Commands
-
         /// <summary>
         /// Checks if the view contains the item.
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        /// <param name="item">The item</param>
+        /// <returns>True if found</returns>
         public bool Contains(object item)
         {
             return this.internalList.Contains(item);
@@ -1145,7 +751,12 @@ namespace MvvmLib.Navigation
             return true;
         }
 
-        private void SetCurrent(int position, object item)
+        /// <summary>
+        /// Sets the current item.
+        /// </summary>
+        /// <param name="position">The position</param>
+        /// <param name="item">The item</param>
+        protected virtual void SetCurrent(int position, object item)
         {
             this.currentPosition = position;
             rank = position != -1 ? position + 1 : -1;
@@ -1154,27 +765,8 @@ namespace MvvmLib.Navigation
             OnPropertyChanged(nameof(Rank));
             OnPropertyChanged(nameof(CurrentItem));
 
-            CheckCanMoveCurrent();
-
             OnCurrentChanged();
         }
-
-        private void CheckCanMoveCurrent()
-        {
-            if (CanMoveCurrentToPrevious != oldCanMoveCurrentToPrevious)
-            {
-                moveCurrentToFirstCommand?.RaiseCanExecuteChanged();
-                moveCurrentToPreviousCommand?.RaiseCanExecuteChanged();
-                this.oldCanMoveCurrentToPrevious = CanMoveCurrentToPrevious;
-            }
-            if (CanMoveCurrentToNext != oldCanMoveCurrentToNext)
-            {
-                moveCurrentToNextCommand?.RaiseCanExecuteChanged();
-                moveCurrentToLastCommand?.RaiseCanExecuteChanged();
-                this.oldCanMoveCurrentToNext = CanMoveCurrentToNext;
-            }
-        }
-
 
         #region Paging
 
@@ -1185,26 +777,9 @@ namespace MvvmLib.Navigation
             return pageCount;
         }
 
-        private void CheckCanMove(bool oldCanMoveToPreviousPage, bool oldCanMoveToNextPage)
-        {
-            if (CanMoveToPreviousPage != oldCanMoveToPreviousPage)
-            {
-                moveToFirstPageCommand?.RaiseCanExecuteChanged();
-                moveToPreviousPageCommand?.RaiseCanExecuteChanged();
-            }
-            if (CanMoveToNextPage != oldCanMoveToNextPage)
-            {
-                moveToNextPageCommand?.RaiseCanExecuteChanged();
-                moveToLastPageCommand?.RaiseCanExecuteChanged();
-            }
-        }
-
         private void MoveToPageInternal(int pageIndex)
         {
             OnPageChanging(pageIndex);
-
-            var oldCanMoveToPreviousPage = CanMoveToPreviousPage;
-            var oldCanMoveToNextPage = CanMoveToNextPage;
 
             int startIndex = pageIndex * pageSize; // 0 ...5 ...
             int endCount = startIndex + pageSize;  // 5 ... 10
@@ -1229,8 +804,6 @@ namespace MvvmLib.Navigation
             OnPropertyChanged(nameof(End));
             OnPropertyChanged(nameof(PageIndex));
             OnPropertyChanged(nameof(CurrentPage));
-
-            CheckCanMove(oldCanMoveToPreviousPage, oldCanMoveToNextPage);
 
             OnPageChanged(pageIndex);
 
@@ -1339,7 +912,13 @@ namespace MvvmLib.Navigation
             this.Filter = new Predicate<object>(p => filter((T)p));
         }
 
-        private void SortBy(string propertyName, ListSortDirection sortDirection, bool clearSortDescriptions)
+        /// <summary>
+        /// Allows to add a sort description.
+        /// </summary>
+        /// <param name="propertyName">The property name</param>
+        /// <param name="sortDirection">The sort direction</param>
+        /// <param name="clearSortDescriptions">Allows to clear sort descriptions</param>
+        protected virtual void SortBy(string propertyName, ListSortDirection sortDirection, bool clearSortDescriptions)
         {
             if (propertyName == null)
                 throw new ArgumentNullException(nameof(propertyName));
@@ -1370,7 +949,10 @@ namespace MvvmLib.Navigation
             SortBy(propertyName, ListSortDirection.Ascending, clearSortDescriptions);
         }
 
-        private void ApplySort()
+        /// <summary>
+        /// Applies the sort.
+        /// </summary>
+        protected virtual void ApplySort()
         {
             if (customSort != null)
             {
@@ -1383,7 +965,10 @@ namespace MvvmLib.Navigation
             }
         }
 
-        private void ApplyFilter()
+        /// <summary>
+        /// Applies the filter.
+        /// </summary>
+        protected virtual void ApplyFilter()
         {
             this.shadowCollection.Clear();
             foreach (var item in this.sourceCollection)
@@ -1396,7 +981,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to refresh the internal list. Usefull for a <see cref="SourceCollection"/> that does not implement <see cref="INotifyCollectionChanged"/>.
         /// </summary>
-        public void Refresh()
+        public virtual void Refresh()
         {
             if (IsRefreshDeferred)
                 return;
@@ -1441,7 +1026,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The item created</returns>
-        public object CreateNew(Type itemType)
+        public virtual object CreateNew(Type itemType)
         {
             var item = SourceResolver.CreateInstance(itemType);
             return item;
@@ -1461,7 +1046,7 @@ namespace MvvmLib.Navigation
         /// Adds a new item.
         /// </summary>
         /// <returns>The item created</returns>
-        public object AddNew()
+        public virtual object AddNew()
         {
             if (!canAddNew)
                 throw new InvalidOperationException("Add new is not supported");
@@ -1475,7 +1060,7 @@ namespace MvvmLib.Navigation
         /// Adds the new item.
         /// </summary>
         /// <param name="newItem">The new item</param>
-        public object AddNewItem(object newItem)
+        public virtual object AddNewItem(object newItem)
         {
             if (!canAddNew)
                 throw new InvalidOperationException("Add new is not supported");
@@ -1516,7 +1101,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to begin edit. If the current item implements <see cref="IEditableObject"/>, "BeginEdit" is invoked.
         /// </summary>
-        public void EditCurrentItem()
+        public virtual void EditCurrentItem()
         {
             if (this.CurrentItem != null)
                 this.EditItem(this.CurrentItem);
@@ -1526,7 +1111,7 @@ namespace MvvmLib.Navigation
         /// Begins edit the item.
         /// </summary>
         /// <param name="item">The item</param>
-        public void EditItem(object item)
+        public virtual void EditItem(object item)
         {
             if (!canEditItem)
                 throw new InvalidOperationException("Edit item is not supported");
@@ -1553,7 +1138,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Cancel adding item.
         /// </summary>
-        public void CancelNew()
+        public virtual void CancelNew()
         {
             if (!this.isAddingNew)
                 throw new InvalidOperationException("Not currently adding new item");
@@ -1579,7 +1164,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Cancel edit item.
         /// </summary>
-        public void CancelEdit()
+        public virtual void CancelEdit()
         {
             if (!this.isEditingItem)
                 throw new InvalidOperationException("Not currently editing item");
@@ -1600,7 +1185,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Commit adding item.
         /// </summary>
-        public void CommitNew()
+        public virtual void CommitNew()
         {
             if (!this.isAddingNew)
                 throw new InvalidOperationException("Not currently adding new item");
@@ -1616,7 +1201,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Commit edit item.
         /// </summary>
-        public void CommitEdit()
+        public virtual void CommitEdit()
         {
             if (!this.isEditingItem)
                 throw new InvalidOperationException("Not currently editing item");
@@ -1639,7 +1224,7 @@ namespace MvvmLib.Navigation
         /// </summary>
         /// <param name="item">The item</param>
         /// <returns>True if removed</returns>
-        public void Remove(object item)
+        public virtual void Remove(object item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -1655,7 +1240,7 @@ namespace MvvmLib.Navigation
         /// Removes the item at the position.
         /// </summary>
         /// <param name="position">The position</param>
-        public void RemoveAt(int position)
+        public virtual void RemoveAt(int position)
         {
             if (position < 0 || position > this.internalList.Count - 1)
                 throw new IndexOutOfRangeException();
@@ -1664,7 +1249,12 @@ namespace MvvmLib.Navigation
             RemoveInternal(position, item);
         }
 
-        private void RemoveInternal(int position, object item)
+        /// <summary>
+        /// Removes the item.
+        /// </summary>
+        /// <param name="position">The position</param>
+        /// <param name="item">The item</param>
+        protected void RemoveInternal(int position, object item)
         {
             if(!this.canRemove)
                 throw new InvalidOperationException("Remove item is not supported");
@@ -1728,7 +1318,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Ends the edition.
         /// </summary>
-        public void Save()
+        public virtual void Save()
         {
             if (this.IsAddingNew)
                 this.CommitNew();
@@ -1739,7 +1329,7 @@ namespace MvvmLib.Navigation
         /// <summary>
         /// Allows to cancel edition and changes.
         /// </summary>
-        public void Cancel()
+        public virtual void Cancel()
         {
             if (this.IsAddingNew)
                 this.CancelNew();

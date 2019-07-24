@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MvvmLib.Wpf.Mvvm
+namespace MvvmLib.Mvvm
 {
 
     /// <summary>

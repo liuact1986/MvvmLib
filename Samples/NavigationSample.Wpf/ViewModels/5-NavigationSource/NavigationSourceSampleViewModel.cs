@@ -15,7 +15,7 @@ namespace NavigationSample.Wpf.ViewModels
         private readonly IEventAggregator eventAggregator;
 
         public NavigationSource Navigation { get; }
-
+        public NavigationSourceCommands Commands { get; }
         public ObservableCollection<SourceMenuItem> BackStack { get; set; }
         public ObservableCollection<SourceMenuItem> ForwardStack { get; set; }
 
@@ -30,6 +30,7 @@ namespace NavigationSample.Wpf.ViewModels
             this.ForwardStack = new ObservableCollection<SourceMenuItem>();
 
             Navigation = NavigationManager.GetDefaultNavigationSource("HistorySample");
+            this.Commands = new NavigationSourceCommands(Navigation);
 
             InsertCommand = new DelegateCommand(Insert);
             RemoveFirstCommand = new DelegateCommand(RemoveFirst);

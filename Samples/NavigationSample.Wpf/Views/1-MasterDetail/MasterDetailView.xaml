@@ -25,22 +25,22 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Orientation="Horizontal" Background="#eee" Grid.ColumnSpan="2">
-            <Button Command="{Binding PeopleListSource.MoveToFirstCommand}">
+            <Button Command="{Binding Commands.MoveToFirstCommand}">
                 <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleListSource.MoveToPreviousCommand}">
+            <Button Command="{Binding Commands.MoveToPreviousCommand}">
                 <controls:MaterialDesignIcon Icon="MenuLeft" Height="30" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleListSource.MoveToNextCommand}">
+            <Button Command="{Binding Commands.MoveToNextCommand}">
                 <controls:MaterialDesignIcon Icon="MenuRight" Height="30" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleListSource.MoveToLastCommand}">
+            <Button Command="{Binding Commands.MoveToLastCommand}">
                 <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
             </Button>
             <TextBox x:Name="IndexTextBox" Text="{Binding PeopleListSource.SelectedIndex}" TextAlignment="Center" VerticalContentAlignment="Center" Width="30" Margin="0,5,0,5">
                 <mvvmLib:Interaction.Behaviors>
                     <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                                    Command="{Binding PeopleListSource.MoveToIndexCommand}"
+                                                    Command="{Binding Commands.MoveToIndexCommand}"
                                                     CommandParameter="{Binding Text, ElementName=IndexTextBox}" />
                 </mvvmLib:Interaction.Behaviors>
             </TextBox>
@@ -67,8 +67,8 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <mvvmLib:AnimatableContentControl Content="{Binding Navigation.Current}" Grid.Row="1" Grid.Column="1" Simultaneous="True">
-            <mvvmLib:AnimatableContentControl.EntranceAnimation>
+        <mvvmLib:AnimatingContentControl Content="{Binding Navigation.Current}" Grid.Row="1" Grid.Column="1" Simultaneous="True">
+            <mvvmLib:AnimatingContentControl.EntranceAnimation>
                 <Storyboard>
                     <PointAnimation Storyboard.TargetName="PreviousContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransformOrigin)" 
@@ -83,15 +83,15 @@
                                      Storyboard.TargetProperty="(UIElement.Opacity)" 
                                      From="1" To="0" Duration="0:0:0.4"/>
                 </Storyboard>
-            </mvvmLib:AnimatableContentControl.EntranceAnimation>
-            <mvvmLib:AnimatableContentControl.ExitAnimation>
+            </mvvmLib:AnimatingContentControl.EntranceAnimation>
+            <mvvmLib:AnimatingContentControl.ExitAnimation>
                 <Storyboard>
                     <DoubleAnimation Storyboard.TargetName="CurrentContentPresenter" 
                                      Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" 
                                      From="300" To="0" Duration="0:0:0.4"/>
                 </Storyboard>
-            </mvvmLib:AnimatableContentControl.ExitAnimation>
-        </mvvmLib:AnimatableContentControl>
+            </mvvmLib:AnimatingContentControl.ExitAnimation>
+        </mvvmLib:AnimatingContentControl>
 
         <Border BorderBrush="Black" BorderThickness="2" Grid.Row="2" Grid.ColumnSpan="2" Background="#fff" VerticalAlignment="Bottom" Height="220">
             <Grid>

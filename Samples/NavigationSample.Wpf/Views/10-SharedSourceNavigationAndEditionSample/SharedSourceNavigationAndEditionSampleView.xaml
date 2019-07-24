@@ -94,22 +94,22 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <Button Command="{Binding PeopleSource.MoveToFirstCommand}">
+            <Button Command="{Binding Commands.MoveToFirstCommand}">
                 <controls:MaterialDesignIcon Icon="SkipPrevious" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleSource.MoveToPreviousCommand}">
+            <Button Command="{Binding Commands.MoveToPreviousCommand}">
                 <controls:MaterialDesignIcon Icon="MenuLeft" Height="30" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleSource.MoveToNextCommand}">
+            <Button Command="{Binding Commands.MoveToNextCommand}">
                 <controls:MaterialDesignIcon Icon="MenuRight" Height="30" Brush="#2980b9"/>
             </Button>
-            <Button Command="{Binding PeopleSource.MoveToLastCommand}">
+            <Button Command="{Binding Commands.MoveToLastCommand}">
                 <controls:MaterialDesignIcon Icon="SkipNext" Brush="#2980b9"/>
             </Button>
             <TextBox x:Name="IndexTextBox" TextAlignment="Center" VerticalContentAlignment="Center" Width="30" Margin="2">
                 <mvvmLib:Interaction.Behaviors>
                     <mvvmLib:EventToCommandBehavior EventName="KeyUp" 
-                                                    Command="{Binding PeopleSource.MoveToIndexCommand}"
+                                                    Command="{Binding Commands.MoveToIndexCommand}"
                                                     CommandParameter="{Binding ElementName=IndexTextBox, Path=Text}"
                                                     />
                 </mvvmLib:Interaction.Behaviors>

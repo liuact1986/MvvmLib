@@ -37,7 +37,7 @@ namespace NavigationSample.Wpf.ViewModels
         }
 
         public NavigationSource Navigation { get; }
-
+        public NavigationSourceCommands Commands { get; }
         public ICommand SayHelloCommand { get; }
 
         public ObservableCollection<Person> People { get; set; }
@@ -50,6 +50,7 @@ namespace NavigationSample.Wpf.ViewModels
             this.fakePeopleService = fakePeopleService;
 
             Navigation = NavigationManager.GetDefaultNavigationSource("Main");
+            this.Commands = new NavigationSourceCommands(Navigation);
 
             SayHelloCommand = new DelegateCommand<string>(SayHello);
             SelectPersonCommand = new DelegateCommand<Person>(ShowPersonDetails);

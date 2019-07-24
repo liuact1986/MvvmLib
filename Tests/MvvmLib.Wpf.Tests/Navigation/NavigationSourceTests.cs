@@ -2148,61 +2148,6 @@ namespace MvvmLib.Wpf.Tests.Navigation
             Assert.AreEqual(1, navigationSource.Entries.Count);
         }
 
-        [TestMethod]
-        public void Commands()
-        {
-            var navigationSource = new NavigationSource();
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToFirstCommand.CanExecute(null);
-
-            navigationSource.NavigateCommand.Execute(typeof(MyNavViewModelA));
-            Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToNextCommand.CanExecute(null);
-            navigationSource.MoveToFirstCommand.CanExecute(null);
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.NavigateCommand.Execute(typeof(MyNavViewModelB));
-            Assert.AreEqual(true, MyNavViewModelB.IsOnNavigatedToInvoked);
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToNextCommand.CanExecute(null);
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.MoveToPreviousCommand.Execute(null);
-            Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToNextCommand.CanExecute(null);
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.MoveToNextCommand.Execute(null);
-            Assert.AreEqual(true, MyNavViewModelB.IsOnNavigatedToInvoked);
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToNextCommand.CanExecute(null);
-
-
-            MyNavViewModelA.Reset();
-            MyNavViewModelB.Reset();
-            MyNavViewModelC.Reset();
-
-            navigationSource.MoveToFirstCommand.Execute(null);
-            Assert.AreEqual(true, MyNavViewModelA.IsOnNavigatedToInvoked);
-            navigationSource.MoveToPreviousCommand.CanExecute(null);
-            navigationSource.MoveToNextCommand.CanExecute(null);
-        }
 
         [TestMethod]
         public void Navigate_Updates_Parameter()

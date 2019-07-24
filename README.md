@@ -36,6 +36,7 @@ ___
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **ListCollectionViewEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
+* **Command providers**: NavigationSourceCommands, NavigationSourceContainerCommands, SharedSourceCommands, ListCollectionViewCommands, PagedSourceCommands
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 

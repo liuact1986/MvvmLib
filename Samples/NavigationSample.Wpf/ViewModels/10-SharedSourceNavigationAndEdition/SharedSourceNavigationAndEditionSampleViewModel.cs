@@ -20,6 +20,7 @@ namespace NavigationSample.Wpf.ViewModels
         private readonly ISubscriberOptions cancelUpdatingPersonSubscriberOptions;
 
         public SharedSource<PersonViewModel> PeopleSource { get; }
+        public SharedSourceCommands Commands { get; }
 
         private DataFormState state;
         public DataFormState State
@@ -43,6 +44,7 @@ namespace NavigationSample.Wpf.ViewModels
             cancelUpdatingPersonSubscriberOptions = eventAggregator.GetEvent<CancelUpdatingPersonEvent>().Subscribe(OnCancelUpdatingPerson);
 
             this.PeopleSource = NavigationManager.GetOrCreateSharedSource<PersonViewModel>();
+            this.Commands = new SharedSourceCommands(PeopleSource);
 
             AddCommand = new DelegateCommand(Add);
             UpdateCommand = new DelegateCommand(Update);

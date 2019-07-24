@@ -4,7 +4,7 @@ namespace MvvmLib.Commands
 {
 
     /// <summary>
-    /// A command with a generic parameter.
+    /// DelegateCommand is an implementation of ICommand that allows to invoke manually CanExecuteChanged (does not use the CommandManager unlike the RoutedCommands). DelegateCommand with parameter.
     /// </summary>
     /// <typeparam name="T">The type of the parameter</typeparam>
     public class DelegateCommand<T> : CommandBase
