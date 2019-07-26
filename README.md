@@ -34,7 +34,6 @@ If you enjoy what I build, please help support this project.
 
 * **NavigationSource**: source for _ContentControls_
 * **SharedSource**: source for _ItemsControls_, _Selectors_ (ListBox, TabControl, etc.)
-* **AnimatableContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **NavigationManager**: allows to manage NavigationSources and SharedSources
 * **ListCollectionViewEx**: allows to browse, filter, sort, group, add, edit with lists and collections.
 * **PagedSource**: paging for DataGrid, etc.
@@ -42,6 +41,7 @@ If you enjoy what I build, please help support this project.
 * **INavigationAware**: allows _view models_ to be notified on navigate
 * **ICanActivate**, **ICanDeactivate**: allow to cancel navigation
 * **IIsSelected**, **ISelectable**, **SelectionSyncBehavior**: allow to select a view 
+* **AnimatingContentControl**, **TransitioningContentControl**, **TransitioningItemsControl**: allow to animate content
 * **Triggers**, **TriggerActions** and **Behaviors**: **EventTrigger**, **DataTrigger**, **CallMethodeAction**, **SelectionSyncBehavior**, **EventToCommandBehavior**,**EventToMethodBehavior**, etc.
 * **PropertyFilter** and **CompositeFilter**: allow to generate predicates.
 * **ViewModelLocator**: allows to **resolve ViewModel** for **views**
