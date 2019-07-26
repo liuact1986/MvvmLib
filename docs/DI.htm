@@ -193,7 +193,7 @@ public class MyService3 : IMyService
 <pre><code class="cs">injector.LifetimeOnDiscovery = LifetimeOnDiscovery.SingletonOnlyForServices;
 </code></pre>
 
-<h3 id="registering-type-with-interfaces">Registering Type with interfaces<a class="headerlink" href="#registering-type-with-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<h3 id="registering-type-for-all-implemented-interfaces">Registering Type for all implemented interfaces<a class="headerlink" href="#registering-type-for-all-implemented-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <pre><code class="cs">public interface ILookupDataServiceType1 { }
 
 public interface ILookupDataServiceType2 { }
@@ -204,28 +204,28 @@ public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType
 { }
 </code></pre>
 
-<pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;LookupDataService&gt;();
+<pre><code class="cs">injector.RegisterTypeForImplementedInterfaces&lt;LookupDataService&gt;();
 </code></pre>
 
 <p>Avoid to do:</p>
-<pre><code class="cs">injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType1, LookupDataService&gt;();
-injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType2, LookupDataService&gt;();
-injector.RegisterTypeWithInterfaces&lt;ILookupDataServiceType3, LookupDataService&gt;();
+<pre><code class="cs">injector.RegisterTypeForImplementedInterfaces&lt;ILookupDataServiceType1, LookupDataService&gt;();
+injector.RegisterTypeForImplementedInterfaces&lt;ILookupDataServiceType2, LookupDataService&gt;();
+injector.RegisterTypeForImplementedInterfaces&lt;ILookupDataServiceType3, LookupDataService&gt;();
 </code></pre>
 
 <p>Set a registration as singleton</p>
-<pre><code class="cs">var registrationOptionsContainer = injector.RegisterTypeWithInterfaces&lt;LookupDataService&gt;();
+<pre><code class="cs">var registrationOptionsContainer = injector.RegisterTypeForImplementedInterfaces&lt;LookupDataService&gt;();
 var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
 registrationOptions2.AsSingleton();
 </code></pre>
 
-<h3 id="registering-singleton-with-interfaces">Registering Singleton with interfaces<a class="headerlink" href="#registering-singleton-with-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
+<h3 id="registering-singleton-for-all-implemented-interfaces">Registering Singleton for all implemented interfaces<a class="headerlink" href="#registering-singleton-for-all-implemented-interfaces" title="Permalink to this headline"><i class="fa fa-link" aria-hidden="true"></i></a></h3>
 <p>Allows to get the same instance for all &quot;services&quot;.</p>
-<pre><code class="cs">injector.RegisterSingletonWithInterfaces&lt;LookupDataService&gt;();
+<pre><code class="cs">injector.RegisterSingletonForImplementedInterfaces&lt;LookupDataService&gt;();
 </code></pre>
 
 <p>Set a registration as multi instances</p>
-<pre><code class="cs">var registrationOptionsContainer = injector.RegisterSingletonWithInterfaces&lt;LookupDataService&gt;();
+<pre><code class="cs">var registrationOptionsContainer = injector.RegisterSingletonForImplementedInterfaces&lt;LookupDataService&gt;();
 var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
 registrationOptions2.AsMultiInstances();
 </code></pre>

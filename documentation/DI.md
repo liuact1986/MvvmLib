@@ -129,7 +129,7 @@ Its possible to register services (interfaces + implementation) discovered as si
 injector.LifetimeOnDiscovery = LifetimeOnDiscovery.SingletonOnlyForServices;
 ```
 
-### Registering Type with interfaces
+### Registering Type for all implemented interfaces
 
 ```cs
 public interface ILookupDataServiceType1 { }
@@ -143,37 +143,37 @@ public class LookupDataService : ILookupDataServiceType1, ILookupDataServiceType
 ```
 
 ```cs
-injector.RegisterTypeWithInterfaces<LookupDataService>();
+injector.RegisterTypeForImplementedInterfaces<LookupDataService>();
 ```
 
 Avoid to do:
 
 ```cs
-injector.RegisterTypeWithInterfaces<ILookupDataServiceType1, LookupDataService>();
-injector.RegisterTypeWithInterfaces<ILookupDataServiceType2, LookupDataService>();
-injector.RegisterTypeWithInterfaces<ILookupDataServiceType3, LookupDataService>();
+injector.RegisterTypeForImplementedInterfaces<ILookupDataServiceType1, LookupDataService>();
+injector.RegisterTypeForImplementedInterfaces<ILookupDataServiceType2, LookupDataService>();
+injector.RegisterTypeForImplementedInterfaces<ILookupDataServiceType3, LookupDataService>();
 ```
 
 Set a registration as singleton
 
 ```cs
-var registrationOptionsContainer = injector.RegisterTypeWithInterfaces<LookupDataService>();
+var registrationOptionsContainer = injector.RegisterTypeForImplementedInterfaces<LookupDataService>();
 var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
 registrationOptions2.AsSingleton();
 ```
 
-### Registering Singleton with interfaces
+### Registering Singleton for all implemented interfaces
 
 Allows to get the same instance for all "services".
 
 ```cs
-injector.RegisterSingletonWithInterfaces<LookupDataService>();
+injector.RegisterSingletonForImplementedInterfaces<LookupDataService>();
 ```
 
 Set a registration as multi instances
 
 ```cs
-var registrationOptionsContainer = injector.RegisterSingletonWithInterfaces<LookupDataService>();
+var registrationOptionsContainer = injector.RegisterSingletonForImplementedInterfaces<LookupDataService>();
 var registrationOptions2 = container[typeof(ILookupDataServiceType2)];
 registrationOptions2.AsMultiInstances();
 ```
